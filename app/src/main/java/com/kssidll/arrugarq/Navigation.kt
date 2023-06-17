@@ -8,7 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import com.kssidll.arrugarq.NavigationDestinations.HOME_ROUTE
 import com.kssidll.arrugarq.NavigationDestinations.INITIAL_ROUTE
 import com.kssidll.arrugarq.ui.home.HomeRoute
-import com.kssidll.arrugarq.ui.home.HomeScreen
 
 object NavigationDestinations {
     const val HOME_ROUTE = "home"
