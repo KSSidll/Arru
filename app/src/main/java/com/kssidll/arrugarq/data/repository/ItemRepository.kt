@@ -21,12 +21,50 @@ class ItemRepository(private val itemDao: ItemDao) : IItemRepository {
         return itemDao.getFlow(id)
     }
 
-    override suspend fun getByName(name: String): List<Item> {
-        return itemDao.getByName(name)
+    override suspend fun getByProductId(productId: Long): List<Item> {
+        return itemDao.getByProductId(productId)
     }
 
-    override fun getByNameFlow(name: String): Flow<List<Item>> {
-        return itemDao.getByNameFlow(name)
+    override fun getByProductIdFlow(productId: Long): Flow<List<Item>> {
+        return itemDao.getByProductIdFlow(productId)
+    }
+
+    override suspend fun getByShopId(shopId: Long): List<Item> {
+        return itemDao.getByShopId(shopId)
+    }
+
+    override fun getByShopIdFlow(shopId: Long): Flow<List<Item>> {
+        return itemDao.getByShopIdFlow(shopId)
+    }
+
+    override suspend fun getNewerThan(date: Long): List<Item> {
+        return itemDao.getNewerThan(date)
+    }
+
+    override fun getNewerThanFlow(date: Long): Flow<List<Item>> {
+        return itemDao.getNewerThanFlow(date)
+    }
+
+    override suspend fun getOlderThan(date: Long): List<Item> {
+        return itemDao.getOlderThan(date)
+    }
+
+    override fun getOlderThanFlow(date: Long): Flow<List<Item>> {
+        return itemDao.getOlderThanFlow(date)
+    }
+
+    override suspend fun getBetweenDates(
+        lowerBoundDate: Long,
+        higherBoundDate: Long
+    ): List<Item> {
+        return itemDao.getBetweenDates(lowerBoundDate, higherBoundDate)
+    }
+
+    override fun getBetweenDatesFlow(
+        lowerBoundDate: Long,
+        higherBoundDate: Long
+    ): Flow<List<Item>> {
+        return itemDao.getBetweenDatesFlow(lowerBoundDate, higherBoundDate)
     }
 
     override suspend fun insert(item: Item): Long {

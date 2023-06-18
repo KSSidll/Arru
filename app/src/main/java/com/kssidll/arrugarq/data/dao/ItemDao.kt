@@ -21,11 +21,35 @@ interface ItemDao {
     @Query("SELECT * FROM item WHERE id == :id")
     fun getFlow(id: Long): Flow<Item>
 
-    @Query("SELECT * FROM item WHERE name == :name")
-    suspend fun getByName(name: String): List<Item>
+    @Query("SELECT * FROM item WHERE productId == :productId")
+    suspend fun getByProductId(productId: Long): List<Item>
 
-    @Query("SELECT * FROM item WHERE name == :name")
-    fun getByNameFlow(name: String): Flow<List<Item>>
+    @Query("SELECT * FROM item WHERE productId == :productId")
+    fun getByProductIdFlow(productId: Long): Flow<List<Item>>
+
+    @Query("SELECT * FROM item WHERE shopId == :shopId")
+    suspend fun getByShopId(shopId: Long): List<Item>
+
+    @Query("SELECT * FROM item WHERE shopId == :shopId")
+    fun getByShopIdFlow(shopId: Long): Flow<List<Item>>
+
+    @Query("SELECT * FROM item WHERE date > :date")
+    suspend fun getNewerThan(date: Long): List<Item>
+
+    @Query("SELECT * FROM item WHERE date > :date")
+    fun getNewerThanFlow(date: Long): Flow<List<Item>>
+
+    @Query("SELECT * FROM item WHERE date < :date")
+    suspend fun getOlderThan(date: Long): List<Item>
+
+    @Query("SELECT * FROM item WHERE date < :date")
+    fun getOlderThanFlow(date: Long): Flow<List<Item>>
+
+    @Query("SELECT * FROM item WHERE date > :lowerBoundDate AND date < :higherBoundDate")
+    suspend fun getBetweenDates(lowerBoundDate: Long, higherBoundDate: Long): List<Item>
+
+    @Query("SELECT * FROM item WHERE date > :lowerBoundDate AND date < :higherBoundDate")
+    fun getBetweenDatesFlow(lowerBoundDate: Long, higherBoundDate: Long): Flow<List<Item>>
 
     @Insert
     suspend fun insert(item: Item): Long
