@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
@@ -10,15 +11,16 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.Arrugarq"
         tools:targetApi="34">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="standard"
-            android:taskAffinity="com.kssidll.arrugarq">
+            android:taskAffinity="com.kssidll.arrugarq"
+            android:theme="@style/Theme.Arrugarq">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
