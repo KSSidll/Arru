@@ -25,7 +25,7 @@ import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 
 @Composable
 fun HomeScreen(
-    onAddItem: () -> Unit
+    onAddItem: () -> Unit,
 ) {
     Box(modifier = Modifier.padding(8.dp)) {
         Column {

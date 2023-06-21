@@ -7,6 +7,6 @@ fun HomeRoute(
     onAddItem: () -> Unit
 ) {
     HomeScreen(
-        onAddItem = onAddItem
+        onAddItem = onAddItem,
     )
 }

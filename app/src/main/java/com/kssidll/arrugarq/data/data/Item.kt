@@ -31,4 +31,13 @@ data class Item(
     val unitMeasure: Long?,
     val price: Long,
     val date: Long,
-)
+) {
+    constructor(
+        productId: Long,
+        shopId: Long?,
+        quantity: Long,
+        unitMeasure: Long?,
+        price: Long,
+        date: Long
+    ) : this (0, productId, shopId, quantity, unitMeasure, price, date)
+}

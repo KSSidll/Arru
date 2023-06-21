@@ -27,4 +27,9 @@ data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val categoryId: Long,
     val name: String,
-)
+) {
+    constructor(
+        categoryId: Long,
+        name: String,
+    ) : this (0, categoryId, name)
+}

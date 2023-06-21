@@ -5,11 +5,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun AddItemRoute(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onProductAdd: () -> Unit,
+    onShopAdd: () -> Unit,
 ) {
     val addItemViewModel: AddItemViewModel = hiltViewModel()
 
     AddItemScreen (
-        onBack = onBack
+        onBack = onBack,
+        onItemAdd = {
+            addItemViewModel.addItem(it)
+        },
+        onProductAdd = onProductAdd,
+        onShopAdd = onShopAdd,
+        products = addItemViewModel.getProductsFlow(),
+        shops = addItemViewModel.getShopsFlow(),
+        state = addItemViewModel.addItemState,
     )
 }

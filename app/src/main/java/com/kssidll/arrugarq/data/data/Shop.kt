@@ -15,4 +15,8 @@ import androidx.room.PrimaryKey
 data class Shop(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
-)
+) {
+    constructor(
+        name: String
+    ) : this (0, name)
+}
