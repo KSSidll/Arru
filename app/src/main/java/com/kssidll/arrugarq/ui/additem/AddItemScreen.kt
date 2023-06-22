@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.additem
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -96,6 +97,13 @@ fun AddItemScreenContent(
     }
     var isShopSearchExpanded: Boolean by remember {
         mutableStateOf(false)
+    }
+
+    BackHandler (
+        enabled = isProductSearchExpanded or isShopSearchExpanded
+    ) {
+        isProductSearchExpanded = false
+        isShopSearchExpanded = false
     }
 
     var shopError: Boolean by remember {
