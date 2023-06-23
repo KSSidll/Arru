@@ -3,19 +3,27 @@ package com.kssidll.arrugarq.ui.addproduct
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
     productRepository: IProductRepository,
+    productCategoryRepository: IProductCategoryRepository
 ) : ViewModel() {
     private val productRepository: IProductRepository
+    private val productCategoryRepository: IProductCategoryRepository
+
+    var addProductState: AddProductState = AddProductState()
 
     init {
         this.productRepository = productRepository
+        this.productCategoryRepository = productCategoryRepository
     }
 
     /**
@@ -29,5 +37,9 @@ class AddProductViewModel @Inject constructor(
                 name = productData.name,
             )
         )
+    }
+
+    fun getProductCategoriesFlow(): Flow<List<ProductCategory>> {
+        return productCategoryRepository.getAllFlow()
     }
 }

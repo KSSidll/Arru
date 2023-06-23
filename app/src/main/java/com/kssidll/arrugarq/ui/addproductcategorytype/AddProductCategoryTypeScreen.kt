@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.addshop
+package com.kssidll.arrugarq.ui.addproductcategorytype
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -48,13 +48,13 @@ import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 
 @Composable
-fun AddShopScreen(
+fun AddProductCategoryTypeScreen(
     onBack: () -> Unit,
-    onShopAdd: (AddShopData) -> Unit,
+    onTypeAdd: (AddProductCategoryTypeData) -> Unit,
 ) {
     Column {
         SecondaryAppBar(onBack = onBack) {
-            Text(text = "Shop")
+            Text(text = "Product Category Type")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -62,20 +62,19 @@ fun AddShopScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            AddShopScreenContent(
+            AddProductCategoryTypeScreenContent(
                 onBack = onBack,
-                onShopAdd = onShopAdd,
+                onTypeAdd = onTypeAdd,
             )
         }
     }
 }
 
 @Composable
-fun AddShopScreenContent(
+fun AddProductCategoryTypeScreenContent(
     onBack: () -> Unit,
-    onShopAdd: (AddShopData) -> Unit,
+    onTypeAdd: (AddProductCategoryTypeData) -> Unit
 ) {
-
     val focusRequester = remember { FocusRequester() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -124,8 +123,8 @@ fun AddShopScreenContent(
                         if (name.isEmpty()) {
                             nameError = true
                         } else {
-                            onShopAdd(
-                                AddShopData(name)
+                            onTypeAdd(
+                                AddProductCategoryTypeData(name)
                             )
                             onBack()
                         }
@@ -140,7 +139,7 @@ fun AddShopScreenContent(
                 ),
                 placeholder = {
                     Text(
-                        text = "Shop Name",
+                        text = "Type Name",
                         modifier = Modifier
                             .alpha(0.5F)
                     )
@@ -159,8 +158,8 @@ fun AddShopScreenContent(
                     if (name.isEmpty()) {
                         nameError = true
                     } else {
-                        onShopAdd(
-                            AddShopData(name)
+                        onTypeAdd(
+                            AddProductCategoryTypeData(name)
                         )
                         onBack()
                     }
@@ -176,12 +175,12 @@ fun AddShopScreenContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Add Shop",
+                        contentDescription = "Add Product Category Type",
                         modifier = Modifier.size(30.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Add Shop",
+                        text = "Add Type",
                         fontSize = 20.sp
                     )
                 }
@@ -190,18 +189,18 @@ fun AddShopScreenContent(
     }
 }
 
-@Preview(group = "AddShopScreen", name = "Add Shop Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddShopScreen", name = "Add Shop Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(group = "AddProductCategoryTypeScreen", name = "Add Product Category Type Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddProductCategoryTypeScreen", name = "Add Product Category Type Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun AddShopScreenPreview() {
+fun AddProductCategoryTypeScrenPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AddShopScreen(
+            AddProductCategoryTypeScreen(
                 onBack = {},
-                onShopAdd = {},
+                onTypeAdd = {},
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.addproduct
+package com.kssidll.arrugarq.ui.addproductcategory
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
@@ -45,23 +45,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductCategoryType
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+
 @Composable
-fun AddProductScreen(
+fun AddProductCategoryScreen(
     onBack: () -> Unit,
-    onCategoryAdd: () -> Unit,
-    onProductAdd: (AddProductData) -> Unit,
-    categories: Flow<List<ProductCategory>>,
-    state: AddProductState,
+    onCategoryTypeAdd: () -> Unit,
+    onCategoryAdd: (AddProductCategoryData) -> Unit,
+    types: Flow<List<ProductCategoryType>>,
+    state: AddProductCategoryState
 ) {
     Column {
         SecondaryAppBar(onBack = onBack) {
-            Text(text = "Product")
+            Text(text = "Product Category")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -69,10 +70,10 @@ fun AddProductScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            AddProductScreenContent(
+            AddProductCategoryScreenContent(
+                onCategoryTypeAdd = onCategoryTypeAdd,
                 onCategoryAdd = onCategoryAdd,
-                onProductAdd = onProductAdd,
-                categories = categories,
+                types = types,
                 state = state,
             )
         }
@@ -80,24 +81,23 @@ fun AddProductScreen(
 }
 
 @Composable
-fun AddProductScreenContent(
-    onCategoryAdd: () -> Unit,
-    onProductAdd: (AddProductData) -> Unit,
-    categories: Flow<List<ProductCategory>>,
-    state: AddProductState,
+fun AddProductCategoryScreenContent(
+    onCategoryTypeAdd: () -> Unit,
+    onCategoryAdd: (AddProductCategoryData) -> Unit,
+    types: Flow<List<ProductCategoryType>>,
+    state: AddProductCategoryState
 ) {
-
-    var isCategorySearchExpanded: Boolean by rememberSaveable {
+    var isCategoryTypeSearchExpanded: Boolean by rememberSaveable {
         mutableStateOf(false)
     }
 
     BackHandler(
-        enabled = isCategorySearchExpanded
+        enabled = isCategoryTypeSearchExpanded
     ) {
-        isCategorySearchExpanded = false
+        isCategoryTypeSearchExpanded = false
     }
 
-    var isCategoryError: Boolean by remember {
+    var isCategoryTypeError: Boolean by remember {
         mutableStateOf(false)
     }
 
@@ -106,17 +106,17 @@ fun AddProductScreenContent(
     }
 
 
-    if (isCategorySearchExpanded) {
-        val collectedCategories = categories.collectAsState(initial = emptyList()).value
+    if (isCategoryTypeSearchExpanded) {
+        val collectedTypes = types.collectAsState(initial = emptyList()).value
 
         Column {
             Text(text = "Product")
-            Button(onClick = { isCategorySearchExpanded = false }) {
+            Button(onClick = { isCategoryTypeSearchExpanded = false }) {
                 Text(text = "Go Back")
             }
 
             LazyColumn {
-                items(items = collectedCategories) {
+                items(items = collectedTypes) {
                     Row {
                         Text(text = it.name)
                     }
@@ -138,14 +138,14 @@ fun AddProductScreenContent(
                     OutlinedTextField(
                         readOnly = true,
                         singleLine = true,
-                        value = state.selectedProductCategory.value?.name ?: String(),
+                        value = state.selectedProductCategoryType.value?.name ?: String(),
                         onValueChange = {
 
                         },
                         modifier = Modifier
                             .onFocusEvent {
                                 if (it.isFocused) {
-                                    isCategorySearchExpanded = true
+                                    isCategoryTypeSearchExpanded = true
                                 }
                             }
                             .fillMaxSize(),
@@ -154,12 +154,12 @@ fun AddProductScreenContent(
                         ),
                         placeholder = {
                             Text(
-                                text = "Category",
+                                text = "Type",
                                 modifier = Modifier
                                     .alpha(0.5F)
                             )
                         },
-                        isError = isCategoryError,
+                        isError = isCategoryTypeError,
                         trailingIcon = {
                             BoxWithConstraints {
                                 Box(
@@ -167,7 +167,7 @@ fun AddProductScreenContent(
                                         .fillMaxHeight()
                                         .aspectRatio(1F)
                                         .clickable {
-                                            onCategoryAdd()
+                                            onCategoryTypeAdd()
                                         },
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -182,7 +182,7 @@ fun AddProductScreenContent(
                                     }
                                     Icon(
                                         imageVector = Icons.Default.Add,
-                                        contentDescription = "Add new Product Category",
+                                        contentDescription = "Add new Product Category Type",
                                         modifier = Modifier.size(40.dp)
                                     )
                                 }
@@ -263,21 +263,21 @@ fun AddProductScreenContent(
     }
 }
 
-@Preview(group = "AddProductScreen", name = "Add Product Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddProductScreen", name = "Add Product Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(group = "AddProductCategoryScreen", name = "Add Product Category Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddProductCategoryScreen", name = "Add Product Category Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun AddProductScreenPreview() {
+fun AddProductCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AddProductScreen(
+            AddProductCategoryScreen(
                 onBack = {},
+                onCategoryTypeAdd = {},
                 onCategoryAdd = {},
-                onProductAdd = {},
-                categories = flowOf(),
-                state = AddProductState()
+                types = flowOf(),
+                state = AddProductCategoryState(),
             )
         }
     }

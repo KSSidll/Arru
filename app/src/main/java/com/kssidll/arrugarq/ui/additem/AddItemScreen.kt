@@ -65,7 +65,9 @@ fun AddItemScreen(
     state: AddItemState,
 ) {
     Column {
-        SecondaryAppBar(onBack = onBack) {}
+        SecondaryAppBar(onBack = onBack) {
+            Text(text = "Item")
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
