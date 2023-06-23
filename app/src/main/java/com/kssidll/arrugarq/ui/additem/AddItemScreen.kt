@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,10 +93,10 @@ fun AddItemScreenContent(
     shops: Flow<List<Shop>>,
     state: AddItemState,
 ) {
-    var isProductSearchExpanded: Boolean by remember {
+    var isProductSearchExpanded: Boolean by rememberSaveable {
         mutableStateOf(false)
     }
-    var isShopSearchExpanded: Boolean by remember {
+    var isShopSearchExpanded: Boolean by rememberSaveable {
         mutableStateOf(false)
     }
 
