@@ -183,12 +183,8 @@ fun AddItemScreenContent(
                             }
                         }
                         .fillMaxSize(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = MaterialTheme.colorScheme.onPrimary,
-                        focusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                    ),
                     textStyle = TextStyle.Default.copy(
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onBackground
                     ),
                     placeholder = {
                         Text(
@@ -252,12 +248,8 @@ fun AddItemScreenContent(
                             }
                         }
                         .fillMaxSize(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = MaterialTheme.colorScheme.onPrimary,
-                        focusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                    ),
                     textStyle = TextStyle.Default.copy(
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onBackground
                     ),
                     placeholder = {
                         Text(
@@ -318,11 +310,11 @@ fun AddItemScreenContent(
                             state.quantity.value = it
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
                         ),
                         textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         placeholder = {
                             Text(
@@ -351,11 +343,11 @@ fun AddItemScreenContent(
                             state.unitMeasure.value = it
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
                         ),
                         textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         placeholder = {
                             Text(
@@ -384,11 +376,11 @@ fun AddItemScreenContent(
                             state.price.value = it
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
                         ),
                         textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         placeholder = {
                             Text(
@@ -417,11 +409,11 @@ fun AddItemScreenContent(
                             state.date.value = it
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
                         ),
                         textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         placeholder = {
                             Text(
