@@ -53,6 +53,23 @@ fun AddShopScreen(
     onShopAdd: (AddShopData) -> Unit,
 ) {
     Column {
+        val focusRequester = remember { FocusRequester() }
+        val lifecycleOwner = LocalLifecycleOwner.current
+
+        DisposableEffect(Unit) {
+            val lifecycle = lifecycleOwner.lifecycle
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    focusRequester.requestFocus()
+                }
+            }
+            lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycle.removeObserver(observer)
+            }
+        }
+
         SecondaryAppBar(onBack = onBack) {
             Text(text = "Shop")
         }
@@ -62,128 +79,101 @@ fun AddShopScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            AddShopScreenContent(
-                onBack = onBack,
-                onShopAdd = onShopAdd,
-            )
-        }
-    }
-}
+            Column {
+                var name: String by rememberSaveable {
+                    mutableStateOf(String())
+                }
 
-@Composable
-fun AddShopScreenContent(
-    onBack: () -> Unit,
-    onShopAdd: (AddShopData) -> Unit,
-) {
+                var nameError: Boolean by remember {
+                    mutableStateOf(false)
+                }
 
-    val focusRequester = remember { FocusRequester() }
-    val lifecycleOwner = LocalLifecycleOwner.current
+                Row (
+                    modifier = Modifier.fillMaxHeight(0.6f),
+                    horizontalArrangement = Arrangement.Center,
+                ){
 
-    DisposableEffect(Unit) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                focusRequester.requestFocus()
-            }
-        }
-        lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
-    }
-
-    Column {
-        var name: String by rememberSaveable {
-            mutableStateOf(String())
-        }
-
-        var nameError: Boolean by remember {
-            mutableStateOf(false)
-        }
-
-        Row (
-            modifier = Modifier.fillMaxHeight(0.6f),
-            horizontalArrangement = Arrangement.Center,
-        ){
-
-            OutlinedTextField(
-                singleLine = true,
-                value = name,
-                onValueChange = {
-                    name = it
-                },
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (name.isEmpty()) {
-                            nameError = true
-                        } else {
-                            onShopAdd(
-                                AddShopData(name)
+                    OutlinedTextField(
+                        singleLine = true,
+                        value = name,
+                        onValueChange = {
+                            name = it
+                        },
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (name.isEmpty()) {
+                                    nameError = true
+                                } else {
+                                    onShopAdd(
+                                        AddShopData(name)
+                                    )
+                                    onBack()
+                                }
+                            }
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
+                        ),
+                        textStyle = TextStyle.Default.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Shop Name",
+                                modifier = Modifier
+                                    .alpha(0.5F)
                             )
-                            onBack()
+                        },
+                        isError = nameError
+                    )
+                }
+                Row (
+                    modifier = Modifier.fillMaxHeight(0.4f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+
+                    Button(
+                        onClick = {
+                            nameError = name.isEmpty()
+
+                            if (
+                                !nameError
+                            ) {
+                                onShopAdd(
+                                    AddShopData(name)
+                                )
+                                onBack()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(70.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Add Shop",
+                                modifier = Modifier.size(30.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Add Shop",
+                                fontSize = 20.sp
+                            )
                         }
                     }
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = MaterialTheme.colorScheme.outline,
-                    focusedBorderColor = MaterialTheme.colorScheme.outline,
-                ),
-                textStyle = TextStyle.Default.copy(
-                    color = MaterialTheme.colorScheme.onBackground
-                ),
-                placeholder = {
-                    Text(
-                        text = "Shop Name",
-                        modifier = Modifier
-                            .alpha(0.5F)
-                    )
-                },
-                isError = nameError
-            )
-        }
-        Row (
-            modifier = Modifier.fillMaxHeight(0.4f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-
-            Button(
-                onClick = {
-                    if (name.isEmpty()) {
-                        nameError = true
-                    } else {
-                        onShopAdd(
-                            AddShopData(name)
-                        )
-                        onBack()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Add Shop",
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Add Shop",
-                        fontSize = 20.sp
-                    )
                 }
             }
         }

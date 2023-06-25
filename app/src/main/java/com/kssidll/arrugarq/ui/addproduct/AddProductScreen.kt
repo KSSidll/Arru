@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.data.data.ProductCategory
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
@@ -60,7 +63,34 @@ fun AddProductScreen(
     state: AddProductState,
 ) {
     Column {
-        SecondaryAppBar(onBack = onBack) {
+        var isCategorySearchExpanded: Boolean by rememberSaveable {
+            mutableStateOf(false)
+        }
+
+        BackHandler(
+            enabled = isCategorySearchExpanded
+        ) {
+            isCategorySearchExpanded = false
+        }
+
+        var isCategoryError: Boolean by remember {
+            mutableStateOf(false)
+        }
+
+        var isNameError: Boolean by remember {
+            mutableStateOf(false)
+        }
+
+        SecondaryAppBar(
+            onBack = {
+                if (
+                    !isCategorySearchExpanded
+                ) {
+                    onBack()
+                }
+                isCategorySearchExpanded = false
+            }
+        ) {
             Text(text = "Product")
         }
 
@@ -69,196 +99,175 @@ fun AddProductScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            AddProductScreenContent(
-                onCategoryAdd = onCategoryAdd,
-                onProductAdd = onProductAdd,
-                categories = categories,
-                state = state,
-            )
-        }
-    }
-}
+            if (isCategorySearchExpanded) {
+                val collectedCategories = categories.collectAsState(initial = emptyList()).value
 
-@Composable
-fun AddProductScreenContent(
-    onCategoryAdd: () -> Unit,
-    onProductAdd: (AddProductData) -> Unit,
-    categories: Flow<List<ProductCategory>>,
-    state: AddProductState,
-) {
-
-    var isCategorySearchExpanded: Boolean by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    BackHandler(
-        enabled = isCategorySearchExpanded
-    ) {
-        isCategorySearchExpanded = false
-    }
-
-    var isCategoryError: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-    var isNameError: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-
-    if (isCategorySearchExpanded) {
-        val collectedCategories = categories.collectAsState(initial = emptyList()).value
-
-        Column {
-            Text(text = "Product")
-            Button(onClick = { isCategorySearchExpanded = false }) {
-                Text(text = "Go Back")
-            }
-
-            LazyColumn {
-                items(items = collectedCategories) {
-                    Row {
-                        Text(text = it.name)
+                LazyColumn {
+                    items(items = collectedCategories) {
+                        AddProductItemCategory(
+                            item = it,
+                            onItemClick = { type ->
+                                state.selectedProductCategory.value = type
+                                isCategorySearchExpanded = false
+                            }
+                        )
+                        Divider()
                     }
                 }
-            }
+            } else {
+                Column {
+                    Column(
+                        modifier = Modifier.fillMaxHeight(0.6f)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                readOnly = true,
+                                singleLine = true,
+                                value = state.selectedProductCategory.value?.name ?: String(),
+                                onValueChange = {
 
-        }
-    } else {
-        Column {
-            Column(
-                modifier = Modifier.fillMaxHeight(0.6f)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    OutlinedTextField(
-                        readOnly = true,
-                        singleLine = true,
-                        value = state.selectedProductCategory.value?.name ?: String(),
-                        onValueChange = {
-
-                        },
-                        modifier = Modifier
-                            .onFocusEvent {
-                                if (it.isFocused) {
-                                    isCategorySearchExpanded = true
-                                }
-                            }
-                            .fillMaxSize(),
-                        textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onBackground
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Category",
+                                },
                                 modifier = Modifier
-                                    .alpha(0.5F)
-                            )
-                        },
-                        isError = isCategoryError,
-                        trailingIcon = {
-                            BoxWithConstraints {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .aspectRatio(1F)
-                                        .clickable {
-                                            onCategoryAdd()
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    val lineColor = MaterialTheme.colorScheme.onBackground
-                                    Canvas(modifier = Modifier.fillMaxSize()) {
-                                        drawLine(
-                                            color = lineColor,
-                                            start = Offset(0F, 0F),
-                                            end = Offset(0F, size.height),
-                                            strokeWidth = Dp.Hairline.value
-                                        )
+                                    .onFocusEvent {
+                                        if (it.isFocused) {
+                                            isCategorySearchExpanded = true
+                                        }
                                     }
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add new Product Category",
-                                        modifier = Modifier.size(40.dp)
+                                    .fillMaxSize(),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground
+                                ),
+                                placeholder = {
+                                    Text(
+                                        text = "Category",
+                                        modifier = Modifier
+                                            .alpha(0.5F)
                                     )
-                                }
+                                },
+                                isError = isCategoryError,
+                                trailingIcon = {
+                                    BoxWithConstraints {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .aspectRatio(1F)
+                                                .clickable {
+                                                    onCategoryAdd()
+                                                },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawLine(
+                                                    color = lineColor,
+                                                    start = Offset(0F, 0F),
+                                                    end = Offset(0F, size.height),
+                                                    strokeWidth = Dp.Hairline.value
+                                                )
+                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = "Add new Product Category",
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
 
+                                    }
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                OutlinedTextField(
+                                    singleLine = true,
+                                    value = state.name.value,
+                                    onValueChange = {
+                                        state.name.value = it
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        cursorColor = MaterialTheme.colorScheme.outline,
+                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    ),
+                                    textStyle = TextStyle.Default.copy(
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    ),
+                                    placeholder = {
+                                        Text(
+                                            text = "Name",
+                                            modifier = Modifier
+                                                .alpha(0.5F)
+                                        )
+                                    },
+                                    isError = isNameError
+                                )
                             }
                         }
-                    )
-                }
+                    }
 
-                Spacer(modifier = Modifier.height(12.dp))
-                Divider()
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Column {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        modifier = Modifier.fillMaxHeight(0.4f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        OutlinedTextField(
-                            singleLine = true,
-                            value = state.name.value,
-                            onValueChange = {
-                                state.name.value = it
+
+                        Button(
+                            onClick = {
+                                val category: ProductCategory? = state.selectedProductCategory.value
+                                val name: String = state.name.value
+
+                                isCategoryError = category == null
+                                isNameError = name.isEmpty()
+
+                                if (
+                                    !isCategoryError &&
+                                    !isNameError
+                                ) {
+                                    onProductAdd(
+                                        AddProductData(
+                                            categoryId = category!!.id,
+                                            name = name,
+                                        )
+                                    )
+                                    onBack()
+                                }
                             },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                cursorColor = MaterialTheme.colorScheme.outline,
-                                focusedBorderColor = MaterialTheme.colorScheme.outline,
-                            ),
-                            textStyle = TextStyle.Default.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            ),
-                            placeholder = {
-                                Text(
-                                    text = "Name",
-                                    modifier = Modifier
-                                        .alpha(0.5F)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Add Product",
+                                    modifier = Modifier.size(30.dp)
                                 )
-                            },
-                            isError = isNameError
-                        )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Add Product",
+                                    fontSize = 20.sp
+                                )
+                            }
+                        }
                     }
                 }
             }
-
-//            Row(
-//                modifier = Modifier.fillMaxHeight(0.4f),
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.Center,
-//            ) {
-//
-//                Button(
-//                    onClick = {
-//                        TODO()
-//                    },
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(70.dp)
-//                ) {
-//                    Row(
-//                        modifier = Modifier.fillMaxSize(),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.Center
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Check,
-//                            contentDescription = "Add Product Category",
-//                            modifier = Modifier.size(30.dp)
-//                        )
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text(
-//                            text = "Add Category",
-//                            fontSize = 20.sp
-//                        )
-//                    }
-//                }
-//            }
         }
     }
 }

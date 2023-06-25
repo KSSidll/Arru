@@ -53,6 +53,23 @@ fun AddProductCategoryTypeScreen(
     onTypeAdd: (AddProductCategoryTypeData) -> Unit,
 ) {
     Column {
+        val focusRequester = remember { FocusRequester() }
+        val lifecycleOwner = LocalLifecycleOwner.current
+
+        DisposableEffect(Unit) {
+            val lifecycle = lifecycleOwner.lifecycle
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    focusRequester.requestFocus()
+                }
+            }
+            lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycle.removeObserver(observer)
+            }
+        }
+
         SecondaryAppBar(onBack = onBack) {
             Text(text = "Product Category Type")
         }
@@ -62,127 +79,101 @@ fun AddProductCategoryTypeScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            AddProductCategoryTypeScreenContent(
-                onBack = onBack,
-                onTypeAdd = onTypeAdd,
-            )
-        }
-    }
-}
+            Column {
+                var name: String by rememberSaveable {
+                    mutableStateOf(String())
+                }
 
-@Composable
-fun AddProductCategoryTypeScreenContent(
-    onBack: () -> Unit,
-    onTypeAdd: (AddProductCategoryTypeData) -> Unit
-) {
-    val focusRequester = remember { FocusRequester() }
-    val lifecycleOwner = LocalLifecycleOwner.current
+                var nameError: Boolean by remember {
+                    mutableStateOf(false)
+                }
 
-    DisposableEffect(Unit) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                focusRequester.requestFocus()
-            }
-        }
-        lifecycle.addObserver(observer)
+                Row (
+                    modifier = Modifier.fillMaxHeight(0.6f),
+                    horizontalArrangement = Arrangement.Center,
+                ){
 
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
-    }
-
-    Column {
-        var name: String by rememberSaveable {
-            mutableStateOf(String())
-        }
-
-        var nameError: Boolean by remember {
-            mutableStateOf(false)
-        }
-
-        Row (
-            modifier = Modifier.fillMaxHeight(0.6f),
-            horizontalArrangement = Arrangement.Center,
-        ){
-
-            OutlinedTextField(
-                singleLine = true,
-                value = name,
-                onValueChange = {
-                    name = it
-                },
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (name.isEmpty()) {
-                            nameError = true
-                        } else {
-                            onTypeAdd(
-                                AddProductCategoryTypeData(name)
+                    OutlinedTextField(
+                        singleLine = true,
+                        value = name,
+                        onValueChange = {
+                            name = it
+                        },
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (name.isEmpty()) {
+                                    nameError = true
+                                } else {
+                                    onTypeAdd(
+                                        AddProductCategoryTypeData(name)
+                                    )
+                                    onBack()
+                                }
+                            }
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
+                        ),
+                        textStyle = TextStyle.Default.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Type Name",
+                                modifier = Modifier
+                                    .alpha(0.5F)
                             )
-                            onBack()
+                        },
+                        isError = nameError
+                    )
+                }
+                Row (
+                    modifier = Modifier.fillMaxHeight(0.4f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+
+                    Button(
+                        onClick = {
+                            nameError = name.isEmpty()
+
+                            if (
+                                !nameError
+                            ) {
+                                onTypeAdd(
+                                    AddProductCategoryTypeData(name)
+                                )
+                                onBack()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(70.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Add Product Category Type",
+                                modifier = Modifier.size(30.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Add Type",
+                                fontSize = 20.sp
+                            )
                         }
                     }
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = MaterialTheme.colorScheme.outline,
-                    focusedBorderColor = MaterialTheme.colorScheme.outline,
-                ),
-                textStyle = TextStyle.Default.copy(
-                    color = MaterialTheme.colorScheme.onBackground
-                ),
-                placeholder = {
-                    Text(
-                        text = "Type Name",
-                        modifier = Modifier
-                            .alpha(0.5F)
-                    )
-                },
-                isError = nameError
-            )
-        }
-        Row (
-            modifier = Modifier.fillMaxHeight(0.4f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-
-            Button(
-                onClick = {
-                    if (name.isEmpty()) {
-                        nameError = true
-                    } else {
-                        onTypeAdd(
-                            AddProductCategoryTypeData(name)
-                        )
-                        onBack()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Add Product Category Type",
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Add Type",
-                        fontSize = 20.sp
-                    )
                 }
             }
         }

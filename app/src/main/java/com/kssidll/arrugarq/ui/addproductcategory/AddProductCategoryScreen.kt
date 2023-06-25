@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.data.data.ProductCategoryType
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
@@ -61,216 +64,231 @@ fun AddProductCategoryScreen(
     state: AddProductCategoryState
 ) {
     Column {
-        SecondaryAppBar(onBack = onBack) {
+        var isCategoryTypeSearchExpanded: Boolean by rememberSaveable {
+            mutableStateOf(false)
+        }
+
+        BackHandler(
+            enabled = isCategoryTypeSearchExpanded
+        ) {
+            isCategoryTypeSearchExpanded = false
+        }
+
+        var isCategoryTypeError: Boolean by remember {
+            mutableStateOf(false)
+        }
+
+        var isNameError: Boolean by remember {
+            mutableStateOf(false)
+        }
+        SecondaryAppBar(
+            onBack = {
+                if (
+                    !isCategoryTypeSearchExpanded
+                ) {
+                    onBack()
+                }
+                isCategoryTypeSearchExpanded = false
+            }
+        ) {
             Text(text = "Product Category")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Box (
+        Box(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            AddProductCategoryScreenContent(
-                onCategoryTypeAdd = onCategoryTypeAdd,
-                onCategoryAdd = onCategoryAdd,
-                types = types,
-                state = state,
-            )
-        }
-    }
-}
-
-@Composable
-fun AddProductCategoryScreenContent(
-    onCategoryTypeAdd: () -> Unit,
-    onCategoryAdd: (AddProductCategoryData) -> Unit,
-    types: Flow<List<ProductCategoryType>>,
-    state: AddProductCategoryState
-) {
-    var isCategoryTypeSearchExpanded: Boolean by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    BackHandler(
-        enabled = isCategoryTypeSearchExpanded
-    ) {
-        isCategoryTypeSearchExpanded = false
-    }
-
-    var isCategoryTypeError: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-    var isNameError: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-
-    if (isCategoryTypeSearchExpanded) {
-        val collectedTypes = types.collectAsState(initial = emptyList()).value
-
-        Column {
-            Text(text = "Product")
-            Button(onClick = { isCategoryTypeSearchExpanded = false }) {
-                Text(text = "Go Back")
-            }
-
-            LazyColumn {
-                items(items = collectedTypes) {
-                    Row {
-                        Text(text = it.name)
+            if (isCategoryTypeSearchExpanded) {
+                val collectedTypes = types.collectAsState(initial = emptyList()).value
+                LazyColumn {
+                    items(items = collectedTypes) {
+                        AddProductCategoryItemType(
+                            item = it,
+                            onItemClick = { type ->
+                                state.selectedProductCategoryType.value = type
+                                isCategoryTypeSearchExpanded = false
+                            }
+                        )
+                        Divider()
                     }
                 }
-            }
+            } else {
+                Column {
+                    Column(
+                        modifier = Modifier.fillMaxHeight(0.6f)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                readOnly = true,
+                                singleLine = true,
+                                value = state.selectedProductCategoryType.value?.name ?: String(),
+                                onValueChange = {
 
-        }
-    } else {
-        Column {
-            Column(
-                modifier = Modifier.fillMaxHeight(0.6f)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    OutlinedTextField(
-                        readOnly = true,
-                        singleLine = true,
-                        value = state.selectedProductCategoryType.value?.name ?: String(),
-                        onValueChange = {
-
-                        },
-                        modifier = Modifier
-                            .onFocusEvent {
-                                if (it.isFocused) {
-                                    isCategoryTypeSearchExpanded = true
-                                }
-                            }
-                            .fillMaxSize(),
-                        textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onBackground
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Type",
+                                },
                                 modifier = Modifier
-                                    .alpha(0.5F)
-                            )
-                        },
-                        isError = isCategoryTypeError,
-                        trailingIcon = {
-                            BoxWithConstraints {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .aspectRatio(1F)
-                                        .clickable {
-                                            onCategoryTypeAdd()
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    val lineColor = MaterialTheme.colorScheme.onBackground
-                                    Canvas(modifier = Modifier.fillMaxSize()) {
-                                        drawLine(
-                                            color = lineColor,
-                                            start = Offset(0F, 0F),
-                                            end = Offset(0F, size.height),
-                                            strokeWidth = Dp.Hairline.value
-                                        )
+                                    .onFocusEvent {
+                                        if (it.isFocused) {
+                                            isCategoryTypeSearchExpanded = true
+                                        }
                                     }
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add new Product Category Type",
-                                        modifier = Modifier.size(40.dp)
+                                    .fillMaxSize(),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground
+                                ),
+                                placeholder = {
+                                    Text(
+                                        text = "Type",
+                                        modifier = Modifier
+                                            .alpha(0.5F)
                                     )
-                                }
+                                },
+                                isError = isCategoryTypeError,
+                                trailingIcon = {
+                                    BoxWithConstraints {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .aspectRatio(1F)
+                                                .clickable {
+                                                    onCategoryTypeAdd()
+                                                },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawLine(
+                                                    color = lineColor,
+                                                    start = Offset(0F, 0F),
+                                                    end = Offset(0F, size.height),
+                                                    strokeWidth = Dp.Hairline.value
+                                                )
+                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = "Add new Product Category Type",
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
 
+                                    }
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                OutlinedTextField(
+                                    singleLine = true,
+                                    value = state.name.value,
+                                    onValueChange = {
+                                        state.name.value = it
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        cursorColor = MaterialTheme.colorScheme.outline,
+                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    ),
+                                    textStyle = TextStyle.Default.copy(
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    ),
+                                    placeholder = {
+                                        Text(
+                                            text = "Name",
+                                            modifier = Modifier
+                                                .alpha(0.5F)
+                                        )
+                                    },
+                                    isError = isNameError
+                                )
                             }
                         }
-                    )
-                }
+                    }
 
-                Spacer(modifier = Modifier.height(12.dp))
-                Divider()
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Column {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        modifier = Modifier.fillMaxHeight(0.4f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        OutlinedTextField(
-                            singleLine = true,
-                            value = state.name.value,
-                            onValueChange = {
-                                state.name.value = it
+
+                        Button(
+                            onClick = {
+                                val type: ProductCategoryType? = state.selectedProductCategoryType.value
+                                val name: String = state.name.value
+
+                                isCategoryTypeError = type == null
+                                isNameError = name.isEmpty()
+
+                                if (
+                                    !isCategoryTypeError &&
+                                    !isNameError
+                                ) {
+                                    onCategoryAdd(
+                                        AddProductCategoryData(
+                                            typeId = type!!.id,
+                                            name = name,
+                                        )
+                                    )
+                                    onBack()
+                                }
                             },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                cursorColor = MaterialTheme.colorScheme.outline,
-                                focusedBorderColor = MaterialTheme.colorScheme.outline,
-                            ),
-                            textStyle = TextStyle.Default.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            ),
-                            placeholder = {
-                                Text(
-                                    text = "Name",
-                                    modifier = Modifier
-                                        .alpha(0.5F)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Add Product Category",
+                                    modifier = Modifier.size(30.dp)
                                 )
-                            },
-                            isError = isNameError
-                        )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Add Category",
+                                    fontSize = 20.sp
+                                )
+                            }
+                        }
                     }
                 }
             }
-
-//            Row(
-//                modifier = Modifier.fillMaxHeight(0.4f),
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.Center,
-//            ) {
-//
-//                Button(
-//                    onClick = {
-//                        TODO()
-//                    },
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(70.dp)
-//                ) {
-//                    Row(
-//                        modifier = Modifier.fillMaxSize(),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.Center
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Check,
-//                            contentDescription = "Add Product Category",
-//                            modifier = Modifier.size(30.dp)
-//                        )
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text(
-//                            text = "Add Category",
-//                            fontSize = 20.sp
-//                        )
-//                    }
-//                }
-//            }
         }
     }
 }
 
-@Preview(group = "AddProductCategoryScreen", name = "Add Product Category Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddProductCategoryScreen", name = "Add Product Category Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(
+    group = "AddProductCategoryScreen",
+    name = "Add Product Category Screen Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Preview(
+    group = "AddProductCategoryScreen",
+    name = "Add Product Category Screen Light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
 @Composable
 fun AddProductCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.background,
         ) {
             AddProductCategoryScreen(
                 onBack = {},
