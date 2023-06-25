@@ -116,8 +116,45 @@ fun AddProductCategoryScreen(
             } else {
                 Column {
                     Column(
-                        modifier = Modifier.fillMaxHeight(0.6f)
+                        modifier = Modifier.fillMaxHeight(0.6f),
+                        verticalArrangement = Arrangement.Bottom
                     ) {
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                OutlinedTextField(
+                                    singleLine = true,
+                                    value = state.name.value,
+                                    onValueChange = {
+                                        state.name.value = it
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        cursorColor = MaterialTheme.colorScheme.outline,
+                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    ),
+                                    textStyle = TextStyle.Default.copy(
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        fontSize = 16.sp
+                                    ),
+                                    suffix = {
+                                        Text(
+                                            text = "Name",
+                                            fontSize = 16.sp,
+                                            modifier = Modifier
+                                                .alpha(0.5F)
+                                        )
+                                    },
+                                    isError = isNameError
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -139,13 +176,16 @@ fun AddProductCategoryScreen(
                                     }
                                     .fillMaxSize(),
                                 textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
                                 ),
-                                placeholder = {
+                                suffix = {
                                     Text(
                                         text = "Type",
+                                        fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
+                                            .padding(end = 6.dp)
                                     )
                                 },
                                 isError = isCategoryTypeError,
@@ -179,40 +219,6 @@ fun AddProductCategoryScreen(
                                     }
                                 }
                             )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Divider()
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                OutlinedTextField(
-                                    singleLine = true,
-                                    value = state.name.value,
-                                    onValueChange = {
-                                        state.name.value = it
-                                    },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        cursorColor = MaterialTheme.colorScheme.outline,
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    ),
-                                    textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    ),
-                                    placeholder = {
-                                        Text(
-                                            text = "Name",
-                                            modifier = Modifier
-                                                .alpha(0.5F)
-                                        )
-                                    },
-                                    isError = isNameError
-                                )
-                            }
                         }
                     }
 

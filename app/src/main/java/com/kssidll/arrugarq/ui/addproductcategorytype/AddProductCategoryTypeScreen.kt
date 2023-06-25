@@ -91,6 +91,7 @@ fun AddProductCategoryTypeScreen(
                 Row (
                     modifier = Modifier.fillMaxHeight(0.6f),
                     horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Bottom
                 ){
 
                     OutlinedTextField(
@@ -122,11 +123,13 @@ fun AddProductCategoryTypeScreen(
                             focusedBorderColor = MaterialTheme.colorScheme.outline,
                         ),
                         textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 16.sp
                         ),
-                        placeholder = {
+                        suffix = {
                             Text(
                                 text = "Type Name",
+                                fontSize = 16.sp,
                                 modifier = Modifier
                                     .alpha(0.5F)
                             )

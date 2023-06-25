@@ -150,138 +150,113 @@ fun AddItemScreen(
             } else {
                 Column {
                     Column (
-                        modifier = Modifier.fillMaxHeight(0.6f)
+                        modifier = Modifier.fillMaxHeight(0.6f),
+                        verticalArrangement = Arrangement.Bottom
                     ) {
 
+
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
-                                readOnly = true,
                                 singleLine = true,
-                                value = state.selectedProduct.value?.name ?: String(),
-                                onValueChange = {
-
-                                },
-                                modifier = Modifier
-                                    .onFocusEvent {
-                                        if (it.isFocused) {
-                                            isProductSearchExpanded = true
-                                        }
-                                    }
-                                    .fillMaxSize(),
-                                textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground
+                                value = state.unitMeasure.value,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
                                 ),
-                                placeholder = {
+                                onValueChange = {
+                                    state.unitMeasure.value = it
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    cursorColor = MaterialTheme.colorScheme.outline,
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                ),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                suffix = {
                                     Text(
-                                        text = "Product",
+                                        text = "Unit Measure",
+                                        fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
                                     )
                                 },
-                                isError = productError,
-                                trailingIcon = {
-                                    BoxWithConstraints {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxHeight()
-                                                .aspectRatio(1F)
-                                                .clickable {
-                                                    onProductAdd()
-                                                },
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            val lineColor = MaterialTheme.colorScheme.onBackground
-                                            Canvas(modifier = Modifier.fillMaxSize()) {
-                                                drawLine(
-                                                    color = lineColor,
-                                                    start = Offset(0F, 0F),
-                                                    end = Offset(0F, size.height),
-                                                    strokeWidth = Dp.Hairline.value
-                                                )
-                                            }
-                                            Icon(
-                                                imageVector = Icons.Default.Add,
-                                                contentDescription = "Add new Product",
-                                                modifier = Modifier.size(40.dp)
-                                            )
-                                        }
-
-                                    }
-                                }
                             )
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
-                                readOnly = true,
                                 singleLine = true,
-                                value = state.selectedShop.value?.name ?: String(),
-                                onValueChange = {
-
-                                },
-                                modifier = Modifier
-                                    .onFocusEvent {
-                                        if (it.isFocused) {
-                                            isShopSearchExpanded = true
-                                        }
-                                    }
-                                    .fillMaxSize(),
-                                textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground
+                                value = state.date.value,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
                                 ),
-                                placeholder = {
+                                onValueChange = {
+                                    state.date.value = it
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    cursorColor = MaterialTheme.colorScheme.outline,
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                ),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                suffix = {
                                     Text(
-                                        text = "Shop",
+                                        text = "Date",
+                                        fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
                                     )
                                 },
-                                trailingIcon = {
-                                    BoxWithConstraints {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxHeight()
-                                                .aspectRatio(1F)
-                                                .clickable {
-                                                    onShopAdd()
-                                                },
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            val lineColor = MaterialTheme.colorScheme.onBackground
-                                            Canvas(modifier = Modifier.fillMaxSize()) {
-                                                drawLine(
-                                                    color = lineColor,
-                                                    start = Offset(0F, 0F),
-                                                    end = Offset(0F, size.height),
-                                                    strokeWidth = Dp.Hairline.value
-                                                )
-                                            }
-                                            Icon(
-                                                imageVector = Icons.Default.Add,
-                                                contentDescription = "Add new Shop",
-                                                modifier = Modifier.size(40.dp)
-                                            )
-                                        }
-
-                                    }
-                                }
+                                isError = dateError
                             )
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
-                        Divider()
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                singleLine = true,
+                                value = state.price.value,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                ),
+                                onValueChange = {
+                                    state.price.value = it
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    cursorColor = MaterialTheme.colorScheme.outline,
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                ),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                suffix = {
+                                    Text(
+                                        text = "Price",
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .alpha(0.5F)
+                                    )
+                                },
+                                isError = priceError
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Column {
@@ -303,11 +278,13 @@ fun AddItemScreen(
                                         focusedBorderColor = MaterialTheme.colorScheme.outline,
                                     ),
                                     textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        fontSize = 16.sp
                                     ),
-                                    placeholder = {
+                                    suffix = {
                                         Text(
                                             text = "Quantity",
+                                            fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
                                         )
@@ -316,103 +293,144 @@ fun AddItemScreen(
                                 )
                             }
 
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Divider()
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(60.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 OutlinedTextField(
+                                    readOnly = true,
                                     singleLine = true,
-                                    value = state.unitMeasure.value,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number
-                                    ),
+                                    value = state.selectedShop.value?.name ?: String(),
                                     onValueChange = {
-                                        state.unitMeasure.value = it
+
                                     },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        cursorColor = MaterialTheme.colorScheme.outline,
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    ),
+                                    modifier = Modifier
+                                        .onFocusEvent {
+                                            if (it.isFocused) {
+                                                isShopSearchExpanded = true
+                                            }
+                                        }
+                                        .fillMaxSize(),
                                     textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        fontSize = 16.sp
                                     ),
-                                    placeholder = {
+                                    suffix = {
                                         Text(
-                                            text = "Unit Measure",
+                                            text = "Shop",
+                                            fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
+                                                .padding(end = 6.dp)
                                         )
                                     },
+                                    trailingIcon = {
+                                        BoxWithConstraints {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .aspectRatio(1F)
+                                                    .clickable {
+                                                        onShopAdd()
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                val lineColor = MaterialTheme.colorScheme.onBackground
+                                                Canvas(modifier = Modifier.fillMaxSize()) {
+                                                    drawLine(
+                                                        color = lineColor,
+                                                        start = Offset(0F, 0F),
+                                                        end = Offset(0F, size.height),
+                                                        strokeWidth = Dp.Hairline.value
+                                                    )
+                                                }
+                                                Icon(
+                                                    imageVector = Icons.Default.Add,
+                                                    contentDescription = "Add new Shop",
+                                                    modifier = Modifier.size(40.dp)
+                                                )
+                                            }
+
+                                        }
+                                    }
                                 )
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(60.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 OutlinedTextField(
+                                    readOnly = true,
                                     singleLine = true,
-                                    value = state.price.value,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number
-                                    ),
+                                    value = state.selectedProduct.value?.name ?: String(),
                                     onValueChange = {
-                                        state.price.value = it
+
                                     },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        cursorColor = MaterialTheme.colorScheme.outline,
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    ),
+                                    modifier = Modifier
+                                        .onFocusEvent {
+                                            if (it.isFocused) {
+                                                isProductSearchExpanded = true
+                                            }
+                                        }
+                                        .fillMaxSize(),
                                     textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        fontSize = 16.sp
                                     ),
-                                    placeholder = {
+                                    suffix = {
                                         Text(
-                                            text = "Price",
+                                            text = "Product",
+                                            fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
+                                                .padding(end = 6.dp)
                                         )
                                     },
-                                    isError = priceError
+                                    isError = productError,
+                                    trailingIcon = {
+                                        BoxWithConstraints {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .aspectRatio(1F)
+                                                    .clickable {
+                                                        onProductAdd()
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                val lineColor = MaterialTheme.colorScheme.onBackground
+                                                Canvas(modifier = Modifier.fillMaxSize()) {
+                                                    drawLine(
+                                                        color = lineColor,
+                                                        start = Offset(0F, 0F),
+                                                        end = Offset(0F, size.height),
+                                                        strokeWidth = Dp.Hairline.value
+                                                    )
+                                                }
+                                                Icon(
+                                                    imageVector = Icons.Default.Add,
+                                                    contentDescription = "Add new Product",
+                                                    modifier = Modifier.size(40.dp)
+                                                )
+                                            }
+
+                                        }
+                                    }
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                OutlinedTextField(
-                                    singleLine = true,
-                                    value = state.date.value,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number
-                                    ),
-                                    onValueChange = {
-                                        state.date.value = it
-                                    },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        cursorColor = MaterialTheme.colorScheme.outline,
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    ),
-                                    textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    ),
-                                    placeholder = {
-                                        Text(
-                                            text = "Date",
-                                            modifier = Modifier
-                                                .alpha(0.5F)
-                                        )
-                                    },
-                                    isError = dateError
-                                )
-                            }
                         }
                     }
 
