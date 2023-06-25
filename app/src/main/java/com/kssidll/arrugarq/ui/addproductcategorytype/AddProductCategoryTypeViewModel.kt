@@ -25,7 +25,7 @@ class AddProductCategoryTypeViewModel @Inject constructor(
     fun addType(typeData: AddProductCategoryTypeData) = viewModelScope.launch {
         productCategoryTypeRepository.insert(
             ProductCategoryType(
-                name = typeData.name,
+                name = typeData.name.trim(),
             )
         )
     }

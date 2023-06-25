@@ -33,7 +33,7 @@ class AddProductCategoryViewModel @Inject constructor(
         categoryRepository.insert(
             ProductCategory(
                 typeId = productCategoryData.typeId,
-                name = productCategoryData.name,
+                name = productCategoryData.name.trim(),
             )
         )
     }

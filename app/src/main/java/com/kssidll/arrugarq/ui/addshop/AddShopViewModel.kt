@@ -25,7 +25,7 @@ class AddShopViewModel @Inject constructor(
     fun addShop(shopData: AddShopData) = viewModelScope.launch {
         shopRepository.insert(
             Shop(
-                name = shopData.name,
+                name = shopData.name.trim(),
             )
         )
     }
