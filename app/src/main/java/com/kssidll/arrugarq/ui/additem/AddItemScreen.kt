@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -150,10 +152,11 @@ fun AddItemScreen(
             } else {
                 Column {
                     Column (
-                        modifier = Modifier.fillMaxHeight(0.6f),
-                        verticalArrangement = Arrangement.Bottom
+                        modifier = Modifier
+                            .fillMaxHeight(0.6f)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Bottom,
                     ) {
-
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),

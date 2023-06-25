@@ -11,7 +11,9 @@
 /.idea/inspectionProfiles/Project_Default.xml
 .DS_Store
 /build
+/app/release
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+/keystore.jks
