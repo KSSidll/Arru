@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductCategoryAltName
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -34,12 +35,27 @@ interface ProductCategoryDao {
     @Query("SELECT * FROM productcategory WHERE name == :name")
     fun getByNameFlow(name: String): Flow<ProductCategory>
 
+    @Query("SELECT productcategory.* from productcategory JOIN productcategoryaltname ON productcategory.id = productcategoryaltname.productCategoryId WHERE productcategory.name LIKE :name OR productcategoryaltname.name LIKE :name")
+    suspend fun findLike(name: String): List<ProductCategory>
+
+    @Query("SELECT productcategory.* from productcategory JOIN productcategoryaltname ON productcategory.id = productcategoryaltname.productCategoryId WHERE productcategory.name LIKE :name OR productcategoryaltname.name LIKE :name")
+    fun findLikeFlow(name: String): Flow<List<ProductCategory>>
+
     @Insert
     suspend fun insert(productCategory: ProductCategory): Long
+
+    @Insert
+    suspend fun addAltName(alternativeName: ProductCategoryAltName): Long
 
     @Update
     suspend fun update(productCategory: ProductCategory)
 
+    @Update
+    suspend fun updateAltName(alternativeName: ProductCategoryAltName)
+
     @Delete
     suspend fun delete(productCategory: ProductCategory)
+
+    @Delete
+    suspend fun deleteAltName(alternativeName: ProductCategoryAltName)
 }

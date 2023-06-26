@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.dao.ProductDao
 import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductAltName
 import kotlinx.coroutines.flow.Flow
 
 class ProductRepository(private val productDao: ProductDao) : IProductRepository {
@@ -37,15 +38,35 @@ class ProductRepository(private val productDao: ProductDao) : IProductRepository
         return productDao.getByNameFlow(name)
     }
 
+    override suspend fun findLike(name: String): List<Product> {
+        return productDao.findLike(name)
+    }
+
+    override fun findLikeFlow(name: String): Flow<List<Product>> {
+        return productDao.findLikeFlow(name)
+    }
+
     override suspend fun insert(product: Product): Long {
         return productDao.insert(product)
+    }
+
+    override suspend fun addAltName(alternativeName: ProductAltName): Long {
+        return productDao.addAltName(alternativeName)
     }
 
     override suspend fun update(product: Product) {
         productDao.update(product)
     }
 
+    override suspend fun updateAltName(alternativeName: ProductAltName) {
+        productDao.updateAltName(alternativeName)
+    }
+
     override suspend fun delete(product: Product) {
         productDao.delete(product)
+    }
+
+    override suspend fun deleteAltName(alternativeName: ProductAltName) {
+        productDao.deleteAltName(alternativeName)
     }
 }

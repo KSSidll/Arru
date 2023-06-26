@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductAltName
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -26,20 +27,35 @@ interface ProductDao {
     suspend fun getByCategoryId(categoryId: Long): List<Product>
 
     @Query("SELECT * FROM product WHERE categoryId == :categoryId")
-   fun getByCategoryIdFlow(categoryId: Long): Flow<List<Product>>
+    fun getByCategoryIdFlow(categoryId: Long): Flow<List<Product>>
 
-   @Query("SELECT * FROM product WHERE name == :name")
-   suspend fun getByName(name: String): Product
+    @Query("SELECT * FROM product WHERE name == :name")
+    suspend fun getByName(name: String): Product
 
-   @Query("SELECT * FROM product WHERE name == :name")
-   fun getByNameFlow(name: String): Flow<Product>
+    @Query("SELECT * FROM product WHERE name == :name")
+    fun getByNameFlow(name: String): Flow<Product>
 
-   @Insert
-   suspend fun insert(product: Product): Long
+    @Query("SELECT product.* FROM product JOIN productaltname ON product.id = productaltname.productId WHERE product.name LIKE :name OR productaltname.name LIKE :name")
+    suspend fun findLike(name: String): List<Product>
 
-   @Update
-   suspend fun update(product: Product)
+    @Query("SELECT product.* FROM product JOIN productaltname ON product.id = productaltname.productId WHERE product.name LIKE :name OR productaltname.name LIKE :name")
+    fun findLikeFlow(name: String): Flow<List<Product>>
 
-   @Delete
-   suspend fun delete(product: Product)
+    @Insert
+    suspend fun insert(product: Product): Long
+
+    @Insert
+    suspend fun addAltName(alternativeName: ProductAltName): Long
+
+    @Update
+    suspend fun update(product: Product)
+
+    @Update
+    suspend fun updateAltName(alternativeName: ProductAltName)
+
+    @Delete
+    suspend fun delete(product: Product)
+
+    @Delete
+    suspend fun deleteAltName(alternativeName: ProductAltName)
 }
