@@ -14,6 +14,13 @@ import androidx.room.PrimaryKey
             childColumns = ["categoryId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
+        ),
+        ForeignKey(
+            entity = ProductProducer::class,
+            parentColumns = ["id"],
+            childColumns = ["producerId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
         )
     ],
     indices = [
@@ -26,10 +33,12 @@ import androidx.room.PrimaryKey
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val categoryId: Long,
+    @ColumnInfo(index = true) val producerId: Long?,
     val name: String,
 ) {
     constructor(
         categoryId: Long,
+        producerId: Long?,
         name: String,
-    ) : this (0, categoryId, name)
+    ) : this (0, categoryId, producerId, name)
 }

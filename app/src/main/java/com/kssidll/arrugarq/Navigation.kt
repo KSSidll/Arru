@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kssidll.arrugarq.NavigationDestinations.ADD_ITEM_ROUTE
 import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_CATEGORY_ROUTE
 import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_CATEGORY_TYPE_ROUTE
+import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_PRODUCER_ROUTE
 import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_ROUTE
 import com.kssidll.arrugarq.NavigationDestinations.ADD_SHOP_ROUTE
 import com.kssidll.arrugarq.NavigationDestinations.HOME_ROUTE
@@ -15,6 +16,7 @@ import com.kssidll.arrugarq.ui.additem.AddItemRoute
 import com.kssidll.arrugarq.ui.addproduct.AddProductRoute
 import com.kssidll.arrugarq.ui.addproductcategory.AddProductCategoryRoute
 import com.kssidll.arrugarq.ui.addproductcategorytype.AddProductCategoryTypeRoute
+import com.kssidll.arrugarq.ui.addproductproducer.AddProductProducerRoute
 import com.kssidll.arrugarq.ui.addshop.AddShopRoute
 import com.kssidll.arrugarq.ui.home.HomeRoute
 
@@ -25,6 +27,7 @@ object NavigationDestinations {
     const val ADD_PRODUCT_CATEGORY_ROUTE = "addproductcategory"
     const val ADD_PRODUCT_CATEGORY_TYPE_ROUTE = "addproductcategorytype"
     const val ADD_SHOP_ROUTE = "addshop"
+    const val ADD_PRODUCT_PRODUCER_ROUTE = "addproductproducer"
 }
 
 @Composable
@@ -56,6 +59,10 @@ fun Navigation(
 
     fun navigateAddShop() {
         navController.navigate(ADD_SHOP_ROUTE)
+    }
+
+    fun navigateAddProductProducer() {
+        navController.navigate(ADD_PRODUCT_PRODUCER_ROUTE)
     }
 
     /**
@@ -98,6 +105,9 @@ fun Navigation(
                 },
                 onProductCategoryAdd = {
                     navigateAddProductCategory()
+                },
+                onProductProducerAdd = {
+                    navigateAddProductProducer()
                 }
             )
         }
@@ -123,6 +133,14 @@ fun Navigation(
 
         composable(ADD_SHOP_ROUTE) {
             AddShopRoute (
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(ADD_PRODUCT_PRODUCER_ROUTE) {
+            AddProductProducerRoute (
                 onBack = {
                     navController.popBackStack()
                 }

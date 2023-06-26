@@ -6,16 +6,19 @@ import com.kssidll.arrugarq.data.dao.ItemDao
 import com.kssidll.arrugarq.data.dao.ProductCategoryDao
 import com.kssidll.arrugarq.data.dao.ProductCategoryTypeDao
 import com.kssidll.arrugarq.data.dao.ProductDao
+import com.kssidll.arrugarq.data.dao.ProductProducerDao
 import com.kssidll.arrugarq.data.dao.ShopDao
 import com.kssidll.arrugarq.data.database.AppDatabase
 import com.kssidll.arrugarq.data.repository.IItemRepository
 import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
 import com.kssidll.arrugarq.data.repository.IProductCategoryTypeRepository
+import com.kssidll.arrugarq.data.repository.IProductProducerRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
 import com.kssidll.arrugarq.data.repository.IShopRepository
 import com.kssidll.arrugarq.data.repository.ItemRepository
 import com.kssidll.arrugarq.data.repository.ProductCategoryRepository
 import com.kssidll.arrugarq.data.repository.ProductCategoryTypeRepository
+import com.kssidll.arrugarq.data.repository.ProductProducerRepository
 import com.kssidll.arrugarq.data.repository.ProductRepository
 import com.kssidll.arrugarq.data.repository.ShopRepository
 import dagger.Module
@@ -87,5 +90,15 @@ class DatabaseModule {
     @Provides
     fun provideShopRepository(shopDao: ShopDao): IShopRepository {
         return ShopRepository(shopDao)
+    }
+
+    @Provides
+    fun provideProductProducerDao(appDatabase: AppDatabase): ProductProducerDao {
+        return appDatabase.getProductProducerDao()
+    }
+
+    @Provides
+    fun provideProductProducerRepository(productProducerDao: ProductProducerDao): IProductProducerRepository {
+        return ProductProducerRepository(productProducerDao)
     }
 }

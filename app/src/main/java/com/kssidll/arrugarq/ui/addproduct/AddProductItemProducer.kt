@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.additem
+package com.kssidll.arrugarq.ui.addproduct
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -16,13 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductProducer
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 
 @Composable
-fun AddItemItemProduct(
-    item: Product,
-    onItemClick: (Product) -> Unit,
+fun AddProductItemProducer(
+    item: ProductProducer,
+    onItemClick: (ProductProducer) -> Unit,
 ) {
     Row (
         horizontalArrangement = Arrangement.Center,
@@ -44,16 +44,16 @@ fun AddItemItemProduct(
     }
 }
 
-@Preview(group = "AddItemItemProduct", name = "Add Item Item Product Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddItemItemProduct", name = "Add Item Item Product Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(group = "AddProductScreenItemProducer", name = "Add Product Item Producer Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddProductScreenItemProducer", name = "Add Product Item Producer Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun AddItemItemProductPreview() {
+fun AddProductScreenItemProducerPreview() {
     ArrugarqTheme {
         Surface (
             color = MaterialTheme.colorScheme.background,
         ) {
-            AddItemItemProduct(
-                item = Product(0, 0, "test"),
+            AddProductItemProducer(
+                item = ProductProducer(0, "test"),
                 onItemClick = {},
             )
         }

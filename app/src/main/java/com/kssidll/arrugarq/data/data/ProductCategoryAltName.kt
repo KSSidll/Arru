@@ -27,7 +27,7 @@ import androidx.room.PrimaryKey
 data class ProductCategoryAltName(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val productCategoryId: Long,
-    @ColumnInfo(index = true) val name: String,
+    val name: String,
 ) {
     constructor(
         productCategoryId: Long,

@@ -29,6 +29,12 @@ interface ProductDao {
     @Query("SELECT * FROM product WHERE categoryId == :categoryId")
     fun getByCategoryIdFlow(categoryId: Long): Flow<List<Product>>
 
+    @Query("SELECT * FROM product WHERE producerId == :producerId")
+    suspend fun getByProducerId(producerId: Long): List<Product>
+
+    @Query("SELECT * FROM product WHERE producerId == :producerId")
+    fun getByProducerIdFlow(producerId: Long): Flow<List<Product>>
+
     @Query("SELECT * FROM product WHERE name == :name")
     suspend fun getByName(name: String): Product
 

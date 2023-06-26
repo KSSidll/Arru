@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.addshop
+package com.kssidll.arrugarq.ui.addproductproducer
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -48,9 +48,9 @@ import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 
 @Composable
-fun AddShopScreen(
+fun AddProductProducerScreen(
     onBack: () -> Unit,
-    onShopAdd: (AddShopData) -> Unit,
+    onProducerAdd: (AddProductProducerData) -> Unit,
 ) {
     Column {
         val focusRequester = remember { FocusRequester() }
@@ -71,7 +71,7 @@ fun AddShopScreen(
         }
 
         SecondaryAppBar(onBack = onBack) {
-            Text(text = "Shop")
+            Text(text = "Product Producer")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -113,8 +113,8 @@ fun AddShopScreen(
                                 if (
                                     !nameError
                                 ) {
-                                    onShopAdd(
-                                        AddShopData(name)
+                                    onProducerAdd(
+                                        AddProductProducerData(name)
                                     )
                                     onBack()
                                 }
@@ -130,7 +130,7 @@ fun AddShopScreen(
                         ),
                         suffix = {
                             Text(
-                                text = "Shop Name",
+                                text = "Producer Name",
                                 fontSize = 16.sp,
                                 modifier = Modifier
                                     .alpha(0.5F)
@@ -152,8 +152,8 @@ fun AddShopScreen(
                             if (
                                 !nameError
                             ) {
-                                onShopAdd(
-                                    AddShopData(name)
+                                onProducerAdd(
+                                    AddProductProducerData(name)
                                 )
                                 onBack()
                             }
@@ -169,12 +169,12 @@ fun AddShopScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = "Add Shop",
+                                contentDescription = "Add Product Producer",
                                 modifier = Modifier.size(30.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Add Shop",
+                                text = "Add Producer",
                                 fontSize = 20.sp
                             )
                         }
@@ -185,18 +185,18 @@ fun AddShopScreen(
     }
 }
 
-@Preview(group = "AddShopScreen", name = "Add Shop Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddShopScreen", name = "Add Shop Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(group = "AddProductProducerScreen", name = "Add Product Producer Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddProductProducerScreen", name = "Add Product Producer Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun AddShopScreenPreview() {
+fun AddProductProducerScreenPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AddShopScreen(
+            AddProductProducerScreen(
                 onBack = {},
-                onShopAdd = {},
+                onProducerAdd = {},
             )
         }
     }

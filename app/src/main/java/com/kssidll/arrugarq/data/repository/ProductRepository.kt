@@ -30,6 +30,14 @@ class ProductRepository(private val productDao: ProductDao) : IProductRepository
         return productDao.getByCategoryIdFlow(categoryId)
     }
 
+    override suspend fun getByProducerId(producerId: Long): List<Product> {
+        return productDao.getByProducerId(producerId)
+    }
+
+    override fun getByProducerIdFlow(producerId: Long): Flow<List<Product>> {
+        return productDao.getByProducerIdFlow(producerId)
+    }
+
     override suspend fun getByName(name: String): Product {
         return productDao.getByName(name)
     }

@@ -49,17 +49,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductProducer
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.util.Optional
 
 @Composable
 fun AddProductScreen(
     onBack: () -> Unit,
     onCategoryAdd: () -> Unit,
+    onProducerAdd: () -> Unit,
     onProductAdd: (AddProductData) -> Unit,
     categories: Flow<List<ProductCategory>>,
+    producers: Flow<List<ProductProducer>>,
     state: AddProductState,
 ) {
     Column {
@@ -67,28 +71,35 @@ fun AddProductScreen(
             mutableStateOf(false)
         }
 
-        BackHandler(
-            enabled = isCategorySearchExpanded
-        ) {
-            isCategorySearchExpanded = false
-        }
-
-        var isCategoryError: Boolean by remember {
+        var isProducerSearchExpanded: Boolean by rememberSaveable {
             mutableStateOf(false)
         }
 
-        var isNameError: Boolean by remember {
+        BackHandler(
+            enabled = isCategorySearchExpanded || isProducerSearchExpanded
+        ) {
+            isCategorySearchExpanded = false
+            isProducerSearchExpanded = false
+        }
+
+        var categoryError: Boolean by remember {
+            mutableStateOf(false)
+        }
+
+        var nameError: Boolean by remember {
             mutableStateOf(false)
         }
 
         SecondaryAppBar(
             onBack = {
                 if (
-                    !isCategorySearchExpanded
+                    !isCategorySearchExpanded &&
+                    !isProducerSearchExpanded
                 ) {
                     onBack()
                 }
                 isCategorySearchExpanded = false
+                isProducerSearchExpanded = false
             }
         ) {
             Text(text = "Product")
@@ -109,6 +120,21 @@ fun AddProductScreen(
                             onItemClick = { type ->
                                 state.selectedProductCategory.value = type
                                 isCategorySearchExpanded = false
+                            }
+                        )
+                        Divider()
+                    }
+                }
+            } else if (isProducerSearchExpanded) {
+                val collectedProducers = producers.collectAsState(initial = emptyList()).value
+
+                LazyColumn {
+                    items(items = collectedProducers) {
+                        AddProductItemProducer(
+                            item = it,
+                            onItemClick = { type ->
+                                state.selectedProductProducer.value = type
+                                isProducerSearchExpanded = false
                             }
                         )
                         Divider()
@@ -148,13 +174,80 @@ fun AddProductScreen(
                                                 .alpha(0.5F)
                                         )
                                     },
-                                    isError = isNameError
+                                    isError = nameError
                                 )
                             }
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
                         Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            OutlinedTextField(
+                                readOnly = true,
+                                singleLine = true,
+                                value = state.selectedProductProducer.value?.name ?: String(),
+                                onValueChange = {
+
+                                },
+                                modifier = Modifier
+                                    .onFocusEvent {
+                                        if (it.isFocused) {
+                                            isProducerSearchExpanded = true
+                                        }
+                                    }
+                                    .fillMaxSize(),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                suffix = {
+                                    Text(
+                                        text = "Producer",
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .alpha(0.5F)
+                                            .padding(end = 6.dp)
+                                    )
+                                },
+                                trailingIcon = {
+                                    BoxWithConstraints {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .aspectRatio(1F)
+                                                .clickable {
+                                                    onProducerAdd()
+                                                },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawLine(
+                                                    color = lineColor,
+                                                    start = Offset(0F, 0F),
+                                                    end = Offset(0F, size.height),
+                                                    strokeWidth = Dp.Hairline.value
+                                                )
+                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = "Add new Product Producer",
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
+
+                                    }
+                                }
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Row(
@@ -190,7 +283,7 @@ fun AddProductScreen(
                                             .padding(end = 6.dp)
                                     )
                                 },
-                                isError = isCategoryError,
+                                isError = categoryError,
                                 trailingIcon = {
                                     BoxWithConstraints {
                                         Box(
@@ -233,18 +326,20 @@ fun AddProductScreen(
                         Button(
                             onClick = {
                                 val category: ProductCategory? = state.selectedProductCategory.value
+                                val producer: ProductProducer? = state.selectedProductProducer.value
                                 val name: String = state.name.value
 
-                                isCategoryError = category == null
-                                isNameError = name.isEmpty()
+                                categoryError = category == null
+                                nameError = name.isEmpty()
 
                                 if (
-                                    !isCategoryError &&
-                                    !isNameError
+                                    !categoryError &&
+                                    !nameError
                                 ) {
                                     onProductAdd(
                                         AddProductData(
                                             categoryId = category!!.id,
+                                            producerId = Optional.ofNullable(producer?.id),
                                             name = name,
                                         )
                                     )
@@ -291,9 +386,11 @@ fun AddProductScreenPreview() {
             AddProductScreen(
                 onBack = {},
                 onCategoryAdd = {},
+                onProducerAdd = {},
                 onProductAdd = {},
                 categories = flowOf(),
-                state = AddProductState()
+                producers = flowOf(),
+                state = AddProductState(),
             )
         }
     }

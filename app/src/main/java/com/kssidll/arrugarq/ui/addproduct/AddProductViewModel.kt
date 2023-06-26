@@ -4,26 +4,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arrugarq.data.data.Product
 import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductProducer
 import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
+import com.kssidll.arrugarq.data.repository.IProductProducerRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
     productRepository: IProductRepository,
-    productCategoryRepository: IProductCategoryRepository
+    productCategoryRepository: IProductCategoryRepository,
+    productProducerRepository: IProductProducerRepository,
 ) : ViewModel() {
     private val productRepository: IProductRepository
     private val productCategoryRepository: IProductCategoryRepository
+    private val productProducerRepository: IProductProducerRepository
 
     var addProductState: AddProductState = AddProductState()
 
     init {
         this.productRepository = productRepository
         this.productCategoryRepository = productCategoryRepository
+        this.productProducerRepository = productProducerRepository
     }
 
     /**
@@ -34,6 +40,7 @@ class AddProductViewModel @Inject constructor(
         productRepository.insert(
             Product(
                 categoryId = productData.categoryId,
+                producerId = productData.producerId.getOrNull(),
                 name = productData.name.trim(),
             )
         )
@@ -41,5 +48,9 @@ class AddProductViewModel @Inject constructor(
 
     fun getProductCategoriesFlow(): Flow<List<ProductCategory>> {
         return productCategoryRepository.getAllFlow()
+    }
+
+    fun getProductProducersFlow(): Flow<List<ProductProducer>> {
+        return productProducerRepository.getAllFlow()
     }
 }
