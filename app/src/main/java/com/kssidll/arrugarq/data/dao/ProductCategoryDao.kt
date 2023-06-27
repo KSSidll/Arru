@@ -35,10 +35,11 @@ interface ProductCategoryDao {
     @Query("SELECT * FROM productcategory WHERE name == :name")
     fun getByNameFlow(name: String): Flow<ProductCategory>
 
-    @Query("SELECT productcategory.* from productcategory JOIN productcategoryaltname ON productcategory.id = productcategoryaltname.productCategoryId WHERE productcategory.name LIKE :name OR productcategoryaltname.name LIKE :name")
+    @Query("SELECT productcategory.* from productcategory LEFT JOIN productcategoryaltname ON productcategory.id = productcategoryaltname.productCategoryId WHERE productcategory.name LIKE '%' || :name || '%' OR productcategoryaltname.name LIKE '%' || :name || '%' OR :name = ''")
     suspend fun findLike(name: String): List<ProductCategory>
 
-    @Query("SELECT productcategory.* from productcategory JOIN productcategoryaltname ON productcategory.id = productcategoryaltname.productCategoryId WHERE productcategory.name LIKE :name OR productcategoryaltname.name LIKE :name")
+
+    @Query("SELECT productcategory.* from productcategory LEFT JOIN productcategoryaltname ON productcategory.id = productcategoryaltname.productCategoryId WHERE productcategory.name LIKE '%' || :name || '%' OR productcategoryaltname.name LIKE '%' || :name || '%' OR :name = ''")
     fun findLikeFlow(name: String): Flow<List<ProductCategory>>
 
     @Insert
