@@ -65,7 +65,7 @@ dependencies {
 
     def compose_version = '1.5.0-beta02'
     def hilt_version = '2.46.1'
-    def room_version = "2.6.0-alpha01"
+    def room_version = "2.6.0-alpha02"
 
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
@@ -92,7 +92,7 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
     // Material3
-    implementation 'androidx.compose.material3:material3:1.2.0-alpha02'
+    implementation 'androidx.compose.material3:material3:1.2.0-alpha03'
 
     // Test
     testImplementation 'junit:junit:4.13.2'
