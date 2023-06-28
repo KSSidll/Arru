@@ -82,6 +82,24 @@ fun AddProductSearchCategory(
     }
 
     Column {
+        LazyColumn (
+            modifier = Modifier.fillMaxHeight(0.5f),
+            reverseLayout = true
+        ) {
+            items(items = displayedCategories) {
+                AddProductItemCategory(
+                    item = it.productCategory,
+                    onItemClick = { productCategory: ProductCategory ->
+                        onItemClick(productCategory)
+                    }
+                )
+                Divider()
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Divider(color = MaterialTheme.colorScheme.outline)
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -145,19 +163,6 @@ fun AddProductSearchCategory(
             )
         }
         Divider(color = MaterialTheme.colorScheme.outline)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        LazyColumn {
-            items(items = displayedCategories) {
-                AddProductItemCategory(
-                    item = it.productCategory,
-                    onItemClick = { productCategory: ProductCategory ->
-                        onItemClick(productCategory)
-                    }
-                )
-                Divider()
-            }
-        }
     }
 }
 

@@ -76,6 +76,24 @@ fun AddProductSearchProducer(
     }
 
     Column {
+        LazyColumn (
+            modifier = Modifier.fillMaxHeight(0.5f),
+            reverseLayout = true
+        ) {
+            items(items = displayedProducers) {
+                AddProductItemProducer(
+                    item = it,
+                    onItemClick = { producer ->
+                        onItemClick(producer)
+                    }
+                )
+                Divider()
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Divider(color = MaterialTheme.colorScheme.outline)
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,21 +156,7 @@ fun AddProductSearchProducer(
                 }
             )
         }
-
         Divider(color = MaterialTheme.colorScheme.outline)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        LazyColumn {
-            items(items = displayedProducers) {
-                AddProductItemProducer(
-                    item = it,
-                    onItemClick = { producer ->
-                        onItemClick(producer)
-                    }
-                )
-                Divider()
-            }
-        }
     }
 }
 
