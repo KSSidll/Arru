@@ -33,3 +33,31 @@ data class ProductCategory(
         name: String,
     ) : this(0, typeId, name)
 }
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = ProductCategory::class,
+            parentColumns = ["id"],
+            childColumns = ["productCategoryId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.RESTRICT,
+        )
+    ],
+    indices = [
+        Index(
+            value = ["name"],
+            unique = true
+        )
+    ]
+)
+data class ProductCategoryAltName(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) val productCategoryId: Long,
+    val name: String,
+) {
+    constructor(
+        productCategoryId: Long,
+        name: String,
+    ) : this(0, productCategoryId, name)
+}

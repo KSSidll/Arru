@@ -18,7 +18,7 @@ fun AddItemRoute(
         },
         onProductAdd = onProductAdd,
         onShopAdd = onShopAdd,
-        products = addItemViewModel.getProductsFlow(),
+        productsWithAltNames = addItemViewModel.getProductsWithAltNamesFlow(),
         shops = addItemViewModel.getShopsFlow(),
         state = addItemViewModel.addItemState,
     )

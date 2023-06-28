@@ -3,7 +3,7 @@ package com.kssidll.arrugarq.ui.additem
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arrugarq.data.data.Item
-import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductWithAltNames
 import com.kssidll.arrugarq.data.data.Shop
 import com.kssidll.arrugarq.data.repository.IItemRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
@@ -49,11 +49,11 @@ class AddItemViewModel @Inject constructor(
         )
     }
 
-    fun getProductsFlow(): Flow<List<Product>> {
-        return productRepository.getAllFlow()
-    }
-
     fun getShopsFlow(): Flow<List<Shop>> {
         return shopRepository.getAllFlow()
+    }
+
+    fun getProductsWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
+        return productRepository.getAllWithAltNamesFlow()
     }
 }

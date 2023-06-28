@@ -4,9 +4,11 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arrugarq.data.data.Product
 import com.kssidll.arrugarq.data.data.ProductAltName
+import com.kssidll.arrugarq.data.data.ProductWithAltNames
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -46,6 +48,14 @@ interface ProductDao {
 
     @Query("SELECT product.* FROM product LEFT JOIN productaltname ON product.id = productaltname.productId WHERE product.name LIKE '%' || :name || '%' OR productaltname.name LIKE '%' || :name || '%' OR :name = ''")
     fun findLikeFlow(name: String): Flow<List<Product>>
+
+    @Transaction
+    @Query("SELECT * FROM product")
+    suspend fun getAllWithAltNames(): List<ProductWithAltNames>
+
+    @Transaction
+    @Query("SELECT * FROM product")
+    fun getAllWithAltNamesFlow(): Flow<List<ProductWithAltNames>>
 
     @Insert
     suspend fun insert(product: Product): Long

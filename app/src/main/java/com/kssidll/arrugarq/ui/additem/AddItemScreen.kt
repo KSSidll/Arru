@@ -1,5 +1,6 @@
 package com.kssidll.arrugarq.ui.additem
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductWithAltNames
 import com.kssidll.arrugarq.data.data.Shop
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
@@ -66,7 +68,7 @@ fun AddItemScreen(
     onItemAdd: (AddItemData) -> Unit,
     onProductAdd: () -> Unit,
     onShopAdd: () -> Unit,
-    products: Flow<List<Product>>,
+    productsWithAltNames: Flow<List<ProductWithAltNames>>,
     shops: Flow<List<Shop>>,
     state: AddItemState,
 ) {
@@ -120,20 +122,13 @@ fun AddItemScreen(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
             if (isProductSearchExpanded) {
-                val collectedProducts = products.collectAsState(initial = emptyList()).value
-
-                LazyColumn {
-                    items(items = collectedProducts) {
-                        AddItemItemProduct(
-                            item = it,
-                            onItemClick = { type ->
-                                state.selectedProduct.value = type
-                                isProductSearchExpanded = false
-                            }
-                        )
-                        Divider()
-                    }
-                }
+                AddItemSearchProduct(
+                    productsWithAltNames = productsWithAltNames,
+                    onItemClick = { product: Product ->
+                        state.selectedProduct.value = product
+                        isProductSearchExpanded = false
+                    },
+                )
             } else if (isShopSearchExpanded) {
                 val collectedShops = shops.collectAsState(initial = emptyList()).value
 
@@ -507,6 +502,7 @@ fun AddItemScreen(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview(group = "AddItemScreen", name = "Add Item Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(group = "AddItemScreen", name = "Add Item Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
@@ -521,9 +517,12 @@ fun AddItemScreenPreview() {
                 onItemAdd = {},
                 onProductAdd = {},
                 onShopAdd = {},
-                products = flowOf(
+                productsWithAltNames = flowOf(
                     listOf(
-                        Product(0,0,"test1"),
+                        ProductWithAltNames(
+                            Product(0,0,"test1"),
+                            listOf()
+                        ),
                     )
                 ),
                 shops = flowOf(

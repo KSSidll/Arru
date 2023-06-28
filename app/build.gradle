@@ -63,6 +63,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
 
+    implementation 'me.xdrop:fuzzywuzzy:1.4.0'
+
     def compose_version = '1.5.0-beta02'
     def hilt_version = '2.46.1'
     def room_version = "2.6.0-alpha02"
