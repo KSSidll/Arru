@@ -44,12 +44,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.Product
 import com.kssidll.arrugarq.data.data.ProductWithAltNames
 import com.kssidll.arrugarq.data.data.Shop
@@ -110,7 +112,7 @@ fun AddItemScreen(
                 isShopSearchExpanded = false
             }
         ) {
-            Text(text = "Item")
+            Text(text = stringResource(R.string.item))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -169,7 +171,7 @@ fun AddItemScreen(
                                 ),
                                 suffix = {
                                     Text(
-                                        text = "Unit Measure",
+                                        text = stringResource(R.string.item_unit_measure),
                                         fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
@@ -203,7 +205,7 @@ fun AddItemScreen(
                                 ),
                                 suffix = {
                                     Text(
-                                        text = "Date",
+                                        text = stringResource(R.string.item_date),
                                         fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
@@ -238,7 +240,7 @@ fun AddItemScreen(
                                 ),
                                 suffix = {
                                     Text(
-                                        text = "Price",
+                                        text = stringResource(R.string.item_price),
                                         fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
@@ -274,7 +276,7 @@ fun AddItemScreen(
                                     ),
                                     suffix = {
                                         Text(
-                                            text = "Quantity",
+                                            text = stringResource(R.string.item_quantity),
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
@@ -319,7 +321,7 @@ fun AddItemScreen(
                                     ),
                                     suffix = {
                                         Text(
-                                            text = "Shop",
+                                            text = stringResource(R.string.item_shop),
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
@@ -348,7 +350,7 @@ fun AddItemScreen(
                                                 }
                                                 Icon(
                                                     imageVector = Icons.Default.Add,
-                                                    contentDescription = "Add new Shop",
+                                                    contentDescription = stringResource(R.string.add_shop_description),
                                                     modifier = Modifier.size(40.dp)
                                                 )
                                             }
@@ -386,7 +388,7 @@ fun AddItemScreen(
                                     ),
                                     suffix = {
                                         Text(
-                                            text = "Product",
+                                            text = stringResource(R.string.item_product),
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
@@ -416,7 +418,7 @@ fun AddItemScreen(
                                                 }
                                                 Icon(
                                                     imageVector = Icons.Default.Add,
-                                                    contentDescription = "Add new Product",
+                                                    contentDescription = stringResource(R.string.add_product_description),
                                                     modifier = Modifier.size(40.dp)
                                                 )
                                             }
@@ -482,12 +484,12 @@ fun AddItemScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Add Item",
+                                    contentDescription = stringResource(R.string.add_item_description),
                                     modifier = Modifier.size(30.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Add Item",
+                                    text = stringResource(R.string.item_add),
                                     fontSize = 20.sp
                                 )
                             }

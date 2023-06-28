@@ -38,11 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.Shop
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.flow.Flow
@@ -118,7 +120,7 @@ fun AddItemSearchShop(
                 ),
                 suffix = {
                     Text(
-                        text = "Filter",
+                        text = stringResource(R.string.search),
                         fontSize = 16.sp,
                         modifier = Modifier
                             .alpha(0.5F)
@@ -147,7 +149,7 @@ fun AddItemSearchShop(
                             }
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = "Add new Shop",
+                                contentDescription = stringResource(R.string.add_shop_description),
                                 modifier = Modifier.size(40.dp)
                             )
                         }

@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">Arrugarq</string>
+
+    <string name="search">Search</string>
+
+    <string name="add_item_description">Add new Item</string>
+    <string name="add_product_description">Add new Product</string>
+    <string name="add_shop_description">Add new Shop</string>
+    <string name="add_product_category_description">Add new Product Category</string>
+    <string name="add_product_producer_description">Add new Product Producer</string>
+    <string name="add_product_category_type_description">Add new Product Category Type</string>
+
+    <string name="item">Item</string>
+    <string name="item_add">Add Item</string>
+
+    <string name="item_unit_measure">Unit Measure</string>
+    <string name="item_date">Date</string>
+    <string name="item_price">Price</string>
+    <string name="item_quantity">Quantity</string>
+
+    <string name="item_shop">Shop</string>
+    <string name="item_shop_add">Add Shop</string>
+
+    <string name="item_product">Product</string>
+    <string name="item_product_add">Add Product</string>
+
+    <string name="item_full_product_producer">Product Producer</string>
+    <string name="item_product_producer">Producer</string>
+    <string name="item_product_producer_add">Add Producer</string>
+
+    <string name="item_full_product_category">Product Category</string>
+    <string name="item_product_category">Category</string>
+    <string name="item_product_category_add">Add Category</string>
+
+    <string name="item_full_product_category_type">Product Category Type</string>
+    <string name="item_product_category_type">Type</string>
+    <string name="item_product_category_type_add">Add Type</string>
+
 </resources>

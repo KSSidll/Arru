@@ -40,11 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.ProductCategoryType
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
@@ -88,7 +90,7 @@ fun AddProductCategoryScreen(
                 isCategoryTypeSearchExpanded = false
             }
         ) {
-            Text(text = "Product Category")
+            Text(text = stringResource(R.string.item_full_product_category))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -132,7 +134,7 @@ fun AddProductCategoryScreen(
                                     ),
                                     suffix = {
                                         Text(
-                                            text = "Name",
+                                            text = stringResource(R.string.item_product_category),
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
@@ -173,7 +175,7 @@ fun AddProductCategoryScreen(
                                 ),
                                 suffix = {
                                     Text(
-                                        text = "Type",
+                                        text = stringResource(R.string.item_product_category_type),
                                         fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
@@ -203,7 +205,7 @@ fun AddProductCategoryScreen(
                                             }
                                             Icon(
                                                 imageVector = Icons.Default.Add,
-                                                contentDescription = "Add new Product Category Type",
+                                                contentDescription = stringResource(R.string.add_product_category_type_description),
                                                 modifier = Modifier.size(40.dp)
                                             )
                                         }
@@ -252,12 +254,12 @@ fun AddProductCategoryScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Add Product Category",
+                                    contentDescription = stringResource(R.string.add_product_category_description),
                                     modifier = Modifier.size(30.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Add Category",
+                                    text = stringResource(R.string.item_product_category_add),
                                     fontSize = 20.sp
                                 )
                             }

@@ -40,11 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.ProductCategory
 import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
 import com.kssidll.arrugarq.data.data.ProductProducer
@@ -100,7 +102,7 @@ fun AddProductScreen(
                 isProducerSearchExpanded = false
             }
         ) {
-            Text(text = "Product")
+            Text(text = stringResource(R.string.item_product))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -154,7 +156,7 @@ fun AddProductScreen(
                                     ),
                                     suffix = {
                                         Text(
-                                            text = "Name",
+                                            text = stringResource(R.string.item_product),
                                             fontSize = 16.sp,
                                             modifier = Modifier
                                                 .alpha(0.5F)
@@ -199,7 +201,7 @@ fun AddProductScreen(
                                 ),
                                 suffix = {
                                     Text(
-                                        text = "Producer",
+                                        text = stringResource(R.string.item_product_producer),
                                         fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
@@ -228,7 +230,7 @@ fun AddProductScreen(
                                             }
                                             Icon(
                                                 imageVector = Icons.Default.Add,
-                                                contentDescription = "Add new Product Producer",
+                                                contentDescription = stringResource(R.string.add_product_producer_description),
                                                 modifier = Modifier.size(40.dp)
                                             )
                                         }
@@ -266,7 +268,7 @@ fun AddProductScreen(
                                 ),
                                 suffix = {
                                     Text(
-                                        text = "Category",
+                                        text = stringResource(R.string.item_product_category),
                                         fontSize = 16.sp,
                                         modifier = Modifier
                                             .alpha(0.5F)
@@ -296,7 +298,7 @@ fun AddProductScreen(
                                             }
                                             Icon(
                                                 imageVector = Icons.Default.Add,
-                                                contentDescription = "Add new Product Category",
+                                                contentDescription = stringResource(R.string.add_product_category_description),
                                                 modifier = Modifier.size(40.dp)
                                             )
                                         }
@@ -347,12 +349,12 @@ fun AddProductScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Add Product",
+                                    contentDescription = stringResource(R.string.add_product_description),
                                     modifier = Modifier.size(30.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Add Product",
+                                    text = stringResource(R.string.item_product_add),
                                     fontSize = 20.sp
                                 )
                             }
