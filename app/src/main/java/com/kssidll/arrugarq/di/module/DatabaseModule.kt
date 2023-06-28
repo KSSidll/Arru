@@ -2,6 +2,8 @@ package com.kssidll.arrugarq.di.module
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arrugarq.data.dao.ItemDao
 import com.kssidll.arrugarq.data.dao.ProductCategoryDao
 import com.kssidll.arrugarq.data.dao.ProductCategoryTypeDao
@@ -37,8 +39,24 @@ class DatabaseModule {
         return Room.databaseBuilder(
             appContext.applicationContext,
             AppDatabase::class.java,
-            "app_database"
-        ).build()
+            "arrugarq_database"
+        ).addCallback(object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+
+                // prepopulate the database
+                // we do that with a function but it is preffered and recommended
+                // to prepopulate via prepackaged database file
+                // TODO change this to prepackaged database file
+                for (data in prepopulateProductCategoryTypeData()) {
+                    db.execSQL("INSERT INTO productcategorytype (id, name) VALUES('${data.id}', '${data.name}');")
+                }
+
+                for (data in prepopulateProductCategoryData()) {
+                    db.execSQL("INSERT INTO productcategory (typeId, name) VALUES('${data.typeId}', '${data.name}');")
+                }
+            }
+        }).build()
     }
 
     @Provides
