@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -36,7 +34,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -130,20 +127,13 @@ fun AddItemScreen(
                     },
                 )
             } else if (isShopSearchExpanded) {
-                val collectedShops = shops.collectAsState(initial = emptyList()).value
-
-                LazyColumn {
-                    items(items = collectedShops) {
-                        AddItemItemShop(
-                            item = it,
-                            onItemClick = { type ->
-                                state.selectedShop.value = type
-                                isShopSearchExpanded = false
-                            }
-                        )
-                        Divider()
+                AddItemSearchShop(
+                    shops = shops,
+                    onItemClick = { shop ->
+                        state.selectedShop.value = shop
+                        isShopSearchExpanded = false
                     }
-                }
+                )
             } else {
                 Column {
                     Column (

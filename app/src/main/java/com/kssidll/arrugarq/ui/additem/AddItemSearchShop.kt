@@ -29,41 +29,35 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kssidll.arrugarq.data.data.Product
-import com.kssidll.arrugarq.data.data.ProductWithAltNames
+import com.kssidll.arrugarq.data.data.Shop
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Composable
-fun AddItemSearchProduct(
-    productsWithAltNames: Flow<List<ProductWithAltNames>>,
-    onItemClick: (Product) -> Unit,
+fun AddItemSearchShop(
+    shops: Flow<List<Shop>>,
+    onItemClick: (Shop) -> Unit,
 ) {
-    val collectedProductsWithAltNames = productsWithAltNames.collectAsState(initial = emptyList()).value
+    val collectedShops = shops.collectAsState(initial = emptyList()).value
 
     var filter: String by remember {
         mutableStateOf(String())
     }
 
-    var displayedProducts: List<ProductWithAltNames> by remember {
+    var displayedShops: List<Shop> by remember {
         mutableStateOf(listOf())
     }
 
-    displayedProducts = collectedProductsWithAltNames.map { productWithAltNames ->
-        val productNameScore = FuzzySearch.extractOne(filter, listOf(productWithAltNames.product.name)).score
-        val bestAlternativeNamesScore = if (productWithAltNames.alternativeNames.isNotEmpty()) {
-            FuzzySearch.extractOne(filter, productWithAltNames.alternativeNames.map { it.name }).score
-        } else -1
+    displayedShops = collectedShops.map { shop ->
+        val productNameScore = FuzzySearch.extractOne(filter, listOf(shop.name)).score
 
-        val maxScore = maxOf(productNameScore, bestAlternativeNamesScore)
-
-        productWithAltNames to maxScore
+        shop to productNameScore
     }.sortedByDescending { (_, score) ->
         score
-    }.map { (productWithAltNames, _) ->
-        productWithAltNames
+    }.map { (shop, _) ->
+        shop
     }
 
     Column {
@@ -97,15 +91,16 @@ fun AddItemSearchProduct(
                 },
             )
         }
+        
         Divider(color = MaterialTheme.colorScheme.outline)
         Spacer(modifier = Modifier.height(24.dp))
 
         LazyColumn {
-            items(items = displayedProducts) {
-                AddItemItemProduct(
-                    item = it.product,
-                    onItemClick = { product: Product ->
-                        onItemClick(product)
+            items(items = displayedShops) {
+                AddItemItemShop(
+                    item = it,
+                    onItemClick = { shop ->
+                        onItemClick(shop)
                     }
                 )
                 Divider()
@@ -114,17 +109,17 @@ fun AddItemSearchProduct(
     }
 }
 
-@Preview(group = "AddItemSearchProduct", name = "Add Item Search Product Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddItemSearchProduct", name = "Add Item Search Product Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(group = "AddItemSearchShop", name = "Add Item Search Shop Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddItemSearchShop", name = "Add Item Search Shop Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun AddItemSearchProductPreview() {
+fun AddItemSearchShopPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AddItemSearchProduct(
-                productsWithAltNames = flowOf(),
+            AddItemSearchShop(
+                shops = flowOf(),
                 onItemClick = {},
             )
         }
