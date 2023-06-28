@@ -200,7 +200,7 @@ fun AddProductCategoryScreen(
                                                 },
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            val lineColor = MaterialTheme.colorScheme.outline
                                             Canvas(modifier = Modifier.fillMaxSize()) {
                                                 drawLine(
                                                     color = lineColor,

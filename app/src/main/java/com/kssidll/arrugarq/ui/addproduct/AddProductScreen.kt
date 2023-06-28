@@ -207,6 +207,10 @@ fun AddProductScreen(
                                     color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 16.sp
                                 ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                                ),
                                 suffix = {
                                     Text(
                                         text = "Producer",
@@ -227,7 +231,7 @@ fun AddProductScreen(
                                                 },
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            val lineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                                             Canvas(modifier = Modifier.fillMaxSize()) {
                                                 drawLine(
                                                     color = lineColor,
@@ -295,7 +299,7 @@ fun AddProductScreen(
                                                 },
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            val lineColor = MaterialTheme.colorScheme.outline
                                             Canvas(modifier = Modifier.fillMaxSize()) {
                                                 drawLine(
                                                     color = lineColor,

@@ -168,7 +168,8 @@ fun AddItemScreen(
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     cursorColor = MaterialTheme.colorScheme.outline,
-                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                                 ),
                                 textStyle = TextStyle.Default.copy(
                                     color = MaterialTheme.colorScheme.onBackground,
@@ -320,6 +321,10 @@ fun AddItemScreen(
                                         color = MaterialTheme.colorScheme.onBackground,
                                         fontSize = 16.sp
                                     ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                                    ),
                                     suffix = {
                                         Text(
                                             text = "Shop",
@@ -340,7 +345,7 @@ fun AddItemScreen(
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                val lineColor = MaterialTheme.colorScheme.onBackground
+                                                val lineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                                     drawLine(
                                                         color = lineColor,
