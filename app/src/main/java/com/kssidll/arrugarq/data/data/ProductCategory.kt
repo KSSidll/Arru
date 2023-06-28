@@ -1,10 +1,12 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 @Entity(
     foreignKeys = [
@@ -61,3 +63,11 @@ data class ProductCategoryAltName(
         name: String,
     ) : this(0, productCategoryId, name)
 }
+
+data class ProductCategoryWithAltNames(
+    @Embedded val productCategory: ProductCategory,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "productId"
+    ) val alternativeNames: List<ProductAltName>
+)

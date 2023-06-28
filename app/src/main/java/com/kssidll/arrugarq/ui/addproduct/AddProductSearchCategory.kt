@@ -1,0 +1,132 @@
+package com.kssidll.arrugarq.ui.addproduct
+
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
+import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import me.xdrop.fuzzywuzzy.FuzzySearch
+
+@Composable
+fun AddProductSearchCategory(
+    categoriesWithAltNames: Flow<List<ProductCategoryWithAltNames>>,
+    onItemClick: (ProductCategory) -> Unit
+) {
+    val collectedProductCategoriesWithAltNames = categoriesWithAltNames.collectAsState(initial = emptyList()).value
+
+    var filter: String by remember {
+        mutableStateOf(String())
+    }
+
+    var displayedCategories: List<ProductCategoryWithAltNames> by remember {
+        mutableStateOf(listOf())
+    }
+
+    displayedCategories = collectedProductCategoriesWithAltNames.map { categoryWithAltNames ->
+        val categoryNameScore = FuzzySearch.extractOne(filter, listOf(categoryWithAltNames.productCategory.name)).score
+        val bestAlternativeNamesScore = if (categoryWithAltNames.alternativeNames.isNotEmpty()) {
+            FuzzySearch.extractOne(filter, categoryWithAltNames.alternativeNames.map { it.name }).score
+        } else -1
+
+        val maxScore = maxOf(categoryNameScore, bestAlternativeNamesScore)
+
+        categoryWithAltNames to maxScore
+    }.sortedByDescending { (_, score) ->
+        score
+    }.map { (categoryWithAltNames, _) ->
+        categoryWithAltNames
+    }
+
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                value = filter,
+                onValueChange = {
+                    filter = it
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = MaterialTheme.colorScheme.outline,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                textStyle = TextStyle.Default.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp
+                ),
+                suffix = {
+                    Text(
+                        text = "Filter",
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .alpha(0.5F)
+                    )
+                },
+            )
+        }
+        Divider(color = MaterialTheme.colorScheme.outline)
+        Spacer(modifier = Modifier.height(24.dp))
+
+        LazyColumn {
+            items(items = displayedCategories) {
+                AddProductItemCategory(
+                    item = it.productCategory,
+                    onItemClick = { productCategory: ProductCategory ->
+                        onItemClick(productCategory)
+                    }
+                )
+                Divider()
+            }
+        }
+    }
+}
+
+@Preview(group = "AddProductSearchCategory", name = "Add Product Search Category Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddProductSearchCategory", name = "Add Product Search Category Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun AddProductSearchCategoryPreview() {
+    ArrugarqTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            AddProductSearchCategory(
+                categoriesWithAltNames = flowOf(),
+                onItemClick = {},
+            )
+        }
+    }
+}

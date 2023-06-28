@@ -3,7 +3,7 @@ package com.kssidll.arrugarq.ui.addproduct
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arrugarq.data.data.Product
-import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
 import com.kssidll.arrugarq.data.data.ProductProducer
 import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
 import com.kssidll.arrugarq.data.repository.IProductProducerRepository
@@ -46,8 +46,8 @@ class AddProductViewModel @Inject constructor(
         )
     }
 
-    fun getProductCategoriesFlow(): Flow<List<ProductCategory>> {
-        return productCategoryRepository.getAllFlow()
+    fun getProductCategoriesWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>> {
+        return productCategoryRepository.getAllWithAltNamesFlow()
     }
 
     fun getProductProducersFlow(): Flow<List<ProductProducer>> {

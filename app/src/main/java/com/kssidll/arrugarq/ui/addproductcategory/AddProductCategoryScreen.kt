@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -32,7 +30,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,19 +97,13 @@ fun AddProductCategoryScreen(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
             if (isCategoryTypeSearchExpanded) {
-                val collectedTypes = types.collectAsState(initial = emptyList()).value
-                LazyColumn {
-                    items(items = collectedTypes) {
-                        AddProductCategoryItemType(
-                            item = it,
-                            onItemClick = { type ->
-                                state.selectedProductCategoryType.value = type
-                                isCategoryTypeSearchExpanded = false
-                            }
-                        )
-                        Divider()
-                    }
-                }
+                AddProductCategorySearchType(
+                    types = types,
+                    onItemClick = { type: ProductCategoryType ->
+                        state.selectedProductCategoryType.value = type
+                        isCategoryTypeSearchExpanded = false
+                    },
+                )
             } else {
                 Column {
                     Column(

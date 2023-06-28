@@ -512,14 +512,7 @@ fun AddItemScreenPreview() {
                 onItemAdd = {},
                 onProductAdd = {},
                 onShopAdd = {},
-                productsWithAltNames = flowOf(
-                    listOf(
-                        ProductWithAltNames(
-                            Product(0,0,"test1"),
-                            listOf()
-                        ),
-                    )
-                ),
+                productsWithAltNames = flowOf(),
                 shops = flowOf(
                     listOf(
                         Shop(0, "test")

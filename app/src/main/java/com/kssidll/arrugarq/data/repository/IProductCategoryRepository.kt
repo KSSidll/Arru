@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.data.ProductCategory
 import com.kssidll.arrugarq.data.data.ProductCategoryAltName
+import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
 import kotlinx.coroutines.flow.Flow
 
 interface IProductCategoryRepository {
@@ -15,6 +16,8 @@ interface IProductCategoryRepository {
     fun getByNameFlow(name: String): Flow<ProductCategory>
     suspend fun findLike(name: String): List<ProductCategory>
     suspend fun findLikeFlow(name: String): Flow<List<ProductCategory>>
+    suspend fun getAllWithAltNames(): List<ProductCategoryWithAltNames>
+    fun getAllWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>>
     suspend fun insert(productCategory: ProductCategory): Long
     suspend fun addAltName(alternativeName: ProductCategoryAltName): Long
     suspend fun update(productCategory: ProductCategory)

@@ -18,7 +18,7 @@ fun AddProductRoute(
         onProductAdd = {
             addProductViewModel.addProduct(it)
         },
-        categories = addProductViewModel.getProductCategoriesFlow(),
+        categoriesWithAltNames = addProductViewModel.getProductCategoriesWithAltNamesFlow(),
         producers = addProductViewModel.getProductProducersFlow(),
         state = addProductViewModel.addProductState
     )

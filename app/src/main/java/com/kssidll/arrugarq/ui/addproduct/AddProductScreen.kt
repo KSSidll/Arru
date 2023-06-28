@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -32,7 +30,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.data.data.ProductCategory
+import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
 import com.kssidll.arrugarq.data.data.ProductProducer
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
@@ -62,7 +60,7 @@ fun AddProductScreen(
     onCategoryAdd: () -> Unit,
     onProducerAdd: () -> Unit,
     onProductAdd: (AddProductData) -> Unit,
-    categories: Flow<List<ProductCategory>>,
+    categoriesWithAltNames: Flow<List<ProductCategoryWithAltNames>>,
     producers: Flow<List<ProductProducer>>,
     state: AddProductState,
 ) {
@@ -110,36 +108,22 @@ fun AddProductScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            if (isCategorySearchExpanded) {
-                val collectedCategories = categories.collectAsState(initial = emptyList()).value
-
-                LazyColumn {
-                    items(items = collectedCategories) {
-                        AddProductItemCategory(
-                            item = it,
-                            onItemClick = { type ->
-                                state.selectedProductCategory.value = type
-                                isCategorySearchExpanded = false
-                            }
-                        )
-                        Divider()
+            if (isProducerSearchExpanded) {
+                AddProductSearchProducer(
+                    producers = producers,
+                    onItemClick = { producer: ProductProducer ->
+                        state.selectedProductProducer.value = producer
+                        isProducerSearchExpanded = false
+                    },
+                )
+            } else if (isCategorySearchExpanded) {
+                AddProductSearchCategory(
+                    categoriesWithAltNames = categoriesWithAltNames,
+                    onItemClick = { category: ProductCategory ->
+                        state.selectedProductCategory.value = category
+                        isCategorySearchExpanded = false
                     }
-                }
-            } else if (isProducerSearchExpanded) {
-                val collectedProducers = producers.collectAsState(initial = emptyList()).value
-
-                LazyColumn {
-                    items(items = collectedProducers) {
-                        AddProductItemProducer(
-                            item = it,
-                            onItemClick = { type ->
-                                state.selectedProductProducer.value = type
-                                isProducerSearchExpanded = false
-                            }
-                        )
-                        Divider()
-                    }
-                }
+                )
             } else {
                 Column {
                     Column(
@@ -392,7 +376,7 @@ fun AddProductScreenPreview() {
                 onCategoryAdd = {},
                 onProducerAdd = {},
                 onProductAdd = {},
-                categories = flowOf(),
+                categoriesWithAltNames = flowOf(),
                 producers = flowOf(),
                 state = AddProductState(),
             )

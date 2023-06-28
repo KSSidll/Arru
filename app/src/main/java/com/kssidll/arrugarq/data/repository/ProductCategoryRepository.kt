@@ -3,6 +3,7 @@ package com.kssidll.arrugarq.data.repository
 import com.kssidll.arrugarq.data.dao.ProductCategoryDao
 import com.kssidll.arrugarq.data.data.ProductCategory
 import com.kssidll.arrugarq.data.data.ProductCategoryAltName
+import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
 import kotlinx.coroutines.flow.Flow
 
 class ProductCategoryRepository(private val productCategoryDao: ProductCategoryDao) : IProductCategoryRepository {
@@ -44,6 +45,14 @@ class ProductCategoryRepository(private val productCategoryDao: ProductCategoryD
 
     override suspend fun findLikeFlow(name: String): Flow<List<ProductCategory>> {
         return productCategoryDao.findLikeFlow(name)
+    }
+
+    override suspend fun getAllWithAltNames(): List<ProductCategoryWithAltNames> {
+        return productCategoryDao.getAllWithAltNames()
+    }
+
+    override fun getAllWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>> {
+        return productCategoryDao.getAllWithAltNamesFlow()
     }
 
     override suspend fun insert(productCategory: ProductCategory): Long {
