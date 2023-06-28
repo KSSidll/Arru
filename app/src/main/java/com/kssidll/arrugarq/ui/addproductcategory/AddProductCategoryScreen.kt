@@ -103,6 +103,7 @@ fun AddProductCategoryScreen(
                         state.selectedProductCategoryType.value = type
                         isCategoryTypeSearchExpanded = false
                     },
+                    onAddClick = onCategoryTypeAdd
                 )
             } else {
                 Column {

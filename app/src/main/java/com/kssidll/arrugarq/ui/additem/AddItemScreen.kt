@@ -125,6 +125,7 @@ fun AddItemScreen(
                         state.selectedProduct.value = product
                         isProductSearchExpanded = false
                     },
+                    onAddClick = onProductAdd
                 )
             } else if (isShopSearchExpanded) {
                 AddItemSearchShop(
@@ -132,7 +133,8 @@ fun AddItemScreen(
                     onItemClick = { shop ->
                         state.selectedShop.value = shop
                         isShopSearchExpanded = false
-                    }
+                    },
+                    onAddClick = onShopAdd
                 )
             } else {
                 Column {

@@ -115,6 +115,7 @@ fun AddProductScreen(
                         state.selectedProductProducer.value = producer
                         isProducerSearchExpanded = false
                     },
+                    onAddClick = onProducerAdd
                 )
             } else if (isCategorySearchExpanded) {
                 AddProductSearchCategory(
@@ -122,7 +123,8 @@ fun AddProductScreen(
                     onItemClick = { category: ProductCategory ->
                         state.selectedProductCategory.value = category
                         isCategorySearchExpanded = false
-                    }
+                    },
+                    onAddClick = onCategoryAdd
                 )
             } else {
                 Column {
