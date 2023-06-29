@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search">Szukaj</string>
+
+    <string name="add_item_description">Dodaj nowy Przedmiot</string>
+    <string name="add_product_description">Dodaj nowy Produkt</string>
+    <string name="add_shop_description">Dodaj nowy Sklep</string>
+    <string name="add_product_category_description">Dodaj nową kategorię produktów</string>
+    <string name="add_product_producer_description">Dodaj nowego producenta produktów</string>
+    <string name="add_product_category_type_description">Dodaj nowy typ kategorii produktów</string>
+
+    <string name="item">Przedmiot</string>
+    <string name="item_add">Dodaj Przedmiot</string>
+
+    <string name="item_unit_measure">Jednostka Miary</string>
+    <string name="item_date">Data</string>
+    <string name="item_price">Cena</string>
+    <string name="item_quantity">Ilość</string>
+
+    <string name="item_shop">Sklep</string>
+    <string name="item_shop_add">Dodaj Sklep</string>
+
+    <string name="item_product">Produkt</string>
+    <string name="item_product_add">Dodaj Produkt</string>
+
+    <string name="item_full_product_producer">Producent Produktów</string>
+    <string name="item_product_producer">Producent</string>
+    <string name="item_product_producer_add">Dodaj Producenta</string>
+
+    <string name="item_full_product_category">Kategoria Produktów</string>
+    <string name="item_product_category">Kategoria</string>
+    <string name="item_product_category_add">Dodaj Kategorię</string>
+
+    <string name="item_full_product_category_type">Typ Kategorii Produktów</string>
+    <string name="item_product_category_type">Typ</string>
+    <string name="item_product_category_type_add">Dodaj Typ</string>
+</resources>
