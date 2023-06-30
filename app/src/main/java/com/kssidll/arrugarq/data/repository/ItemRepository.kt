@@ -21,6 +21,14 @@ class ItemRepository(private val itemDao: ItemDao) : IItemRepository {
         return itemDao.getFlow(id)
     }
 
+    override suspend fun getLast(): Item {
+        return itemDao.getLast()
+    }
+
+    override fun getLastFlow(): Flow<Item> {
+        return itemDao.getLastFlow()
+    }
+
     override suspend fun getByProductId(productId: Long): List<Item> {
         return itemDao.getByProductId(productId)
     }
