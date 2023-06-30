@@ -9,6 +9,7 @@ import com.kssidll.arrugarq.data.dao.ProductCategoryDao
 import com.kssidll.arrugarq.data.dao.ProductCategoryTypeDao
 import com.kssidll.arrugarq.data.dao.ProductDao
 import com.kssidll.arrugarq.data.dao.ProductProducerDao
+import com.kssidll.arrugarq.data.dao.ProductVariantDao
 import com.kssidll.arrugarq.data.dao.ShopDao
 import com.kssidll.arrugarq.data.database.AppDatabase
 import com.kssidll.arrugarq.data.repository.IItemRepository
@@ -16,12 +17,14 @@ import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
 import com.kssidll.arrugarq.data.repository.IProductCategoryTypeRepository
 import com.kssidll.arrugarq.data.repository.IProductProducerRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
+import com.kssidll.arrugarq.data.repository.IProductVariantRepository
 import com.kssidll.arrugarq.data.repository.IShopRepository
 import com.kssidll.arrugarq.data.repository.ItemRepository
 import com.kssidll.arrugarq.data.repository.ProductCategoryRepository
 import com.kssidll.arrugarq.data.repository.ProductCategoryTypeRepository
 import com.kssidll.arrugarq.data.repository.ProductProducerRepository
 import com.kssidll.arrugarq.data.repository.ProductRepository
+import com.kssidll.arrugarq.data.repository.ProductVariantRepository
 import com.kssidll.arrugarq.data.repository.ShopRepository
 import dagger.Module
 import dagger.Provides
@@ -80,9 +83,20 @@ class DatabaseModule {
     }
 
     @Provides
+    fun provideProductVariantDao(appDatabase: AppDatabase): ProductVariantDao {
+        return appDatabase.getProductVariantDao()
+    }
+
+    @Provides
+    fun provideProductVariantRepository(productVariantDao: ProductVariantDao): IProductVariantRepository {
+        return ProductVariantRepository(productVariantDao)
+    }
+
+    @Provides
     fun provideProductCategoryDao(appDatabase: AppDatabase): ProductCategoryDao {
         return appDatabase.getProductCategoryDao()
     }
+
 
     @Provides
     fun provideProductCategoryRepository(productCategoryDao: ProductCategoryDao): IProductCategoryRepository {

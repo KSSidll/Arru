@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.Product
+import com.kssidll.arrugarq.data.data.ProductVariant
 import com.kssidll.arrugarq.data.data.ProductWithAltNames
 import com.kssidll.arrugarq.data.data.Shop
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
@@ -66,11 +67,17 @@ fun AddItemScreen(
     onBack: () -> Unit,
     onItemAdd: (AddItemData) -> Unit,
     onProductAdd: () -> Unit,
+    onVariantAdd: (Long) -> Unit,
     onShopAdd: () -> Unit,
     productsWithAltNames: Flow<List<ProductWithAltNames>>,
+    variants: Flow<List<ProductVariant>>,
     shops: Flow<List<Shop>>,
     state: AddItemState,
+    onSelectProduct: (Product) -> Unit = {},
 ) {
+    val disabledAlpha = 0.20f
+    val optionalBorderAlpha = 0.40f
+
     Column {
 
         var isProductSearchExpanded: Boolean by rememberSaveable {
@@ -79,12 +86,16 @@ fun AddItemScreen(
         var isShopSearchExpanded: Boolean by rememberSaveable {
             mutableStateOf(false)
         }
+        var isVariantSearchExpanded: Boolean by rememberSaveable {
+            mutableStateOf(false)
+        }
 
         BackHandler (
-            enabled = isProductSearchExpanded or isShopSearchExpanded
+            enabled = isProductSearchExpanded or isShopSearchExpanded or isVariantSearchExpanded
         ) {
             isProductSearchExpanded = false
             isShopSearchExpanded = false
+            isVariantSearchExpanded = false
         }
 
         var productError: Boolean by remember {
@@ -104,12 +115,14 @@ fun AddItemScreen(
             onBack = {
                 if (
                     !isProductSearchExpanded &&
-                    !isShopSearchExpanded
+                    !isShopSearchExpanded &&
+                    !isVariantSearchExpanded
                 ) {
                     onBack()
                 }
                 isProductSearchExpanded = false
                 isShopSearchExpanded = false
+                isVariantSearchExpanded = false
             }
         ) {
             Text(text = stringResource(R.string.item))
@@ -126,8 +139,19 @@ fun AddItemScreen(
                     onItemClick = { product: Product ->
                         state.selectedProduct.value = product
                         isProductSearchExpanded = false
+                        productError = false
+                        onSelectProduct(product)
                     },
                     onAddClick = onProductAdd
+                )
+            } else if (isVariantSearchExpanded) {
+                AddItemSearchVariant(
+                    variants = variants,
+                    onItemClick = { variant ->
+                        state.selectedVariant.value = variant
+                        isVariantSearchExpanded = false
+                    },
+                    onAddClick = { onVariantAdd(state.selectedProduct.value!!.id) }
                 )
             } else if (isShopSearchExpanded) {
                 AddItemSearchShop(
@@ -146,41 +170,6 @@ fun AddItemScreen(
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.Bottom,
                     ) {
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            OutlinedTextField(
-                                singleLine = true,
-                                value = state.unitMeasure.value,
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number
-                                ),
-                                onValueChange = {
-                                    state.unitMeasure.value = it
-                                },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    cursorColor = MaterialTheme.colorScheme.outline,
-                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                                ),
-                                textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp
-                                ),
-                                suffix = {
-                                    Text(
-                                        text = stringResource(R.string.item_unit_measure),
-                                        fontSize = 16.sp,
-                                        modifier = Modifier
-                                            .alpha(0.5F)
-                                    )
-                                },
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -213,16 +202,21 @@ fun AddItemScreen(
                                 },
                                 isError = dateError
                             )
+
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
 
+                        val isPriceEnabled = state.selectedProduct.value != null
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .alpha(if (isPriceEnabled) 1f else disabledAlpha),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
                                 singleLine = true,
+                                enabled = isPriceEnabled,
                                 value = state.price.value,
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Number
@@ -252,182 +246,262 @@ fun AddItemScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                OutlinedTextField(
-                                    singleLine = true,
-                                    value = state.quantity.value,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number
-                                    ),
-                                    onValueChange = {
-                                        state.quantity.value = it
-                                    },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        cursorColor = MaterialTheme.colorScheme.outline,
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    ),
-                                    textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        fontSize = 16.sp
-                                    ),
-                                    suffix = {
-                                        Text(
-                                            text = stringResource(R.string.item_quantity),
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .alpha(0.5F)
-                                        )
-                                    },
-                                    isError = quantityError
-                                )
-                            }
+                        val isQuantityEnabled = state.selectedProduct.value != null
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .alpha(if (isQuantityEnabled) 1f else disabledAlpha),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                singleLine = true,
+                                enabled = isQuantityEnabled,
+                                value = state.quantity.value,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                ),
+                                onValueChange = {
+                                    state.quantity.value = it
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    cursorColor = MaterialTheme.colorScheme.outline,
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                ),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                suffix = {
+                                    Text(
+                                        text = if (state.selectedVariant.value == null)
+                                            stringResource(R.string.item_product_variant_default_value)
+                                        else
+                                            stringResource(R.string.item_quantity),
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .alpha(0.5F)
+                                    )
+                                },
+                                isError = quantityError
+                            )
+                        }
 
 
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Divider()
-                            Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                            Row(
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                readOnly = true,
+                                singleLine = true,
+                                value = state.selectedShop.value?.name ?: String(),
+                                onValueChange = {
+
+                                },
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(60.dp),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                OutlinedTextField(
-                                    readOnly = true,
-                                    singleLine = true,
-                                    value = state.selectedShop.value?.name ?: String(),
-                                    onValueChange = {
-
-                                    },
-                                    modifier = Modifier
-                                        .onFocusEvent {
-                                            if (it.isFocused) {
-                                                isShopSearchExpanded = true
-                                            }
-                                        }
-                                        .fillMaxSize(),
-                                    textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        fontSize = 16.sp
-                                    ),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                                    ),
-                                    suffix = {
-                                        Text(
-                                            text = stringResource(R.string.item_shop),
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .alpha(0.5F)
-                                                .padding(end = 6.dp)
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        BoxWithConstraints {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .aspectRatio(1F)
-                                                    .clickable {
-                                                        onShopAdd()
-                                                    },
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                val lineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                                                Canvas(modifier = Modifier.fillMaxSize()) {
-                                                    drawLine(
-                                                        color = lineColor,
-                                                        start = Offset(0F, 0F),
-                                                        end = Offset(0F, size.height),
-                                                        strokeWidth = Dp.Hairline.value
-                                                    )
-                                                }
-                                                Icon(
-                                                    imageVector = Icons.Default.Add,
-                                                    contentDescription = stringResource(R.string.add_shop_description),
-                                                    modifier = Modifier.size(40.dp)
-                                                )
-                                            }
-
+                                    .onFocusEvent {
+                                        if (it.isFocused) {
+                                            isShopSearchExpanded = true
                                         }
                                     }
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(60.dp),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                OutlinedTextField(
-                                    readOnly = true,
-                                    singleLine = true,
-                                    value = state.selectedProduct.value?.name ?: String(),
-                                    onValueChange = {
-
-                                    },
-                                    modifier = Modifier
-                                        .onFocusEvent {
-                                            if (it.isFocused) {
-                                                isProductSearchExpanded = true
-                                            }
-                                        }
-                                        .fillMaxSize(),
-                                    textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        fontSize = 16.sp
-                                    ),
-                                    suffix = {
-                                        Text(
-                                            text = stringResource(R.string.item_product),
-                                            fontSize = 16.sp,
+                                    .fillMaxSize(),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha)
+                                ),
+                                suffix = {
+                                    Text(
+                                        text = stringResource(R.string.item_shop),
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .alpha(0.5F)
+                                            .padding(end = 6.dp)
+                                    )
+                                },
+                                trailingIcon = {
+                                    BoxWithConstraints {
+                                        Box(
                                             modifier = Modifier
-                                                .alpha(0.5F)
-                                                .padding(end = 6.dp)
-                                        )
-                                    },
-                                    isError = productError,
-                                    trailingIcon = {
-                                        BoxWithConstraints {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .aspectRatio(1F)
-                                                    .clickable {
-                                                        onProductAdd()
-                                                    },
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                val lineColor = MaterialTheme.colorScheme.onBackground
-                                                Canvas(modifier = Modifier.fillMaxSize()) {
-                                                    drawLine(
-                                                        color = lineColor,
-                                                        start = Offset(0F, 0F),
-                                                        end = Offset(0F, size.height),
-                                                        strokeWidth = Dp.Hairline.value
-                                                    )
-                                                }
-                                                Icon(
-                                                    imageVector = Icons.Default.Add,
-                                                    contentDescription = stringResource(R.string.add_product_description),
-                                                    modifier = Modifier.size(40.dp)
+                                                .fillMaxHeight()
+                                                .aspectRatio(1F)
+                                                .clickable {
+                                                    onShopAdd()
+                                                },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val lineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawLine(
+                                                    color = lineColor,
+                                                    start = Offset(0F, 0F),
+                                                    end = Offset(0F, size.height),
+                                                    strokeWidth = Dp.Hairline.value
                                                 )
                                             }
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = stringResource(R.string.add_shop_description),
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
 
+                                    }
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                                .alpha(1f),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                readOnly = true,
+                                singleLine = true,
+                                value = state.selectedProduct.value?.name ?: String(),
+                                onValueChange = {
+
+                                },
+                                modifier = Modifier
+                                    .onFocusEvent {
+                                        if (it.isFocused) {
+                                            isProductSearchExpanded = true
                                         }
                                     }
-                                )
-                            }
+                                    .fillMaxSize(),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                suffix = {
+                                    Text(
+                                        text = stringResource(R.string.item_product),
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .alpha(0.5F)
+                                            .padding(end = 6.dp)
+                                    )
+                                },
+                                isError = productError,
+                                trailingIcon = {
+                                    BoxWithConstraints {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .aspectRatio(1F)
+                                                .clickable {
+                                                    onProductAdd()
+                                                },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawLine(
+                                                    color = lineColor,
+                                                    start = Offset(0F, 0F),
+                                                    end = Offset(0F, size.height),
+                                                    strokeWidth = Dp.Hairline.value
+                                                )
+                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = stringResource(R.string.add_product_description),
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
 
+                                    }
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        val isVariantEnabled = state.selectedProduct.value != null
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                                .alpha(if (isVariantEnabled) 1f else disabledAlpha),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            OutlinedTextField(
+                                readOnly = true,
+                                singleLine = true,
+                                enabled = isVariantEnabled,
+                                value = state.selectedVariant.value?.name ?: stringResource(R.string.item_product_variant_default_value),
+                                onValueChange = {
+
+                                },
+                                modifier = Modifier
+                                    .onFocusEvent {
+                                        if (it.isFocused) {
+                                            isVariantSearchExpanded = true
+                                        }
+                                    }
+                                    .fillMaxSize(),
+                                textStyle = TextStyle.Default.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 16.sp
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha)
+                                ),
+                                suffix = {
+                                    Text(
+                                        text = stringResource(R.string.item_product_variant),
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .alpha(0.5F)
+                                            .padding(end = 6.dp)
+                                    )
+                                },
+                                trailingIcon = {
+                                    BoxWithConstraints {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .aspectRatio(1F)
+                                                .clickable {
+                                                    onVariantAdd(state.selectedProduct.value!!.id)
+                                                },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val lineColor = MaterialTheme.colorScheme.onBackground
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawLine(
+                                                    color = lineColor,
+                                                    start = Offset(0F, 0F),
+                                                    end = Offset(0F, size.height),
+                                                    strokeWidth = Dp.Hairline.value
+                                                )
+                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = stringResource(R.string.add_product_variant_description),
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
+
+                                    }
+                                }
+                            )
                         }
                     }
 
@@ -442,10 +516,10 @@ fun AddItemScreen(
                         Button(
                             onClick = {
                                 val product: Product? = state.selectedProduct.value
+                                val variant: ProductVariant? = state.selectedVariant.value
                                 val shop: Shop? = state.selectedShop.value
 
                                 val quantity: Long? = state.quantity.value.toLongOrNull()
-                                val unitMeasure: Long? = state.unitMeasure.value.toLongOrNull()
                                 val price: Float? = state.price.value.toFloatOrNull()
                                 val date: Long? = state.date.value.toLongOrNull()
 
@@ -463,9 +537,9 @@ fun AddItemScreen(
                                     onItemAdd(
                                         AddItemData(
                                             productId = product!!.id,
+                                            variantId = Optional.ofNullable(variant?.id),
                                             shopId = Optional.ofNullable(shop?.id),
                                             quantity = quantity!!,
-                                            unitMeasure = Optional.ofNullable(unitMeasure),
                                             price = price!!,
                                             date = date!!,
                                         )
@@ -515,8 +589,10 @@ fun AddItemScreenPreview() {
                 onBack = {},
                 onItemAdd = {},
                 onProductAdd = {},
+                onVariantAdd = {},
                 onShopAdd = {},
                 productsWithAltNames = flowOf(),
+                variants = flowOf(),
                 shops = flowOf(
                     listOf(
                         Shop(0, "test")

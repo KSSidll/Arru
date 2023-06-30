@@ -66,6 +66,8 @@ fun AddProductScreen(
     producers: Flow<List<ProductProducer>>,
     state: AddProductState,
 ) {
+    val optionalBorderAlpha = 0.40f
+
     Column {
         var isCategorySearchExpanded: Boolean by rememberSaveable {
             mutableStateOf(false)
@@ -196,8 +198,8 @@ fun AddProductScreen(
                                     fontSize = 16.sp
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha)
                                 ),
                                 suffix = {
                                     Text(

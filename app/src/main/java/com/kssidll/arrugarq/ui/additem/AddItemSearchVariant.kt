@@ -45,36 +45,36 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.data.data.Shop
+import com.kssidll.arrugarq.data.data.ProductVariant
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Composable
-fun AddItemSearchShop(
-    shops: Flow<List<Shop>>,
-    onItemClick: (Shop?) -> Unit,
+fun AddItemSearchVariant(
+    variants: Flow<List<ProductVariant>>,
+    onItemClick: (ProductVariant?) -> Unit,
     onAddClick: () -> Unit,
 ) {
-    val collectedShops = shops.collectAsState(initial = emptyList()).value
+    val collectedVariants = variants.collectAsState(initial = emptyList()).value
 
     var filter: String by remember {
         mutableStateOf(String())
     }
 
-    var displayedShops: List<Shop> by remember {
+    var displayedVariants: List<ProductVariant> by remember {
         mutableStateOf(listOf())
     }
 
-    displayedShops = collectedShops.map { shop ->
-        val shopNameScore = FuzzySearch.extractOne(filter, listOf(shop.name)).score
+    displayedVariants = collectedVariants.map { variant ->
+        val variantNameScore = FuzzySearch.extractOne(filter, listOf(variant.name)).score
 
-        shop to shopNameScore
+        variant to variantNameScore
     }.sortedByDescending { (_, score) ->
         score
-    }.map { (shop, _) ->
-        shop
+    }.map { (variant, _) ->
+        variant
     }
 
     Column {
@@ -82,11 +82,11 @@ fun AddItemSearchShop(
             modifier = Modifier.fillMaxHeight(0.5f),
             reverseLayout = true
         ) {
-            items(items = displayedShops) {
-                AddItemItemShop(
+            items(items = displayedVariants) {
+                AddItemItemVariant(
                     item = it,
-                    onItemClick = { shop ->
-                        onItemClick(shop)
+                    onItemClick = { variant ->
+                        onItemClick(variant)
                     }
                 )
                 Divider()
@@ -149,7 +149,7 @@ fun AddItemSearchShop(
                             }
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(R.string.add_shop_description),
+                                contentDescription = stringResource(R.string.add_product_variant_description),
                                 modifier = Modifier.size(40.dp)
                             )
                         }
@@ -159,8 +159,8 @@ fun AddItemSearchShop(
             )
         }
         Divider(color = MaterialTheme.colorScheme.outline)
-        AddItemItemShop(
-            item = Shop(stringResource(R.string.no_value)),
+        AddItemItemVariant(
+            item = ProductVariant(0, stringResource(R.string.item_product_variant_default_value)),
             onItemClick = {
                 onItemClick(null)
             }
@@ -170,17 +170,17 @@ fun AddItemSearchShop(
     }
 }
 
-@Preview(group = "AddItemSearchShop", name = "Add Item Search Shop Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddItemSearchShop", name = "Add Item Search Shop Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(group = "AddItemSearchVariant", name = "Add Item Search Variant Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(group = "AddItemSearchVariant", name = "Add Item Search Variant Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun AddItemSearchShopPreview() {
+fun AddItemSearchVariantPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AddItemSearchShop(
-                shops = flowOf(),
+            AddItemSearchVariant(
+                variants = flowOf(),
                 onItemClick = {},
                 onAddClick = {},
             )

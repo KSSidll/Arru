@@ -15,6 +15,13 @@ import androidx.room.PrimaryKey
             onUpdate = ForeignKey.RESTRICT,
         ),
         ForeignKey(
+            entity = ProductVariant::class,
+            parentColumns = ["id"],
+            childColumns = ["variantId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
+        ForeignKey(
             entity = Shop::class,
             parentColumns = ["id"],
             childColumns = ["shopId"],
@@ -26,18 +33,18 @@ import androidx.room.PrimaryKey
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val productId: Long,
+    @ColumnInfo(index = true) val variantId: Long?,
     @ColumnInfo(index = true) val shopId: Long?,
     val quantity: Long,
-    val unitMeasure: Long?,
     val price: Long,
     val date: Long,
 ) {
     constructor(
         productId: Long,
+        variantId: Long?,
         shopId: Long?,
         quantity: Long,
-        unitMeasure: Long?,
         price: Long,
         date: Long
-    ) : this (0, productId, shopId, quantity, unitMeasure, price, date)
+    ) : this (0, productId, variantId, shopId, quantity, price, date)
 }

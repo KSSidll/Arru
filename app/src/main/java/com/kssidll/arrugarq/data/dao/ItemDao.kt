@@ -33,6 +33,12 @@ interface ItemDao {
     @Query("SELECT * FROM item WHERE productId == :productId")
     fun getByProductIdFlow(productId: Long): Flow<List<Item>>
 
+    @Query("SELECT * FROM item WHERE variantId == :variantId")
+    suspend fun getByVariant(variantId: Long): List<Item>
+
+    @Query("SELECT * FROM item WHERE variantId == :variantId")
+    fun getByVariantFlow(variantId: Long): Flow<List<Item>>
+
     @Query("SELECT * FROM item WHERE shopId == :shopId")
     suspend fun getByShopId(shopId: Long): List<Item>
 

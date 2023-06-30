@@ -1,15 +1,22 @@
 package com.kssidll.arrugarq.ui.additem
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arrugarq.data.data.Item
+import com.kssidll.arrugarq.data.data.ProductVariant
 import com.kssidll.arrugarq.data.data.ProductWithAltNames
 import com.kssidll.arrugarq.data.data.Shop
 import com.kssidll.arrugarq.data.repository.IItemRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
+import com.kssidll.arrugarq.data.repository.IProductVariantRepository
 import com.kssidll.arrugarq.data.repository.IShopRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
@@ -18,18 +25,32 @@ import kotlin.jvm.optionals.getOrNull
 class AddItemViewModel @Inject constructor(
     itemRepository: IItemRepository,
     productRepository: IProductRepository,
+    variantsRepository: IProductVariantRepository,
     shopRepository: IShopRepository,
 ) : ViewModel() {
     private val itemRepository: IItemRepository
     private val productRepository: IProductRepository
+    private val variantsRepository: IProductVariantRepository
     private val shopRepository: IShopRepository
 
     var addItemState: AddItemState = AddItemState()
 
+    private var variantsJob: Job? = null
+    var variants: MutableState<Flow<List<ProductVariant>>> = mutableStateOf(flowOf())
+
     init {
         this.itemRepository = itemRepository
         this.productRepository = productRepository
+        this.variantsRepository = variantsRepository
         this.shopRepository = shopRepository
+    }
+
+    suspend fun fetch() {
+        val lastItem: Item? = itemRepository.getLast()
+
+        addItemState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
+        // TODO add date fetch after date formatting is implemented
+//        addItemState.date.value = Time(lastItem.date).toString()
     }
 
     /**
@@ -40,9 +61,9 @@ class AddItemViewModel @Inject constructor(
         itemRepository.insert(
             Item(
                 productId = itemData.productId,
+                variantId = itemData.variantId.getOrNull(),
                 shopId = itemData.shopId.getOrNull(),
                 quantity = itemData.quantity,
-                unitMeasure = itemData.unitMeasure.getOrNull(),
                 price = (itemData.price * 100).toLong(),
                 date = itemData.date,
             )
@@ -55,5 +76,13 @@ class AddItemViewModel @Inject constructor(
 
     fun getProductsWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
         return productRepository.getAllWithAltNamesFlow()
+    }
+
+    fun queryProductVariants(productId: Long) {
+        variantsJob?.cancel()
+
+        variantsJob = viewModelScope.launch {
+            variants.value = variantsRepository.getByProductFlow(productId).cancellable()
+        }
     }
 }

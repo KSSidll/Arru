@@ -4,8 +4,9 @@
 
     <string name="no_value">Brak</string>
 
-    <string name="add_item_description">Dodaj nowy Przedmiot</string>
-    <string name="add_product_description">Dodaj nowy Produkt</string>
+    <string name="add_item_description">Dodaj nowy przedmiot</string>
+    <string name="add_product_description">Dodaj nowy produkt</string>
+    <string name="add_product_variant_description">Dodaj nową wariację produktu</string>
     <string name="add_shop_description">Dodaj nowy Sklep</string>
     <string name="add_product_category_description">Dodaj nową kategorię produktów</string>
     <string name="add_product_producer_description">Dodaj nowego producenta produktów</string>
@@ -24,6 +25,11 @@
 
     <string name="item_product">Produkt</string>
     <string name="item_product_add">Dodaj Produkt</string>
+
+    <string name="item_full_product_variant">Wariant Produktu</string>
+    <string name="item_product_variant">Wariant</string>
+    <string name="item_product_variant_add">Dodaj Wariant</string>
+    <string name="item_product_variant_default_value">Kilogramy</string>
 
     <string name="item_full_product_producer">Producent Produktów</string>
     <string name="item_product_producer">Producent</string>
