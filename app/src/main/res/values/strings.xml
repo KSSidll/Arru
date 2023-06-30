@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Arrugarq</string>
+    <string name="app_name" translatable="false">Arrugarq</string>
 
     <string name="search">Search</string>
 
