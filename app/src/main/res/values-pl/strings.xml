@@ -2,6 +2,8 @@
 <resources>
     <string name="search">Szukaj</string>
 
+    <string name="no_value">Brak</string>
+
     <string name="add_item_description">Dodaj nowy Przedmiot</string>
     <string name="add_product_description">Dodaj nowy Produkt</string>
     <string name="add_shop_description">Dodaj nowy Sklep</string>

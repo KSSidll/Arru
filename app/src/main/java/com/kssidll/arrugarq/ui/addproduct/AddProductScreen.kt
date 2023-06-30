@@ -113,7 +113,7 @@ fun AddProductScreen(
             if (isProducerSearchExpanded) {
                 AddProductSearchProducer(
                     producers = producers,
-                    onItemClick = { producer: ProductProducer ->
+                    onItemClick = { producer ->
                         state.selectedProductProducer.value = producer
                         isProducerSearchExpanded = false
                     },
@@ -122,7 +122,7 @@ fun AddProductScreen(
             } else if (isCategorySearchExpanded) {
                 AddProductSearchCategory(
                     categoriesWithAltNames = categoriesWithAltNames,
-                    onItemClick = { category: ProductCategory ->
+                    onItemClick = { category ->
                         state.selectedProductCategory.value = category
                         isCategorySearchExpanded = false
                     },

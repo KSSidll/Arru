@@ -54,7 +54,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 @Composable
 fun AddProductSearchProducer(
     producers: Flow<List<ProductProducer>>,
-    onItemClick: (ProductProducer) -> Unit,
+    onItemClick: (ProductProducer?) -> Unit,
     onAddClick: () -> Unit,
 ) {
     val collectedProducers = producers.collectAsState(initial = emptyList()).value
@@ -158,6 +158,13 @@ fun AddProductSearchProducer(
                 }
             )
         }
+        Divider(color = MaterialTheme.colorScheme.outline)
+        AddProductItemProducer(
+            item = ProductProducer(stringResource(R.string.no_value)),
+            onItemClick = {
+                onItemClick(null)
+            }
+        )
         Divider(color = MaterialTheme.colorScheme.outline)
     }
 }

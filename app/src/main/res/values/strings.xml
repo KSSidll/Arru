@@ -3,6 +3,8 @@
 
     <string name="search">Search</string>
 
+    <string name="no_value">None</string>
+
     <string name="add_item_description">Add new Item</string>
     <string name="add_product_description">Add new Product</string>
     <string name="add_shop_description">Add new Shop</string>

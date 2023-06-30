@@ -54,7 +54,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 @Composable
 fun AddItemSearchShop(
     shops: Flow<List<Shop>>,
-    onItemClick: (Shop) -> Unit,
+    onItemClick: (Shop?) -> Unit,
     onAddClick: () -> Unit,
 ) {
     val collectedShops = shops.collectAsState(initial = emptyList()).value
@@ -159,6 +159,14 @@ fun AddItemSearchShop(
             )
         }
         Divider(color = MaterialTheme.colorScheme.outline)
+        AddItemItemShop(
+            item = Shop(stringResource(R.string.no_value)),
+            onItemClick = {
+                onItemClick(null)
+            }
+        )
+        Divider(color = MaterialTheme.colorScheme.outline)
+
     }
 }
 
