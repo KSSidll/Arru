@@ -13,7 +13,7 @@ class ShopRepository(private val shopDao: ShopDao) : IShopRepository {
         return shopDao.getAllFlow()
     }
 
-    override suspend fun get(id: Long): Shop {
+    override suspend fun get(id: Long): Shop? {
         return shopDao.get(id)
     }
 
@@ -21,7 +21,7 @@ class ShopRepository(private val shopDao: ShopDao) : IShopRepository {
         return shopDao.getFlow(id)
     }
 
-    override suspend fun getByName(name: String): Shop {
+    override suspend fun getByName(name: String): Shop? {
         return shopDao.getByName(name)
     }
 

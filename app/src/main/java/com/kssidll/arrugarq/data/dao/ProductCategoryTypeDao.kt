@@ -17,13 +17,13 @@ interface ProductCategoryTypeDao {
     fun getAllFlow(): Flow<List<ProductCategoryType>>
 
     @Query("SELECT * FROM productcategorytype WHERE id == :id")
-    suspend fun get(id: Long): ProductCategoryType
+    suspend fun get(id: Long): ProductCategoryType?
 
     @Query("SELECT * FROM productcategorytype WHERE id == :id")
     fun getFlow(id: Long): Flow<ProductCategoryType>
 
     @Query("SELECT * FROM productcategorytype WHERE name == :name")
-    suspend fun getByName(name: String): ProductCategoryType
+    suspend fun getByName(name: String): ProductCategoryType?
 
     @Query("SELECT * FROM productcategorytype WHERE name == :name")
     fun getByNameFlow(name: String): Flow<ProductCategoryType>

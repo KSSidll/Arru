@@ -13,7 +13,7 @@ class ProductCategoryTypeRepository(private val productCategoryTypeDao: ProductC
         return productCategoryTypeDao.getAllFlow()
     }
 
-    override suspend fun get(id: Long): ProductCategoryType {
+    override suspend fun get(id: Long): ProductCategoryType? {
         return productCategoryTypeDao.get(id)
     }
 
@@ -21,7 +21,7 @@ class ProductCategoryTypeRepository(private val productCategoryTypeDao: ProductC
         return productCategoryTypeDao.getFlow(id)
     }
 
-    override suspend fun getByName(name: String): ProductCategoryType {
+    override suspend fun getByName(name: String): ProductCategoryType? {
         return productCategoryTypeDao.getByName(name)
     }
 

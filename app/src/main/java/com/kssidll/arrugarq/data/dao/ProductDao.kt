@@ -20,7 +20,7 @@ interface ProductDao {
     fun getAllFlow(): Flow<List<Product>>
 
     @Query("SELECT * FROM product WHERE id == :id")
-    suspend fun get(id: Long): Product
+    suspend fun get(id: Long): Product?
 
     @Query("SELECT * FROM product WHERE id == :id")
     fun getFlow(id: Long): Flow<Product>
@@ -38,7 +38,7 @@ interface ProductDao {
     fun getByProducerIdFlow(producerId: Long): Flow<List<Product>>
 
     @Query("SELECT * FROM product WHERE name == :name")
-    suspend fun getByName(name: String): Product
+    suspend fun getByName(name: String): Product?
 
     @Query("SELECT * FROM product WHERE name == :name")
     fun getByNameFlow(name: String): Flow<Product>

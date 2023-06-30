@@ -17,13 +17,13 @@ interface ProductProducerDao {
     fun getAllFlow(): Flow<List<ProductProducer>>
 
     @Query("SELECT * FROM productproducer WHERE id == :id")
-    suspend fun get(id: Long): ProductProducer
+    suspend fun get(id: Long): ProductProducer?
 
     @Query("SELECT * FROM productproducer WHERE id == :id")
     fun getFlow(id: Long): Flow<ProductProducer>
 
     @Query("SELECT * FROM productproducer WHERE name == :name")
-    suspend fun getByName(name: String): ProductProducer
+    suspend fun getByName(name: String): ProductProducer?
 
     @Query("SELECT * FROM productproducer WHERE name == :name")
     fun getByNameFlow(name: String): Flow<ProductProducer>

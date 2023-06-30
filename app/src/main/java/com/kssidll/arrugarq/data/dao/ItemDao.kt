@@ -16,13 +16,13 @@ interface ItemDao {
     fun getAllFlow(): Flow<List<Item>>
 
     @Query("SELECT * FROM item WHERE id == :id")
-    suspend fun get(id: Long): Item
+    suspend fun get(id: Long): Item?
 
     @Query("SELECT * FROM item WHERE id == :id")
     fun getFlow(id: Long): Flow<Item>
 
     @Query("SELECT * FROM item ORDER BY id DESC LIMIT 1")
-    suspend fun getLast(): Item
+    suspend fun getLast(): Item?
 
     @Query("SELECT * FROM item ORDER BY id DESC LIMIT 1")
     fun getLastFlow(): Flow<Item>

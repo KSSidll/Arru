@@ -13,7 +13,7 @@ class ProductProducerRepository(private val productProducerDao: ProductProducerD
         return productProducerDao.getAllFlow()
     }
 
-    override suspend fun get(id: Long): ProductProducer {
+    override suspend fun get(id: Long): ProductProducer? {
         return productProducerDao.get(id)
     }
 
@@ -21,7 +21,7 @@ class ProductProducerRepository(private val productProducerDao: ProductProducerD
         return productProducerDao.getFlow(id)
     }
 
-    override suspend fun getByName(name: String): ProductProducer {
+    override suspend fun getByName(name: String): ProductProducer? {
         return productProducerDao.getByName(name)
     }
 

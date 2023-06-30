@@ -17,13 +17,13 @@ interface ShopDao {
     fun getAllFlow(): Flow<List<Shop>>
 
     @Query("SELECT * FROM shop WHERE id == :id")
-    suspend fun get(id: Long): Shop
+    suspend fun get(id: Long): Shop?
 
     @Query("SELECT * FROM shop WHERE id == :id")
     fun getFlow(id: Long): Flow<Shop>
 
     @Query("SELECT * FROM shop WHERE name == :name")
-    suspend fun getByName(name: String): Shop
+    suspend fun getByName(name: String): Shop?
 
     @Query("SELECT * FROM shop WHERE name == :name")
     fun getByNameFlow(name: String): Flow<Shop>

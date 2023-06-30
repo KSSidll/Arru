@@ -13,7 +13,7 @@ class ItemRepository(private val itemDao: ItemDao) : IItemRepository {
         return itemDao.getAllFlow()
     }
 
-    override suspend fun get(id: Long): Item {
+    override suspend fun get(id: Long): Item? {
         return itemDao.get(id)
     }
 
@@ -21,7 +21,7 @@ class ItemRepository(private val itemDao: ItemDao) : IItemRepository {
         return itemDao.getFlow(id)
     }
 
-    override suspend fun getLast(): Item {
+    override suspend fun getLast(): Item? {
         return itemDao.getLast()
     }
 
