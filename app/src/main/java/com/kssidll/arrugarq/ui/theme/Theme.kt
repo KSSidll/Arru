@@ -80,7 +80,8 @@ fun ArrugarqTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        darkTheme -> DarkColorScheme
+        darkTheme || android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q
+        -> DarkColorScheme
         else -> LightColorScheme
     }
     val view = LocalView.current
