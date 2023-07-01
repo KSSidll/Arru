@@ -161,7 +161,9 @@ fun AddItemScreen(
                         Button(
                             onClick = {
                                 isDatePickerDialogExpanded = false
-                                state.date.value = datePickerState.selectedDateMillis
+                                if (datePickerState.selectedDateMillis != null) {
+                                    state.date.value = datePickerState.selectedDateMillis
+                                }
                             }
                         ) {
                             Row (
