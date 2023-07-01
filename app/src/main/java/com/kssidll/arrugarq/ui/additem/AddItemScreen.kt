@@ -88,7 +88,7 @@ fun AddItemScreen(
     state: AddItemState,
     onSelectProduct: (Product) -> Unit = {},
 ) {
-    val disabledAlpha = 0.20f
+    val disabledMajorAlphaBonus = 0.50f
     val optionalBorderAlpha = 0.40f
 
     Column {
@@ -298,9 +298,8 @@ fun AddItemScreen(
                         val isPriceEnabled = state.selectedProduct.value != null
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .alpha(if (isPriceEnabled) 1f else disabledAlpha),
-                            horizontalArrangement = Arrangement.Center
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
                         ) {
                             OutlinedTextField(
                                 modifier = Modifier.fillMaxWidth(0.85f),
@@ -338,8 +337,7 @@ fun AddItemScreen(
                         val isQuantityEnabled = state.selectedProduct.value != null
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .alpha(if (isQuantityEnabled) 1f else disabledAlpha),
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
@@ -527,7 +525,7 @@ fun AddItemScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(60.dp)
-                                .alpha(if (isVariantEnabled) 1f else disabledAlpha),
+                                .alpha(if (isVariantEnabled) 1f else disabledMajorAlphaBonus),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
@@ -546,7 +544,9 @@ fun AddItemScreen(
                                     }
                                     .fillMaxSize(),
                                 textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(
+                                        alpha = if (isVariantEnabled) 1f else disabledMajorAlphaBonus
+                                    ),
                                     fontSize = 16.sp
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
