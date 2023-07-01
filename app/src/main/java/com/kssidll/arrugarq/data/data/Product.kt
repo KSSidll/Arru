@@ -27,7 +27,7 @@ import androidx.room.Relation
     ],
     indices = [
         Index(
-            value = ["name"],
+            value = ["producerId", "name"],
             unique = true
         )
     ]
