@@ -13,5 +13,6 @@ data class AddItemState(
 
     var quantity: MutableState<String> = mutableStateOf(String()),
     var price: MutableState<String> = mutableStateOf(String()),
-    var date: MutableState<String> = mutableStateOf(String()),
+
+    var date: MutableState<Long?> = mutableStateOf(null),
 )

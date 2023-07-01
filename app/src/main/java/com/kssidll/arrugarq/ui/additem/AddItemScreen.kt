@@ -4,7 +4,11 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,13 +31,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,8 +70,11 @@ import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.Optional
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemScreen(
     onBack: () -> Unit,
@@ -79,6 +92,7 @@ fun AddItemScreen(
     val optionalBorderAlpha = 0.40f
 
     Column {
+        val datePickerState = rememberDatePickerState()
 
         var isProductSearchExpanded: Boolean by rememberSaveable {
             mutableStateOf(false)
@@ -87,6 +101,9 @@ fun AddItemScreen(
             mutableStateOf(false)
         }
         var isVariantSearchExpanded: Boolean by rememberSaveable {
+            mutableStateOf(false)
+        }
+        var isDatePickerDialogExpanded: Boolean by remember {
             mutableStateOf(false)
         }
 
@@ -133,6 +150,42 @@ fun AddItemScreen(
         Box (
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
+
+            if (isDatePickerDialogExpanded) {
+
+                DatePickerDialog(
+                    onDismissRequest = {
+                        isDatePickerDialogExpanded = false
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                isDatePickerDialogExpanded = false
+                                state.date.value = datePickerState.selectedDateMillis
+                            }
+                        ) {
+                            Row (
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxSize()
+                            ){
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(24.dp),
+                                    tint = Color.Green.copy(alpha = 0.60f)
+                                )
+                            }
+                        }
+
+                    }
+                ) {
+                    DatePicker(
+                        state = datePickerState
+                    )
+                }
+            }
+
             if (isProductSearchExpanded) {
                 AddItemSearchProduct(
                     productsWithAltNames = productsWithAltNames,
@@ -171,38 +224,73 @@ fun AddItemScreen(
                         verticalArrangement = Arrangement.Bottom,
                     ) {
 
+                        val datePickerToggleInteractionSource = remember { MutableInteractionSource() }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            OutlinedTextField(
-                                singleLine = true,
-                                value = state.date.value,
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number
-                                ),
-                                onValueChange = {
-                                    state.date.value = it
-                                },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    cursorColor = MaterialTheme.colorScheme.outline,
-                                    focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                ),
-                                textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp
-                                ),
-                                suffix = {
-                                    Text(
-                                        text = stringResource(R.string.item_date),
-                                        fontSize = 16.sp,
-                                        modifier = Modifier
-                                            .alpha(0.5F)
+                            Box(
+                                modifier = Modifier
+                                    .defaultMinSize(
+                                        minWidth = OutlinedTextFieldDefaults.MinWidth,
+                                        minHeight = OutlinedTextFieldDefaults.MinHeight
                                     )
-                                },
-                                isError = dateError
-                            )
+                                    .height(OutlinedTextFieldDefaults.MinHeight)
+                                    .fillMaxWidth(0.85f)
+                                    .border(
+                                        shape = OutlinedTextFieldDefaults.shape,
+                                        color = if (dateError)
+                                            OutlinedTextFieldDefaults.colors().errorIndicatorColor
+                                        else OutlinedTextFieldDefaults.colors().unfocusedIndicatorColor,
+                                        width = OutlinedTextFieldDefaults.UnfocusedBorderThickness
+                                    )
+                                    .clickable(
+                                        interactionSource = datePickerToggleInteractionSource,
+                                        indication = null
+                                    ) {
+                                        isDatePickerDialogExpanded = true
+                                    },
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(OutlinedTextFieldDefaults.contentPadding())
+                                        .fillMaxSize(),
+                                ) {
+                                    Row (
+                                        modifier = Modifier.fillMaxSize(),
+                                    ) {
+                                        Box(modifier = Modifier
+                                            .fillMaxHeight()
+                                            .weight(1f)
+                                            .scrollable(
+                                                state = rememberScrollState(),
+                                                orientation = Orientation.Horizontal,
+                                                interactionSource = datePickerToggleInteractionSource
+                                            ),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            val date = state.date.value
+                                            Text(
+                                                text = if (date != null)
+                                                    SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                                                else String(),
+                                                style = TextStyle.Default.copy(
+                                                    color = MaterialTheme.colorScheme.onBackground,
+                                                    fontSize = 16.sp
+                                                ),
+                                                maxLines = 1,
+                                            )
+                                        }
 
+                                        Text(
+                                            text = stringResource(R.string.item_date),
+                                            fontSize = 16.sp,
+                                            modifier = Modifier
+                                                .alpha(0.5F)
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -215,6 +303,7 @@ fun AddItemScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth(0.85f),
                                 singleLine = true,
                                 enabled = isPriceEnabled,
                                 value = state.price.value,
@@ -254,6 +343,7 @@ fun AddItemScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth(0.85f),
                                 singleLine = true,
                                 enabled = isQuantityEnabled,
                                 value = state.quantity.value,
@@ -521,7 +611,7 @@ fun AddItemScreen(
 
                                 val quantity: Long? = state.quantity.value.toLongOrNull()
                                 val price: Float? = state.price.value.toFloatOrNull()
-                                val date: Long? = state.date.value.toLongOrNull()
+                                val date: Long? = state.date.value
 
                                 productError = product == null
                                 quantityError = quantity == null

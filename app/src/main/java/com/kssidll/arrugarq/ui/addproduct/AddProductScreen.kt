@@ -143,6 +143,7 @@ fun AddProductScreen(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(0.85f),
                                     singleLine = true,
                                     value = state.name.value,
                                     onValueChange = {

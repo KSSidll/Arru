@@ -49,8 +49,7 @@ class AddItemViewModel @Inject constructor(
         val lastItem: Item? = itemRepository.getLast()
 
         addItemState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
-        // TODO add date fetch after date formatting is implemented
-//        addItemState.date.value = Time(lastItem.date).toString()
+        addItemState.date.value = lastItem?.date
     }
 
     /**
