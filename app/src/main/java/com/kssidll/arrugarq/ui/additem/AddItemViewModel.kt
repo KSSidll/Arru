@@ -48,8 +48,13 @@ class AddItemViewModel @Inject constructor(
     suspend fun fetch() {
         val lastItem: Item? = itemRepository.getLast()
 
-        addItemState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
-        addItemState.date.value = lastItem?.date
+        if (addItemState.selectedShop.value == null) {
+            addItemState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
+        }
+
+        if (addItemState.date.value == null) {
+            addItemState.date.value = lastItem?.date
+        }
     }
 
     /**
@@ -84,4 +89,17 @@ class AddItemViewModel @Inject constructor(
             variants.value = variantsRepository.getByProductFlow(productId).cancellable()
         }
     }
+
+    suspend fun fillStateWithSelectedProductLatestData() {
+        val lastItemByProduct = itemRepository.getLastByProductId(addItemState.selectedProduct.value!!.id)
+
+        if (lastItemByProduct == null) return
+
+        addItemState.selectedVariant.value = lastItemByProduct.variantId?.let {
+            variantsRepository.get(it)
+        }
+
+        addItemState.price.value = String.format("%.2f", lastItemByProduct.price / 100f)
+    }
+
 }

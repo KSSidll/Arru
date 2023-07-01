@@ -33,6 +33,12 @@ interface ItemDao {
     @Query("SELECT * FROM item WHERE productId == :productId")
     fun getByProductIdFlow(productId: Long): Flow<List<Item>>
 
+    @Query("SELECT * FROM item WHERE productId == :productId ORDER BY id DESC LIMIT 1")
+    suspend fun getLastByProductId(productId: Long): Item?
+
+    @Query("SELECT * FROM item WHERE productId == :productId ORDER BY id DESC LIMIT 1")
+    fun getLastByProductIdFlow(productId: Long): Flow<Item?>
+
     @Query("SELECT * FROM item WHERE variantId == :variantId")
     suspend fun getByVariant(variantId: Long): List<Item>
 

@@ -5,9 +5,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kssidll.arrugarq.ui.shared.Loading
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddItemRoute(
@@ -16,6 +18,8 @@ fun AddItemRoute(
     onVariantAdd: (Long) -> Unit,
     onShopAdd: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     val addItemViewModel: AddItemViewModel = hiltViewModel()
 
     var isLoading: Boolean by remember {
@@ -45,6 +49,11 @@ fun AddItemRoute(
             state = addItemViewModel.addItemState,
             onSelectProduct = {
                 addItemViewModel.queryProductVariants(it.id)
+                scope.launch {
+                    isLoading = true
+                    addItemViewModel.fillStateWithSelectedProductLatestData()
+                    isLoading = false
+                }
             },
         )
     }
