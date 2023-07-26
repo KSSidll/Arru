@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
 import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
 
@@ -71,7 +73,7 @@ fun AddShopScreen(
         }
 
         SecondaryAppBar(onBack = onBack) {
-            Text(text = "Shop")
+            Text(text = stringResource(R.string.item_shop))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -130,7 +132,7 @@ fun AddShopScreen(
                         ),
                         suffix = {
                             Text(
-                                text = "Shop Name",
+                                text = stringResource(R.string.item_shop),
                                 fontSize = 16.sp,
                                 modifier = Modifier
                                     .alpha(0.5F)
@@ -169,12 +171,12 @@ fun AddShopScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = "Add Shop",
+                                contentDescription = stringResource(R.string.add_shop_description),
                                 modifier = Modifier.size(30.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Add Shop",
+                                text = stringResource(R.string.item_shop_add),
                                 fontSize = 20.sp
                             )
                         }

@@ -9,15 +9,6 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = ProductCategoryType::class,
-            parentColumns = ["id"],
-            childColumns = ["typeId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        )
-    ],
     indices = [
         Index(
             value = ["name"],
@@ -27,13 +18,11 @@ import androidx.room.Relation
 )
 data class ProductCategory(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val typeId: Long,
     val name: String,
 ) {
     constructor(
-        typeId: Long,
         name: String,
-    ) : this(0, typeId, name)
+    ) : this(0, name)
 }
 
 @Entity(

@@ -10,7 +10,6 @@
     <string name="add_shop_description">Dodaj nowy Sklep</string>
     <string name="add_product_category_description">Dodaj nową kategorię produktów</string>
     <string name="add_product_producer_description">Dodaj nowego producenta produktów</string>
-    <string name="add_product_category_type_description">Dodaj nowy typ kategorii produktów</string>
 
     <string name="item">Przedmiot</string>
     <string name="item_add">Dodaj Przedmiot</string>
@@ -38,8 +37,4 @@
     <string name="item_full_product_category">Kategoria Produktów</string>
     <string name="item_product_category">Kategoria</string>
     <string name="item_product_category_add">Dodaj Kategorię</string>
-
-    <string name="item_full_product_category_type">Typ Kategorii Produktów</string>
-    <string name="item_product_category_type">Typ</string>
-    <string name="item_product_category_type_add">Dodaj Typ</string>
 </resources>

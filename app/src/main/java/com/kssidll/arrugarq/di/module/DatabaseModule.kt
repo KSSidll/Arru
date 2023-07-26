@@ -6,7 +6,6 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arrugarq.data.dao.ItemDao
 import com.kssidll.arrugarq.data.dao.ProductCategoryDao
-import com.kssidll.arrugarq.data.dao.ProductCategoryTypeDao
 import com.kssidll.arrugarq.data.dao.ProductDao
 import com.kssidll.arrugarq.data.dao.ProductProducerDao
 import com.kssidll.arrugarq.data.dao.ProductVariantDao
@@ -14,14 +13,12 @@ import com.kssidll.arrugarq.data.dao.ShopDao
 import com.kssidll.arrugarq.data.database.AppDatabase
 import com.kssidll.arrugarq.data.repository.IItemRepository
 import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
-import com.kssidll.arrugarq.data.repository.IProductCategoryTypeRepository
 import com.kssidll.arrugarq.data.repository.IProductProducerRepository
 import com.kssidll.arrugarq.data.repository.IProductRepository
 import com.kssidll.arrugarq.data.repository.IProductVariantRepository
 import com.kssidll.arrugarq.data.repository.IShopRepository
 import com.kssidll.arrugarq.data.repository.ItemRepository
 import com.kssidll.arrugarq.data.repository.ProductCategoryRepository
-import com.kssidll.arrugarq.data.repository.ProductCategoryTypeRepository
 import com.kssidll.arrugarq.data.repository.ProductProducerRepository
 import com.kssidll.arrugarq.data.repository.ProductRepository
 import com.kssidll.arrugarq.data.repository.ProductVariantRepository
@@ -51,12 +48,8 @@ class DatabaseModule {
                 // we do that with a function but it is preffered and recommended
                 // to prepopulate via prepackaged database file
                 // TODO change this to prepackaged database file
-                for (data in prepopulateProductCategoryTypeData()) {
-                    db.execSQL("INSERT INTO productcategorytype (id, name) VALUES('${data.id}', '${data.name}');")
-                }
-
                 for (data in prepopulateProductCategoryData()) {
-                    db.execSQL("INSERT INTO productcategory (typeId, name) VALUES('${data.typeId}', '${data.name}');")
+                    db.execSQL("INSERT INTO productcategory (name) VALUES('${data.name}');")
                 }
             }
         }).build()
@@ -101,17 +94,6 @@ class DatabaseModule {
     @Provides
     fun provideProductCategoryRepository(productCategoryDao: ProductCategoryDao): IProductCategoryRepository {
         return ProductCategoryRepository(productCategoryDao)
-    }
-
-
-    @Provides
-    fun provideProductCategoryTypeDao(appDatabase: AppDatabase): ProductCategoryTypeDao {
-        return appDatabase.getProductCategoryTypeDao()
-    }
-
-    @Provides
-    fun provideProductCategoryTypeRepository(productCategoryTypeDao: ProductCategoryTypeDao): IProductCategoryTypeRepository {
-        return ProductCategoryTypeRepository(productCategoryTypeDao)
     }
 
     @Provides

@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ArrugarqTheme {
-                Surface(
+                Surface (
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {

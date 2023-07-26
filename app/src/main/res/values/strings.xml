@@ -7,11 +7,10 @@
 
     <string name="add_item_description">Add new Item</string>
     <string name="add_product_description">Add new Product</string>
-    <string name="add_product_variant_description">Add New Product Variant</string>
+    <string name="add_product_variant_description">Add new Product Variant</string>
     <string name="add_shop_description">Add new Shop</string>
     <string name="add_product_category_description">Add new Product Category</string>
     <string name="add_product_producer_description">Add new Product Producer</string>
-    <string name="add_product_category_type_description">Add new Product Category Type</string>
 
     <string name="item">Item</string>
     <string name="item_add">Add Item</string>
@@ -39,9 +38,4 @@
     <string name="item_full_product_category">Product Category</string>
     <string name="item_product_category">Category</string>
     <string name="item_product_category_add">Add Category</string>
-
-    <string name="item_full_product_category_type">Product Category Type</string>
-    <string name="item_product_category_type">Type</string>
-    <string name="item_product_category_type_add">Add Type</string>
-
 </resources>
