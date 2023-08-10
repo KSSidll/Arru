@@ -1,10 +1,10 @@
 package com.kssidll.arrugarq.data.repository
 
-import com.kssidll.arrugarq.data.dao.ItemDao
-import com.kssidll.arrugarq.data.data.Item
-import kotlinx.coroutines.flow.Flow
+import com.kssidll.arrugarq.data.dao.*
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
-class ItemRepository(private val itemDao: ItemDao) : IItemRepository {
+class ItemRepository(private val itemDao: ItemDao): IItemRepository {
     override suspend fun getAll(): List<Item> {
         return itemDao.getAll()
     }
@@ -81,14 +81,20 @@ class ItemRepository(private val itemDao: ItemDao) : IItemRepository {
         lowerBoundDate: Long,
         higherBoundDate: Long
     ): List<Item> {
-        return itemDao.getBetweenDates(lowerBoundDate, higherBoundDate)
+        return itemDao.getBetweenDates(
+            lowerBoundDate,
+            higherBoundDate
+        )
     }
 
     override fun getBetweenDatesFlow(
         lowerBoundDate: Long,
         higherBoundDate: Long
     ): Flow<List<Item>> {
-        return itemDao.getBetweenDatesFlow(lowerBoundDate, higherBoundDate)
+        return itemDao.getBetweenDatesFlow(
+            lowerBoundDate,
+            higherBoundDate
+        )
     }
 
     override suspend fun insert(item: Item): Long {

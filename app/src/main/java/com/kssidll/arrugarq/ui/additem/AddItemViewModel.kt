@@ -1,25 +1,14 @@
 package com.kssidll.arrugarq.ui.additem
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.kssidll.arrugarq.data.data.Item
-import com.kssidll.arrugarq.data.data.ProductVariant
-import com.kssidll.arrugarq.data.data.ProductWithAltNames
-import com.kssidll.arrugarq.data.data.Shop
-import com.kssidll.arrugarq.data.repository.IItemRepository
-import com.kssidll.arrugarq.data.repository.IProductRepository
-import com.kssidll.arrugarq.data.repository.IProductVariantRepository
-import com.kssidll.arrugarq.data.repository.IShopRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.jvm.optionals.getOrNull
+import androidx.compose.runtime.*
+import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.*
+import dagger.hilt.android.lifecycle.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import javax.inject.*
+import kotlin.jvm.optionals.*
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
@@ -27,7 +16,7 @@ class AddItemViewModel @Inject constructor(
     productRepository: IProductRepository,
     variantsRepository: IProductVariantRepository,
     shopRepository: IShopRepository,
-) : ViewModel() {
+): ViewModel() {
     private val itemRepository: IItemRepository
     private val productRepository: IProductRepository
     private val variantsRepository: IProductVariantRepository
@@ -86,12 +75,14 @@ class AddItemViewModel @Inject constructor(
         variantsJob?.cancel()
 
         variantsJob = viewModelScope.launch {
-            variants.value = variantsRepository.getByProductFlow(productId).cancellable()
+            variants.value = variantsRepository.getByProductFlow(productId)
+                .cancellable()
         }
     }
 
     suspend fun fillStateWithSelectedProductLatestData() {
-        val lastItemByProduct = itemRepository.getLastByProductId(addItemState.selectedProduct.value!!.id)
+        val lastItemByProduct =
+            itemRepository.getLastByProductId(addItemState.selectedProduct.value!!.id)
 
         if (lastItemByProduct == null) return
 
@@ -99,7 +90,10 @@ class AddItemViewModel @Inject constructor(
             variantsRepository.get(it)
         }
 
-        addItemState.price.value = String.format("%.2f", lastItemByProduct.price / 100f)
+        addItemState.price.value = String.format(
+            "%.2f",
+            lastItemByProduct.price / 100f
+        )
     }
 
 }

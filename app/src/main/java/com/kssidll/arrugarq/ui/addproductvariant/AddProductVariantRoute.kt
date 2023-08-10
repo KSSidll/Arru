@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.addproductvariant
 
-import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.*
 
 @Composable
 fun AddProductVariantRoute(

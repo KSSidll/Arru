@@ -1,9 +1,6 @@
 package com.kssidll.arrugarq.data.data
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     foreignKeys = [
@@ -24,5 +21,9 @@ data class ProductVariant(
     constructor(
         productId: Long,
         name: String,
-    ) : this (0, productId, name)
+    ): this(
+        0,
+        productId,
+        name
+    )
 }

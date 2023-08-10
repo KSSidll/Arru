@@ -1,11 +1,8 @@
 package com.kssidll.arrugarq.data.dao
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
-import com.kssidll.arrugarq.data.data.Item
-import kotlinx.coroutines.flow.Flow
+
+import androidx.room.*
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
 @Dao
 interface ItemDao {
@@ -64,10 +61,16 @@ interface ItemDao {
     fun getOlderThanFlow(date: Long): Flow<List<Item>>
 
     @Query("SELECT * FROM item WHERE date > :lowerBoundDate AND date < :higherBoundDate")
-    suspend fun getBetweenDates(lowerBoundDate: Long, higherBoundDate: Long): List<Item>
+    suspend fun getBetweenDates(
+        lowerBoundDate: Long,
+        higherBoundDate: Long
+    ): List<Item>
 
     @Query("SELECT * FROM item WHERE date > :lowerBoundDate AND date < :higherBoundDate")
-    fun getBetweenDatesFlow(lowerBoundDate: Long, higherBoundDate: Long): Flow<List<Item>>
+    fun getBetweenDatesFlow(
+        lowerBoundDate: Long,
+        higherBoundDate: Long
+    ): Flow<List<Item>>
 
     @Insert
     suspend fun insert(item: Item): Long
@@ -76,5 +79,5 @@ interface ItemDao {
     suspend fun update(item: Item)
 
     @Delete
-    suspend fun delete (item: Item)
+    suspend fun delete(item: Item)
 }

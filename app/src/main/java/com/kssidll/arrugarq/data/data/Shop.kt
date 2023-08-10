@@ -1,8 +1,6 @@
 package com.kssidll.arrugarq.data.data
 
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     indices = [
@@ -18,5 +16,8 @@ data class Shop(
 ) {
     constructor(
         name: String
-    ) : this (0, name)
+    ): this(
+        0,
+        name
+    )
 }

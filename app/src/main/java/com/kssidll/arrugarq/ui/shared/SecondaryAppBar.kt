@@ -1,22 +1,16 @@
 package com.kssidll.arrugarq.ui.shared
 
-import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
+import android.content.res.*
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
 fun SecondaryAppBar(
@@ -50,8 +44,18 @@ fun SecondaryAppBar(
     }
 }
 
-@Preview(group = "SecondaryAppBar", name = "Secondary App Bar Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(group = "SecondaryAppBar", name = "Secondary App Bar Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    group = "SecondaryAppBar",
+    name = "Secondary App Bar Light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Preview(
+    group = "SecondaryAppBar",
+    name = "Secondary App Bar Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
 fun SecondaryAppBarPreview() {
     ArrugarqTheme {
@@ -60,7 +64,7 @@ fun SecondaryAppBarPreview() {
         ) {
             SecondaryAppBar(
                 onBack = {}
-            ){}
+            ) {}
         }
     }
 }

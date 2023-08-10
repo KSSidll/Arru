@@ -1,57 +1,30 @@
 package com.kssidll.arrugarq.ui.addproductcategory
 
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import android.content.res.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.*
+import androidx.compose.ui.*
+import androidx.compose.ui.draw.*
+import androidx.compose.ui.focus.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.res.*
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.input.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
-import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
+import com.kssidll.arrugarq.ui.shared.*
+import com.kssidll.arrugarq.ui.theme.*
 
 
 @Composable
-fun AddProductCategoryScreen (
+fun AddProductCategoryScreen(
     onBack: () -> Unit,
     onCategoryAdd: (AddProductCategoryData) -> Unit,
 ) {
@@ -79,7 +52,7 @@ fun AddProductCategoryScreen (
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Box (
+        Box(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
             Column {
@@ -91,11 +64,11 @@ fun AddProductCategoryScreen (
                     mutableStateOf(false)
                 }
 
-                Row (
+                Row(
                     modifier = Modifier.fillMaxHeight(0.6f),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom
-                ){
+                ) {
 
                     OutlinedTextField(
                         singleLine = true,
@@ -142,7 +115,7 @@ fun AddProductCategoryScreen (
                         isError = nameError
                     )
                 }
-                Row (
+                Row(
                     modifier = Modifier.fillMaxHeight(0.4f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,

@@ -1,3 +1,4 @@
 <resources>
+
     <style name="Theme.Arrugarq" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

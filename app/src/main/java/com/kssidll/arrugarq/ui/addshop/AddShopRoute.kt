@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.addshop
 
-import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.*
 
 @Composable
 fun AddShopRoute(
@@ -9,7 +9,7 @@ fun AddShopRoute(
 ) {
     val addShopViewModel: AddShopViewModel = hiltViewModel()
 
-    AddShopScreen (
+    AddShopScreen(
         onBack = onBack,
         onShopAdd = {
             addShopViewModel.addShop(it)

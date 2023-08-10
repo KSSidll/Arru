@@ -17,7 +17,7 @@ import com.kssidll.arrugarq.data.data.*
     ],
     version = 1,
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class AppDatabase: RoomDatabase() {
     abstract fun getItemDao(): ItemDao
     abstract fun getProductDao(): ProductDao
     abstract fun getProductVariantDao(): ProductVariantDao

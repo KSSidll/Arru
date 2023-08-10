@@ -1,12 +1,10 @@
 package com.kssidll.arrugarq.data.repository
 
-import com.kssidll.arrugarq.data.dao.ProductCategoryDao
-import com.kssidll.arrugarq.data.data.ProductCategory
-import com.kssidll.arrugarq.data.data.ProductCategoryAltName
-import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
-import kotlinx.coroutines.flow.Flow
+import com.kssidll.arrugarq.data.dao.*
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
-class ProductCategoryRepository(private val productCategoryDao: ProductCategoryDao) : IProductCategoryRepository {
+class ProductCategoryRepository(private val productCategoryDao: ProductCategoryDao): IProductCategoryRepository {
     override suspend fun getAll(): List<ProductCategory> {
         return productCategoryDao.getAll()
     }

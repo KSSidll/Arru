@@ -1,78 +1,35 @@
 package com.kssidll.arrugarq.ui.additem
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import android.annotation.*
+import android.content.res.*
+import androidx.activity.compose.*
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.interaction.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.*
+import androidx.compose.ui.*
+import androidx.compose.ui.draw.*
+import androidx.compose.ui.focus.*
+import androidx.compose.ui.geometry.*
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.res.*
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.input.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.data.data.Product
-import com.kssidll.arrugarq.data.data.ProductVariant
-import com.kssidll.arrugarq.data.data.ProductWithAltNames
-import com.kssidll.arrugarq.data.data.Shop
-import com.kssidll.arrugarq.ui.shared.SecondaryAppBar
-import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.Optional
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.ui.shared.*
+import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
+import java.text.*
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +64,7 @@ fun AddItemScreen(
             mutableStateOf(false)
         }
 
-        BackHandler (
+        BackHandler(
             enabled = isProductSearchExpanded or isShopSearchExpanded or isVariantSearchExpanded
         ) {
             isProductSearchExpanded = false
@@ -147,7 +104,7 @@ fun AddItemScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Box (
+        Box(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
 
@@ -166,11 +123,11 @@ fun AddItemScreen(
                                 }
                             }
                         ) {
-                            Row (
+                            Row(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxSize()
-                            ){
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "",
@@ -219,14 +176,15 @@ fun AddItemScreen(
                 )
             } else {
                 Column {
-                    Column (
+                    Column(
                         modifier = Modifier
                             .fillMaxHeight(0.6f)
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.Bottom,
                     ) {
 
-                        val datePickerToggleInteractionSource = remember { MutableInteractionSource() }
+                        val datePickerToggleInteractionSource =
+                            remember { MutableInteractionSource() }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
@@ -258,23 +216,27 @@ fun AddItemScreen(
                                         .padding(OutlinedTextFieldDefaults.contentPadding())
                                         .fillMaxSize(),
                                 ) {
-                                    Row (
+                                    Row(
                                         modifier = Modifier.fillMaxSize(),
                                     ) {
-                                        Box(modifier = Modifier
-                                            .fillMaxHeight()
-                                            .weight(1f)
-                                            .scrollable(
-                                                state = rememberScrollState(),
-                                                orientation = Orientation.Horizontal,
-                                                interactionSource = datePickerToggleInteractionSource
-                                            ),
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .weight(1f)
+                                                .scrollable(
+                                                    state = rememberScrollState(),
+                                                    orientation = Orientation.Horizontal,
+                                                    interactionSource = datePickerToggleInteractionSource
+                                                ),
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             val date = state.date.value
                                             Text(
                                                 text = if (date != null)
-                                                    SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                                                    SimpleDateFormat(
+                                                        "MMM d, yyyy",
+                                                        Locale.getDefault()
+                                                    ).format(date)
                                                 else String(),
                                                 style = TextStyle.Default.copy(
                                                     color = MaterialTheme.colorScheme.onBackground,
@@ -429,12 +391,19 @@ fun AddItemScreen(
                                                 },
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            val lineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                                            val lineColor =
+                                                MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                                             Canvas(modifier = Modifier.fillMaxSize()) {
                                                 drawLine(
                                                     color = lineColor,
-                                                    start = Offset(0F, 0F),
-                                                    end = Offset(0F, size.height),
+                                                    start = Offset(
+                                                        0F,
+                                                        0F
+                                                    ),
+                                                    end = Offset(
+                                                        0F,
+                                                        size.height
+                                                    ),
                                                     strokeWidth = Dp.Hairline.value
                                                 )
                                             }
@@ -502,8 +471,14 @@ fun AddItemScreen(
                                             Canvas(modifier = Modifier.fillMaxSize()) {
                                                 drawLine(
                                                     color = lineColor,
-                                                    start = Offset(0F, 0F),
-                                                    end = Offset(0F, size.height),
+                                                    start = Offset(
+                                                        0F,
+                                                        0F
+                                                    ),
+                                                    end = Offset(
+                                                        0F,
+                                                        size.height
+                                                    ),
                                                     strokeWidth = Dp.Hairline.value
                                                 )
                                             }
@@ -534,7 +509,8 @@ fun AddItemScreen(
                                 readOnly = true,
                                 singleLine = true,
                                 enabled = isVariantEnabled,
-                                value = state.selectedVariant.value?.name ?: stringResource(R.string.item_product_variant_default_value),
+                                value = state.selectedVariant.value?.name
+                                    ?: stringResource(R.string.item_product_variant_default_value),
                                 onValueChange = {
 
                                 },
@@ -579,8 +555,14 @@ fun AddItemScreen(
                                             Canvas(modifier = Modifier.fillMaxSize()) {
                                                 drawLine(
                                                     color = lineColor,
-                                                    start = Offset(0F, 0F),
-                                                    end = Offset(0F, size.height),
+                                                    start = Offset(
+                                                        0F,
+                                                        0F
+                                                    ),
+                                                    end = Offset(
+                                                        0F,
+                                                        size.height
+                                                    ),
                                                     strokeWidth = Dp.Hairline.value
                                                 )
                                             }
@@ -668,8 +650,18 @@ fun AddItemScreen(
 }
 
 @SuppressLint("UnrememberedMutableState")
-@Preview(group = "AddItemScreen", name = "Add Item Screen Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(group = "AddItemScreen", name = "Add Item Screen Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(
+    group = "AddItemScreen",
+    name = "Add Item Screen Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Preview(
+    group = "AddItemScreen",
+    name = "Add Item Screen Light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
 @Composable
 fun AddItemScreenPreview() {
     ArrugarqTheme {
@@ -687,7 +679,10 @@ fun AddItemScreenPreview() {
                 variants = flowOf(),
                 shops = flowOf(
                     listOf(
-                        Shop(0, "test")
+                        Shop(
+                            0,
+                            "test"
+                        )
                     )
                 ),
                 state = AddItemState()

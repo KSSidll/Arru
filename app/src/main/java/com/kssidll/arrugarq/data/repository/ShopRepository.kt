@@ -1,10 +1,10 @@
 package com.kssidll.arrugarq.data.repository
 
-import com.kssidll.arrugarq.data.dao.ShopDao
-import com.kssidll.arrugarq.data.data.Shop
-import kotlinx.coroutines.flow.Flow
+import com.kssidll.arrugarq.data.dao.*
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
-class ShopRepository(private val shopDao: ShopDao) : IShopRepository {
+class ShopRepository(private val shopDao: ShopDao): IShopRepository {
     override suspend fun getAll(): List<Shop> {
         return shopDao.getAll()
     }

@@ -1,17 +1,16 @@
 package com.kssidll.arrugarq.ui.addproductvariant
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.kssidll.arrugarq.data.data.ProductVariant
-import com.kssidll.arrugarq.data.repository.IProductVariantRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.*
+import dagger.hilt.android.lifecycle.*
+import kotlinx.coroutines.*
+import javax.inject.*
 
 @HiltViewModel
 class AddProductVariantViewModel @Inject constructor(
     productVariantRepository: IProductVariantRepository,
-) : ViewModel() {
+): ViewModel() {
     private val productVariantRepository: IProductVariantRepository
 
     init {

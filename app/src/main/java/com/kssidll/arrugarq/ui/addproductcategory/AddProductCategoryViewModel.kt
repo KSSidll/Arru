@@ -1,18 +1,17 @@
 package com.kssidll.arrugarq.ui.addproductcategory
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.kssidll.arrugarq.data.data.ProductCategory
-import com.kssidll.arrugarq.data.repository.IProductCategoryRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.*
+import dagger.hilt.android.lifecycle.*
+import kotlinx.coroutines.*
+import javax.inject.*
 
 @HiltViewModel
 class AddProductCategoryViewModel @Inject constructor(
     categoryRepository: IProductCategoryRepository,
-) : ViewModel() {
-    private val categoryRepository : IProductCategoryRepository
+): ViewModel() {
+    private val categoryRepository: IProductCategoryRepository
 
     init {
         this.categoryRepository = categoryRepository

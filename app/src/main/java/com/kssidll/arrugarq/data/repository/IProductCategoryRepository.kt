@@ -1,9 +1,7 @@
 package com.kssidll.arrugarq.data.repository
 
-import com.kssidll.arrugarq.data.data.ProductCategory
-import com.kssidll.arrugarq.data.data.ProductCategoryAltName
-import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
-import kotlinx.coroutines.flow.Flow
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
 interface IProductCategoryRepository {
     suspend fun getAll(): List<ProductCategory>

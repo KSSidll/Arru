@@ -1,8 +1,8 @@
 package com.kssidll.arrugarq.di.module
 
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.*
+import dagger.hilt.*
+import dagger.hilt.components.*
 
 @Module
 @InstallIn(SingletonComponent::class)

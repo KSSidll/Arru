@@ -1,9 +1,7 @@
 package com.kssidll.arrugarq.ui.addproduct
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import com.kssidll.arrugarq.data.data.ProductCategory
-import com.kssidll.arrugarq.data.data.ProductProducer
+import androidx.compose.runtime.*
+import com.kssidll.arrugarq.data.data.*
 
 data class AddProductState(
     var selectedProductCategory: MutableState<ProductCategory?> = mutableStateOf(null),

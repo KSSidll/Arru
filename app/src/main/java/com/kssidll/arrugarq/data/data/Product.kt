@@ -1,12 +1,6 @@
 package com.kssidll.arrugarq.data.data
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import androidx.room.*
 
 @Entity(
     foreignKeys = [
@@ -42,7 +36,12 @@ data class Product(
         categoryId: Long,
         producerId: Long?,
         name: String,
-    ) : this (0, categoryId, producerId, name)
+    ): this(
+        0,
+        categoryId,
+        producerId,
+        name
+    )
 }
 
 @Entity(
@@ -70,7 +69,11 @@ data class ProductAltName(
     constructor(
         productId: Long,
         name: String,
-    ) : this(0, productId, name)
+    ): this(
+        0,
+        productId,
+        name
+    )
 }
 
 data class ProductWithAltNames(

@@ -1,10 +1,7 @@
 package com.kssidll.arrugarq.ui.additem
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import com.kssidll.arrugarq.data.data.Product
-import com.kssidll.arrugarq.data.data.ProductVariant
-import com.kssidll.arrugarq.data.data.Shop
+import androidx.compose.runtime.*
+import com.kssidll.arrugarq.data.data.*
 
 data class AddItemState(
     var selectedProduct: MutableState<Product?> = mutableStateOf(null),

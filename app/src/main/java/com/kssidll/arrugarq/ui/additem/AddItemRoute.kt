@@ -1,15 +1,9 @@
 package com.kssidll.arrugarq.ui.additem
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.kssidll.arrugarq.ui.shared.Loading
-import kotlinx.coroutines.launch
+import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.*
+import com.kssidll.arrugarq.ui.shared.*
+import kotlinx.coroutines.*
 
 @Composable
 fun AddItemRoute(
@@ -35,7 +29,7 @@ fun AddItemRoute(
     if (isLoading) {
         Loading()
     } else {
-        AddItemScreen (
+        AddItemScreen(
             onBack = onBack,
             onItemAdd = {
                 addItemViewModel.addItem(it)

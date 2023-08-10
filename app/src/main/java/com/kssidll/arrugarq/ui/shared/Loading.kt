@@ -1,19 +1,13 @@
 package com.kssidll.arrugarq.ui.shared
 
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
+import android.content.res.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
 fun Loading() {
@@ -30,8 +24,18 @@ fun Loading() {
     }
 }
 
-@Preview(group = "Loading", name = "Loading Light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(group = "Loading", name = "Loading Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    group = "Loading",
+    name = "Loading Light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Preview(
+    group = "Loading",
+    name = "Loading Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
 fun LoadingPreview() {
     ArrugarqTheme {

@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.data.repository
 
-import com.kssidll.arrugarq.data.data.Item
-import kotlinx.coroutines.flow.Flow
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
 interface IItemRepository {
     suspend fun getAll(): List<Item>
@@ -22,9 +22,17 @@ interface IItemRepository {
     fun getNewerThanFlow(date: Long): Flow<List<Item>>
     suspend fun getOlderThan(date: Long): List<Item>
     fun getOlderThanFlow(date: Long): Flow<List<Item>>
-    suspend fun getBetweenDates(lowerBoundDate: Long, higherBoundDate: Long): List<Item>
-    fun getBetweenDatesFlow(lowerBoundDate: Long, higherBoundDate: Long): Flow<List<Item>>
+    suspend fun getBetweenDates(
+        lowerBoundDate: Long,
+        higherBoundDate: Long
+    ): List<Item>
+
+    fun getBetweenDatesFlow(
+        lowerBoundDate: Long,
+        higherBoundDate: Long
+    ): Flow<List<Item>>
+
     suspend fun insert(item: Item): Long
     suspend fun update(item: Item)
-    suspend fun delete (item: Item)
+    suspend fun delete(item: Item)
 }

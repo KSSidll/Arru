@@ -1,15 +1,8 @@
 package com.kssidll.arrugarq.data.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.Update
-import com.kssidll.arrugarq.data.data.ProductCategory
-import com.kssidll.arrugarq.data.data.ProductCategoryAltName
-import com.kssidll.arrugarq.data.data.ProductCategoryWithAltNames
-import kotlinx.coroutines.flow.Flow
+import androidx.room.*
+import com.kssidll.arrugarq.data.data.*
+import kotlinx.coroutines.flow.*
 
 @Dao
 interface ProductCategoryDao {

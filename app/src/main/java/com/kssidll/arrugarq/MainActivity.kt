@@ -1,19 +1,18 @@
 package com.kssidll.arrugarq
 
-import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import com.kssidll.arrugarq.ui.theme.ArrugarqTheme
-import dagger.hilt.android.AndroidEntryPoint
+import android.annotation.*
+import android.content.pm.*
+import android.os.*
+import androidx.activity.*
+import androidx.activity.compose.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.ui.*
+import com.kssidll.arrugarq.ui.theme.*
+import dagger.hilt.android.*
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity: ComponentActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +23,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ArrugarqTheme {
-                Surface (
+                Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {

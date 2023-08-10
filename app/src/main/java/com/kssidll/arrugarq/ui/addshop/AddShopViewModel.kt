@@ -1,17 +1,16 @@
 package com.kssidll.arrugarq.ui.addshop
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.kssidll.arrugarq.data.data.Shop
-import com.kssidll.arrugarq.data.repository.IShopRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.*
+import dagger.hilt.android.lifecycle.*
+import kotlinx.coroutines.*
+import javax.inject.*
 
 @HiltViewModel
 class AddShopViewModel @Inject constructor(
     shopRepository: IShopRepository,
-) : ViewModel() {
+): ViewModel() {
     private val shopRepository: IShopRepository
 
     init {
