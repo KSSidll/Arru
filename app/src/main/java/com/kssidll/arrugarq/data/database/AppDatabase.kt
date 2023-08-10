@@ -1,21 +1,8 @@
 package com.kssidll.arrugarq.data.database
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import com.kssidll.arrugarq.data.dao.ItemDao
-import com.kssidll.arrugarq.data.dao.ProductCategoryDao
-import com.kssidll.arrugarq.data.dao.ProductDao
-import com.kssidll.arrugarq.data.dao.ProductProducerDao
-import com.kssidll.arrugarq.data.dao.ProductVariantDao
-import com.kssidll.arrugarq.data.dao.ShopDao
-import com.kssidll.arrugarq.data.data.Item
-import com.kssidll.arrugarq.data.data.Product
-import com.kssidll.arrugarq.data.data.ProductAltName
-import com.kssidll.arrugarq.data.data.ProductCategory
-import com.kssidll.arrugarq.data.data.ProductCategoryAltName
-import com.kssidll.arrugarq.data.data.ProductProducer
-import com.kssidll.arrugarq.data.data.ProductVariant
-import com.kssidll.arrugarq.data.data.Shop
+import androidx.room.*
+import com.kssidll.arrugarq.data.dao.*
+import com.kssidll.arrugarq.data.data.*
 
 @Database(
     entities = [
@@ -29,7 +16,6 @@ import com.kssidll.arrugarq.data.data.Shop
         ProductProducer::class,
     ],
     version = 1,
-    exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getItemDao(): ItemDao
