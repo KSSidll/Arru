@@ -1,154 +1,167 @@
 package com.kssidll.arrugarq
 
+import android.os.*
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
-import androidx.navigation.*
-import androidx.navigation.compose.*
-import com.kssidll.arrugarq.NavigationDestinations.ADD_ITEM_ROUTE
-import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_CATEGORY_ROUTE
-import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_PRODUCER_ROUTE
-import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_ROUTE
-import com.kssidll.arrugarq.NavigationDestinations.ADD_PRODUCT_VARIANT_ROUTE
-import com.kssidll.arrugarq.NavigationDestinations.ADD_SHOP_ROUTE
-import com.kssidll.arrugarq.NavigationDestinations.HOME_ROUTE
-import com.kssidll.arrugarq.ui.additem.*
-import com.kssidll.arrugarq.ui.addproduct.*
-import com.kssidll.arrugarq.ui.addproductcategory.*
-import com.kssidll.arrugarq.ui.addproductproducer.*
-import com.kssidll.arrugarq.ui.addproductvariant.*
-import com.kssidll.arrugarq.ui.addshop.*
-import com.kssidll.arrugarq.ui.home.*
+import androidx.compose.ui.platform.*
+import com.kssidll.arrugarq.presentation.screen.additem.*
+import com.kssidll.arrugarq.presentation.screen.addproduct.*
+import com.kssidll.arrugarq.presentation.screen.addproductcategory.*
+import com.kssidll.arrugarq.presentation.screen.addproductproducer.*
+import com.kssidll.arrugarq.presentation.screen.addproductvariant.*
+import com.kssidll.arrugarq.presentation.screen.addshop.*
+import com.kssidll.arrugarq.presentation.screen.home.*
+import dev.olshevski.navigation.reimagined.*
+import kotlinx.parcelize.*
 
-object NavigationDestinations {
-    const val HOME_ROUTE = "home"
-    const val ADD_ITEM_ROUTE = "additem"
-    const val ADD_PRODUCT_ROUTE = "addproduct"
-    const val ADD_PRODUCT_VARIANT_ROUTE = "addproductvariant"
-    const val ADD_PRODUCT_CATEGORY_ROUTE = "addproductcategory"
-    const val ADD_SHOP_ROUTE = "addshop"
-    const val ADD_PRODUCT_PRODUCER_ROUTE = "addproductproducer"
+@Parcelize
+sealed class Screen: Parcelable {
+    data object Home: Screen()
+    data object AddItem: Screen()
+    data object AddProduct: Screen()
+    data class AddProductVariant(val productId: Long): Screen()
+    data object AddProductCategory: Screen()
+    data object AddProductProducer: Screen()
+    data object AddShop: Screen()
+    data object AddFilterGroup: Screen()
 }
 
 @Composable
 fun Navigation(
-    navController: NavHostController = rememberNavController()
+    navController: NavController<Screen> = rememberNavController(startDestination = Screen.Home)
 ) {
-    // the navigation functions are abstracted to keep consistency
-    // as we prefer having functions for routes that require arguments
-    // so might as well have functions for routes that don't
-    fun navigateHome() {
-        navController.navigate(HOME_ROUTE)
-    }
+    NavBackHandler(controller = navController)
 
-    fun navigateAddItem() {
-        navController.navigate(ADD_ITEM_ROUTE)
-    }
-
-    fun navigateAddProduct() {
-        navController.navigate(ADD_PRODUCT_ROUTE)
-    }
-
-    fun navigateAddProductVariant(productId: Long) {
-        navController.navigate("$ADD_PRODUCT_VARIANT_ROUTE/$productId")
-    }
-
-    fun navigateAddProductCategory() {
-        navController.navigate(ADD_PRODUCT_CATEGORY_ROUTE)
-    }
-
-    fun navigateAddShop() {
-        navController.navigate(ADD_SHOP_ROUTE)
-    }
-
-    fun navigateAddProductProducer() {
-        navController.navigate(ADD_PRODUCT_PRODUCER_ROUTE)
-    }
-
-    /**
-     * Use to navigate to main app screen
-     */
-    fun navigateBase() {
-        navController.navigate(HOME_ROUTE)
-    }
-
-    NavHost(
-        navController = navController,
-        startDestination = HOME_ROUTE
-    ) {
-        composable(HOME_ROUTE) {
-            HomeRoute(
-                onAddItem = {
-                    navigateAddItem()
-                }
-            )
+    val onBack: () -> Unit = {
+        navController.apply {
+            if (backstack.entries.size > 1) pop()
         }
+    }
 
-        composable(ADD_ITEM_ROUTE) {
-            AddItemRoute(
-                onBack = {
-                    navController.popBackStack()
-                },
-                onProductAdd = {
-                    navigateAddProduct()
-                },
-                onVariantAdd = { producentId ->
-                    navigateAddProductVariant(producentId)
-                },
-                onShopAdd = {
-                    navigateAddShop()
-                },
-            )
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val easing = CubicBezierEasing(
+        0.48f,
+        0.19f,
+        0.05f,
+        1.03f
+    )
+
+    AnimatedNavHost(
+        controller = navController,
+        transitionSpec = { action, _, _ ->
+            if (action != NavAction.Pop) {
+                slideInHorizontally(
+                    animationSpec = tween(
+                        600,
+                        easing = easing
+                    ),
+                    initialOffsetX = { screenWidth }) + fadeIn(
+                    tween(
+                        300,
+                        100
+                    )
+                ) togetherWith slideOutHorizontally(
+                    animationSpec = tween(
+                        600,
+                        easing = easing
+                    ),
+                    targetOffsetX = { -screenWidth }) + fadeOut(
+                    tween(
+                        300,
+                        100
+                    )
+                )
+            } else {
+                slideInHorizontally(
+                    animationSpec = tween(
+                        600,
+                        easing = easing
+                    ),
+                    initialOffsetX = { -screenWidth }) + fadeIn(
+                    tween(
+                        300,
+                        100
+                    )
+                ) togetherWith slideOutHorizontally(
+                    animationSpec = tween(
+                        600,
+                        easing = easing
+                    ),
+                    targetOffsetX = { screenWidth }) + fadeOut(
+                    tween(
+                        300,
+                        100
+                    )
+                )
+            }
         }
+    ) { screen ->
+        when (screen) {
+            is Screen.Home -> {
+                HomeRoute(
+                    onAddItem = {
+                        navController.navigate(Screen.AddItem)
+                    }
+                )
+            }
 
-        composable(ADD_PRODUCT_ROUTE) {
-            AddProductRoute(
-                onBack = {
-                    navController.popBackStack()
-                },
-                onProductCategoryAdd = {
-                    navigateAddProductCategory()
-                },
-                onProductProducerAdd = {
-                    navigateAddProductProducer()
-                }
-            )
-        }
+            is Screen.AddItem -> {
+                AddItemRoute(
+                    onBack = onBack,
+                    onProductAdd = {
+                        navController.navigate(Screen.AddProduct)
+                    },
+                    onVariantAdd = { productId ->
+                        navController.navigate(Screen.AddProductVariant(productId = productId))
+                    },
+                    onShopAdd = {
+                        navController.navigate(Screen.AddShop)
+                    },
+                )
+            }
 
-        composable(
-            "$ADD_PRODUCT_VARIANT_ROUTE/{productId}",
-            arguments = listOf(
-                navArgument("productId") { type = NavType.LongType }
-            )
-        ) {
-            AddProductVariantRoute(
-                productId = it.arguments?.getLong("productId")!!,
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
+            is Screen.AddProduct -> {
+                AddProductRoute(
+                    onBack = onBack,
+                    onProductCategoryAdd = {
+                        navController.navigate(Screen.AddProductCategory)
+                    },
+                    onProductProducerAdd = {
+                        navController.navigate(Screen.AddProductProducer)
+                    }
+                )
+            }
 
-        composable(ADD_PRODUCT_CATEGORY_ROUTE) {
-            AddProductCategoryRoute(
-                onBack = {
-                    navController.popBackStack()
-                },
-            )
-        }
+            is Screen.AddProductVariant -> {
+                AddProductVariantRoute(
+                    productId = screen.productId,
+                    onBack = onBack,
+                )
+            }
 
-        composable(ADD_SHOP_ROUTE) {
-            AddShopRoute(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
+            is Screen.AddProductCategory -> {
+                AddProductCategoryRoute(
+                    onBack = onBack,
+                )
+            }
 
-        composable(ADD_PRODUCT_PRODUCER_ROUTE) {
-            AddProductProducerRoute(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
+            is Screen.AddProductProducer -> {
+                AddProductProducerRoute(
+                    onBack = onBack,
+                )
+            }
+
+            is Screen.AddShop -> {
+                AddShopRoute(
+                    onBack = onBack,
+                )
+            }
+
+            is Screen.AddFilterGroup -> {
+
+            }
+
         }
     }
 }

@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.di.module
 
 import android.content.*
 import androidx.room.*
-import androidx.sqlite.db.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.database.*
 import com.kssidll.arrugarq.data.repository.*

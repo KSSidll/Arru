@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
     id 'com.google.dagger.hilt.android'
     id 'com.google.devtools.ksp'
 }
@@ -31,6 +32,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             matchingFallbacks = []
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -42,10 +44,9 @@ android {
     }
     buildFeatures {
         compose true
-        viewBinding true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.7'
+        kotlinCompilerExtensionVersion '1.5.3'
     }
     packagingOptions {
         resources {
@@ -55,48 +56,42 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.12.0-alpha05'
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.30.1'
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    // AndroidX
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("androidx.datastore:datastore-preferences-android:1.1.0-alpha05")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
-    implementation 'me.xdrop:fuzzywuzzy:1.4.0'
-
-    def compose_version = '1.5.0-beta02'
-    def hilt_version = '2.47'
-    def room_version = "2.6.0-alpha02"
-
-    // Dagger Hilt
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
-    kapt "com.google.dagger:hilt-compiler:$hilt_version"
-    implementation 'androidx.savedstate:savedstate-ktx:1.2.1'
-
-    // Room
-    implementation "androidx.room:room-ktx:$room_version"
-    ksp "androidx.room:room-compiler:$room_version"
-    ksp "androidx.room:room-ktx:$room_version"
+    // Navigation
+    implementation("dev.olshevski.navigation:reimagined:1.5.0")
+    implementation("dev.olshevski.navigation:reimagined-hilt:1.5.0")
 
     // Compose
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.activity:activity-compose:1.7.2'
-    implementation 'androidx.navigation:navigation-compose:2.6.0'
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    implementation("androidx.compose.ui:ui:1.6.0-alpha06")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.0-alpha06")
+    debugImplementation "androidx.compose.ui:ui-tooling:1.6.0-alpha06"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:1.6.0-alpha06"
+    implementation("androidx.compose.material3:material3:1.2.0-alpha08")
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.0-alpha08")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha06")
+    implementation("androidx.compose.material:material:1.6.0-alpha06")
 
-    // Material3
-    implementation 'androidx.compose.material3:material3:1.2.0-alpha03'
+    // DI
+    implementation("com.google.dagger:hilt-android:2.48")
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.5.1'
+    kapt("com.google.dagger:hilt-compiler:2.48")
 
-    // Test
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.2.0-alpha01'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    // Room
+    implementation("androidx.room:room-ktx:2.6.0-rc01")
+    ksp("androidx.room:room-compiler:2.6.0-rc01")
+    ksp("androidx.room:room-ktx:2.6.0-rc01")
+
+
+    implementation("me.xdrop:fuzzywuzzy:1.4.0")
+
 }
 
 ksp {
