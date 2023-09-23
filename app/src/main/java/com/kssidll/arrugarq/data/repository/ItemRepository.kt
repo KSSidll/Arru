@@ -29,6 +29,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getLastFlow()
     }
 
+    override suspend fun getTotalSpentByMonth(): List<ItemMonthlyTotal> {
+        return itemDao.getTotalSpentByMonth()
+    }
+
+    override fun getTotalSpentByMonthFlow(): Flow<List<ItemMonthlyTotal>> {
+        return itemDao.getTotalSpentByMonthFlow()
+    }
+
     override suspend fun getByProductId(productId: Long): List<Item> {
         return itemDao.getByProductId(productId)
     }

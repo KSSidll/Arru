@@ -53,3 +53,8 @@ data class Item(
         date
     )
 }
+
+data class ItemMonthlyTotal(
+    @ColumnInfo(name = "year_month") val yearMonth: String,
+    val total: Long,
+)

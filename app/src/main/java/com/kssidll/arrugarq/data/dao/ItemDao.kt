@@ -23,7 +23,10 @@ interface ItemDao {
 
     @Query("SELECT * FROM item ORDER BY id DESC LIMIT 1")
     fun getLastFlow(): Flow<Item>
-
+    @Query("SELECT strftime('%Y-%m', datetime(date / 1000, 'unixepoch')) AS year_month, SUM(price) AS total FROM item GROUP BY year_month ORDER BY year_month")
+    suspend fun getTotalSpentByMonth(): List<ItemMonthlyTotal>
+    @Query("SELECT strftime('%Y-%m', datetime(date / 1000, 'unixepoch')) AS year_month, SUM(price) AS total FROM item GROUP BY year_month ORDER BY year_month")
+    fun getTotalSpentByMonthFlow(): Flow<List<ItemMonthlyTotal>>
     @Query("SELECT * FROM item WHERE productId == :productId")
     suspend fun getByProductId(productId: Long): List<Item>
 
