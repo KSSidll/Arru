@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.presentation.theme.*
-import com.kssidll.arrugarq.presentation.widget.other.*
+import com.kssidll.arrugarq.presentation.components.other.*
 import kotlinx.coroutines.flow.*
 import java.util.*
 

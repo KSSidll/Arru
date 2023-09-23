@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.presentation.widget.other
+package com.kssidll.arrugarq.presentation.components.other
 
 import android.content.res.*
 import androidx.compose.foundation.layout.*

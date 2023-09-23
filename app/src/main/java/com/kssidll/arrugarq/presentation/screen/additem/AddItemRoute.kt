@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.presentation.screen.additem
 
 import androidx.compose.runtime.*
-import com.kssidll.arrugarq.presentation.widget.other.*
+import com.kssidll.arrugarq.presentation.components.other.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
 
