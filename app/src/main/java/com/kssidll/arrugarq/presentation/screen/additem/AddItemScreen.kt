@@ -667,10 +667,7 @@ fun AddItemScreen(
 @Composable
 fun AddItemScreenPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             AddItemScreen(
                 onBack = {},
                 onItemAdd = {},

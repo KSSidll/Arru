@@ -175,10 +175,7 @@ fun AddProductProducerScreen(
 @Composable
 fun AddProductProducerScreenPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             AddProductProducerScreen(
                 onBack = {},
                 onProducerAdd = {},

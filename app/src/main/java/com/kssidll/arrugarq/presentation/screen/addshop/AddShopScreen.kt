@@ -175,10 +175,7 @@ fun AddShopScreen(
 @Composable
 fun AddShopScreenPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             AddShopScreen(
                 onBack = {},
                 onShopAdd = {},

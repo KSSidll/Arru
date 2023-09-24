@@ -182,10 +182,7 @@ fun AddProductVariantScreen(
 @Composable
 fun AddProductVariantScreenPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             AddProductVariantScreen(
                 productId = 0,
                 onBack = {},

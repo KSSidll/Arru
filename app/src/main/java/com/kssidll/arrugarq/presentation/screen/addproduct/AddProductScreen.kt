@@ -366,10 +366,7 @@ fun AddProductScreen(
 @Composable
 fun AddProductScreenPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             AddProductScreen(
                 onBack = {},
                 onCategoryAdd = {},

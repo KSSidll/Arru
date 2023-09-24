@@ -135,10 +135,7 @@ fun HomeScreenPreview() {
                 )
             )
         ) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
+            Surface(modifier = Modifier.fillMaxSize()) {
                 HomeScreen(
                     onAddItem = {},
                     itemMonthlyTotals = listOf(
