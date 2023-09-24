@@ -18,6 +18,7 @@ import com.patrykandpatrick.vico.compose.axis.horizontal.*
 import com.patrykandpatrick.vico.compose.chart.*
 import com.patrykandpatrick.vico.compose.chart.column.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
+import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import com.patrykandpatrick.vico.core.chart.scale.*
 import com.patrykandpatrick.vico.core.entry.*
@@ -66,11 +67,12 @@ fun HomeScreen(
                     chartScrollState = chartScrollState,
                     chart = columnChart(
                         columns = listOf(currentChartStyle.columnChart.columns[0].apply { this.thicknessDp = 50.dp.value }),
+                        spacing = 12.dp,
                     ),
                     model = entryModelOf(chartData),
                     topAxis = rememberTopAxis(
                         valueFormatter = {
-                            value, _ -> itemMonthlyTotals.getOrNull(value.toInt())?.total?.div(100F).toString()
+                            value, _ -> itemMonthlyTotals.getOrNull(value.toInt())?.total?.div(100).toString()
                         }
                     ),
                     bottomAxis = rememberBottomAxis(
@@ -117,19 +119,39 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            HomeScreen(
-                onAddItem = {},
-                itemMonthlyTotals = listOf(
-                    ItemMonthlyTotal(
-                        yearMonth = "2022-08",
-                        total = 34821,
-                    )
-                ),
+        ProvideChartStyle(
+            chartStyle = m3ChartStyle(
+                entityColors = listOf(
+                    MaterialTheme.colorScheme.tertiary,
+                )
             )
+        ) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                HomeScreen(
+                    onAddItem = {},
+                    itemMonthlyTotals = listOf(
+                        ItemMonthlyTotal(
+                            yearMonth = "2022-08",
+                            total = 34821,
+                        ),
+                        ItemMonthlyTotal(
+                            yearMonth = "2022-09",
+                            total = 25000,
+                        ),
+                        ItemMonthlyTotal(
+                            yearMonth = "2022-10",
+                            total = 50000,
+                        ),
+                        ItemMonthlyTotal(
+                            yearMonth = "2022-11",
+                            total = 12345,
+                        ),
+                    ),
+                )
+            }
         }
     }
 }
