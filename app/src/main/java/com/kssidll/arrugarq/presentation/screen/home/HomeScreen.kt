@@ -36,7 +36,12 @@ fun HomeScreen(
     LaunchedEffect(itemMonthlyTotals) {
         chartData.clear()
         itemMonthlyTotals.forEachIndexed { index, data ->
-            chartData.add(FloatEntry(index.toFloat(), data.total.div(100F)))
+            chartData.add(
+                FloatEntry(
+                    index.toFloat(),
+                    data.total.div(100F)
+                )
+            )
         }
         shouldChartScrollToEnd = true
     }
@@ -49,7 +54,8 @@ fun HomeScreen(
             chartScrollState.animateScrollBy(
                 value = scrollValue,
                 animationSpec = FloatTweenSpec(
-                    duration = scrollValue.div(6).toInt(),
+                    duration = scrollValue.div(6)
+                        .toInt(),
                     easing = EaseInOut
                 )
             )
@@ -66,18 +72,21 @@ fun HomeScreen(
                 Chart(
                     chartScrollState = chartScrollState,
                     chart = columnChart(
-                        columns = listOf(currentChartStyle.columnChart.columns[0].apply { this.thicknessDp = 50.dp.value }),
+                        columns = listOf(currentChartStyle.columnChart.columns[0].apply {
+                            this.thicknessDp = 50.dp.value
+                        }),
                         spacing = 12.dp,
                     ),
                     model = entryModelOf(chartData),
                     topAxis = rememberTopAxis(
-                        valueFormatter = {
-                            value, _ -> itemMonthlyTotals.getOrNull(value.toInt())?.total?.div(100).toString()
+                        valueFormatter = { value, _ ->
+                            itemMonthlyTotals.getOrNull(value.toInt())?.total?.div(100)
+                                .toString()
                         }
                     ),
                     bottomAxis = rememberBottomAxis(
-                        valueFormatter = {
-                            value, _ -> itemMonthlyTotals.getOrNull(value.toInt())?.yearMonth.orEmpty()
+                        valueFormatter = { value, _ ->
+                            itemMonthlyTotals.getOrNull(value.toInt())?.yearMonth.orEmpty()
                         },
                     ),
                     autoScaleUp = AutoScaleUp.None,

@@ -43,7 +43,7 @@ fun <T> FuzzySearchableList(
     showDefaultValueItem: Boolean = false,
     defaultItemText: String = String(),
     spaceUnderSearchField: Dp = 100.dp,
-) where T : IFuzzySearchable {
+) where T: IFuzzySearchable {
     var query: String by rememberSaveable {
         mutableStateOf(String())
     }
@@ -52,7 +52,10 @@ fun <T> FuzzySearchableList(
         mutableStateOf(listOf())
     }
 
-    LaunchedEffect(items, query) {
+    LaunchedEffect(
+        items,
+        query
+    ) {
         displayedItems = items.fuzzySearchSort(query)
     }
 

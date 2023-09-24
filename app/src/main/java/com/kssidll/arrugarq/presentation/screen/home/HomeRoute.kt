@@ -11,6 +11,7 @@ fun HomeRoute(
 
     HomeScreen(
         onAddItem = onAddItem,
-        itemMonthlyTotals = homeViewModel.getItemTotalSpentByMonth().collectAsState(initial = listOf()).value
+        itemMonthlyTotals = homeViewModel.getItemTotalSpentByMonth()
+            .collectAsState(initial = listOf()).value
     )
 }

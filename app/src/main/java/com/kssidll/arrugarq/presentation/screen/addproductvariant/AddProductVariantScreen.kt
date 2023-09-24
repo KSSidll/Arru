@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.presentation.theme.*
 import com.kssidll.arrugarq.presentation.components.other.*
+import com.kssidll.arrugarq.presentation.theme.*
 
 @Composable
 fun AddProductVariantScreen(

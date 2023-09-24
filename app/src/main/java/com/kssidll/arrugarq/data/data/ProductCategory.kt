@@ -61,7 +61,7 @@ data class ProductCategoryWithAltNames(
         parentColumn = "id",
         entityColumn = "productId"
     ) val alternativeNames: List<ProductAltName>
-) : IFuzzySearchable {
+): IFuzzySearchable {
     override fun getFuzzyScore(query: String): Int {
         val productNameScore = FuzzySearch.extractOne(
             query,
