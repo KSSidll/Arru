@@ -19,8 +19,9 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.presentation.theme.*
+import com.kssidll.arrugarq.presentation.components.list.*
 import com.kssidll.arrugarq.presentation.components.other.*
+import com.kssidll.arrugarq.presentation.theme.*
 import kotlinx.coroutines.flow.*
 import java.util.*
 
@@ -81,22 +82,28 @@ fun AddProductScreen(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
             if (isProducerSearchExpanded) {
-                AddProductSearchProducer(
-                    producers = producers,
-                    onItemClick = { producer ->
-                        state.selectedProductProducer.value = producer
+                FuzzySearchableList(
+                    items = producers.collectAsState(emptyList()).value,
+                    itemText = { it.name },
+                    onItemClick = {
+                        state.selectedProductProducer.value = it
                         isProducerSearchExpanded = false
                     },
-                    onAddClick = onProducerAdd
+                    onAddButtonClick = onProducerAdd,
+                    addButtonDescription = stringResource(R.string.add_product_producer_description),
+                    showDefaultValueItem = true,
+                    defaultItemText = stringResource(R.string.no_value),
                 )
             } else if (isCategorySearchExpanded) {
-                AddProductSearchCategory(
-                    categoriesWithAltNames = categoriesWithAltNames,
-                    onItemClick = { category ->
-                        state.selectedProductCategory.value = category
+                FuzzySearchableList(
+                    items = categoriesWithAltNames.collectAsState(emptyList()).value,
+                    onItemClick = {
+                        state.selectedProductCategory.value = it?.productCategory
                         isCategorySearchExpanded = false
                     },
-                    onAddClick = onCategoryAdd
+                    itemText = { it.productCategory.name },
+                    onAddButtonClick = onCategoryAdd,
+                    addButtonDescription = stringResource(R.string.add_product_category_description),
                 )
             } else {
                 Column {

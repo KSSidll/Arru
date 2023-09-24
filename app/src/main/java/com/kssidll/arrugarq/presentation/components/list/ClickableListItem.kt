@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.presentation.screen.addproduct
+package com.kssidll.arrugarq.presentation.components.list
 
 import android.content.res.*
 import androidx.compose.foundation.*
@@ -8,13 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.presentation.theme.*
 
 @Composable
-fun AddProductItemProducer(
-    item: ProductProducer,
-    onItemClick: (ProductProducer) -> Unit,
+fun ClickableListItem(
+    text: String,
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -22,14 +21,14 @@ fun AddProductItemProducer(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onItemClick(item)
+                onClick?.invoke()
             },
     ) {
         Box(
             modifier = Modifier.padding(vertical = 16.dp),
         ) {
             Text(
-                text = item.name,
+                text = text,
                 fontSize = 20.sp
             )
         }
@@ -37,29 +36,23 @@ fun AddProductItemProducer(
 }
 
 @Preview(
-    group = "AddProductScreenItemProducer",
-    name = "Add Product Item Producer Screen Dark",
+    group = "ClickableListItem",
+    name = "Clickable List Item Dark",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "AddProductScreenItemProducer",
-    name = "Add Product Item Producer Screen Light",
+    group = "ClickableListItem",
+    name = "Clickable List Item Light",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO
 )
 @Composable
-fun AddProductScreenItemProducerPreview() {
+fun ClickableListItemPreview() {
     ArrugarqTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-        ) {
-            AddProductItemProducer(
-                item = ProductProducer(
-                    0,
-                    "test"
-                ),
-                onItemClick = {},
+        Surface(color = MaterialTheme.colorScheme.background) {
+            ClickableListItem(
+                text = "test"
             )
         }
     }

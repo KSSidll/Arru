@@ -25,8 +25,9 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.presentation.theme.*
+import com.kssidll.arrugarq.presentation.components.list.*
 import com.kssidll.arrugarq.presentation.components.other.*
+import com.kssidll.arrugarq.presentation.theme.*
 import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
@@ -146,33 +147,43 @@ fun AddItemScreen(
             }
 
             if (isProductSearchExpanded) {
-                AddItemSearchProduct(
-                    productsWithAltNames = productsWithAltNames,
-                    onItemClick = { product: Product ->
-                        state.selectedProduct.value = product
+                FuzzySearchableList(
+                    items = productsWithAltNames.collectAsState(emptyList()).value,
+                    onItemClick = {
+                        state.selectedProduct.value = it?.product
                         isProductSearchExpanded = false
                         productError = false
-                        onSelectProduct(product)
+                        it?.product?.let { product -> onSelectProduct(product) }
                     },
-                    onAddClick = onProductAdd
+                    itemText = { it.product.name },
+                    onAddButtonClick = onProductAdd,
+                    addButtonDescription = stringResource(R.string.add_product_description),
                 )
             } else if (isVariantSearchExpanded) {
-                AddItemSearchVariant(
-                    variants = variants,
-                    onItemClick = { variant ->
-                        state.selectedVariant.value = variant
+                FuzzySearchableList(
+                    items = variants.collectAsState(emptyList()).value,
+                    itemText = { it.name },
+                    onItemClick = {
+                        state.selectedVariant.value = it
                         isVariantSearchExpanded = false
                     },
-                    onAddClick = { onVariantAdd(state.selectedProduct.value!!.id) }
+                    onAddButtonClick = { onVariantAdd(state.selectedProduct.value!!.id) },
+                    addButtonDescription = stringResource(R.string.add_product_variant_description),
+                    showDefaultValueItem = true,
+                    defaultItemText = stringResource(R.string.item_product_variant_default_value),
                 )
             } else if (isShopSearchExpanded) {
-                AddItemSearchShop(
-                    shops = shops,
-                    onItemClick = { shop ->
-                        state.selectedShop.value = shop
+                FuzzySearchableList(
+                    items = shops.collectAsState(emptyList()).value,
+                    itemText = { it.name },
+                    onItemClick = {
+                        state.selectedShop.value = it
                         isShopSearchExpanded = false
                     },
-                    onAddClick = onShopAdd
+                    onAddButtonClick = onShopAdd,
+                    addButtonDescription = stringResource(R.string.add_shop_description),
+                    showDefaultValueItem = true,
+                    defaultItemText = stringResource(R.string.no_value),
                 )
             } else {
                 Column {
@@ -540,7 +551,7 @@ fun AddItemScreen(
                                             .fillMaxHeight()
                                             .aspectRatio(1F)
                                             .clickable {
-                                                onVariantAdd(state.selectedProduct.value!!.id)
+                                                state.selectedProduct.value?.let { onVariantAdd(it.id) }
                                             },
                                         contentAlignment = Alignment.Center
                                     ) {

@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
+import me.xdrop.fuzzywuzzy.*
 
 @Entity(
     foreignKeys = [
@@ -17,7 +18,7 @@ data class ProductVariant(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val productId: Long,
     val name: String,
-) {
+) : IFuzzySearchable {
     constructor(
         productId: Long,
         name: String,
@@ -26,4 +27,9 @@ data class ProductVariant(
         productId,
         name
     )
+
+    override fun getFuzzyScore(query: String): Int {
+        return FuzzySearch.extractOne(query, listOf(name)).score
+    }
+
 }

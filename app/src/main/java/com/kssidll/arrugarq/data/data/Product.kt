@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
+import me.xdrop.fuzzywuzzy.*
 
 @Entity(
     foreignKeys = [
@@ -82,4 +83,22 @@ data class ProductWithAltNames(
         parentColumn = "id",
         entityColumn = "productId"
     ) val alternativeNames: List<ProductAltName>
-)
+) : IFuzzySearchable {
+    override fun getFuzzyScore(query: String): Int {
+        val productNameScore = FuzzySearch.extractOne(
+            query,
+            listOf(product.name)
+        ).score
+        val bestAlternativeNamesScore = if (alternativeNames.isNotEmpty()) {
+            FuzzySearch.extractOne(
+                query,
+                alternativeNames.map { it.name }).score
+        } else -1
+
+        return maxOf(
+            productNameScore,
+            bestAlternativeNamesScore
+        )
+    }
+
+}
