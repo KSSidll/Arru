@@ -9,17 +9,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.*
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.*
-import androidx.compose.ui.text.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.presentation.components.other.*
+import com.kssidll.arrugarq.presentation.component.field.*
+import com.kssidll.arrugarq.presentation.component.other.*
 import com.kssidll.arrugarq.presentation.theme.*
 
 @Composable
@@ -70,7 +69,7 @@ fun AddProductVariantScreen(
                     verticalAlignment = Alignment.Bottom
                 ) {
 
-                    OutlinedTextField(
+                    StyledOutlinedTextField(
                         singleLine = true,
                         value = name,
                         onValueChange = {
@@ -99,20 +98,9 @@ fun AddProductVariantScreen(
                                 }
                             }
                         ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = MaterialTheme.colorScheme.outline,
-                            focusedBorderColor = MaterialTheme.colorScheme.outline,
-                        ),
-                        textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = 16.sp
-                        ),
-                        suffix = {
+                        label = {
                             Text(
                                 text = stringResource(R.string.item_product_variant),
-                                fontSize = 16.sp,
-                                modifier = Modifier
-                                    .alpha(0.5F)
                             )
                         },
                         isError = nameError
@@ -125,6 +113,15 @@ fun AddProductVariantScreen(
                 ) {
 
                     Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(70.dp),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
                         onClick = {
                             nameError = name.isEmpty()
 
@@ -140,9 +137,6 @@ fun AddProductVariantScreen(
                                 onBack()
                             }
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(70.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxSize(),

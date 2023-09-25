@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.presentation.components.other
+package com.kssidll.arrugarq.presentation.component.other
 
 import android.content.res.*
 import androidx.compose.foundation.*
@@ -21,7 +21,7 @@ fun SecondaryAppBar(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
 
         IconButton(
@@ -31,7 +31,7 @@ fun SecondaryAppBar(
                 Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = "Go back",
                 modifier = Modifier.size(30.dp),
-                tint = MaterialTheme.colorScheme.onPrimary
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -59,9 +59,7 @@ fun SecondaryAppBar(
 @Composable
 fun SecondaryAppBarPreview() {
     ArrugarqTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface {
             SecondaryAppBar(
                 onBack = {}
             ) {}

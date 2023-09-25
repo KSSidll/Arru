@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.presentation.screen.home
 
 import android.content.res.Configuration.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
@@ -10,6 +11,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
+import androidx.compose.ui.geometry.*
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
@@ -66,8 +70,13 @@ fun HomeScreen(
         }
     }
 
-    Box(modifier = Modifier.padding(8.dp)) {
-        Column {
+    Column {
+        // Content
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+        ) {
             Row(horizontalArrangement = Arrangement.Center) {
                 Chart(
                     chartScrollState = chartScrollState,
@@ -95,20 +104,70 @@ fun HomeScreen(
             }
         }
 
-        Box(
-            modifier = Modifier.align(Alignment.BottomEnd)
-        ) {
-            FilledIconButton(
-                modifier = Modifier.size(72.dp),
-                onClick = onAddItem
+        // Bottom Bar
+        Row {
+            val configuration = LocalConfiguration.current
+            val screenWidth = configuration.screenWidthDp.dp
+            val addItemButtonSize = 72.dp
+            val canvasSize = 40.dp
+
+            val color = MaterialTheme.colorScheme.surfaceContainer
+            val bg = MaterialTheme.colorScheme.surface
+
+            Row(
+                modifier = Modifier
+                    .width(screenWidth - addItemButtonSize - canvasSize)
+                    .height(addItemButtonSize)
+                    .background(color)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add new item",
-                    modifier = Modifier.fillMaxSize()
-                )
+
+            }
+
+            Box(
+                modifier = Modifier.width(addItemButtonSize + canvasSize)
+            ) {
+                Canvas(
+                    modifier = Modifier
+                        .width(canvasSize)
+                        .height(addItemButtonSize)
+                ) {
+                    drawRect(
+                        color = color,
+                    )
+                    drawCircle(
+                        color = bg,
+                        blendMode = BlendMode.SrcIn,
+                        radius = size.height,
+                        center = Offset(size.height, size.height.div(5)),
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .width(addItemButtonSize)
+                        .offset(1.dp, (-12).dp)
+                ) {
+                    FilledIconButton(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1F),
+                        onClick = onAddItem,
+                        colors = IconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add new item",
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
             }
         }
+
     }
 }
 

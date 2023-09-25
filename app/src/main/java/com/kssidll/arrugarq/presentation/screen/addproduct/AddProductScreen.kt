@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.presentation.screen.addproduct
 
 import android.content.res.*
 import androidx.activity.compose.*
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
@@ -10,17 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.*
-import androidx.compose.ui.focus.*
-import androidx.compose.ui.geometry.*
 import androidx.compose.ui.res.*
-import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.presentation.components.list.*
-import com.kssidll.arrugarq.presentation.components.other.*
+import com.kssidll.arrugarq.presentation.component.field.*
+import com.kssidll.arrugarq.presentation.component.list.*
+import com.kssidll.arrugarq.presentation.component.other.*
 import com.kssidll.arrugarq.presentation.theme.*
 import kotlinx.coroutines.flow.*
 import java.util.*
@@ -35,7 +31,6 @@ fun AddProductScreen(
     producers: Flow<List<ProductProducer>>,
     state: AddProductState,
 ) {
-    val optionalBorderAlpha = 0.40f
 
     Column {
         var isCategorySearchExpanded: Boolean by rememberSaveable {
@@ -117,27 +112,16 @@ fun AddProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                OutlinedTextField(
+                                StyledOutlinedTextField(
                                     modifier = Modifier.fillMaxWidth(0.85f),
                                     singleLine = true,
                                     value = state.name.value,
                                     onValueChange = {
                                         state.name.value = it
                                     },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        cursorColor = MaterialTheme.colorScheme.outline,
-                                        focusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    ),
-                                    textStyle = TextStyle.Default.copy(
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        fontSize = 16.sp
-                                    ),
-                                    suffix = {
+                                    label = {
                                         Text(
-                                            text = stringResource(R.string.item_product),
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .alpha(0.5F)
+                                            text = stringResource(R.string.item_product)
                                         )
                                     },
                                     isError = nameError
@@ -149,149 +133,37 @@ fun AddProductScreen(
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Row(
+                        SearchField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(60.dp),
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
-                            OutlinedTextField(
-                                readOnly = true,
-                                singleLine = true,
-                                value = state.selectedProductProducer.value?.name ?: String(),
-                                onValueChange = {
-
-                                },
-                                modifier = Modifier
-                                    .onFocusEvent {
-                                        if (it.isFocused) {
-                                            isProducerSearchExpanded = true
-                                        }
-                                    }
-                                    .fillMaxSize(),
-                                textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp
-                                ),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha),
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = optionalBorderAlpha)
-                                ),
-                                suffix = {
-                                    Text(
-                                        text = stringResource(R.string.item_product_producer),
-                                        fontSize = 16.sp,
-                                        modifier = Modifier
-                                            .alpha(0.5F)
-                                            .padding(end = 6.dp)
-                                    )
-                                },
-                                trailingIcon = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .aspectRatio(1F)
-                                            .clickable {
-                                                onProducerAdd()
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        val lineColor =
-                                            MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                                        Canvas(modifier = Modifier.fillMaxSize()) {
-                                            drawLine(
-                                                color = lineColor,
-                                                start = Offset(
-                                                    0F,
-                                                    0F
-                                                ),
-                                                end = Offset(
-                                                    0F,
-                                                    size.height
-                                                ),
-                                                strokeWidth = Dp.Hairline.value
-                                            )
-                                        }
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(R.string.add_product_producer_description),
-                                            modifier = Modifier.size(40.dp)
-                                        )
-                                    }
-                                }
-                            )
-                        }
+                            value = state.selectedProductProducer.value?.name ?: String(),
+                            onFocus = {
+                                isProducerSearchExpanded = true
+                            },
+                            label = stringResource(R.string.item_product_producer),
+                            onAddButtonClick = {
+                                onProducerAdd()
+                            },
+                            addButtonDescription = stringResource(R.string.add_product_producer_description),
+                        )
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Row(
+                        SearchField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(60.dp),
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
-                            OutlinedTextField(
-                                readOnly = true,
-                                singleLine = true,
-                                value = state.selectedProductCategory.value?.name ?: String(),
-                                onValueChange = {
-
-                                },
-                                modifier = Modifier
-                                    .onFocusEvent {
-                                        if (it.isFocused) {
-                                            isCategorySearchExpanded = true
-                                        }
-                                    }
-                                    .fillMaxSize(),
-                                textStyle = TextStyle.Default.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 16.sp
-                                ),
-                                suffix = {
-                                    Text(
-                                        text = stringResource(R.string.item_product_category),
-                                        fontSize = 16.sp,
-                                        modifier = Modifier
-                                            .alpha(0.5F)
-                                            .padding(end = 6.dp)
-                                    )
-                                },
-                                isError = categoryError,
-                                trailingIcon = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .aspectRatio(1F)
-                                            .clickable {
-                                                onCategoryAdd()
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        val lineColor = MaterialTheme.colorScheme.outline
-                                        Canvas(modifier = Modifier.fillMaxSize()) {
-                                            drawLine(
-                                                color = lineColor,
-                                                start = Offset(
-                                                    0F,
-                                                    0F
-                                                ),
-                                                end = Offset(
-                                                    0F,
-                                                    size.height
-                                                ),
-                                                strokeWidth = Dp.Hairline.value
-                                            )
-                                        }
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(R.string.add_product_category_description),
-                                            modifier = Modifier.size(40.dp)
-                                        )
-                                    }
-                                }
-                            )
-                        }
+                            value = state.selectedProductCategory.value?.name ?: String(),
+                            onFocus = {
+                                isCategorySearchExpanded = true
+                            },
+                            label = stringResource(R.string.item_product_category),
+                            onAddButtonClick = {
+                                onCategoryAdd()
+                            },
+                            addButtonDescription = stringResource(R.string.add_product_category_description),
+                        )
                     }
 
                     Row(
@@ -301,6 +173,15 @@ fun AddProductScreen(
                     ) {
 
                         Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp),
+                            colors = ButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ),
                             onClick = {
                                 val category: ProductCategory? = state.selectedProductCategory.value
                                 val producer: ProductProducer? = state.selectedProductProducer.value
@@ -323,9 +204,6 @@ fun AddProductScreen(
                                     onBack()
                                 }
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(70.dp)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxSize(),
