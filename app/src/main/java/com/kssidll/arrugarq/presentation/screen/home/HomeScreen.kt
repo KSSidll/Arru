@@ -35,7 +35,7 @@ fun HomeScreen(
                 .weight(1F)
                 .padding(start = 8.dp, top = 8.dp, end = 8.dp)
         ) {
-            SpendingChart(
+            OneDimensionalSpendingChart(
                 spentByTimeData = spentByTimeData,
                 spentByTimePeriod = spentByTimePeriod,
                 onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
