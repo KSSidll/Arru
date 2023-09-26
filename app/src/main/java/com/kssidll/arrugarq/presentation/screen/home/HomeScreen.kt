@@ -1,9 +1,7 @@
 package com.kssidll.arrugarq.presentation.screen.home
 
 import android.content.res.Configuration.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
@@ -24,19 +22,16 @@ import com.patrykandpatrick.vico.compose.chart.column.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
-import com.patrykandpatrick.vico.core.chart.scale.*
 import com.patrykandpatrick.vico.core.entry.*
-import kotlinx.coroutines.*
+import com.patrykandpatrick.vico.core.scroll.*
 
 @Composable
 fun HomeScreen(
     onAddItem: () -> Unit,
     itemMonthlyTotals: List<ItemMonthlyTotal>,
 ) {
-    val scope = rememberCoroutineScope()
     val chartScrollState = rememberChartScrollState()
-    val chartData: SnapshotStateList<FloatEntry> = remember { mutableStateListOf() }
-    var shouldChartScrollToEnd by remember { mutableStateOf(false) }
+    val chartData: SnapshotStateList<ChartEntry> = remember { mutableStateListOf() }
     LaunchedEffect(itemMonthlyTotals) {
         chartData.clear()
         itemMonthlyTotals.forEachIndexed { index, data ->
@@ -47,27 +42,6 @@ fun HomeScreen(
                 )
             )
         }
-        shouldChartScrollToEnd = true
-    }
-
-    // scroll can only happen once the scroll state has been updated with new data
-    // thus updating scroll in the same recomposition does nothing
-    DisposableEffect(shouldChartScrollToEnd) {
-        scope.launch {
-            val scrollValue = chartScrollState.maxValue - chartScrollState.value
-            chartScrollState.animateScrollBy(
-                value = scrollValue,
-                animationSpec = FloatTweenSpec(
-                    duration = scrollValue.div(6)
-                        .toInt(),
-                    easing = EaseInOut
-                )
-            )
-        }
-
-        onDispose {
-            shouldChartScrollToEnd = false
-        }
     }
 
     Column {
@@ -77,31 +51,34 @@ fun HomeScreen(
                 .weight(1F)
                 .padding(start = 8.dp, top = 8.dp, end = 8.dp)
         ) {
-            Row(horizontalArrangement = Arrangement.Center) {
-                Chart(
-                    chartScrollState = chartScrollState,
-                    chart = columnChart(
-                        columns = listOf(currentChartStyle.columnChart.columns[0].apply {
-                            this.thicknessDp = 50.dp.value
-                        }),
-                        spacing = 12.dp,
-                    ),
-                    model = entryModelOf(chartData),
-                    topAxis = rememberTopAxis(
-                        valueFormatter = { value, _ ->
-                            itemMonthlyTotals.getOrNull(value.toInt())?.total?.div(100)
-                                .toString()
-                        }
-                    ),
-                    bottomAxis = rememberBottomAxis(
-                        valueFormatter = { value, _ ->
-                            itemMonthlyTotals.getOrNull(value.toInt())?.yearMonth.orEmpty()
-                        },
-                    ),
-                    autoScaleUp = AutoScaleUp.None,
-                    isZoomEnabled = false,
-                )
-            }
+            Chart(
+                chartScrollState = chartScrollState,
+                chartScrollSpec = rememberChartScrollSpec(
+                    isScrollEnabled = true,
+                    initialScroll = InitialScroll.End,
+                ),
+                chart = columnChart(
+                    columns = listOf(currentChartStyle.columnChart.columns[0].apply {
+                        this.thicknessDp = 50.dp.value
+                    }),
+                    spacing = 12.dp,
+                ),
+                chartModelProducer = ChartEntryModelProducer(chartData),
+                topAxis = rememberTopAxis(
+                    valueFormatter = { value, _ ->
+                        itemMonthlyTotals.getOrNull(value.toInt())?.total?.div(100)
+                            .toString()
+                    }
+                ),
+                bottomAxis = rememberBottomAxis(
+                    valueFormatter = { value, _ ->
+                        itemMonthlyTotals.getOrNull(value.toInt())?.yearMonth.orEmpty()
+                    },
+                ),
+                isZoomEnabled = false,
+            )
+
+
         }
 
         // Bottom Bar
