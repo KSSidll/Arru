@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.data.data
+package com.kssidll.arrugarq.domain.data
 
 interface IFuzzySearchable {
     fun getFuzzyScore(query: String): Int

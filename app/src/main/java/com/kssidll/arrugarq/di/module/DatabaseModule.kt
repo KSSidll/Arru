@@ -5,6 +5,7 @@ import androidx.room.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.database.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.repository.*
 import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.qualifiers.*

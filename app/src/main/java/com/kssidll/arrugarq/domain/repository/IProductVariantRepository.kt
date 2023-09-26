@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.data.repository
+package com.kssidll.arrugarq.domain.repository
 
 import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*

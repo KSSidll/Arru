@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
+import com.kssidll.arrugarq.domain.data.*
 import me.xdrop.fuzzywuzzy.*
 
 @Entity(

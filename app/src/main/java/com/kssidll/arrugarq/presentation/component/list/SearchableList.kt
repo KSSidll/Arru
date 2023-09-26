@@ -18,6 +18,7 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.presentation.theme.*
 
 /**
