@@ -11,7 +11,10 @@ fun HomeRoute(
 
     HomeScreen(
         onAddItem = onAddItem,
-        itemMonthlyTotals = homeViewModel.getItemTotalSpentByMonth()
-            .collectAsState(initial = listOf()).value
+        spentByTimeData = homeViewModel.spentByTimeData.collectAsState(initial = listOf()).value,
+        spentByTimePeriod = homeViewModel.spentByTimePeriod,
+        onSpentByTimePeriodSwitch = {
+            homeViewModel.switchToSpentByTimePeriod(it)
+        }
     )
 }

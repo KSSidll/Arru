@@ -135,7 +135,6 @@ fun StyledOutlinedTextField(
 ) {
     val colors = styledTextFieldColorDefaults().toTextFieldColors(optional)
 
-
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,

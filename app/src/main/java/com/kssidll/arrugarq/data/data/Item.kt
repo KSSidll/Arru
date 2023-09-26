@@ -1,6 +1,8 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
+import com.kssidll.arrugarq.domain.chart.*
+import com.patrykandpatrick.vico.core.entry.*
 
 @Entity(
     foreignKeys = [
@@ -54,7 +56,20 @@ data class Item(
     )
 }
 
-data class ItemMonthlyTotal(
-    @ColumnInfo(name = "year_month") val yearMonth: String,
+data class ItemSpentByTime(
+    val time: String,
     val total: Long,
-)
+) : IChartable {
+    override fun chartEntry(x: Int): ChartEntry {
+        return FloatEntry(x.toFloat(), total.toFloat())
+    }
+
+    override fun topAxisLabel(): String {
+        return total.div(100).toString()
+    }
+
+    override fun bottomAxisLabel(): String {
+        return time
+    }
+
+}
