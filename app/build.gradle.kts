@@ -58,7 +58,6 @@ android {
 }
 
 dependencies {
-
     // AndroidX
     implementation(libs.activity.compose)
     implementation(libs.core.splashscreen)
@@ -79,7 +78,6 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.material3.window.sizeclass)
     implementation(libs.material.icons.extended)
-    implementation(libs.material)
 
     // DI
     implementation(libs.hilt)
