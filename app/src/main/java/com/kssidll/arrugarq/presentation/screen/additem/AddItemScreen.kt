@@ -27,6 +27,11 @@ import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
+private fun isDateError(value: Long?) = value == null
+private fun isPriceError(value: Float?) = value == null
+private fun isQuantityError(value: Long?) = value == null
+private fun isProductError(value: Product?) = value == null
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemScreen(
@@ -48,26 +53,17 @@ fun AddItemScreen(
         var isDatePickerDialogExpanded: Boolean by remember {
             mutableStateOf(false)
         }
-        var isProductSearchDialogExpanded: Boolean by remember {
+        var isShopSearchDialogExpanded: Boolean by remember {
             mutableStateOf(false)
         }
-        var isShopSearchDialogExpanded: Boolean by remember {
+        var isProductSearchDialogExpanded: Boolean by remember {
             mutableStateOf(false)
         }
         var isVariantSearchDialogExpanded: Boolean by remember {
             mutableStateOf(false)
         }
 
-        var productError: Boolean by remember {
-            mutableStateOf(false)
-        }
-        var quantityError: Boolean by remember {
-            mutableStateOf(false)
-        }
-        var priceError: Boolean by remember {
-            mutableStateOf(false)
-        }
-        var dateError: Boolean by remember {
+        var attemptedToSubmit: Boolean by remember {
             mutableStateOf(false)
         }
 
@@ -118,6 +114,24 @@ fun AddItemScreen(
                 }
             }
 
+            if (isShopSearchDialogExpanded) {
+                FuzzySearchableListDialog(
+                    onDismissRequest = {
+                        isShopSearchDialogExpanded = false
+                    },
+                    items = shops.collectAsState(emptyList()).value,
+                    itemText = { it.name },
+                    onItemClick = {
+                        state.selectedShop.value = it
+                        isShopSearchDialogExpanded = false
+                    },
+                    onAddButtonClick = onShopAdd,
+                    addButtonDescription = stringResource(R.string.add_shop_description),
+                    showDefaultValueItem = true,
+                    defaultItemText = stringResource(R.string.no_value),
+                )
+            }
+
             if (isProductSearchDialogExpanded) {
                 FuzzySearchableListDialog(
                     onDismissRequest = {
@@ -127,7 +141,6 @@ fun AddItemScreen(
                     onItemClick = {
                         state.selectedProduct.value = it?.product
                         isProductSearchDialogExpanded = false
-                        productError = false
                         it?.product?.let { product -> onSelectProduct(product) }
                     },
                     itemText = { it.product.name },
@@ -151,24 +164,6 @@ fun AddItemScreen(
                     addButtonDescription = stringResource(R.string.add_product_variant_description),
                     showDefaultValueItem = true,
                     defaultItemText = stringResource(R.string.item_product_variant_default_value),
-                )
-            }
-
-            if (isShopSearchDialogExpanded) {
-                FuzzySearchableListDialog(
-                    onDismissRequest = {
-                        isShopSearchDialogExpanded = false
-                    },
-                    items = shops.collectAsState(emptyList()).value,
-                    itemText = { it.name },
-                    onItemClick = {
-                        state.selectedShop.value = it
-                        isShopSearchDialogExpanded = false
-                    },
-                    onAddButtonClick = onShopAdd,
-                    addButtonDescription = stringResource(R.string.add_shop_description),
-                    showDefaultValueItem = true,
-                    defaultItemText = stringResource(R.string.no_value),
                 )
             }
 
@@ -197,7 +192,8 @@ fun AddItemScreen(
                             onClick = {
                                 isDatePickerDialogExpanded = true
                             },
-                            interactionSource = datePickerToggleInteractionSource
+                            interactionSource = datePickerToggleInteractionSource,
+                            error = if (attemptedToSubmit) isDateError(state.date.value) else false
                         )
                     }
 
@@ -228,7 +224,7 @@ fun AddItemScreen(
                                         .alpha(0.5F)
                                 )
                             },
-                            isError = priceError
+                            isError = if (attemptedToSubmit) isPriceError(state.price.value.toFloatOrNull()) else false
                         )
                     }
 
@@ -262,7 +258,7 @@ fun AddItemScreen(
                                         .alpha(0.5F)
                                 )
                             },
-                            isError = quantityError
+                            isError = if (attemptedToSubmit) isQuantityError(state.quantity.value.toLongOrNull()) else false,
                         )
                     }
 
@@ -297,7 +293,7 @@ fun AddItemScreen(
                             isProductSearchDialogExpanded = true
                         },
                         label = stringResource(R.string.item_product),
-                        error = productError,
+                        error = if (attemptedToSubmit) isProductError(state.selectedProduct.value) else false,
                         onAddButtonClick = {
                             onProductAdd()
                         },
@@ -343,6 +339,8 @@ fun AddItemScreen(
                             disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         ),
                         onClick = {
+                            attemptedToSubmit = true
+
                             val product: Product? = state.selectedProduct.value
                             val variant: ProductVariant? = state.selectedVariant.value
                             val shop: Shop? = state.selectedShop.value
@@ -351,16 +349,11 @@ fun AddItemScreen(
                             val price: Float? = state.price.value.toFloatOrNull()
                             val date: Long? = state.date.value
 
-                            productError = product == null
-                            quantityError = quantity == null
-                            priceError = price == null
-                            dateError = date == null
-
                             if (
-                                !productError &&
-                                !quantityError &&
-                                !priceError &&
-                                !dateError
+                                !isDateError(date) &&
+                                !isPriceError(price) &&
+                                !isQuantityError(quantity) &&
+                                !isProductError(product)
                             ) {
                                 onItemAdd(
                                     AddItemData(

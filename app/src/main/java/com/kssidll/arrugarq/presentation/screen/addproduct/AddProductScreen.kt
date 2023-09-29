@@ -19,6 +19,9 @@ import com.kssidll.arrugarq.presentation.theme.*
 import kotlinx.coroutines.flow.*
 import java.util.*
 
+fun isNameError(value: String?) = value.isNullOrBlank()
+fun isCategoryError(value: ProductCategory?) = value == null
+
 @Composable
 fun AddProductScreen(
     onBack: () -> Unit,
@@ -39,11 +42,7 @@ fun AddProductScreen(
             mutableStateOf(false)
         }
 
-        var categoryError: Boolean by remember {
-            mutableStateOf(false)
-        }
-
-        var nameError: Boolean by remember {
+        var attemptedToSubmit: Boolean by remember {
             mutableStateOf(false)
         }
 
@@ -110,7 +109,7 @@ fun AddProductScreen(
                                             text = stringResource(R.string.item_product)
                                         )
                                     },
-                                    isError = nameError
+                                    isError = if (attemptedToSubmit) isNameError(state.name.value) else false
                                 )
                             }
                         }
@@ -132,6 +131,7 @@ fun AddProductScreen(
                                 onProducerAdd()
                             },
                             addButtonDescription = stringResource(R.string.add_product_producer_description),
+                            optional = true,
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -149,6 +149,7 @@ fun AddProductScreen(
                                 onCategoryAdd()
                             },
                             addButtonDescription = stringResource(R.string.add_product_category_description),
+                            error = if (attemptedToSubmit) isCategoryError(state.selectedProductCategory.value) else false,
                         )
                     }
 
@@ -169,16 +170,15 @@ fun AddProductScreen(
                                 disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             ),
                             onClick = {
+                                attemptedToSubmit = true
+
                                 val category: ProductCategory? = state.selectedProductCategory.value
                                 val producer: ProductProducer? = state.selectedProductProducer.value
                                 val name: String = state.name.value
 
-                                categoryError = category == null
-                                nameError = name.isEmpty()
-
                                 if (
-                                    !categoryError &&
-                                    !nameError
+                                    !isCategoryError(category) &&
+                                    !isNameError(name)
                                 ) {
                                     onProductAdd(
                                         AddProductData(
