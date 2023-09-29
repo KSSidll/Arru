@@ -24,6 +24,7 @@ fun SearchField(
     optional: Boolean = false,
     value: String = String(),
     onFocus: (() -> Unit)? = null,
+    readOnly: Boolean = true,
     label: String = String(),
     error: Boolean = false,
     showAddButton: Boolean = true,
@@ -45,7 +46,7 @@ fun SearchField(
     StyledOutlinedTextField(
         enabled = enabled,
         optional = optional,
-        readOnly = true,
+        readOnly = readOnly,
         singleLine = true,
         value = value,
         onValueChange = {},

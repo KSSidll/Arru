@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.presentation.component.list
+package com.kssidll.arrugarq.presentation.component.button
 
 import android.content.res.*
 import androidx.compose.foundation.*

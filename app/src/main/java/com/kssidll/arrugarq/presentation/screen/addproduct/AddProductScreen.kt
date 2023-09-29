@@ -1,13 +1,11 @@
 package com.kssidll.arrugarq.presentation.screen.addproduct
 
 import android.content.res.*
-import androidx.activity.compose.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
@@ -15,7 +13,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.presentation.component.field.*
-import com.kssidll.arrugarq.presentation.component.list.*
+import com.kssidll.arrugarq.presentation.component.dialog.*
 import com.kssidll.arrugarq.presentation.component.other.*
 import com.kssidll.arrugarq.presentation.theme.*
 import kotlinx.coroutines.flow.*
@@ -33,19 +31,12 @@ fun AddProductScreen(
 ) {
 
     Column {
-        var isCategorySearchExpanded: Boolean by rememberSaveable {
+        var isCategorySearchDialogExpanded: Boolean by remember {
             mutableStateOf(false)
         }
 
-        var isProducerSearchExpanded: Boolean by rememberSaveable {
+        var isProducerSearchDialogExpanded: Boolean by remember {
             mutableStateOf(false)
-        }
-
-        BackHandler(
-            enabled = isCategorySearchExpanded || isProducerSearchExpanded
-        ) {
-            isCategorySearchExpanded = false
-            isProducerSearchExpanded = false
         }
 
         var categoryError: Boolean by remember {
@@ -56,18 +47,7 @@ fun AddProductScreen(
             mutableStateOf(false)
         }
 
-        SecondaryAppBar(
-            onBack = {
-                if (
-                    !isCategorySearchExpanded &&
-                    !isProducerSearchExpanded
-                ) {
-                    onBack()
-                }
-                isCategorySearchExpanded = false
-                isProducerSearchExpanded = false
-            }
-        ) {
+        SecondaryAppBar(onBack = onBack) {
             Text(text = stringResource(R.string.item_product))
         }
 
@@ -76,25 +56,31 @@ fun AddProductScreen(
         Box(
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            if (isProducerSearchExpanded) {
-                FuzzySearchableList(
+            if (isProducerSearchDialogExpanded) {
+                FuzzySearchableListDialog(
+                    onDismissRequest = {
+                        isProducerSearchDialogExpanded = false
+                    },
                     items = producers.collectAsState(emptyList()).value,
                     itemText = { it.name },
                     onItemClick = {
                         state.selectedProductProducer.value = it
-                        isProducerSearchExpanded = false
+                        isProducerSearchDialogExpanded = false
                     },
                     onAddButtonClick = onProducerAdd,
                     addButtonDescription = stringResource(R.string.add_product_producer_description),
                     showDefaultValueItem = true,
                     defaultItemText = stringResource(R.string.no_value),
                 )
-            } else if (isCategorySearchExpanded) {
-                FuzzySearchableList(
+            } else if (isCategorySearchDialogExpanded) {
+                FuzzySearchableListDialog(
+                    onDismissRequest = {
+                        isCategorySearchDialogExpanded = false
+                    },
                     items = categoriesWithAltNames.collectAsState(emptyList()).value,
                     onItemClick = {
                         state.selectedProductCategory.value = it?.productCategory
-                        isCategorySearchExpanded = false
+                        isCategorySearchDialogExpanded = false
                     },
                     itemText = { it.productCategory.name },
                     onAddButtonClick = onCategoryAdd,
@@ -139,7 +125,7 @@ fun AddProductScreen(
                                 .height(60.dp),
                             value = state.selectedProductProducer.value?.name ?: String(),
                             onFocus = {
-                                isProducerSearchExpanded = true
+                                isProducerSearchDialogExpanded = true
                             },
                             label = stringResource(R.string.item_product_producer),
                             onAddButtonClick = {
@@ -156,7 +142,7 @@ fun AddProductScreen(
                                 .height(60.dp),
                             value = state.selectedProductCategory.value?.name ?: String(),
                             onFocus = {
-                                isCategorySearchExpanded = true
+                                isCategorySearchDialogExpanded = true
                             },
                             label = stringResource(R.string.item_product_category),
                             onAddButtonClick = {

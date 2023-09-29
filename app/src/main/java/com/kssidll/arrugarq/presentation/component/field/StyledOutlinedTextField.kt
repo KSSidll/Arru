@@ -58,52 +58,77 @@ fun StyledTextFieldColors.toTextFieldColors(optional: Boolean = false): TextFiel
     )
 
 @Composable
-fun styledTextFieldColorDefaults(): StyledTextFieldColors {
-    with (MaterialTheme.colorScheme) {
-        return StyledTextFieldColors(
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = onSurface,
-                unfocusedTextColor = onSurface,
-                disabledTextColor = onSurface.copy(0.3F),
-                errorTextColor = this.error,
-
-                focusedIndicatorColor = tertiary,
-                unfocusedIndicatorColor = tertiary,
-                disabledIndicatorColor = onSurface.copy(0.3F),
-                errorIndicatorColor = this.error,
-
-                focusedTrailingIconColor = onSurface,
-                unfocusedTrailingIconColor = onSurface,
-                disabledTrailingIconColor = onSurface.copy(0.3F),
-                errorTrailingIconColor = onSurface,
-
-                focusedLabelColor = tertiary,
-                unfocusedLabelColor = tertiary,
-                disabledLabelColor = onSurface.copy(0.3F),
-                errorLabelColor = this.error,
-
-                focusedContainerColor = surface,
-                unfocusedContainerColor = surface,
-                disabledContainerColor = surface,
-                errorContainerColor = surface,
-
-                cursorColor = tertiary,
-                errorCursorColor = this.error,
-                selectionColors = TextSelectionColors(
-                    handleColor = tertiary,
-                    backgroundColor = tertiaryContainer,
-                ),
-            ),
-            optionalFocusedTextColor = onSurface.copy(0.4F),
-            optionalUnfocusedTextColor = onSurface.copy(0.4F),
-            optionalFocusedIndicatorColor = tertiary.copy(0.4F),
-            optionalUnfocusedIndicatorColor = tertiary.copy(0.4F),
-            optionalFocusedTrailingIconColor = onSurface.copy(0.4F),
-            optionalUnfocusedTrailingIconColor = onSurface.copy(0.4F),
-            optionalFocusedLabelIcon = tertiary.copy(0.6F),
-            optionalUnfocusedLabelIcon = tertiary.copy(0.6F),
-        )
-    }
+fun styledTextFieldColorDefaults(
+    focusedTextColor: Color = MaterialTheme.colorScheme.onSurface,
+    unfocusedTextColor: Color = MaterialTheme.colorScheme.onSurface,
+    disabledTextColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.3F),
+    errorTextColor: Color = MaterialTheme.colorScheme.error,
+    focusedIndicatorColor: Color = MaterialTheme.colorScheme.tertiary,
+    unfocusedIndicatorColor: Color = MaterialTheme.colorScheme.tertiary,
+    disabledIndicatorColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.3F),
+    errorIndicatorColor: Color = MaterialTheme.colorScheme.error,
+    focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
+    disabledTrailingIconColor: Color = MaterialTheme.colorScheme.primary.copy(0.3F),
+    errorTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
+    focusedLabelColor: Color = MaterialTheme.colorScheme.tertiary,
+    unfocusedLabelColor: Color = MaterialTheme.colorScheme.tertiary,
+    disabledLabelColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.3F),
+    errorLabelColor: Color = MaterialTheme.colorScheme.error,
+    focusedContainerColor: Color = Color.Transparent,
+    unfocusedContainerColor: Color = Color.Transparent,
+    disabledContainerColor: Color = Color.Transparent,
+    errorContainerColor: Color = Color.Transparent,
+    cursorColor: Color = MaterialTheme.colorScheme.tertiary,
+    errorCursorColor: Color = MaterialTheme.colorScheme.error,
+    selectionColors: TextSelectionColors = TextSelectionColors(
+        handleColor = MaterialTheme.colorScheme.tertiary,
+        backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+    ),
+    optionalFocusedTextColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.4F),
+    optionalUnfocusedTextColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.4F),
+    optionalFocusedIndicatorColor: Color = MaterialTheme.colorScheme.tertiary.copy(0.4F),
+    optionalUnfocusedIndicatorColor: Color = MaterialTheme.colorScheme.tertiary.copy(0.4F),
+    optionalFocusedTrailingIconColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.4F),
+    optionalUnfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.onSurface.copy(0.4F),
+    optionalFocusedLabelIcon: Color = MaterialTheme.colorScheme.tertiary.copy(0.6F),
+    optionalUnfocusedLabelIcon: Color = MaterialTheme.colorScheme.tertiary.copy(0.6F),
+): StyledTextFieldColors {
+    return StyledTextFieldColors(
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = focusedTextColor,
+            unfocusedTextColor = unfocusedTextColor,
+            disabledTextColor = disabledTextColor,
+            errorTextColor = errorTextColor,
+            focusedIndicatorColor = focusedIndicatorColor,
+            unfocusedIndicatorColor = unfocusedIndicatorColor,
+            disabledIndicatorColor = disabledIndicatorColor,
+            errorIndicatorColor = errorIndicatorColor,
+            focusedTrailingIconColor = focusedTrailingIconColor,
+            unfocusedTrailingIconColor = unfocusedTrailingIconColor,
+            disabledTrailingIconColor = disabledTrailingIconColor,
+            errorTrailingIconColor = errorTrailingIconColor,
+            focusedLabelColor = focusedLabelColor,
+            unfocusedLabelColor = unfocusedLabelColor,
+            disabledLabelColor = disabledLabelColor,
+            errorLabelColor = errorLabelColor,
+            focusedContainerColor = focusedContainerColor,
+            unfocusedContainerColor = unfocusedContainerColor,
+            disabledContainerColor = disabledContainerColor,
+            errorContainerColor = errorContainerColor,
+            cursorColor = cursorColor,
+            errorCursorColor = errorCursorColor,
+            selectionColors = selectionColors
+        ),
+        optionalFocusedTextColor = optionalFocusedTextColor,
+        optionalUnfocusedTextColor = optionalUnfocusedTextColor,
+        optionalFocusedIndicatorColor = optionalFocusedIndicatorColor,
+        optionalUnfocusedIndicatorColor = optionalUnfocusedIndicatorColor,
+        optionalFocusedTrailingIconColor = optionalFocusedTrailingIconColor,
+        optionalUnfocusedTrailingIconColor = optionalUnfocusedTrailingIconColor,
+        optionalFocusedLabelIcon = optionalFocusedLabelIcon,
+        optionalUnfocusedLabelIcon = optionalUnfocusedLabelIcon,
+    )
 }
 
 
@@ -132,9 +157,8 @@ fun StyledOutlinedTextField(
     minLines: Int = Int.MIN_VALUE,
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
     shape: Shape = OutlinedTextFieldDefaults.shape,
+    colors: StyledTextFieldColors = styledTextFieldColorDefaults(),
 ) {
-    val colors = styledTextFieldColorDefaults().toTextFieldColors(optional)
-
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -158,6 +182,6 @@ fun StyledOutlinedTextField(
         minLines = minLines,
         interactionSource = interactionSource,
         shape = shape,
-        colors = colors,
+        colors = colors.toTextFieldColors(optional),
     )
 }
