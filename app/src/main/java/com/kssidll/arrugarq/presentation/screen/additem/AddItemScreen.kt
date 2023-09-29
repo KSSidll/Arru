@@ -194,7 +194,7 @@ fun AddItemScreen(
                             value = if (date != null) SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date) else String(),
                             showAddButton = false,
                             label = stringResource(R.string.item_date),
-                            onFocus = {
+                            onClick = {
                                 isDatePickerDialogExpanded = true
                             },
                             interactionSource = datePickerToggleInteractionSource
@@ -266,7 +266,6 @@ fun AddItemScreen(
                         )
                     }
 
-
                     Spacer(modifier = Modifier.height(12.dp))
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(12.dp))
@@ -277,7 +276,7 @@ fun AddItemScreen(
                             .height(60.dp),
                         optional = true,
                         value = state.selectedShop.value?.name ?: String(),
-                        onFocus = {
+                        onClick = {
                             isShopSearchDialogExpanded = true
                         },
                         label = stringResource(R.string.item_shop),
@@ -294,7 +293,7 @@ fun AddItemScreen(
                             .fillMaxWidth()
                             .height(60.dp),
                         value = state.selectedProduct.value?.name ?: String(),
-                        onFocus = {
+                        onClick = {
                             isProductSearchDialogExpanded = true
                         },
                         label = stringResource(R.string.item_product),
@@ -316,7 +315,7 @@ fun AddItemScreen(
                         enabled = isVariantEnabled,
                         value = state.selectedVariant.value?.name
                             ?: stringResource(R.string.item_product_variant_default_value),
-                        onFocus = {
+                        onClick = {
                             isVariantSearchDialogExpanded = true
                         },
                         label = stringResource(R.string.item_product_variant),

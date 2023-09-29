@@ -7,17 +7,13 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.tokens.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.*
-import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.presentation.component.button.*
@@ -26,15 +22,16 @@ import com.kssidll.arrugarq.presentation.theme.*
 
 /**
  * @param T: Type of the item, needs to implement IFuzzySearchable
+ * @param onDismissRequest: Function called when the user tries to dismiss the Dialog by clicking outside. This is also called when the Add/'+' button is clicked
  * @param items: Items to be displayed in the list
- * @param onItemClick: Function called when an item is clicked
  * @param itemText: Transfarmation used to determine what to display on the item card
+ * @param onItemClick: Function called when an item is clicked
  * @param showAddButton: Whether to show an Add/'+' button in the search field
  * @param onAddButtonClick: Function called when the Add/'+' button is clicked
  * @param addButtonDescription: Description for the Add/'+' button icon
  * @param showDefaultValueItem: Whether to show a default, null value item under the search field
  * @param defaultItemText: String to display on the default, null value item
- * @param spaceUnderSearchField: How much height offset there should be under the search field. BEWARE, default, null value item is drawn in that space
+ * @param shape: Shape of the Dialog
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +47,21 @@ fun <T> FuzzySearchableListDialog(
     defaultItemText: String = String(),
     shape: Shape = ShapeDefaults.ExtraLarge,
 ) where T: IFuzzySearchable {
+    var query: String by remember {
+        mutableStateOf(String())
+    }
+
+    var displayedItems: List<T> by remember {
+        mutableStateOf(listOf())
+    }
+
+    LaunchedEffect(
+        items,
+        query
+    ) {
+        displayedItems = items.fuzzySearchSort(query)
+    }
+
     AlertDialog(onDismissRequest = onDismissRequest) {
         Surface(
             modifier = Modifier
@@ -59,20 +71,6 @@ fun <T> FuzzySearchableListDialog(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 1.dp,
         ) {
-            var query: String by remember {
-                mutableStateOf(String())
-            }
-
-            var displayedItems: List<T> by remember {
-                mutableStateOf(listOf())
-            }
-
-            LaunchedEffect(
-                items,
-                query
-            ) {
-                displayedItems = items.fuzzySearchSort(query)
-            }
 
             Column {
                 LazyColumn(
@@ -128,6 +126,7 @@ fun <T> FuzzySearchableListDialog(
                                 Box(
                                     modifier = Modifier
                                         .clickable {
+                                            onDismissRequest()
                                             onAddButtonClick?.invoke()
                                         },
                                     contentAlignment = Alignment.Center

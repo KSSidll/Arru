@@ -23,14 +23,14 @@ fun SearchField(
     enabled: Boolean = true,
     optional: Boolean = false,
     value: String = String(),
-    onFocus: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
     readOnly: Boolean = true,
     label: String = String(),
     error: Boolean = false,
     showAddButton: Boolean = true,
     onAddButtonClick: (() -> Unit)? = null,
     addButtonDescription: String? = null,
-    interactionSource: MutableInteractionSource = MutableInteractionSource(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     var lineColor: Color
 
@@ -42,23 +42,36 @@ fun SearchField(
             else colors.unfocusedIndicatorColor
     }
 
-    val focusRequester = remember { FocusRequester() }
+    // a hack to force the text field to lose focus every time it's focused
+    // setting canFocus to focusDisabled doesn't work so we make mutable modifier instead
+    // i have no idea if there's a better way to do this
+    // and i have no idea why we aren't just able to do that with compose api
+    // but this is the only solution i could come up with that actually works
+    var focusDisabled: Boolean by remember { mutableStateOf(false) }
+    var focusControllerModifier: Modifier by remember { mutableStateOf(Modifier) }
+    LaunchedEffect(focusDisabled) {
+        if (focusDisabled) {
+            focusControllerModifier = Modifier
+            focusDisabled = false
+        }
+    }
+
     StyledOutlinedTextField(
+        modifier = modifier
+            .onFocusEvent {
+                if (it.isFocused) {
+                    onClick?.invoke()
+                    focusControllerModifier = Modifier.focusProperties { canFocus = false }
+                    focusDisabled = true
+                }
+            }
+            .then(focusControllerModifier),
         enabled = enabled,
         optional = optional,
         readOnly = readOnly,
         singleLine = true,
         value = value,
         onValueChange = {},
-        modifier = Modifier
-            .focusRequester(focusRequester)
-            .onFocusEvent {
-                if (it.isFocused) {
-                    onFocus?.invoke()
-                }
-                focusRequester.freeFocus()
-            }
-            .then(modifier),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp
         ),
@@ -96,7 +109,7 @@ fun SearchField(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = addButtonDescription,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.fillMaxSize(0.75F)
                     )
                 }
             }

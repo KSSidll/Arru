@@ -124,7 +124,7 @@ fun AddProductScreen(
                                 .fillMaxWidth()
                                 .height(60.dp),
                             value = state.selectedProductProducer.value?.name ?: String(),
-                            onFocus = {
+                            onClick = {
                                 isProducerSearchDialogExpanded = true
                             },
                             label = stringResource(R.string.item_product_producer),
@@ -141,7 +141,7 @@ fun AddProductScreen(
                                 .fillMaxWidth()
                                 .height(60.dp),
                             value = state.selectedProductCategory.value?.name ?: String(),
-                            onFocus = {
+                            onClick = {
                                 isCategorySearchDialogExpanded = true
                             },
                             label = stringResource(R.string.item_product_category),
