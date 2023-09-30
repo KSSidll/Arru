@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
 import com.kssidll.arrugarq.domain.chart.*
+import com.kssidll.arrugarq.domain.utils.*
 import com.patrykandpatrick.vico.core.entry.*
 
 @Entity(
@@ -68,8 +69,7 @@ data class ItemSpentByTime(
     }
 
     override fun topAxisLabel(): String {
-        return total.div(100)
-            .toString()
+        return total.div(100).formatToCurrency()
     }
 
     override fun bottomAxisLabel(): String {
