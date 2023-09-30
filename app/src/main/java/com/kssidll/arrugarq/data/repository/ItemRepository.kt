@@ -38,6 +38,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getTotalSpentByDayFlow()
     }
 
+    override suspend fun getTotalSpentByWeek(): List<ItemSpentByTime> {
+        return itemDao.getTotalSpentByWeek()
+    }
+
+    override fun getTotalSpentByWeekFlow(): Flow<List<ItemSpentByTime>> {
+        return itemDao.getTotalSpentByWeekFlow()
+    }
+
     override suspend fun getTotalSpentByMonth(): List<ItemSpentByTime> {
         return itemDao.getTotalSpentByMonth()
     }

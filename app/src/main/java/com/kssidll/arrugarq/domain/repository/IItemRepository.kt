@@ -12,6 +12,8 @@ interface IItemRepository {
     fun getLastFlow(): Flow<Item>
     suspend fun getTotalSpentByDay(): List<ItemSpentByTime>
     fun getTotalSpentByDayFlow(): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByWeek(): List<ItemSpentByTime>
+    fun getTotalSpentByWeekFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByMonth(): List<ItemSpentByTime>
     fun getTotalSpentByMonthFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByYear(): List<ItemSpentByTime>

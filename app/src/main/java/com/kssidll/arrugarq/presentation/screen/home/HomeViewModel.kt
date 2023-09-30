@@ -11,6 +11,7 @@ import javax.inject.*
 
 enum class SpentByTimePeriod {
     Day,
+    Week,
     Month,
     Year,
 }
@@ -45,6 +46,7 @@ class HomeViewModel @Inject constructor(
             with(itemRepository) {
                 when (newPeriod) {
                     SpentByTimePeriod.Day -> _spentByTimeData.value = getTotalSpentByDayFlow().cancellable()
+                    SpentByTimePeriod.Week -> _spentByTimeData.value = getTotalSpentByWeekFlow().cancellable()
                     SpentByTimePeriod.Month -> _spentByTimeData.value = getTotalSpentByMonthFlow().cancellable()
                     SpentByTimePeriod.Year -> _spentByTimeData.value = getTotalSpentByYearFlow().cancellable()
                 }

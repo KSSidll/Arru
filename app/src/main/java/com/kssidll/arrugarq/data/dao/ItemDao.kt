@@ -30,6 +30,12 @@ interface ItemDao {
     @Query("SELECT strftime('%Y-%m-%d', datetime(date / 1000, 'unixepoch')) AS time, SUM(price) AS total FROM item GROUP BY time ORDER BY time")
     fun getTotalSpentByDayFlow(): Flow<List<ItemSpentByTime>>
 
+    @Query("SELECT strftime('%Y-%W', datetime(date / 1000, 'unixepoch')) AS time, SUM(price) AS total FROM item GROUP BY time ORDER BY time")
+    suspend fun getTotalSpentByWeek(): List<ItemSpentByTime>
+
+    @Query("SELECT strftime('%Y-%W', datetime(date / 1000, 'unixepoch')) AS time, SUM(price) AS total FROM item GROUP BY time ORDER BY time")
+    fun getTotalSpentByWeekFlow(): Flow<List<ItemSpentByTime>>
+
     @Query("SELECT strftime('%Y-%m', datetime(date / 1000, 'unixepoch')) AS time, SUM(price) AS total FROM item GROUP BY time ORDER BY time")
     suspend fun getTotalSpentByMonth(): List<ItemSpentByTime>
 
