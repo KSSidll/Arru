@@ -1,0 +1,43 @@
+package com.kssidll.arrugarq.ui.theme.schema
+
+import androidx.compose.material3.*
+import androidx.compose.ui.graphics.*
+
+val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFFB6C4FF),
+    onPrimary = Color(0xFF082978),
+    primaryContainer = Color(0xFF284190),
+    onPrimaryContainer = Color(0xFFDCE1FF),
+    inversePrimary = Color(0xFF425AA9),
+    secondary = Color(0xFFD1BCFF),
+    onSecondary = Color(0xFF391E72),
+    secondaryContainer = Color(0xFF50378A),
+    onSecondaryContainer = Color(0xFFE9DDFF),
+    tertiary = Color(0xFFD9B9FF),
+    onTertiary = Color(0xFF411B6D),
+    tertiaryContainer = Color(0xFF593485),
+    onTertiaryContainer = Color(0xFFEEDBFF),
+    background = Color(0xFF1B1B1F),
+    onBackground = Color(0xFFE4E1E6),
+    surface = Color(0xFF1E1F22),
+    onSurface = Color(0xFFE4E1E6),
+    surfaceVariant = Color(0xFF45464F),
+    onSurfaceVariant = Color(0xFFC6C6D0),
+    surfaceTint = Color(0xFFB6C4FF),
+    inverseSurface = Color(0xFFE4E1E6),
+    inverseOnSurface = Color(0xFF1B1B1F),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    outline = Color(0xFF90909A),
+    outlineVariant = Color(0xFF45464F),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFF404040),
+    surfaceContainer = Color(0xFF2B2D31),
+    surfaceContainerHigh = Color(0xFF313338),
+    surfaceContainerHighest = Color(0xFF383A40),
+    surfaceContainerLow = Color(0xFF232428),
+    surfaceContainerLowest = Color(0xFF11140E),
+    surfaceDim = Color(0xFF1E1F22),
+)

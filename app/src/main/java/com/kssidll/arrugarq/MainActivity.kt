@@ -8,7 +8,7 @@ import androidx.activity.compose.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.*
-import com.kssidll.arrugarq.presentation.theme.*
+import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import dagger.hilt.android.*

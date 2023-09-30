@@ -5,13 +5,13 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
-import com.kssidll.arrugarq.presentation.screen.additem.*
-import com.kssidll.arrugarq.presentation.screen.addproduct.*
-import com.kssidll.arrugarq.presentation.screen.addproductcategory.*
-import com.kssidll.arrugarq.presentation.screen.addproductproducer.*
-import com.kssidll.arrugarq.presentation.screen.addproductvariant.*
-import com.kssidll.arrugarq.presentation.screen.addshop.*
-import com.kssidll.arrugarq.presentation.screen.home.*
+import com.kssidll.arrugarq.ui.screen.additem.*
+import com.kssidll.arrugarq.ui.screen.addproduct.*
+import com.kssidll.arrugarq.ui.screen.addproductcategory.*
+import com.kssidll.arrugarq.ui.screen.addproductproducer.*
+import com.kssidll.arrugarq.ui.screen.addproductvariant.*
+import com.kssidll.arrugarq.ui.screen.addshop.*
+import com.kssidll.arrugarq.ui.screen.home.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 

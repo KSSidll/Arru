@@ -95,7 +95,14 @@ dependencies {
 }
 
 ksp {
-    arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
+    arg(
+        RoomSchemaArgProvider(
+            File(
+                projectDir,
+                "schemas"
+            )
+        )
+    )
 }
 
 class RoomSchemaArgProvider(

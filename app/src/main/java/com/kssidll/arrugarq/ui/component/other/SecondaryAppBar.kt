@@ -1,0 +1,68 @@
+package com.kssidll.arrugarq.ui.component.other
+
+import android.content.res.*
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.automirrored.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.ui.theme.*
+
+@Composable
+fun SecondaryAppBar(
+    onBack: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+    ) {
+
+        IconButton(
+            onClick = onBack
+        ) {
+            Icon(
+                Icons.AutoMirrored.Rounded.ArrowBack,
+                contentDescription = "Go back",
+                modifier = Modifier.size(30.dp),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            content()
+        }
+    }
+}
+
+@Preview(
+    group = "Secondary App Bar",
+    name = "Light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Preview(
+    group = "Secondary App Bar",
+    name = "Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun SecondaryAppBarPreview() {
+    ArrugarqTheme {
+        Surface {
+            SecondaryAppBar(
+                onBack = {}
+            ) {}
+        }
+    }
+}

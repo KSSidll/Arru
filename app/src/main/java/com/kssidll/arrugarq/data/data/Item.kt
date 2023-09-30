@@ -59,13 +59,17 @@ data class Item(
 data class ItemSpentByTime(
     val time: String,
     val total: Long,
-) : IChartable {
+): IChartable {
     override fun chartEntry(x: Int): ChartEntry {
-        return FloatEntry(x.toFloat(), total.toFloat())
+        return FloatEntry(
+            x.toFloat(),
+            total.toFloat()
+        )
     }
 
     override fun topAxisLabel(): String {
-        return total.div(100).toString()
+        return total.div(100)
+            .toString()
     }
 
     override fun bottomAxisLabel(): String {

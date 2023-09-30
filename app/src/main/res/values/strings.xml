@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Arrugarq</string>
 
+    <string name="navigate_to_dashboard_description">Navigate to the dashboard</string>
+
     <string name="search">Search</string>
 
     <string name="no_value">None</string>

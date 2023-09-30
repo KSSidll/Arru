@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="navigate_to_dashboard_description">Przejdź do głównego ekranu</string>
+
     <string name="search">Szukaj</string>
 
     <string name="no_value">Brak</string>
