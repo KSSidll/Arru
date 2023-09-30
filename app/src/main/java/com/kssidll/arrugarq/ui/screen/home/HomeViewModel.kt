@@ -2,7 +2,8 @@ package com.kssidll.arrugarq.ui.screen.home
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.chart.*
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.repository.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -25,7 +26,7 @@ class HomeViewModel @Inject constructor(
     private val itemRepository: IItemRepository
 
     private var spentByTimeQuery: Job? = null
-    private var _spentByTimeData: MutableState<Flow<List<IChartable>>> = mutableStateOf(flowOf())
+    private var _spentByTimeData: MutableState<Flow<List<Chartable>>> = mutableStateOf(flowOf())
     val spentByTimeData by _spentByTimeData
 
     private var _spentByTimePeriod: MutableState<SpentByTimePeriod> =
@@ -37,6 +38,17 @@ class HomeViewModel @Inject constructor(
         this.itemRepository = itemRepository
 
         switchToSpentByTimePeriod(spentByTimePeriod)
+    }
+
+    fun getTotalSpent(): Flow<Float> {
+        return itemRepository.getTotalSpentFlow()
+            .map {
+                it.div(100F)
+            }
+    }
+
+    fun getSpentByShop(): Flow<List<ItemSpentByShop>> {
+        return itemRepository.getShopTotalSpentFlow()
     }
 
     fun switchToSpentByTimePeriod(newPeriod: SpentByTimePeriod) {

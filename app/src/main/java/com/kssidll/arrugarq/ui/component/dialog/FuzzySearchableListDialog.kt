@@ -16,8 +16,8 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.ui.component.button.*
 import com.kssidll.arrugarq.ui.component.field.*
+import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.theme.*
 
 /**
@@ -78,7 +78,7 @@ fun <T> FuzzySearchableListDialog(
                     reverseLayout = true
                 ) {
                     items(items = displayedItems) {
-                        ClickableListItem(
+                        BaseClickableListItem(
                             onClick = {
                                 onItemClick?.invoke(it)
                             },
@@ -91,7 +91,7 @@ fun <T> FuzzySearchableListDialog(
 
                 if (showDefaultValueItem) {
                     HorizontalDivider()
-                    ClickableListItem(
+                    BaseClickableListItem(
                         onClick = {
                             onItemClick?.invoke(null)
                         },

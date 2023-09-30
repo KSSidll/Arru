@@ -11,7 +11,9 @@ fun HomeRoute(
 
     HomeScreen(
         onAddItem = onAddItem,
-        spentByTimeData = homeViewModel.spentByTimeData.collectAsState(initial = listOf()).value,
+        totalSpentData = homeViewModel.getTotalSpent(),
+        spentByShopData = homeViewModel.getSpentByShop(),
+        spentByTimeData = homeViewModel.spentByTimeData,
         spentByTimePeriod = homeViewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             homeViewModel.switchToSpentByTimePeriod(it)

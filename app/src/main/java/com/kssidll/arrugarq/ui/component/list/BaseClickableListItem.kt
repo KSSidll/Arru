@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.component.button
+package com.kssidll.arrugarq.ui.component.list
 
 import android.content.res.*
 import androidx.compose.foundation.*
@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
-fun ClickableListItem(
+fun BaseClickableListItem(
     text: String,
     onClick: (() -> Unit)? = null,
 ) {
@@ -36,22 +36,22 @@ fun ClickableListItem(
 }
 
 @Preview(
-    group = "Clickable List Item",
+    group = "Base Clickable List Item",
     name = "Dark",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "Clickable List Item",
+    group = "Base Clickable List Item",
     name = "Light",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO
 )
 @Composable
-fun ClickableListItemPreview() {
+fun BaseClickableListItemPreview() {
     ArrugarqTheme {
         Surface {
-            ClickableListItem(
+            BaseClickableListItem(
                 text = "test"
             )
         }

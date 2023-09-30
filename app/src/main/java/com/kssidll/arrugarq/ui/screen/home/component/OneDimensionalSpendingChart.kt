@@ -6,28 +6,40 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.chart.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.button.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
+import com.patrykandpatrick.vico.compose.chart.edges.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 
 @Composable
 fun OneDimensionalSpendingChart(
-    spentByTimeData: List<IChartable>,
+    spentByTimeData: List<Chartable>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    modifier: Modifier = Modifier,
+    chartModifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         PeriodButtons(
             spentByTimePeriod = spentByTimePeriod,
             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
         )
 
-        OneDimensionalChart(spentByTimeData = spentByTimeData)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OneDimensionalChart(
+            spentByTimeData = spentByTimeData,
+            modifier = chartModifier,
+            fadingEdges = FadingEdges(
+                startEdgeWidth = 3.dp
+            ),
+        )
     }
 }
 
@@ -46,8 +58,9 @@ private fun PeriodButtons(
                 onClick = {
                     onSpentByTimePeriodSwitch(it)
                 },
-                text = it.name,
-            )
+            ) {
+                Text(it.name)
+            }
         }
     }
 }

@@ -15,13 +15,14 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.chart.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 // Important, the order of items in the enum determines the order that the locations appear in
 // on the bottom navigation bar
@@ -61,7 +62,9 @@ enum class HomeScreenLocations(
 @Composable
 fun HomeScreen(
     onAddItem: () -> Unit,
-    spentByTimeData: List<IChartable>,
+    totalSpentData: Flow<Float>,
+    spentByShopData: Flow<List<ItemSpentByShop>>,
+    spentByTimeData: Flow<List<Chartable>>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
 ) {
@@ -86,41 +89,25 @@ fun HomeScreen(
         }
     ) {
         Box(modifier = Modifier.padding(it)) {
-            HomeScreenContent(
-                pagerState = pagerState,
-                spentByTimeData = spentByTimeData,
-                spentByTimePeriod = spentByTimePeriod,
-                onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun HomeScreenContent(
-    pagerState: PagerState,
-    spentByTimeData: List<IChartable>,
-    spentByTimePeriod: SpentByTimePeriod,
-    onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
-) {
-    HorizontalPager(
-        state = pagerState,
-        userScrollEnabled = false,
-    ) {
-        when (HomeScreenLocations.getByOrdinal(it)!!) {
-            HomeScreenLocations.Dashboard -> {
-                DashboardScreen(
-                    spentByTimeData = spentByTimeData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                )
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+            ) { location ->
+                when (HomeScreenLocations.getByOrdinal(location)!!) {
+                    HomeScreenLocations.Dashboard -> {
+                        DashboardScreen(
+                            totalSpentData = totalSpentData,
+                            spentByShopData = spentByShopData,
+                            spentByTimeData = spentByTimeData,
+                            spentByTimePeriod = spentByTimePeriod,
+                            onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+                        )
+                    }
+                }
             }
         }
     }
-
 }
-
 
 @Preview(
     group = "Home Screen",
@@ -147,23 +134,27 @@ fun HomeScreenPreview() {
             Surface(modifier = Modifier.fillMaxSize()) {
                 HomeScreen(
                     onAddItem = {},
-                    spentByTimeData = listOf(
-                        ItemSpentByTime(
-                            time = "2022-08",
-                            total = 34821
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-09",
-                            total = 25000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-10",
-                            total = 50000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-11",
-                            total = 12345
-                        ),
+                    totalSpentData = flowOf(),
+                    spentByShopData = flowOf(),
+                    spentByTimeData = flowOf(
+                        listOf(
+                            ItemSpentByTime(
+                                time = "2022-08",
+                                total = 34821
+                            ),
+                            ItemSpentByTime(
+                                time = "2022-09",
+                                total = 25000
+                            ),
+                            ItemSpentByTime(
+                                time = "2022-10",
+                                total = 50000
+                            ),
+                            ItemSpentByTime(
+                                time = "2022-11",
+                                total = 12345
+                            ),
+                        )
                     ),
                     spentByTimePeriod = SpentByTimePeriod.Month,
                     onSpentByTimePeriodSwitch = {},

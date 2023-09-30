@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
-import com.kssidll.arrugarq.domain.chart.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.patrykandpatrick.vico.core.entry.*
 
@@ -60,7 +60,7 @@ data class Item(
 data class ItemSpentByTime(
     val time: String,
     val total: Long,
-): IChartable {
+): Chartable {
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
@@ -69,11 +69,31 @@ data class ItemSpentByTime(
     }
 
     override fun topAxisLabel(): String {
-        return total.div(100).formatToCurrency()
+        return total.div(100)
+            .formatToCurrency()
     }
 
     override fun bottomAxisLabel(): String {
         return time
+    }
+
+}
+
+data class ItemSpentByShop(
+    @Embedded val shop: Shop,
+    val total: Long,
+): Rankable {
+    override fun getDisplayName(): String {
+        return shop.name
+    }
+
+    override fun getDisplayValue(): String {
+        return total.div(100)
+            .formatToCurrency()
+    }
+
+    override fun getValue(): Long {
+        return total
     }
 
 }

@@ -24,6 +24,18 @@ interface ItemDao {
     @Query("SELECT * FROM item ORDER BY id DESC LIMIT 1")
     fun getLastFlow(): Flow<Item>
 
+    @Query("SELECT shop.*, SUM(item.price) as total FROM item INNER JOIN shop ON item.shopId = shop.id GROUP BY item.shopId")
+    suspend fun getShopTotalSpent(): List<ItemSpentByShop>
+
+    @Query("SELECT shop.*, SUM(item.price) as total FROM item INNER JOIN shop ON item.shopId = shop.id GROUP BY item.shopId")
+    fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>>
+
+    @Query("SELECT SUM(price) AS total FROM item")
+    suspend fun getTotalSpent(): Long
+
+    @Query("SELECT SUM(price) AS total FROM item")
+    fun getTotalSpentFlow(): Flow<Long>
+
     @Query("SELECT strftime('%Y-%m-%d', datetime(date / 1000, 'unixepoch')) AS time, SUM(price) AS total FROM item GROUP BY time ORDER BY time")
     suspend fun getTotalSpentByDay(): List<ItemSpentByTime>
 

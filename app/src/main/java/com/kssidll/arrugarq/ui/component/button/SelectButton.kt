@@ -8,69 +8,70 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 
-@Composable
-fun SelectButton(
-    modifier: Modifier = Modifier,
-    selected: Boolean,
-    text: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-    shape: Shape = ButtonDefaults.shape,
-    elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
-    border: BorderStroke? = null,
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    interactionSource: MutableInteractionSource = MutableInteractionSource(),
-) {
-    val colors: ButtonColors = if (selected) {
-        ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.onTertiary,
-        )
-    } else {
-        ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-        )
-    }
+data class SelectButtonColors(
+    val selectedContainer: Color,
+    val selectedContent: Color,
+    val unselectedContainer: Color,
+    val unselectedContent: Color,
+    val disabledContainerColor: Color,
+    val disabledContentColor: Color,
+)
 
-    Button(
-        modifier = modifier,
-        onClick = onClick,
-        enabled = enabled,
-        shape = shape,
-        colors = colors,
-        elevation = elevation,
-        border = border,
-        contentPadding = contentPadding,
-        interactionSource = interactionSource,
-        text = text,
+fun SelectButtonColors.toButtonColors(selected: Boolean): ButtonColors {
+    return ButtonColors(
+        containerColor = if (selected) selectedContainer else unselectedContainer,
+        contentColor = if (selected) selectedContent else unselectedContent,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor,
     )
 }
 
 @Composable
-private fun Button(
+fun selectButtonDefaultColors(
+    selectedContainer: Color = MaterialTheme.colorScheme.tertiary,
+    selectedContent: Color = MaterialTheme.colorScheme.onTertiary,
+    unselectedContainer: Color = MaterialTheme.colorScheme.tertiaryContainer,
+    unselectedContent: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+    disabledContainerColor: Color = ButtonDefaults.buttonColors().disabledContainerColor,
+    disabledContentColor: Color = ButtonDefaults.buttonColors().disabledContentColor,
+): SelectButtonColors {
+    return SelectButtonColors(
+        selectedContainer = selectedContainer,
+        selectedContent = selectedContent,
+        unselectedContainer = unselectedContainer,
+        unselectedContent = unselectedContent,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor,
+    )
+}
+
+/**
+ * A Button with `selected` possible state
+ */
+@Composable
+fun SelectButton(
     modifier: Modifier = Modifier,
+    selected: Boolean,
     onClick: () -> Unit,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.shape,
-    colors: ButtonColors,
     elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
-    text: String,
+    colors: SelectButtonColors = selectButtonDefaultColors(),
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
         modifier = modifier,
         onClick = onClick,
         enabled = enabled,
         shape = shape,
-        colors = colors,
+        colors = colors.toButtonColors(selected),
         elevation = elevation,
         border = border,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-    ) {
-        Text(text = text)
-    }
+        content = content
+    )
 }

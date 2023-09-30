@@ -4,16 +4,18 @@ import android.content.res.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.chart.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.axis.horizontal.*
 import com.patrykandpatrick.vico.compose.chart.column.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
+import com.patrykandpatrick.vico.core.chart.edges.*
 import com.patrykandpatrick.vico.core.chart.scale.*
 import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
@@ -21,7 +23,9 @@ import kotlinx.coroutines.*
 
 @Composable
 fun OneDimensionalChart(
-    spentByTimeData: List<IChartable>
+    spentByTimeData: List<Chartable>,
+    modifier: Modifier = Modifier,
+    fadingEdges: FadingEdges? = null,
 ) {
     val scope = rememberCoroutineScope()
     val scroll = rememberChartScrollState()
@@ -40,6 +44,7 @@ fun OneDimensionalChart(
     }
 
     com.patrykandpatrick.vico.compose.chart.Chart(
+        modifier = modifier,
         chartScrollState = scroll,
         chartScrollSpec = rememberChartScrollSpec(
             isScrollEnabled = true,
@@ -80,6 +85,7 @@ fun OneDimensionalChart(
                     .orEmpty()
             },
         ),
+        fadingEdges = fadingEdges,
         isZoomEnabled = true,
         autoScaleUp = AutoScaleUp.None,
     )
