@@ -8,8 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.axis.horizontal.*
 import com.patrykandpatrick.vico.compose.chart.column.*
@@ -128,24 +128,7 @@ fun OneDimesionalChartPreview() {
         ) {
             Surface {
                 OneDimensionalChart(
-                    spentByTimeData = listOf(
-                        ItemSpentByTime(
-                            time = "2022-08",
-                            total = 34821
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-09",
-                            total = 25000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-10",
-                            total = 50000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-11",
-                            total = 12345
-                        ),
-                    ),
+                    spentByTimeData = getFakeSpentByTimeData(),
                 )
             }
         }

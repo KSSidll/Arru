@@ -13,6 +13,7 @@ fun HomeRoute(
         onAddItem = onAddItem,
         totalSpentData = homeViewModel.getTotalSpent(),
         spentByShopData = homeViewModel.getSpentByShop(),
+        spentByCategoryData = homeViewModel.getSpentByCategory(),
         spentByTimeData = homeViewModel.spentByTimeData,
         spentByTimePeriod = homeViewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {

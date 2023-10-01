@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
+import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.*
 fun DashboardScreen(
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
+    spentByCategoryData: Flow<List<ItemSpentByCategory>>,
     spentByTimeData: Flow<List<Chartable>>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
@@ -30,6 +32,7 @@ fun DashboardScreen(
     DashboardScreenContent(
         totalSpentData = totalSpentData.collectAsState(0F).value,
         spentByShopData = spentByShopData.collectAsState(emptyList()).value,
+        spentByCategoryData = spentByCategoryData.collectAsState(emptyList()).value,
         spentByTimeData = spentByTimeData.collectAsState(emptyList()).value,
         spentByTimePeriod = spentByTimePeriod,
         onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
@@ -43,6 +46,7 @@ private val tileInnerPadding: Dp = 12.dp
 private fun DashboardScreenContent(
     totalSpentData: Float,
     spentByShopData: List<ItemSpentByShop>,
+    spentByCategoryData: List<ItemSpentByCategory>,
     spentByTimeData: List<Chartable>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
@@ -81,10 +85,23 @@ private fun DashboardScreenContent(
         ) {
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
+                items = spentByCategoryData,
+                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
+            )
+        }
+
+        Surface(
+            modifier = Modifier.padding(tileOuterPadding),
+            shape = ShapeDefaults.ExtraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
+            RankingList(
+                modifier = Modifier.padding(tileInnerPadding),
                 items = spentByShopData,
                 animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
             )
         }
+
     }
 }
 
@@ -113,46 +130,9 @@ fun DashboardScreenPreview() {
             Surface(modifier = Modifier.fillMaxSize()) {
                 DashboardScreenContent(
                     totalSpentData = 16832.18F,
-                    spentByShopData = listOf(
-                        ItemSpentByShop(
-                            shop = Shop("test1"),
-                            total = 168200
-                        ),
-                        ItemSpentByShop(
-                            shop = Shop("test2"),
-                            total = 10000
-                        ),
-                        ItemSpentByShop(
-                            shop = Shop("test3"),
-                            total = 100000
-                        ),
-                        ItemSpentByShop(
-                            shop = Shop("test4"),
-                            total = 61000
-                        ),
-                        ItemSpentByShop(
-                            shop = Shop("test5"),
-                            total = 27600
-                        ),
-                    ),
-                    spentByTimeData = listOf(
-                        ItemSpentByTime(
-                            time = "2022-08",
-                            total = 34821
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-09",
-                            total = 25000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-10",
-                            total = 50000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-11",
-                            total = 12345
-                        ),
-                    ),
+                    spentByShopData = getFakeSpentByShopData(),
+                    spentByCategoryData = getFakeSpentByCategoryData(),
+                    spentByTimeData = getFakeSpentByTimeData(),
                     spentByTimePeriod = SpentByTimePeriod.Month,
                     onSpentByTimePeriodSwitch = {},
                 )

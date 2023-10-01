@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -64,6 +65,7 @@ fun HomeScreen(
     onAddItem: () -> Unit,
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
+    spentByCategoryData: Flow<List<ItemSpentByCategory>>,
     spentByTimeData: Flow<List<Chartable>>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
@@ -98,6 +100,7 @@ fun HomeScreen(
                         DashboardScreen(
                             totalSpentData = totalSpentData,
                             spentByShopData = spentByShopData,
+                            spentByCategoryData = spentByCategoryData,
                             spentByTimeData = spentByTimeData,
                             spentByTimePeriod = spentByTimePeriod,
                             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
@@ -134,28 +137,10 @@ fun HomeScreenPreview() {
             Surface(modifier = Modifier.fillMaxSize()) {
                 HomeScreen(
                     onAddItem = {},
-                    totalSpentData = flowOf(),
-                    spentByShopData = flowOf(),
-                    spentByTimeData = flowOf(
-                        listOf(
-                            ItemSpentByTime(
-                                time = "2022-08",
-                                total = 34821
-                            ),
-                            ItemSpentByTime(
-                                time = "2022-09",
-                                total = 25000
-                            ),
-                            ItemSpentByTime(
-                                time = "2022-10",
-                                total = 50000
-                            ),
-                            ItemSpentByTime(
-                                time = "2022-11",
-                                total = 12345
-                            ),
-                        )
-                    ),
+                    totalSpentData = flowOf(1357452F),
+                    spentByShopData = getFakeSpentByShopDataFlow(),
+                    spentByCategoryData = getFakeSpentByCategoryDataFlow(),
+                    spentByTimeData = getFakeSpentByTimeDataFlow(),
                     spentByTimePeriod = SpentByTimePeriod.Month,
                     onSpentByTimePeriodSwitch = {},
                 )

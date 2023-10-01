@@ -38,6 +38,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getShopTotalSpentFlow()
     }
 
+    override suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory> {
+        return itemDao.getCategoryTotalSpent()
+    }
+
+    override fun getCategoryTotalSpentFlow(): Flow<List<ItemSpentByCategory>> {
+        return itemDao.getCategoryTotalSpentFlow()
+    }
+
     override suspend fun getTotalSpent(): Long {
         return itemDao.getTotalSpent()
     }

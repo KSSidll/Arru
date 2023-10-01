@@ -51,6 +51,10 @@ class HomeViewModel @Inject constructor(
         return itemRepository.getShopTotalSpentFlow()
     }
 
+    fun getSpentByCategory(): Flow<List<ItemSpentByCategory>> {
+        return itemRepository.getCategoryTotalSpentFlow()
+    }
+
     fun switchToSpentByTimePeriod(newPeriod: SpentByTimePeriod) {
         _spentByTimePeriod.value = newPeriod
         spentByTimeQuery?.cancel()

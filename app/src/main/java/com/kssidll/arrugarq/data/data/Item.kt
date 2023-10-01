@@ -97,3 +97,22 @@ data class ItemSpentByShop(
     }
 
 }
+
+data class ItemSpentByCategory(
+    @Embedded val category: ProductCategory,
+    val total: Long,
+): Rankable {
+    override fun getDisplayName(): String {
+        return category.name
+    }
+
+    override fun getDisplayValue(): String {
+        return total.div(100)
+            .formatToCurrency()
+    }
+
+    override fun getValue(): Long {
+        return total
+    }
+
+}

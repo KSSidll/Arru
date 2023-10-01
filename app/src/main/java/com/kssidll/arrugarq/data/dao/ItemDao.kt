@@ -30,6 +30,12 @@ interface ItemDao {
     @Query("SELECT shop.*, SUM(item.price) as total FROM item INNER JOIN shop ON item.shopId = shop.id GROUP BY item.shopId")
     fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>>
 
+    @Query("SELECT productcategory.*, SUM(item.price) as total FROM item INNER JOIN product ON item.productId = product.id INNER JOIN productcategory ON product.categoryId = productcategory.id GROUP BY productcategory.id")
+    suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory>
+
+    @Query("SELECT productcategory.*, SUM(item.price) as total FROM item INNER JOIN product ON item.productId = product.id INNER JOIN productcategory ON product.categoryId = productcategory.id GROUP BY productcategory.id")
+    fun getCategoryTotalSpentFlow(): Flow<List<ItemSpentByCategory>>
+
     @Query("SELECT SUM(price) AS total FROM item")
     suspend fun getTotalSpent(): Long
 
