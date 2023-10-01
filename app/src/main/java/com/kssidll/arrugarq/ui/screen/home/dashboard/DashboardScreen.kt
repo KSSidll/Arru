@@ -78,10 +78,11 @@ private fun DashboardScreenContent(
             autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
         )
 
-        Surface(
+        Card(
             modifier = Modifier.padding(tileOuterPadding),
-            shape = ShapeDefaults.ExtraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainer,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
         ) {
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
@@ -90,10 +91,11 @@ private fun DashboardScreenContent(
             )
         }
 
-        Surface(
+        Card(
             modifier = Modifier.padding(tileOuterPadding),
-            shape = ShapeDefaults.ExtraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainer,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
         ) {
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
