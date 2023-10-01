@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.ui.screen.home.dashboard
 
 import android.content.res.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -51,10 +50,7 @@ private fun DashboardScreenContent(
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier.scrollable(
-            state = scrollState,
-            orientation = Orientation.Vertical,
-        )
+        modifier = Modifier.verticalScroll(state = scrollState)
     ) {
         Spacer(Modifier.height(40.dp))
 
@@ -70,21 +66,13 @@ private fun DashboardScreenContent(
 
         Spacer(Modifier.height(32.dp))
 
-        Surface(
-            modifier = Modifier.padding(tileOuterPadding),
-            shape = ShapeDefaults.ExtraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainer,
-        ) {
-            Column {
-                OneDimensionalSpendingChart(
-                    modifier = Modifier.padding(tileInnerPadding),
-                    spentByTimeData = spentByTimeData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                    autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
-                )
-            }
-        }
+        OneDimensionalSpendingChart(
+            modifier = Modifier.padding(tileInnerPadding),
+            spentByTimeData = spentByTimeData,
+            spentByTimePeriod = spentByTimePeriod,
+            onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+            autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
+        )
 
         Surface(
             modifier = Modifier.padding(tileOuterPadding),
