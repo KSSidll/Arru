@@ -3,14 +3,15 @@ package com.kssidll.arrugarq.ui.screen.home.component
 import android.content.res.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.ui.component.button.*
+import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -51,26 +52,48 @@ fun OneDimensionalSpendingChart(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PeriodButtons(
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+    SingleChoiceSegmentedButtonRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp)
     ) {
-        SpentByTimePeriod.entries.forEach {
-            SelectButton(
-                selected = (it == spentByTimePeriod),
+        SpentByTimePeriod.entries.forEachIndexed { index, it ->
+            val shape = when(index) {
+                0 -> RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50)
+                SpentByTimePeriod.entries.size - 1 -> RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50)
+                else -> RectangleShape
+            }
+
+            SegmentedButton(
+                selected = it == spentByTimePeriod,
+                shape = shape,
+                label = {
+                    Text(it.name)
+                },
+                icon = {
+
+                },
                 onClick = {
                     onSpentByTimePeriodSwitch(it)
                 },
-            ) {
-                Text(it.name)
-            }
+                colors = SegmentedButtonDefaults.colors(
+                    activeContainerColor = MaterialTheme.colorScheme.tertiary,
+                    activeContentColor = MaterialTheme.colorScheme.onTertiary,
+                    inactiveContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    inactiveContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    activeBorderColor = Color.Transparent,
+                    inactiveBorderColor = Color.Transparent,
+                )
+            )
         }
     }
+
 }
 
 @Preview(
@@ -97,24 +120,7 @@ fun OneDimensionalSpendingChartPreview() {
         ) {
             Surface {
                 OneDimensionalSpendingChart(
-                    spentByTimeData = listOf(
-                        ItemSpentByTime(
-                            time = "2022-08",
-                            total = 34821
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-09",
-                            total = 25000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-10",
-                            total = 50000
-                        ),
-                        ItemSpentByTime(
-                            time = "2022-11",
-                            total = 12345
-                        ),
-                    ),
+                    spentByTimeData = getFakeSpentByTimeData(),
                     spentByTimePeriod = SpentByTimePeriod.Month,
                     onSpentByTimePeriodSwitch = {},
                 )
