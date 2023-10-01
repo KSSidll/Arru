@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.component.chart
 
 import android.content.res.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,6 +13,7 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.axis.horizontal.*
 import com.patrykandpatrick.vico.compose.chart.column.*
+import com.patrykandpatrick.vico.compose.chart.entry.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
@@ -21,11 +23,17 @@ import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
 
+const val defaultOneDimensionalChartAutoScrollTime: Int = 1200
+val defaultOneDimensionalChartAutoScrollSpec: AnimationSpec<Float> = tween(
+    durationMillis = defaultOneDimensionalChartAutoScrollTime,
+)
+
 @Composable
 fun OneDimensionalChart(
     spentByTimeData: List<Chartable>,
     modifier: Modifier = Modifier,
     fadingEdges: FadingEdges? = null,
+    autoScrollSpec: AnimationSpec<Float> = defaultOneDimensionalChartAutoScrollSpec,
 ) {
     val scope = rememberCoroutineScope()
     val scroll = rememberChartScrollState()
@@ -57,8 +65,12 @@ fun OneDimensionalChart(
                     val itemWidth = (scroll.maxValue + chart.bounds.width()).div(previousDataSize)
                     val itemDiff = spentByTimeData.size - previousDataSize
                     val scrollAmount = itemWidth * itemDiff
+                    val relativeScrollAmount = (scroll.maxValue - scroll.value) + scrollAmount
                     scope.launch {
-                        scroll.animateScrollBy((scroll.maxValue - scroll.value) + scrollAmount)
+                        scroll.animateScrollBy(
+                            value = relativeScrollAmount,
+                            animationSpec = defaultDiffAnimationSpec
+                        )
                     }
                     false
                 } else {
@@ -68,6 +80,7 @@ fun OneDimensionalChart(
                 }
 
             },
+            autoScrollAnimationSpec = autoScrollSpec,
         ),
         chart = chart,
         chartModelProducer = chartEntryModelProducer,

@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.home.component
 
 import android.content.res.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +18,11 @@ import com.patrykandpatrick.vico.compose.chart.edges.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 
+const val defaultOneDimensionalSpendingChartAutoScrollTime: Int = 1200
+val defaultOneDimensionalSpendingChartAutoScrollSpec: AnimationSpec<Float> = tween(
+    durationMillis = defaultOneDimensionalSpendingChartAutoScrollTime,
+)
+
 @Composable
 fun OneDimensionalSpendingChart(
     spentByTimeData: List<Chartable>,
@@ -24,6 +30,7 @@ fun OneDimensionalSpendingChart(
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
     modifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
+    autoScrollSpec: AnimationSpec<Float> = defaultOneDimensionalSpendingChartAutoScrollSpec,
 ) {
     Column(modifier = modifier) {
         PeriodButtons(
@@ -39,6 +46,7 @@ fun OneDimensionalSpendingChart(
             fadingEdges = FadingEdges(
                 startEdgeWidth = 3.dp
             ),
+            autoScrollSpec = autoScrollSpec,
         )
     }
 }

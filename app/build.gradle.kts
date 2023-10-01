@@ -23,7 +23,12 @@ android {
             useSupportLibrary = true
         }
 
-        //        resourceConfigurations += ["en", "pl"]
+        resourceConfigurations.addAll(
+            listOf(
+                "en",
+                "pl"
+            )
+        )
     }
 
     buildTypes {
@@ -34,7 +39,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            //            signingConfig = signingConfigs.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

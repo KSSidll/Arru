@@ -1,25 +1,46 @@
 package com.kssidll.arrugarq.ui.component.list
 
 import android.content.res.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
+import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.theme.*
 
+const val defaultRankingListAnimationTime: Int = 1200
+val defaultRankingListAnimationSpec: AnimationSpec<Float> = tween(defaultRankingListAnimationTime)
+
+private val firstTextStyle: TextStyle = Typography.titleLarge
+private val secondTextStyle: TextStyle = Typography.titleMedium
+private val otherTextStyle: TextStyle = Typography.titleSmall
+
+private fun getTextStyle(position: Int): TextStyle {
+    return when(position) {
+        0 -> firstTextStyle
+        1 -> secondTextStyle
+        else -> otherTextStyle
+    }
+}
+
 /**
  * @param items: List of items to display, the items will be sorted by their value
+ * @param modifier: Modifier applied to the container
  * @param displayCount: How many items to display, 0 means all
+ * @param animationSpec: Animation Spec for the item relative to max value animation
  */
 @Composable
 fun RankingList(
     items: List<Rankable>,
+    modifier: Modifier = Modifier,
     displayCount: Int = 6,
+    animationSpec: AnimationSpec<Float> = defaultRankingListAnimationSpec,
 ) {
     val displayItems: SnapshotStateList<Rankable> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
@@ -37,34 +58,37 @@ fun RankingList(
         }
     }
 
-    Row(
-        modifier = Modifier.padding(8.dp)
-    ) {
+    Row(modifier = modifier) {
         val itemModifier = Modifier
-            .height(40.dp)
+            .height(36.dp)
             .padding(4.dp)
 
         Column {
-            displayItems.forEach {
-                Text(
-                    text = it.getDisplayName(),
-                    modifier = itemModifier,
-                )
-                Spacer(Modifier.width(20.dp))
+            displayItems.forEachIndexed { index, it ->
+                Box(itemModifier) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        text = it.getDisplayName(),
+                        style = getTextStyle(index),
+                    )
+                }
+            }
+        }
+
+        Column(modifier = Modifier.width(IntrinsicSize.Min)) {
+            displayItems.forEachIndexed { index, it ->
+                Box(itemModifier.fillMaxWidth()) {
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = it.getDisplayValue(),
+                        style = getTextStyle(index),
+                    )
+                }
             }
         }
 
         Column {
-            displayItems.forEach {
-                Text(
-                    text = it.getDisplayValue(),
-                    modifier = itemModifier,
-                )
-            }
-        }
-
-        Column {
-            displayItems.forEach {
+            displayItems.forEachIndexed { index, it ->
                 Box(
                     modifier = itemModifier,
                 ) {
@@ -74,6 +98,8 @@ fun RankingList(
                         modifier = Modifier
                             .align(alignment = Alignment.Center)
                             .fillMaxWidth()
+                            .height(getTextStyle(index).fontSize.value.dp.minus(6.dp)),
+                        animationSpec = animationSpec,
                     )
                 }
             }
@@ -85,18 +111,29 @@ fun RankingList(
 private fun RankingItemProgressBar(
     progressValue: Float,
     modifier: Modifier = Modifier,
+    animationSpec: AnimationSpec<Float> = defaultRankingListAnimationSpec,
 ) {
-    var animatedValue by remember { mutableFloatStateOf(0F) }
+    var targetValue by remember { mutableFloatStateOf(0F) }
 
     LaunchedEffect(progressValue) {
-        animatedValue = progressValue
+        targetValue = progressValue
     }
 
-    LinearProgressIndicator(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.tertiary,
-        progress = animatedValue,
+    val animatedValue = animateFloatAsState(
+        targetValue = targetValue,
+        animationSpec = animationSpec,
+        label = "Ranking List item value relative to the highest item value animation"
     )
+
+    Surface(
+        modifier = modifier,
+        shape = ShapeDefaults.Medium,
+    ) {
+        LinearProgressIndicator(
+            color = MaterialTheme.colorScheme.tertiary,
+            progress = animatedValue.value,
+        )
+    }
 }
 
 @Preview(

@@ -37,7 +37,8 @@ fun DashboardScreen(
     )
 }
 
-private val tilePadding: Dp = 8.dp
+private val tileOuterPadding: Dp = 8.dp
+private val tileInnerPadding: Dp = 12.dp
 
 @Composable
 private fun DashboardScreenContent(
@@ -70,27 +71,30 @@ private fun DashboardScreenContent(
         Spacer(Modifier.height(32.dp))
 
         Surface(
-            modifier = Modifier.padding(tilePadding),
+            modifier = Modifier.padding(tileOuterPadding),
             shape = ShapeDefaults.ExtraLarge,
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column {
                 OneDimensionalSpendingChart(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(tileInnerPadding),
                     spentByTimeData = spentByTimeData,
                     spentByTimePeriod = spentByTimePeriod,
                     onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+                    autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
                 )
             }
         }
 
         Surface(
-            modifier = Modifier.padding(tilePadding),
+            modifier = Modifier.padding(tileOuterPadding),
             shape = ShapeDefaults.ExtraLarge,
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             RankingList(
+                modifier = Modifier.padding(tileInnerPadding),
                 items = spentByShopData,
+                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
             )
         }
     }
