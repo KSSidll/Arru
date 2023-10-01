@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.home
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.repository.*
@@ -15,6 +17,17 @@ enum class SpentByTimePeriod {
     Week,
     Month,
     Year,
+}
+
+@Composable
+@ReadOnlyComposable
+fun SpentByTimePeriod.getTranslation(): String {
+    return when (this) {
+        SpentByTimePeriod.Day -> stringResource(R.string.day)
+        SpentByTimePeriod.Week -> stringResource(R.string.week)
+        SpentByTimePeriod.Month -> stringResource(R.string.month)
+        SpentByTimePeriod.Year -> stringResource(R.string.year)
+    }
 }
 
 @HiltViewModel

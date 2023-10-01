@@ -39,4 +39,9 @@
     <string name="item_full_product_category">Kategoria Produktów</string>
     <string name="item_product_category">Kategoria</string>
     <string name="item_product_category_add">Dodaj Kategorię</string>
+
+    <string name="day">Dzień</string>
+    <string name="week">Tydzień</string>
+    <string name="month">Miesiąć</string>
+    <string name="year">Rok</string>
 </resources>

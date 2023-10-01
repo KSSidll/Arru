@@ -15,7 +15,6 @@ import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
-import com.patrykandpatrick.vico.compose.chart.edges.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 
@@ -39,14 +38,11 @@ fun OneDimensionalSpendingChart(
             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         OneDimensionalChart(
             spentByTimeData = spentByTimeData,
             modifier = chartModifier,
-            fadingEdges = FadingEdges(
-                startEdgeWidth = 3.dp
-            ),
             autoScrollSpec = autoScrollSpec,
         )
     }
@@ -61,12 +57,23 @@ private fun PeriodButtons(
     SingleChoiceSegmentedButtonRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp)
+            .padding(
+                start = 10.dp,
+                end = 10.dp
+            )
     ) {
         SpentByTimePeriod.entries.forEachIndexed { index, it ->
-            val shape = when(index) {
-                0 -> RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50)
-                SpentByTimePeriod.entries.size - 1 -> RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50)
+            val shape = when (index) {
+                0 -> RoundedCornerShape(
+                    topStartPercent = 50,
+                    bottomStartPercent = 50
+                )
+
+                SpentByTimePeriod.entries.size - 1 -> RoundedCornerShape(
+                    topEndPercent = 50,
+                    bottomEndPercent = 50
+                )
+
                 else -> RectangleShape
             }
 
@@ -74,7 +81,7 @@ private fun PeriodButtons(
                 selected = it == spentByTimePeriod,
                 shape = shape,
                 label = {
-                    Text(it.name)
+                    Text(it.getTranslation())
                 },
                 icon = {
 

@@ -71,12 +71,13 @@ private fun DashboardScreenContent(
         Spacer(Modifier.height(32.dp))
 
         OneDimensionalSpendingChart(
-            modifier = Modifier.padding(tileInnerPadding),
             spentByTimeData = spentByTimeData,
             spentByTimePeriod = spentByTimePeriod,
             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
             autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
         )
+
+        Spacer(Modifier.height(16.dp))
 
         Card(
             modifier = Modifier.padding(tileOuterPadding),
