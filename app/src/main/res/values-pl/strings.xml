@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigate_to_dashboard_description">Przejdź do głównego ekranu</string>
+    <string name="navigate_to_dashboard_description">Przejdź do pulpitu / głównego ekranu</string>
 
     <string name="search">Szukaj</string>
 
@@ -44,4 +44,5 @@
     <string name="week">Tydzień</string>
     <string name="month">Miesiąć</string>
     <string name="year">Rok</string>
+    <string name="dashboard_nav_label">Pulpit</string>
 </resources>

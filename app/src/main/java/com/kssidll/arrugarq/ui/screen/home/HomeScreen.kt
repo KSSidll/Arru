@@ -4,16 +4,10 @@ import android.content.res.Configuration.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.painter.*
-import androidx.compose.ui.graphics.vector.*
-import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
-import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
@@ -24,40 +18,6 @@ import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-
-// Important, the order of items in the enum determines the order that the locations appear in
-// on the bottom navigation bar
-enum class HomeScreenLocations(
-    val initial: Boolean = false,
-) {
-    Dashboard(initial = true),
-    ;
-
-    val description: String
-        @Composable
-        @ReadOnlyComposable
-        get() = when (this) {
-            Dashboard -> stringResource(R.string.navigate_to_dashboard_description)
-        }
-
-    val imageVector: ImageVector?
-        @Composable
-        get() = when (this) {
-            Dashboard -> Icons.Rounded.Home
-        }
-
-    val painter: Painter?
-        @Composable
-        get() = when (this) {
-            Dashboard -> null
-        }
-
-    companion object {
-        private val idMap = entries.associateBy { it.ordinal }
-        fun getByOrdinal(ordinal: Int) = idMap[ordinal]
-
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -105,6 +65,14 @@ fun HomeScreen(
                             spentByTimePeriod = spentByTimePeriod,
                             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                         )
+                    }
+
+                    HomeScreenLocations.FakeLocation -> {
+
+                    }
+
+                    HomeScreenLocations.AnotherFakeLocation -> {
+
                     }
                 }
             }

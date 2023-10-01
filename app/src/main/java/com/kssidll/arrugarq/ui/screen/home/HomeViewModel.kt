@@ -1,6 +1,10 @@
 package com.kssidll.arrugarq.ui.screen.home
 
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.painter.*
+import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.res.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
@@ -11,24 +15,6 @@ import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
-
-enum class SpentByTimePeriod {
-    Day,
-    Week,
-    Month,
-    Year,
-}
-
-@Composable
-@ReadOnlyComposable
-fun SpentByTimePeriod.getTranslation(): String {
-    return when (this) {
-        SpentByTimePeriod.Day -> stringResource(R.string.day)
-        SpentByTimePeriod.Week -> stringResource(R.string.week)
-        SpentByTimePeriod.Month -> stringResource(R.string.month)
-        SpentByTimePeriod.Year -> stringResource(R.string.year)
-    }
-}
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -89,5 +75,75 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+}
+
+enum class SpentByTimePeriod {
+    Day,
+    Week,
+    Month,
+    Year,
+}
+
+@Composable
+@ReadOnlyComposable
+fun SpentByTimePeriod.getTranslation(): String {
+    return when (this) {
+        SpentByTimePeriod.Day -> stringResource(R.string.day)
+        SpentByTimePeriod.Week -> stringResource(R.string.week)
+        SpentByTimePeriod.Month -> stringResource(R.string.month)
+        SpentByTimePeriod.Year -> stringResource(R.string.year)
+    }
+}
+
+// Important, the order of items in the enum determines the order that the locations appear in
+// on the bottom navigation bar
+enum class HomeScreenLocations(
+    val initial: Boolean = false,
+) {
+    Dashboard(initial = true),
+    FakeLocation(),
+    AnotherFakeLocation(),
+    ;
+
+    val description: String
+        @Composable
+        @ReadOnlyComposable
+        get() = when (this) {
+            Dashboard -> stringResource(R.string.navigate_to_dashboard_description)
+            FakeLocation -> "Test"
+            AnotherFakeLocation -> "Test"
+        }
+
+    val imageVector: ImageVector?
+        @Composable
+        get() = when (this) {
+            Dashboard -> Icons.Rounded.Home
+            FakeLocation -> Icons.Rounded.AccountTree
+            AnotherFakeLocation -> Icons.Rounded.Airlines
+        }
+
+    val painter: Painter?
+        @Composable
+        get() = when (this) {
+            Dashboard -> null
+            FakeLocation -> null
+            AnotherFakeLocation -> null
+        }
+
+    companion object {
+        private val idMap = entries.associateBy { it.ordinal }
+        fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+
+    }
+}
+
+@Composable
+@ReadOnlyComposable
+fun HomeScreenLocations.getTranslation(): String {
+    return when (this) {
+        HomeScreenLocations.Dashboard -> stringResource(R.string.dashboard_nav_label)
+        HomeScreenLocations.FakeLocation -> "Test"
+        HomeScreenLocations.AnotherFakeLocation -> "Test"
     }
 }
