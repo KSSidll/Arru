@@ -18,11 +18,14 @@ import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 
-const val defaultOneDimensionalSpendingChartAutoScrollTime: Int = 1200
-val defaultOneDimensionalSpendingChartAutoScrollSpec: AnimationSpec<Float> = tween(
-    durationMillis = defaultOneDimensionalSpendingChartAutoScrollTime,
+const val defaultOneDimensionalSpendingChartAnimationTime: Int = 1200
+val defaultOneDimensionalSpendingChartAnimationSpec: AnimationSpec<Float> = tween(
+    durationMillis = defaultOneDimensionalSpendingChartAnimationTime,
 )
 
+/**
+ * @param runInitialScrollAnimation: Whether to run the initial scroll when data is loaded, if false, chart will be invisible until data loads
+ */
 @Composable
 fun OneDimensionalSpendingChart(
     spentByTimeData: List<Chartable>,
@@ -30,7 +33,8 @@ fun OneDimensionalSpendingChart(
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
     modifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
-    autoScrollSpec: AnimationSpec<Float> = defaultOneDimensionalSpendingChartAutoScrollSpec,
+    animationSpec: AnimationSpec<Float> = defaultOneDimensionalSpendingChartAnimationSpec,
+    runInitialScrollAnimation: Boolean = false,
 ) {
     Column(modifier = modifier) {
         PeriodButtons(
@@ -43,7 +47,8 @@ fun OneDimensionalSpendingChart(
         OneDimensionalChart(
             spentByTimeData = spentByTimeData,
             modifier = chartModifier,
-            autoScrollSpec = autoScrollSpec,
+            animationSpec = animationSpec,
+            runInitialScrollAnimation = runInitialScrollAnimation,
         )
     }
 }
