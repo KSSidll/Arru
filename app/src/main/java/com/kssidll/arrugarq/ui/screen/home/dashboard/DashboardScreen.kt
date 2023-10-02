@@ -74,7 +74,7 @@ private fun DashboardScreenContent(
             spentByTimeData = spentByTimeData,
             spentByTimePeriod = spentByTimePeriod,
             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-            animationSpec = defaultOneDimensionalSpendingChartAnimationSpec,
+            autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
         )
 
         Spacer(Modifier.height(16.dp))
@@ -88,7 +88,7 @@ private fun DashboardScreenContent(
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
                 items = spentByCategoryData,
-                animationSpec = defaultOneDimensionalSpendingChartAnimationSpec,
+                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
             )
         }
 
@@ -101,7 +101,7 @@ private fun DashboardScreenContent(
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
                 items = spentByShopData,
-                animationSpec = defaultOneDimensionalSpendingChartAnimationSpec,
+                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
             )
         }
 

@@ -6,7 +6,6 @@ import androidx.compose.foundation.gestures.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.domain.data.*
@@ -14,6 +13,7 @@ import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.axis.horizontal.*
 import com.patrykandpatrick.vico.compose.chart.column.*
+import com.patrykandpatrick.vico.compose.chart.entry.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
@@ -23,26 +23,22 @@ import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
 
-const val defaultOneDimensionalChartAnimationTime: Int = 1200
-val defaultOneDimensionalChartAnimationSpec: AnimationSpec<Float> = tween(
-    durationMillis = defaultOneDimensionalChartAnimationTime,
+const val defaultOneDimensionalChartAutoScrollTime: Int = 1200
+val defaultOneDimensionalChartAutoScrollSpec: AnimationSpec<Float> = tween(
+    durationMillis = defaultOneDimensionalChartAutoScrollTime,
 )
 
-/**
- * @param runInitialScrollAnimation: Whether to run the initial scroll when data is loaded, if false, chart will be invisible until data loads
- */
 @Composable
 fun OneDimensionalChart(
     spentByTimeData: List<Chartable>,
     modifier: Modifier = Modifier,
     fadingEdges: FadingEdges? = null,
-    animationSpec: AnimationSpec<Float> = defaultOneDimensionalChartAnimationSpec,
-    runInitialScrollAnimation: Boolean = true,
+    autoScrollSpec: AnimationSpec<Float> = defaultOneDimensionalChartAutoScrollSpec,
 ) {
     val scope = rememberCoroutineScope()
     val scroll = rememberChartScrollState()
     val chartEntryModelProducer = remember { ChartEntryModelProducer() }
-    var showChart by remember { mutableStateOf(runInitialScrollAnimation) }
+    var previousDataSize by remember { mutableIntStateOf(spentByTimeData.size) }
 
     val chart = columnChart(
         columns = listOf(currentChartStyle.columnChart.columns[0].apply {
@@ -56,48 +52,35 @@ fun OneDimensionalChart(
     }
 
     com.patrykandpatrick.vico.compose.chart.Chart(
-        modifier = modifier.alpha(if (showChart) 1F else 0F),
+        modifier = modifier,
         chartScrollState = scroll,
         chartScrollSpec = rememberChartScrollSpec(
             isScrollEnabled = true,
             initialScroll = InitialScroll.End,
             autoScrollCondition = { _, oldModel ->
-                val old = oldModel?.entries?.getOrElse(0) { emptyList() }
-                    .orEmpty()
+                if (oldModel == null) return@rememberChartScrollSpec false
 
-                if (old.isEmpty()) return@rememberChartScrollSpec false
-
-                when {
-                    // handle initial scroll when animation is disabled
-                    !showChart && !runInitialScrollAnimation -> {
-                        scope.launch {
-                            scroll.scrollBy(scroll.maxValue)
-                            showChart = true
-                        }
-
-                        false
+                // handle back scroll
+                if (spentByTimeData.isNotEmpty() && spentByTimeData.size < previousDataSize) {
+                    val itemWidth = (scroll.maxValue + chart.bounds.width()).div(previousDataSize)
+                    val itemDiff = spentByTimeData.size - previousDataSize
+                    val scrollAmount = itemWidth * itemDiff
+                    val relativeScrollAmount = (scroll.maxValue - scroll.value) + scrollAmount
+                    scope.launch {
+                        scroll.animateScrollBy(
+                            value = relativeScrollAmount,
+                            animationSpec = defaultDiffAnimationSpec
+                        )
                     }
-
-                    // handle back scroll
-                    spentByTimeData.size < old.size -> {
-                        val itemWidth = (scroll.maxValue + chart.bounds.width()).div(old.size)
-                        val itemDiff = spentByTimeData.size - old.size
-                        val scrollAmount = itemWidth * itemDiff
-                        val relativeScrollAmount = (scroll.maxValue - scroll.value) + scrollAmount
-                        scope.launch {
-                            scroll.animateScrollBy(
-                                value = relativeScrollAmount,
-                                animationSpec = animationSpec
-                            )
-                        }
-
-                        false
-                    }
-
-                    else -> true
+                    false
+                } else {
+                    true
+                }.also {
+                    previousDataSize = spentByTimeData.size
                 }
+
             },
-            autoScrollAnimationSpec = animationSpec,
+            autoScrollAnimationSpec = autoScrollSpec,
         ),
         chart = chart,
         chartModelProducer = chartEntryModelProducer,
@@ -118,7 +101,6 @@ fun OneDimensionalChart(
         fadingEdges = fadingEdges,
         isZoomEnabled = true,
         autoScaleUp = AutoScaleUp.None,
-        diffAnimationSpec = animationSpec,
     )
 }
 
