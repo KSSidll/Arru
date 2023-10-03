@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.home.dashboard
 
 import android.content.res.*
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,8 +18,6 @@ import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.theme.*
-import com.patrykandpatrick.vico.compose.m3.style.*
-import com.patrykandpatrick.vico.compose.style.*
 import kotlinx.coroutines.flow.*
 
 @Composable
@@ -68,7 +67,7 @@ private fun DashboardScreenContent(
 
             val animatedValue = animateFloatAsState(
                 targetValue = targetValue,
-                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
+                animationSpec = tween(1200),
                 label = "total spent value animation"
             )
             val dropDecimal = animatedValue.value >= 100
@@ -82,14 +81,14 @@ private fun DashboardScreenContent(
 
         Spacer(Modifier.height(32.dp))
 
-        OneDimensionalSpendingChart(
+        DashboardSpendingSummaryComponent(
+            modifier = Modifier.animateContentSize(),
             spentByTimeData = spentByTimeData,
             spentByTimePeriod = spentByTimePeriod,
             onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-            autoScrollSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(4.dp))
 
         Card(
             modifier = Modifier
@@ -104,7 +103,6 @@ private fun DashboardScreenContent(
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
                 items = spentByCategoryData,
-                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
             )
         }
 
@@ -117,7 +115,6 @@ private fun DashboardScreenContent(
             RankingList(
                 modifier = Modifier.padding(tileInnerPadding),
                 items = spentByShopData,
-                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
             )
         }
 
@@ -139,23 +136,15 @@ private fun DashboardScreenContent(
 @Composable
 fun DashboardScreenPreview() {
     ArrugarqTheme {
-        ProvideChartStyle(
-            chartStyle = m3ChartStyle(
-                entityColors = listOf(
-                    MaterialTheme.colorScheme.tertiary,
-                )
+        Surface(modifier = Modifier.fillMaxSize()) {
+            DashboardScreenContent(
+                totalSpentData = 16832.18F,
+                spentByShopData = getFakeSpentByShopData(),
+                spentByCategoryData = getFakeSpentByCategoryData(),
+                spentByTimeData = getFakeSpentByTimeData(),
+                spentByTimePeriod = SpentByTimePeriod.Month,
+                onSpentByTimePeriodSwitch = {},
             )
-        ) {
-            Surface(modifier = Modifier.fillMaxSize()) {
-                DashboardScreenContent(
-                    totalSpentData = 16832.18F,
-                    spentByShopData = getFakeSpentByShopData(),
-                    spentByCategoryData = getFakeSpentByCategoryData(),
-                    spentByTimeData = getFakeSpentByTimeData(),
-                    spentByTimePeriod = SpentByTimePeriod.Month,
-                    onSpentByTimePeriodSwitch = {},
-                )
-            }
         }
     }
 }

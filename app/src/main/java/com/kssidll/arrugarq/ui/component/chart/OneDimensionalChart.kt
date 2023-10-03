@@ -13,37 +13,42 @@ import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.axis.horizontal.*
 import com.patrykandpatrick.vico.compose.chart.column.*
-import com.patrykandpatrick.vico.compose.chart.entry.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
-import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import com.patrykandpatrick.vico.core.chart.edges.*
 import com.patrykandpatrick.vico.core.chart.scale.*
+import com.patrykandpatrick.vico.core.component.shape.*
+import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
-
-const val defaultOneDimensionalChartAutoScrollTime: Int = 1200
-val defaultOneDimensionalChartAutoScrollSpec: AnimationSpec<Float> = tween(
-    durationMillis = defaultOneDimensionalChartAutoScrollTime,
-)
 
 @Composable
 fun OneDimensionalChart(
     spentByTimeData: List<Chartable>,
     modifier: Modifier = Modifier,
     fadingEdges: FadingEdges? = null,
-    autoScrollSpec: AnimationSpec<Float> = defaultOneDimensionalChartAutoScrollSpec,
+    isZoomEnabled: Boolean = false,
+    autoScrollSpec: AnimationSpec<Float> = tween(1200),
+    diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
 ) {
     val scope = rememberCoroutineScope()
     val scroll = rememberChartScrollState()
     val chartEntryModelProducer = remember { ChartEntryModelProducer() }
     var previousDataSize by remember { mutableIntStateOf(spentByTimeData.size) }
 
+    val defaultColumns = currentChartStyle.columnChart.columns
+
     val chart = columnChart(
-        columns = listOf(currentChartStyle.columnChart.columns[0].apply {
-            this.thicknessDp = 75.dp.value
-        }),
+        remember(defaultColumns) {
+            defaultColumns.map { defaultColumn ->
+                LineComponent(
+                    defaultColumn.color,
+                    75.dp.value,
+                    Shapes.roundedCornerShape(allPercent = 30)
+                )
+            }
+        },
         spacing = 12.dp,
     )
 
@@ -69,7 +74,7 @@ fun OneDimensionalChart(
                     scope.launch {
                         scroll.animateScrollBy(
                             value = relativeScrollAmount,
-                            animationSpec = defaultDiffAnimationSpec
+                            animationSpec = autoScrollSpec,
                         )
                     }
                     false
@@ -82,6 +87,7 @@ fun OneDimensionalChart(
             },
             autoScrollAnimationSpec = autoScrollSpec,
         ),
+        diffAnimationSpec = diffAnimationSpec,
         chart = chart,
         chartModelProducer = chartEntryModelProducer,
         topAxis = rememberTopAxis(
@@ -99,7 +105,7 @@ fun OneDimensionalChart(
             },
         ),
         fadingEdges = fadingEdges,
-        isZoomEnabled = true,
+        isZoomEnabled = isZoomEnabled,
         autoScaleUp = AutoScaleUp.None,
     )
 }
@@ -119,18 +125,10 @@ fun OneDimensionalChart(
 @Composable
 fun OneDimesionalChartPreview() {
     ArrugarqTheme {
-        ProvideChartStyle(
-            chartStyle = m3ChartStyle(
-                entityColors = listOf(
-                    MaterialTheme.colorScheme.tertiary,
-                )
+        Surface {
+            OneDimensionalChart(
+                spentByTimeData = getFakeSpentByTimeData(),
             )
-        ) {
-            Surface {
-                OneDimensionalChart(
-                    spentByTimeData = getFakeSpentByTimeData(),
-                )
-            }
         }
     }
 }

@@ -9,6 +9,8 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.*
 import com.google.accompanist.systemuicontroller.*
 import com.kssidll.arrugarq.ui.theme.schema.*
+import com.patrykandpatrick.vico.compose.m3.style.*
+import com.patrykandpatrick.vico.compose.style.*
 
 fun setNavigationBarColor(
     color: Color,
@@ -83,6 +85,15 @@ fun isAppInDynamicColor(): Boolean {
 }
 
 @Composable
+fun arrugarqChartStyle(): ChartStyle {
+    return m3ChartStyle(
+        entityColors = listOf(
+            MaterialTheme.colorScheme.tertiary,
+        )
+    )
+}
+
+@Composable
 fun ArrugarqTheme(
     content: @Composable () -> Unit
 ) {
@@ -113,6 +124,11 @@ fun ArrugarqTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
-    )
+    ) {
+        ProvideChartStyle(
+            chartStyle = arrugarqChartStyle()
+        ) {
+            content()
+        }
+    }
 }

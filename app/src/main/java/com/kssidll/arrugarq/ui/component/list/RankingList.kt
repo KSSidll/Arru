@@ -15,9 +15,6 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 
-const val defaultRankingListAnimationTime: Int = 1200
-val defaultRankingListAnimationSpec: AnimationSpec<Float> = tween(defaultRankingListAnimationTime)
-
 private val firstTextStyle: TextStyle = Typography.titleLarge
 private val secondTextStyle: TextStyle = Typography.titleMedium
 private val otherTextStyle: TextStyle = Typography.titleSmall
@@ -49,7 +46,7 @@ fun RankingList(
     items: List<Rankable>,
     modifier: Modifier = Modifier,
     displayCount: Int = 6,
-    animationSpec: AnimationSpec<Float> = defaultRankingListAnimationSpec,
+    animationSpec: AnimationSpec<Float> = tween(1200),
 ) {
     val displayItems: SnapshotStateList<Rankable> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
@@ -58,12 +55,12 @@ fun RankingList(
         if (items.isNotEmpty()) {
             displayItems.clear()
 
-            var sortedItems = items.sortedByDescending { it.getValue() }
+            var sortedItems = items.sortedByDescending { it.getSortValue() }
             if (displayCount > 0) sortedItems = sortedItems.take(displayCount)
 
             displayItems.addAll(sortedItems)
             maxItemValue = displayItems.first()
-                .getValue()
+                .getSortValue()
         }
     }
 
@@ -121,8 +118,7 @@ fun RankingList(
                         .padding(4.dp)
                 ) {
                     RankingItemProgressBar(
-                        progressValue = it.getValue()
-                            .toFloat() / maxItemValue,
+                        progressValue = it.getSortValue() / maxItemValue.toFloat(),
                         modifier = Modifier
                             .align(alignment = Alignment.Center)
                             .fillMaxWidth()
@@ -139,7 +135,7 @@ fun RankingList(
 private fun RankingItemProgressBar(
     progressValue: Float,
     modifier: Modifier = Modifier,
-    animationSpec: AnimationSpec<Float> = defaultRankingListAnimationSpec,
+    animationSpec: AnimationSpec<Float> = tween(1200),
 ) {
     var targetValue by remember { mutableFloatStateOf(0F) }
 

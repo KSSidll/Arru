@@ -1,10 +1,10 @@
 package com.kssidll.arrugarq.domain.data
 
-interface IFuzzySearchable {
+interface FuzzySearchable {
     fun getFuzzyScore(query: String): Int
 }
 
-fun <E> List<E>.fuzzySearchSort(query: String): List<E> where E: IFuzzySearchable {
+fun <E> List<E>.fuzzySearchSort(query: String): List<E> where E: FuzzySearchable {
     return this.map {
         it to it.getFuzzyScore(query)
     }

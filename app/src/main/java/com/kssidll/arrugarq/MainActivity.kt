@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.*
 import com.kssidll.arrugarq.ui.theme.*
-import com.patrykandpatrick.vico.compose.m3.style.*
-import com.patrykandpatrick.vico.compose.style.*
 import dagger.hilt.android.*
 
 @AndroidEntryPoint
@@ -25,16 +23,8 @@ class MainActivity: ComponentActivity() {
 
         setContent {
             ArrugarqTheme {
-                ProvideChartStyle(
-                    chartStyle = m3ChartStyle(
-                        entityColors = listOf(
-                            MaterialTheme.colorScheme.tertiary,
-                        )
-                    )
-                ) {
-                    Surface(modifier = Modifier.fillMaxSize()) {
-                        Navigation()
-                    }
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Navigation()
                 }
             }
         }

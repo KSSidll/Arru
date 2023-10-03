@@ -15,7 +15,7 @@ import me.xdrop.fuzzywuzzy.*
 data class ProductProducer(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
-): IFuzzySearchable {
+): FuzzySearchable {
     constructor(
         name: String,
     ): this(

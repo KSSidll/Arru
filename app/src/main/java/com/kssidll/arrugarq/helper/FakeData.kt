@@ -21,6 +21,38 @@ fun getFakeSpentByTimeData(): List<ItemSpentByTime> {
             time = "2022-11",
             total = 12345,
         ),
+        ItemSpentByTime(
+            time = "2022-08",
+            total = 34821,
+        ),
+        ItemSpentByTime(
+            time = "2022-09",
+            total = 25000,
+        ),
+        ItemSpentByTime(
+            time = "2022-10",
+            total = 50000,
+        ),
+        ItemSpentByTime(
+            time = "2022-11",
+            total = 12345,
+        ),
+        ItemSpentByTime(
+            time = "2022-08",
+            total = 34821,
+        ),
+        ItemSpentByTime(
+            time = "2022-09",
+            total = 25000,
+        ),
+        ItemSpentByTime(
+            time = "2022-10",
+            total = 50000,
+        ),
+        ItemSpentByTime(
+            time = "2022-11",
+            total = 12345,
+        ),
     )
 }
 

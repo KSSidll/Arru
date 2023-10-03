@@ -61,16 +61,25 @@ data class ItemSpentByTime(
     val time: String,
     val total: Long,
 ): Chartable {
+
+    override fun getValue(): Float {
+        return total.toFloat()
+            .div(100)
+    }
+
+    override fun getSortValue(): Long {
+        return total
+    }
+
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
-            total.toFloat()
+            getValue()
         )
     }
 
     override fun topAxisLabel(): String {
-        return total.div(100)
-            .formatToCurrency()
+        return getValue().formatToCurrency(dropDecimal = true)
     }
 
     override fun bottomAxisLabel(): String {
@@ -83,36 +92,44 @@ data class ItemSpentByShop(
     @Embedded val shop: Shop,
     val total: Long,
 ): Rankable {
+    override fun getValue(): Float {
+        return total.toFloat()
+            .div(100)
+    }
+
+    override fun getSortValue(): Long {
+        return total
+    }
+
     override fun getDisplayName(): String {
         return shop.name
     }
 
     override fun getDisplayValue(): String {
-        return total.div(100)
-            .formatToCurrency()
+        return getValue()
+            .formatToCurrency(dropDecimal = true)
     }
-
-    override fun getValue(): Long {
-        return total
-    }
-
 }
 
 data class ItemSpentByCategory(
     @Embedded val category: ProductCategory,
     val total: Long,
 ): Rankable {
+    override fun getValue(): Float {
+        return total.toFloat()
+            .div(100)
+    }
+
+    override fun getSortValue(): Long {
+        return total
+    }
+
     override fun getDisplayName(): String {
         return category.name
     }
 
     override fun getDisplayValue(): String {
-        return total.div(100)
-            .formatToCurrency()
+        return getValue()
+            .formatToCurrency(dropDecimal = true)
     }
-
-    override fun getValue(): Long {
-        return total
-    }
-
 }
