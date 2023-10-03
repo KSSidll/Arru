@@ -19,6 +19,7 @@ import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.chart.*
 import com.patrykandpatrick.vico.compose.chart.line.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
+import com.patrykandpatrick.vico.core.chart.scale.*
 import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
@@ -31,7 +32,11 @@ fun DashboardSpendingSummaryComponent(
     modifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
+    columnWidth: Dp = 75.dp,
+    columnSpacing: Dp = 12.dp,
 ) {
+    val scrollState = rememberChartScrollState()
+
     Column(modifier = modifier) {
         PeriodButtons(
             spentByTimePeriod = spentByTimePeriod,
@@ -44,14 +49,27 @@ fun DashboardSpendingSummaryComponent(
             spentByTimeData = spentByTimeData,
             modifier = chartModifier,
             autoScrollSpec = autoScrollSpec,
+            scrollState = scrollState,
+            columnWidth = columnWidth,
+            columnSpacing = columnSpacing,
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Box(modifier = Modifier.heightIn(max = 150.dp)) {
+            val period = when (spentByTimePeriod) {
+                SpentByTimePeriod.Day -> 28
+                SpentByTimePeriod.Week -> 14
+                SpentByTimePeriod.Month -> 7
+                SpentByTimePeriod.Year -> 3
+            }
+
             SMAChart(
                 data = spentByTimeData,
                 autoScrollSpec = autoScrollSpec,
+                scrollState = scrollState,
+                period = period,
+                lineSpacing = columnWidth + columnSpacing,
             )
         }
 
@@ -71,37 +89,42 @@ private fun SMAChart(
     alwaysReserveSpace: Boolean = false,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
     diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
+    scrollState: ChartScrollState = rememberChartScrollState(),
+    lineSpacing: Dp = 87.dp,
 ) {
     fun isVisible(): Boolean {
         return data.size >= visibilityThreshold + period
     }
 
     val scope = rememberCoroutineScope()
-    val scroll = rememberChartScrollState()
     var previousDataSize by remember { mutableIntStateOf(data.size) }
 
-    val chart = lineChart()
+    val chart = lineChart(
+        spacing = lineSpacing
+    )
 
     if (isVisible() || alwaysReserveSpace) {
         val chartEntryModelProducer = remember { ChartEntryModelProducer() }
 
-        LaunchedEffect(data) {
+        LaunchedEffect(
+            data,
+            period
+        ) {
             if (isVisible()) {
-                val displayData = Array(data.size - period + 1) { 0F }
+                val displayData = Array(data.size) { 0F }
 
                 var sum = 0F
                 for (itr in 0..<period) {
                     sum += data[itr].getValue()
                 }
 
-                displayData[0] = sum / period
+                displayData[period - 1] = sum / period
 
                 for (itr in period..<data.size) {
                     sum -= data[itr - period].getValue()
                     sum += data[itr].getValue()
-                    displayData[itr - period + 1] = sum / period
+                    displayData[itr] = sum / period
                 }
-
 
                 chartEntryModelProducer.setEntries(displayData.mapIndexed { index, it ->
                     FloatEntry(
@@ -116,7 +139,7 @@ private fun SMAChart(
 
         Chart(
             chart = chart,
-            chartScrollState = scroll,
+            chartScrollState = scrollState,
             chartModelProducer = chartEntryModelProducer,
             chartScrollSpec = rememberChartScrollSpec(
                 isScrollEnabled = true,
@@ -127,28 +150,31 @@ private fun SMAChart(
                     // handle back scroll
                     if (data.isNotEmpty() && data.size < previousDataSize) {
                         val itemWidth =
-                            (scroll.maxValue + chart.bounds.width()).div(previousDataSize - period + 1)
+                            (scrollState.maxValue + chart.bounds.width()).div(previousDataSize)
                         val itemDiff = data.size - previousDataSize
                         val scrollAmount = itemWidth * itemDiff
-                        val relativeScrollAmount = (scroll.maxValue - scroll.value) + scrollAmount
+                        val relativeScrollAmount =
+                            (scrollState.maxValue - scrollState.value) + scrollAmount
                         scope.launch {
-                            scroll.animateScrollBy(
+                            scrollState.animateScrollBy(
                                 value = relativeScrollAmount,
                                 animationSpec = autoScrollSpec,
                             )
                         }
+                        previousDataSize = data.size
+
                         false
                     } else {
-                        true
-                    }.also {
                         previousDataSize = data.size
+
+                        true
                     }
-                    true
                 },
                 autoScrollAnimationSpec = autoScrollSpec,
             ),
             isZoomEnabled = false,
             diffAnimationSpec = diffAnimationSpec,
+            autoScaleUp = AutoScaleUp.None,
         )
     }
 }

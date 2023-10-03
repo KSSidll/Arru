@@ -29,11 +29,13 @@ fun OneDimensionalChart(
     modifier: Modifier = Modifier,
     fadingEdges: FadingEdges? = null,
     isZoomEnabled: Boolean = false,
+    columnWidth: Dp = 75.dp,
+    columnSpacing: Dp = 12.dp,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
     diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
+    scrollState: ChartScrollState = rememberChartScrollState()
 ) {
     val scope = rememberCoroutineScope()
-    val scroll = rememberChartScrollState()
     val chartEntryModelProducer = remember { ChartEntryModelProducer() }
     var previousDataSize by remember { mutableIntStateOf(spentByTimeData.size) }
 
@@ -44,12 +46,12 @@ fun OneDimensionalChart(
             defaultColumns.map { defaultColumn ->
                 LineComponent(
                     defaultColumn.color,
-                    75.dp.value,
+                    columnWidth.value,
                     Shapes.roundedCornerShape(allPercent = 30)
                 )
             }
         },
-        spacing = 12.dp,
+        spacing = columnSpacing,
     )
 
     LaunchedEffect(spentByTimeData) {
@@ -58,7 +60,7 @@ fun OneDimensionalChart(
 
     com.patrykandpatrick.vico.compose.chart.Chart(
         modifier = modifier,
-        chartScrollState = scroll,
+        chartScrollState = scrollState,
         chartScrollSpec = rememberChartScrollSpec(
             isScrollEnabled = true,
             initialScroll = InitialScroll.End,
@@ -67,23 +69,26 @@ fun OneDimensionalChart(
 
                 // handle back scroll
                 if (spentByTimeData.isNotEmpty() && spentByTimeData.size < previousDataSize) {
-                    val itemWidth = (scroll.maxValue + chart.bounds.width()).div(previousDataSize)
+                    val itemWidth =
+                        (scrollState.maxValue + chart.bounds.width()).div(previousDataSize)
                     val itemDiff = spentByTimeData.size - previousDataSize
                     val scrollAmount = itemWidth * itemDiff
-                    val relativeScrollAmount = (scroll.maxValue - scroll.value) + scrollAmount
+                    val relativeScrollAmount =
+                        (scrollState.maxValue - scrollState.value) + scrollAmount
                     scope.launch {
-                        scroll.animateScrollBy(
+                        scrollState.animateScrollBy(
                             value = relativeScrollAmount,
                             animationSpec = autoScrollSpec,
                         )
                     }
+                    previousDataSize = spentByTimeData.size
+
                     false
                 } else {
-                    true
-                }.also {
                     previousDataSize = spentByTimeData.size
-                }
 
+                    true
+                }
             },
             autoScrollAnimationSpec = autoScrollSpec,
         ),
