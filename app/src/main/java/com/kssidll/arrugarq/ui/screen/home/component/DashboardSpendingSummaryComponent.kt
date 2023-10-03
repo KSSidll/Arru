@@ -91,6 +91,7 @@ private fun SMAChart(
     diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
     scrollState: ChartScrollState = rememberChartScrollState(),
     lineSpacing: Dp = 87.dp,
+    scrollOwner: Boolean = false,
 ) {
     fun isVisible(): Boolean {
         return data.size >= visibilityThreshold + period
@@ -144,8 +145,8 @@ private fun SMAChart(
             chartScrollSpec = rememberChartScrollSpec(
                 isScrollEnabled = true,
                 initialScroll = InitialScroll.End,
-                autoScrollCondition = { _, oldModel ->
-                    if (oldModel == null) return@rememberChartScrollSpec false
+                autoScrollCondition = if (scrollOwner) AutoScrollCondition { _, oldModel ->
+                    if (oldModel == null) return@AutoScrollCondition false
 
                     // handle back scroll
                     if (data.isNotEmpty() && data.size < previousDataSize) {
@@ -169,7 +170,7 @@ private fun SMAChart(
 
                         true
                     }
-                },
+                } else AutoScrollCondition.Never,
                 autoScrollAnimationSpec = autoScrollSpec,
             ),
             isZoomEnabled = false,
