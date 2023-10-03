@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.home.dashboard
 
 import android.content.res.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -59,10 +60,21 @@ private fun DashboardScreenContent(
         Spacer(Modifier.height(40.dp))
 
         Box(Modifier.fillMaxWidth()) {
-            val dropDecimal = totalSpentData >= 100
+            var targetValue by remember { mutableFloatStateOf(totalSpentData) }
+
+            LaunchedEffect(totalSpentData) {
+                targetValue = totalSpentData
+            }
+
+            val animatedValue = animateFloatAsState(
+                targetValue = targetValue,
+                animationSpec = defaultOneDimensionalSpendingChartAutoScrollSpec,
+                label = "total spent value animation"
+            )
+            val dropDecimal = animatedValue.value >= 100
 
             Text(
-                text = totalSpentData.formatToCurrency(dropDecimal = dropDecimal),
+                text = animatedValue.value.formatToCurrency(dropDecimal = dropDecimal),
                 modifier = Modifier.align(Alignment.Center),
                 style = Typography.headlineLarge,
             )
@@ -80,7 +92,11 @@ private fun DashboardScreenContent(
         Spacer(Modifier.height(16.dp))
 
         Card(
-            modifier = Modifier.padding(tileOuterPadding),
+            modifier = Modifier
+                .padding(tileOuterPadding)
+                .clickable {
+
+                },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
