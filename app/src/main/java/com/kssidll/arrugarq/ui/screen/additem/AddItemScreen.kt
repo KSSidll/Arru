@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.ui.screen.additem
 
 import android.content.res.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material.icons.*
@@ -11,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
@@ -89,7 +87,10 @@ fun AddItemScreen(
                                 if (datePickerState.selectedDateMillis != null) {
                                     state.date.value = datePickerState.selectedDateMillis
                                 }
-                            }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            )
                         ) {
                             Row(
                                 horizontalArrangement = Arrangement.Center,
@@ -99,8 +100,8 @@ fun AddItemScreen(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "",
-                                    modifier = Modifier.size(24.dp),
-                                    tint = Color.Green.copy(alpha = 0.60f)
+                                    modifier = Modifier.size(30.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 )
                             }
                         }
@@ -108,7 +109,7 @@ fun AddItemScreen(
                     }
                 ) {
                     DatePicker(
-                        state = datePickerState
+                        state = datePickerState,
                     )
                 }
             }
@@ -174,8 +175,6 @@ fun AddItemScreen(
                     verticalArrangement = Arrangement.Bottom,
                 ) {
 
-                    val datePickerToggleInteractionSource =
-                        remember { MutableInteractionSource() }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
@@ -194,7 +193,6 @@ fun AddItemScreen(
                             onClick = {
                                 isDatePickerDialogExpanded = true
                             },
-                            interactionSource = datePickerToggleInteractionSource,
                             error = if (attemptedToSubmit) isDateError(state.date.value) else false
                         )
                     }
