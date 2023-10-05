@@ -58,32 +58,62 @@ fun DashboardSpendingSummaryComponent(
         Spacer(modifier = Modifier.height(12.dp))
 
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            var targetValue by remember { mutableFloatStateOf(spentByTimeData.avg()) }
+            Column(
+                modifier = Modifier.weight(1F),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                var targetValue by remember { mutableFloatStateOf(spentByTimeData.avg()) }
 
-            LaunchedEffect(spentByTimeData) {
-                targetValue = spentByTimeData.avg()
+                LaunchedEffect(spentByTimeData) {
+                    targetValue = spentByTimeData.avg()
+                }
+
+                val animatedValue = animateFloatAsState(
+                    targetValue = targetValue,
+                    animationSpec = tween(1200),
+                    label = "average spent value animation"
+                )
+
+                Text(
+                    text = "Average",
+                    style = Typography.headlineSmall,
+                )
+
+                Text(
+                    text = animatedValue.value.formatToCurrency(),
+                    style = Typography.headlineSmall,
+                )
             }
 
-            val animatedValue = animateFloatAsState(
-                targetValue = targetValue,
-                animationSpec = tween(1200),
-                label = "average spent value animation"
-            )
+            Column(
+                modifier = Modifier.weight(1F),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                var targetValue by remember { mutableFloatStateOf(spentByTimeData.median()) }
 
-            Text(
-                text = "Average",
-                style = Typography.headlineSmall,
-            )
+                LaunchedEffect(spentByTimeData) {
+                    targetValue = spentByTimeData.median()
+                }
 
-            Text(
-                text = animatedValue.value.formatToCurrency(),
-                style = Typography.headlineSmall,
-            )
+                val animatedValue = animateFloatAsState(
+                    targetValue = targetValue,
+                    animationSpec = tween(1200),
+                    label = "average spent value animation"
+                )
 
+                Text(
+                    text = "Median",
+                    style = Typography.headlineSmall,
+                )
+
+                Text(
+                    text = animatedValue.value.formatToCurrency(),
+                    style = Typography.headlineSmall,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
