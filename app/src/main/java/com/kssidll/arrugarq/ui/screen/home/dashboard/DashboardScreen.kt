@@ -70,10 +70,9 @@ private fun DashboardScreenContent(
                 animationSpec = tween(1200),
                 label = "total spent value animation"
             )
-            val dropDecimal = animatedValue.value >= 100
 
             Text(
-                text = animatedValue.value.formatToCurrency(dropDecimal = dropDecimal),
+                text = animatedValue.value.formatToCurrency(),
                 modifier = Modifier.align(Alignment.Center),
                 style = Typography.headlineLarge,
             )

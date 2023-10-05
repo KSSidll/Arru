@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.screen.home.*
@@ -53,6 +54,37 @@ fun DashboardSpendingSummaryComponent(
             columnWidth = columnWidth,
             columnSpacing = columnSpacing,
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            var targetValue by remember { mutableFloatStateOf(spentByTimeData.avg()) }
+
+            LaunchedEffect(spentByTimeData) {
+                targetValue = spentByTimeData.avg()
+            }
+
+            val animatedValue = animateFloatAsState(
+                targetValue = targetValue,
+                animationSpec = tween(1200),
+                label = "average spent value animation"
+            )
+
+            Text(
+                text = "Average",
+                style = Typography.headlineSmall,
+            )
+
+            Text(
+                text = animatedValue.value.formatToCurrency(),
+                style = Typography.headlineSmall,
+            )
+
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 

@@ -37,7 +37,7 @@ data class Item(
     @ColumnInfo(index = true) val shopId: Long?,
     val quantity: Long,
     val price: Long,
-    val date: Long,
+    @ColumnInfo(index = true) val date: Long,
 ) {
     constructor(
         productId: Long,

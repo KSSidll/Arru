@@ -5,6 +5,7 @@ import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
 
 @Database(
+    version = 2,
     entities = [
         Item::class,
         Product::class,
@@ -15,7 +16,9 @@ import com.kssidll.arrugarq.data.data.*
         Shop::class,
         ProductProducer::class,
     ],
-    version = 1,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getItemDao(): ItemDao
