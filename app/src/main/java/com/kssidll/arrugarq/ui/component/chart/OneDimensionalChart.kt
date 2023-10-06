@@ -37,7 +37,6 @@ fun OneDimensionalChart(
 ) {
     val scope = rememberCoroutineScope()
     val chartEntryModelProducer = remember { ChartEntryModelProducer() }
-    var previousDataSize by remember { mutableIntStateOf(spentByTimeData.size) }
 
     val defaultColumns = currentChartStyle.columnChart.columns
 
@@ -67,11 +66,15 @@ fun OneDimensionalChart(
             autoScrollCondition = { _, oldModel ->
                 if (oldModel == null) return@rememberChartScrollSpec false
 
+                val newDataSize = spentByTimeData.size
+                val previousDataSize = oldModel.entries.getOrElse(0) { emptyList() }
+                    .indexOfLast { it.y > 0F }
+
                 // handle back scroll
-                if (spentByTimeData.isNotEmpty() && spentByTimeData.size < previousDataSize) {
+                if (newDataSize < previousDataSize) {
                     val itemWidth =
                         (scrollState.maxValue + chart.bounds.width()).div(previousDataSize)
-                    val itemDiff = spentByTimeData.size - previousDataSize
+                    val itemDiff = newDataSize - previousDataSize
                     val scrollAmount = itemWidth * itemDiff
                     val relativeScrollAmount =
                         (scrollState.maxValue - scrollState.value) + scrollAmount
@@ -81,14 +84,10 @@ fun OneDimensionalChart(
                             animationSpec = autoScrollSpec,
                         )
                     }
-                    previousDataSize = spentByTimeData.size
-
-                    false
-                } else {
-                    previousDataSize = spentByTimeData.size
-
-                    true
+                    return@rememberChartScrollSpec false
                 }
+
+                return@rememberChartScrollSpec true
             },
             autoScrollAnimationSpec = autoScrollSpec,
         ),

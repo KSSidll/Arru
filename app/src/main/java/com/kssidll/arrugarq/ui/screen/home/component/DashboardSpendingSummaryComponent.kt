@@ -160,7 +160,6 @@ private fun SMAChart(
     }
 
     val scope = rememberCoroutineScope()
-    var previousDataSize by remember { mutableIntStateOf(data.size) }
 
     val chart = lineChart(
         spacing = lineSpacing
@@ -210,11 +209,15 @@ private fun SMAChart(
                 autoScrollCondition = if (scrollOwner) AutoScrollCondition { _, oldModel ->
                     if (oldModel == null) return@AutoScrollCondition false
 
+                    val newDataSize = data.size
+                    val previousDataSize = oldModel.entries.getOrElse(0) { emptyList() }
+                        .indexOfLast { it.y > 0F }
+
                     // handle back scroll
-                    if (data.isNotEmpty() && data.size < previousDataSize) {
+                    if (newDataSize < previousDataSize) {
                         val itemWidth =
                             (scrollState.maxValue + chart.bounds.width()).div(previousDataSize)
-                        val itemDiff = data.size - previousDataSize
+                        val itemDiff = newDataSize - previousDataSize
                         val scrollAmount = itemWidth * itemDiff
                         val relativeScrollAmount =
                             (scrollState.maxValue - scrollState.value) + scrollAmount
@@ -224,14 +227,10 @@ private fun SMAChart(
                                 animationSpec = autoScrollSpec,
                             )
                         }
-                        previousDataSize = data.size
-
-                        false
-                    } else {
-                        previousDataSize = data.size
-
-                        true
+                        return@AutoScrollCondition false
                     }
+
+                    return@AutoScrollCondition true
                 } else AutoScrollCondition.Never,
                 autoScrollAnimationSpec = autoScrollSpec,
             ),
