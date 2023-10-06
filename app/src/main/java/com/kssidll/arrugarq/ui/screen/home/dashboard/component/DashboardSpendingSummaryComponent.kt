@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.component
+package com.kssidll.arrugarq.ui.screen.home.dashboard.component
 
 import android.content.res.*
 import androidx.compose.animation.core.*
@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.screen.home.*
@@ -57,68 +56,7 @@ fun DashboardSpendingSummaryComponent(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.weight(1F),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                var targetValue by remember { mutableFloatStateOf(spentByTimeData.avg()) }
-
-                LaunchedEffect(spentByTimeData) {
-                    targetValue = spentByTimeData.avg()
-                }
-
-                val animatedValue = animateFloatAsState(
-                    targetValue = targetValue,
-                    animationSpec = tween(1200),
-                    label = "average spent value animation"
-                )
-
-                Text(
-                    text = "Average",
-                    style = Typography.headlineSmall,
-                )
-
-                Text(
-                    text = animatedValue.value.formatToCurrency(),
-                    style = Typography.headlineSmall,
-                )
-            }
-
-            Column(
-                modifier = Modifier.weight(1F),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                var targetValue by remember { mutableFloatStateOf(spentByTimeData.median()) }
-
-                LaunchedEffect(spentByTimeData) {
-                    targetValue = spentByTimeData.median()
-                }
-
-                val animatedValue = animateFloatAsState(
-                    targetValue = targetValue,
-                    animationSpec = tween(1200),
-                    label = "average spent value animation"
-                )
-
-                Text(
-                    text = "Median",
-                    style = Typography.headlineSmall,
-                )
-
-                Text(
-                    text = animatedValue.value.formatToCurrency(),
-                    style = Typography.headlineSmall,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Box(modifier = Modifier.heightIn(max = 150.dp)) {
+        Box(modifier = Modifier.heightIn(max = 120.dp)) {
             val period = when (spentByTimePeriod) {
                 SpentByTimePeriod.Day -> 28
                 SpentByTimePeriod.Week -> 14
@@ -313,7 +251,7 @@ fun DashboardSpendingSummaryComponentPreview() {
     ArrugarqTheme {
         Surface {
             DashboardSpendingSummaryComponent(
-                spentByTimeData = getFakeSpentByTimeData(),
+                spentByTimeData = generateRandomItemSpentByTimeList(),
                 spentByTimePeriod = SpentByTimePeriod.Month,
                 onSpentByTimePeriodSwitch = {},
             )

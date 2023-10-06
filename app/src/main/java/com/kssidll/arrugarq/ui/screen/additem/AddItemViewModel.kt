@@ -56,8 +56,8 @@ class AddItemViewModel @Inject constructor(
                 productId = itemData.productId,
                 variantId = itemData.variantId.getOrNull(),
                 shopId = itemData.shopId.getOrNull(),
-                quantity = itemData.quantity,
-                price = (itemData.price * 100).toLong(),
+                actualQuantity = itemData.quantity,
+                actualPrice = itemData.price,
                 date = itemData.date,
             )
         )
@@ -95,7 +95,10 @@ class AddItemViewModel @Inject constructor(
             lastItemByProduct.price / 100f
         )
 
-        addItemState.quantity.value = lastItemByProduct.quantity.toString()
+        addItemState.quantity.value = String.format(
+            "%.3f",
+            lastItemByProduct.quantity / 1000f
+        )
     }
 
 }

@@ -15,6 +15,7 @@ fun HomeRoute(
         onAddItem = onAddItem,
         onDashboardCategoryCardClick = onDashboardCategoryCardClick,
         onDashboardShopCardClick = onDashboardShopCardClick,
+        items = homeViewModel.getAllEmbeddedItemSortedFlow(),
         totalSpentData = homeViewModel.getTotalSpent(),
         spentByShopData = homeViewModel.getSpentByShop(),
         spentByCategoryData = homeViewModel.getSpentByCategory(),

@@ -24,6 +24,12 @@ interface ItemDao {
     @Query("SELECT * FROM item ORDER BY id DESC LIMIT 1")
     fun getLastFlow(): Flow<Item>
 
+    @Query("SELECT * FROM item ORDER BY date DESC")
+    suspend fun getAllEmbeddedItemSorted(): List<EmbeddedItem>
+
+    @Query("SELECT * FROM item ORDER BY date DESC")
+    fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>>
+
     @Query("SELECT shop.*, SUM(item.price * item.quantity) as total FROM item INNER JOIN shop ON item.shopId = shop.id GROUP BY item.shopId")
     suspend fun getShopTotalSpent(): List<ItemSpentByShop>
 

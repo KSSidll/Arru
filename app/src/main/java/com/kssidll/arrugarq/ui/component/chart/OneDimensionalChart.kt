@@ -131,7 +131,7 @@ fun OneDimesionalChartPreview() {
     ArrugarqTheme {
         Surface {
             OneDimensionalChart(
-                spentByTimeData = getFakeSpentByTimeData(),
+                spentByTimeData = generateRandomItemSpentByTimeList(),
             )
         }
     }

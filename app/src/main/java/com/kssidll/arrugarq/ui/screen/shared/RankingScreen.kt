@@ -83,7 +83,7 @@ fun RankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = getFakeSpentByCategoryData(),
+                data = generateRandomItemSpentByCategoryList(),
                 onItemClick = {},
             )
         }

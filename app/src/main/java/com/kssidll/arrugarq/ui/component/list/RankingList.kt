@@ -269,7 +269,7 @@ fun RankingListPreview() {
     ArrugarqTheme {
         Surface {
             RankingList(
-                items = getFakeSpentByShopData(),
+                items = generateRandomItemSpentByShopList(),
             )
         }
     }

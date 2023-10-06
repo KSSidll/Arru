@@ -55,7 +55,50 @@ data class Item(
         price,
         date
     )
+
+    constructor(
+        productId: Long,
+        variantId: Long?,
+        shopId: Long?,
+        actualQuantity: Float,
+        actualPrice: Float,
+        date: Long
+    ): this(
+        0,
+        productId,
+        variantId,
+        shopId,
+        actualQuantity.times(1000)
+            .toLong(),
+        actualPrice.times(100)
+            .toLong(),
+        date
+    )
+
+    fun actualQuantity(): Float {
+        return quantity.div(1000F)
+    }
+
+    fun actualPrice(): Float {
+        return price.div(100F)
+    }
 }
+
+data class EmbeddedItem(
+    @Embedded val item: Item,
+    @Relation(
+        parentColumn = "productId",
+        entityColumn = "id",
+    ) val product: Product,
+    @Relation(
+        parentColumn = "variantId",
+        entityColumn = "id",
+    ) val variant: ProductVariant?,
+    @Relation(
+        parentColumn = "shopId",
+        entityColumn = "id",
+    ) val shop: Shop?,
+)
 
 data class ItemSpentByTime(
     val time: String,
@@ -63,7 +106,7 @@ data class ItemSpentByTime(
 ): Chartable {
     override fun getValue(): Float {
         return total.toFloat()
-            .div(100)
+            .div(100000)
     }
 
     override fun getSortValue(): Long {
@@ -100,7 +143,7 @@ data class ItemSpentByShop(
 ): Rankable {
     override fun getValue(): Float {
         return total.toFloat()
-            .div(100)
+            .div(100000)
     }
 
     override fun getSortValue(): Long {
@@ -127,7 +170,7 @@ data class ItemSpentByCategory(
 ): Rankable {
     override fun getValue(): Float {
         return total.toFloat()
-            .div(100)
+            .div(100000)
     }
 
     override fun getSortValue(): Long {

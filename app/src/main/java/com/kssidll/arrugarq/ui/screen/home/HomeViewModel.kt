@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.home
 
 import androidx.compose.material.icons.*
+import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.painter.*
@@ -9,7 +10,6 @@ import androidx.compose.ui.res.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.repository.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -25,7 +25,8 @@ class HomeViewModel @Inject constructor(
     private val itemRepository: IItemRepository
 
     private var spentByTimeQuery: Job? = null
-    private var _spentByTimeData: MutableState<Flow<List<Chartable>>> = mutableStateOf(flowOf())
+    private var _spentByTimeData: MutableState<Flow<List<ItemSpentByTime>>> =
+        mutableStateOf(flowOf())
     val spentByTimeData by _spentByTimeData
 
     private var _spentByTimePeriod: MutableState<SpentByTimePeriod> =
@@ -39,10 +40,14 @@ class HomeViewModel @Inject constructor(
         switchToSpentByTimePeriod(spentByTimePeriod)
     }
 
+    fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>> {
+        return itemRepository.getAllEmbeddedItemSortedFlow()
+    }
+
     fun getTotalSpent(): Flow<Float> {
         return itemRepository.getTotalSpentFlow()
             .map {
-                it.div(100F)
+                it.div(100000F)
             }
     }
 
@@ -102,8 +107,8 @@ enum class HomeScreenLocations(
     val initial: Boolean = false,
 ) {
     Dashboard(initial = true),
-    FakeLocation(),
-    AnotherFakeLocation(),
+    Predictions(),
+    Transactions(),
     ;
 
     val description: String
@@ -111,24 +116,24 @@ enum class HomeScreenLocations(
         @ReadOnlyComposable
         get() = when (this) {
             Dashboard -> stringResource(R.string.navigate_to_dashboard_description)
-            FakeLocation -> "Test"
-            AnotherFakeLocation -> "Test"
+            Predictions -> stringResource(R.string.navigate_to_predictions_description)
+            Transactions -> stringResource(R.string.navigate_to_transactions_description)
         }
 
     val imageVector: ImageVector?
         @Composable
         get() = when (this) {
             Dashboard -> Icons.Rounded.Home
-            FakeLocation -> Icons.Rounded.AccountTree
-            AnotherFakeLocation -> Icons.Rounded.Airlines
+            Predictions -> Icons.Rounded.Upcoming
+            Transactions -> Icons.AutoMirrored.Rounded.Notes
         }
 
     val painter: Painter?
         @Composable
         get() = when (this) {
             Dashboard -> null
-            FakeLocation -> null
-            AnotherFakeLocation -> null
+            Predictions -> null
+            Transactions -> null
         }
 
     companion object {
@@ -143,7 +148,7 @@ enum class HomeScreenLocations(
 fun HomeScreenLocations.getTranslation(): String {
     return when (this) {
         HomeScreenLocations.Dashboard -> stringResource(R.string.dashboard_nav_label)
-        HomeScreenLocations.FakeLocation -> "Test"
-        HomeScreenLocations.AnotherFakeLocation -> "Test"
+        HomeScreenLocations.Predictions -> stringResource(R.string.predictions_nav_label)
+        HomeScreenLocations.Transactions -> stringResource(R.string.transactions_nav_label)
     }
 }

@@ -9,10 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.*
+import com.kssidll.arrugarq.ui.screen.home.predictions.*
+import com.kssidll.arrugarq.ui.screen.home.transactions.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
@@ -25,10 +26,11 @@ fun HomeScreen(
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
+    items: Flow<List<EmbeddedItem>>,
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
-    spentByTimeData: Flow<List<Chartable>>,
+    spentByTimeData: Flow<List<ItemSpentByTime>>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
 ) {
@@ -56,6 +58,7 @@ fun HomeScreen(
             HorizontalPager(
                 state = pagerState,
                 userScrollEnabled = false,
+                beyondBoundsPageCount = HomeScreenLocations.entries.size,
             ) { location ->
                 when (HomeScreenLocations.getByOrdinal(location)!!) {
                     HomeScreenLocations.Dashboard -> {
@@ -71,12 +74,16 @@ fun HomeScreen(
                         )
                     }
 
-                    HomeScreenLocations.FakeLocation -> {
+                    HomeScreenLocations.Predictions -> {
+                        PredictionsScreen(
 
+                        )
                     }
 
-                    HomeScreenLocations.AnotherFakeLocation -> {
-
+                    HomeScreenLocations.Transactions -> {
+                        TransactionsScreen(
+                            items = items,
+                        )
                     }
                 }
             }
@@ -111,10 +118,11 @@ fun HomeScreenPreview() {
                     onAddItem = {},
                     onDashboardCategoryCardClick = {},
                     onDashboardShopCardClick = {},
+                    items = generateRandomEmbeddedItemListFlow(),
                     totalSpentData = flowOf(1357452F),
-                    spentByShopData = getFakeSpentByShopDataFlow(),
-                    spentByCategoryData = getFakeSpentByCategoryDataFlow(),
-                    spentByTimeData = getFakeSpentByTimeDataFlow(),
+                    spentByShopData = generateRandomItemSpentByShopListFlow(),
+                    spentByCategoryData = generateRandomItemSpentByCategoryListFlow(),
+                    spentByTimeData = generateRandomItemSpentByTimeListFlow(),
                     spentByTimePeriod = SpentByTimePeriod.Month,
                     onSpentByTimePeriodSwitch = {},
                 )

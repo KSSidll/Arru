@@ -11,12 +11,11 @@ import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.screen.home.*
-import com.kssidll.arrugarq.ui.screen.home.component.*
+import com.kssidll.arrugarq.ui.screen.home.dashboard.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
@@ -27,7 +26,7 @@ fun DashboardScreen(
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
-    spentByTimeData: Flow<List<Chartable>>,
+    spentByTimeData: Flow<List<ItemSpentByTime>>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
 ) {
@@ -53,7 +52,7 @@ private fun DashboardScreenContent(
     totalSpentData: Float,
     spentByShopData: List<ItemSpentByShop>,
     spentByCategoryData: List<ItemSpentByCategory>,
-    spentByTimeData: List<Chartable>,
+    spentByTimeData: List<ItemSpentByTime>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
 ) {
@@ -84,7 +83,11 @@ private fun DashboardScreenContent(
             )
         }
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(8.dp))
+
+        DashboardAverageAndMedianSpendingComponent(spentByTimeData)
+
+        Spacer(Modifier.height(28.dp))
 
         DashboardSpendingSummaryComponent(
             modifier = Modifier.animateContentSize(),
@@ -150,9 +153,9 @@ fun DashboardScreenPreview() {
                 onCategoryCardClick = {},
                 onShopCardClick = {},
                 totalSpentData = 16832.18F,
-                spentByShopData = getFakeSpentByShopData(),
-                spentByCategoryData = getFakeSpentByCategoryData(),
-                spentByTimeData = getFakeSpentByTimeData(),
+                spentByShopData = generateRandomItemSpentByShopList(),
+                spentByCategoryData = generateRandomItemSpentByCategoryList(),
+                spentByTimeData = generateRandomItemSpentByTimeList(),
                 spentByTimePeriod = SpentByTimePeriod.Month,
                 onSpentByTimePeriodSwitch = {},
             )

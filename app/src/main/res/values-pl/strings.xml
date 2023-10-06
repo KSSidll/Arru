@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="dashboard_nav_label">Pulpit</string>
     <string name="navigate_to_dashboard_description">Przejdź do pulpitu / głównego ekranu</string>
+
+    <string name="predictions_nav_label">Prognozy</string>
+    <string name="navigate_to_predictions_description">Przejdź do ekranu z prognozami danych</string>
+
+    <string name="transactions_nav_label">Transakcje</string>
+    <string name="navigate_to_transactions_description">Przejdź do listy transakcji</string>
 
     <string name="search">Szukaj</string>
 
@@ -44,7 +51,6 @@
     <string name="week">Tydzień</string>
     <string name="month">Miesiąć</string>
     <string name="year">Rok</string>
-    <string name="dashboard_nav_label">Pulpit</string>
     <string name="navigate_to_previous_screen">Wróć do poprzedniego ekranu</string>
     <string name="categories">Kategorie</string>
     <string name="shops">Sklepy</string>

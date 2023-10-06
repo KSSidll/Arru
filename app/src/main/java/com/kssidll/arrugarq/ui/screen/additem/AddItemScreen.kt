@@ -26,7 +26,7 @@ import java.util.*
 
 private fun isDateError(value: Long?) = value == null
 private fun isPriceError(value: Float?) = value == null
-private fun isQuantityError(value: Long?) = value == null
+private fun isQuantityError(value: Float?) = value == null
 private fun isProductError(value: Product?) = value == null
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -291,7 +291,7 @@ private fun AddItemScreenContent(
                                     .alpha(0.5F)
                             )
                         },
-                        isError = if (attemptedToSubmit) isQuantityError(state.quantity.value.toLongOrNull()) else false,
+                        isError = if (attemptedToSubmit) isQuantityError(state.quantity.value.toFloatOrNull()) else false,
                     )
                 }
 
@@ -378,7 +378,7 @@ private fun AddItemScreenContent(
                         val variant: ProductVariant? = state.selectedVariant.value
                         val shop: Shop? = state.selectedShop.value
 
-                        val quantity: Long? = state.quantity.value.toLongOrNull()
+                        val quantity: Float? = state.quantity.value.toFloatOrNull()
                         val price: Float? = state.price.value.toFloatOrNull()
                         val date: Long? = state.date.value
 

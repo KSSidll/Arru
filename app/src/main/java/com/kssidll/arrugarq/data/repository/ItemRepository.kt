@@ -30,6 +30,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getLastFlow()
     }
 
+    override suspend fun getAllEmbeddedItemSorted(): List<EmbeddedItem> {
+        return itemDao.getAllEmbeddedItemSorted()
+    }
+
+    override fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>> {
+        return itemDao.getAllEmbeddedItemSortedFlow()
+    }
+
     override suspend fun getShopTotalSpent(): List<ItemSpentByShop> {
         return itemDao.getShopTotalSpent()
     }

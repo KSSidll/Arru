@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name" translatable="false">Arrugarq</string>
 
+    <string name="dashboard_nav_label">Dashboard</string>
     <string name="navigate_to_dashboard_description">Navigate to the dashboard</string>
+
+    <string name="predictions_nav_label">Predictions</string>
+    <string name="navigate_to_predictions_description">Navigate to the predictions screen</string>
+
+    <string name="transactions_nav_label">Transactions</string>
+    <string name="navigate_to_transactions_description">Navigate to the transactions screen</string>
 
     <string name="search">Search</string>
 
@@ -45,7 +52,6 @@
     <string name="week">Week</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
-    <string name="dashboard_nav_label">Dashboard</string>
     <string name="navigate_to_previous_screen">Return to previous screen</string>
     <string name="categories">Categories</string>
     <string name="shops">Shops</string>
