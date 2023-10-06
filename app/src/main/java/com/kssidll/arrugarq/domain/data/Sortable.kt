@@ -1,21 +1,10 @@
 package com.kssidll.arrugarq.domain.data
 
-interface Item {
-    fun getValue(): Float
+interface Sortable {
     fun getSortValue(): Long
 }
 
-fun <E> List<E>.avg(): Float where E: Item {
-    if (isEmpty()) return 0F
-
-    var sum = 0F
-    forEach {
-        sum += it.getValue()
-    }
-    return sum / size
-}
-
-fun <E> List<E>.median(): Float where E: Item {
+fun <E> List<E>.median(): Float where E: Sortable, E: FloatProvider {
     if (isEmpty()) return 0F
 
     val sorted = this.sortedBy { it.getSortValue() }
@@ -25,3 +14,4 @@ fun <E> List<E>.median(): Float where E: Item {
 
     return (sorted[middle].getValue() + sorted[middle + 1].getValue()).div(2)
 }
+

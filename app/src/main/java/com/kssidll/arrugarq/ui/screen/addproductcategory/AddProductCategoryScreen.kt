@@ -21,105 +21,86 @@ import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductCategoryScreen(
     onBack: () -> Unit,
     onCategoryAdd: (AddProductCategoryData) -> Unit,
 ) {
-    Column {
-        val focusRequester = remember { FocusRequester() }
-        val lifecycleOwner = LocalLifecycleOwner.current
-
-        DisposableEffect(Unit) {
-            val lifecycle = lifecycleOwner.lifecycle
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
-                    focusRequester.requestFocus()
+    Scaffold(
+        topBar = {
+            SecondaryAppBar(
+                onBack = onBack,
+                title = {
+                    Text(text = stringResource(R.string.item_product_category))
                 }
-            }
-            lifecycle.addObserver(observer)
+            )
+        }
+    ) {
+        Box(modifier = Modifier.padding(it)) {
+            AddProductCategoryScreenContent(
+                onBack = onBack,
+                onCategoryAdd = onCategoryAdd,
+            )
+        }
+    }
+}
 
-            onDispose {
-                lifecycle.removeObserver(observer)
+
+@Composable
+private fun AddProductCategoryScreenContent(
+    onBack: () -> Unit,
+    onCategoryAdd: (AddProductCategoryData) -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(Unit) {
+        val lifecycle = lifecycleOwner.lifecycle
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                focusRequester.requestFocus()
             }
         }
+        lifecycle.addObserver(observer)
 
-        SecondaryAppBar(onBack = onBack) {
-            Text(text = stringResource(R.string.item_product_category))
+        onDispose {
+            lifecycle.removeObserver(observer)
         }
+    }
 
-        Spacer(modifier = Modifier.height(12.dp))
+    Box(
+        modifier = Modifier.padding(horizontal = 20.dp)
+    ) {
+        Column {
+            var name: String by rememberSaveable {
+                mutableStateOf(String())
+            }
 
-        Box(
-            modifier = Modifier.padding(horizontal = 20.dp)
-        ) {
-            Column {
-                var name: String by rememberSaveable {
-                    mutableStateOf(String())
-                }
+            var nameError: Boolean by remember {
+                mutableStateOf(false)
+            }
 
-                var nameError: Boolean by remember {
-                    mutableStateOf(false)
-                }
+            Row(
+                modifier = Modifier.fillMaxHeight(0.6f),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Bottom
+            ) {
 
-                Row(
-                    modifier = Modifier.fillMaxHeight(0.6f),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-
-                    StyledOutlinedTextField(
-                        singleLine = true,
-                        value = name,
-                        onValueChange = {
-                            name = it
-                        },
-                        modifier = Modifier
-                            .focusRequester(focusRequester)
-                            .fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                nameError = name.isEmpty()
-
-                                if (
-                                    !nameError
-                                ) {
-                                    onCategoryAdd(
-                                        AddProductCategoryData(name)
-                                    )
-                                    onBack()
-                                }
-                            }
-                        ),
-                        label = {
-                            Text(
-                                text = stringResource(R.string.item_product_category),
-                            )
-                        },
-                        isError = nameError
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxHeight(0.4f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(70.dp),
-                        colors = ButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        ),
-                        onClick = {
+                StyledOutlinedTextField(
+                    singleLine = true,
+                    value = name,
+                    onValueChange = {
+                        name = it
+                    },
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
                             nameError = name.isEmpty()
 
                             if (
@@ -130,24 +111,60 @@ fun AddProductCategoryScreen(
                                 )
                                 onBack()
                             }
-                        },
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(R.string.add_product_category_description),
-                                modifier = Modifier.size(30.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.item_product_category_add),
-                                fontSize = 20.sp
-                            )
                         }
+                    ),
+                    label = {
+                        Text(
+                            text = stringResource(R.string.item_product_category),
+                        )
+                    },
+                    isError = nameError
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxHeight(0.4f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp),
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    onClick = {
+                        nameError = name.isEmpty()
+
+                        if (
+                            !nameError
+                        ) {
+                            onCategoryAdd(
+                                AddProductCategoryData(name)
+                            )
+                            onBack()
+                        }
+                    },
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(R.string.add_product_category_description),
+                            modifier = Modifier.size(30.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.item_product_category_add),
+                            fontSize = 20.sp
+                        )
                     }
                 }
             }

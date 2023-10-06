@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.*
 @Composable
 fun HomeScreen(
     onAddItem: () -> Unit,
+    onDashboardCategoryCardClick: () -> Unit,
+    onDashboardShopCardClick: () -> Unit,
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
@@ -58,6 +60,8 @@ fun HomeScreen(
                 when (HomeScreenLocations.getByOrdinal(location)!!) {
                     HomeScreenLocations.Dashboard -> {
                         DashboardScreen(
+                            onCategoryCardClick = onDashboardCategoryCardClick,
+                            onShopCardClick = onDashboardShopCardClick,
                             totalSpentData = totalSpentData,
                             spentByShopData = spentByShopData,
                             spentByCategoryData = spentByCategoryData,
@@ -105,6 +109,8 @@ fun HomeScreenPreview() {
             Surface(modifier = Modifier.fillMaxSize()) {
                 HomeScreen(
                     onAddItem = {},
+                    onDashboardCategoryCardClick = {},
+                    onDashboardShopCardClick = {},
                     totalSpentData = flowOf(1357452F),
                     spentByShopData = getFakeSpentByShopDataFlow(),
                     spentByCategoryData = getFakeSpentByCategoryDataFlow(),

@@ -2,10 +2,10 @@ package com.kssidll.arrugarq.domain.data
 
 import com.patrykandpatrick.vico.core.entry.*
 
-interface Chartable: Item {
+interface Chartable: FloatProvider, Sortable {
     fun chartEntry(x: Int): ChartEntry
-    fun startAxisLabel(): String = String()
-    fun topAxisLabel(): String = String()
-    fun bottomAxisLabel(): String = String()
-    fun endAxisLabel(): String = String()
+    fun startAxisLabel(): String?
+    fun topAxisLabel(): String?
+    fun bottomAxisLabel(): String?
+    fun endAxisLabel(): String?
 }

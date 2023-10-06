@@ -45,4 +45,7 @@
     <string name="month">Miesiąć</string>
     <string name="year">Rok</string>
     <string name="dashboard_nav_label">Pulpit</string>
+    <string name="navigate_to_previous_screen">Wróć do poprzedniego ekranu</string>
+    <string name="categories">Kategorie</string>
+    <string name="shops">Sklepy</string>
 </resources>

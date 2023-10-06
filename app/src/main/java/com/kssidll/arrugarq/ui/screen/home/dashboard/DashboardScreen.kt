@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.*
 
 @Composable
 fun DashboardScreen(
+    onCategoryCardClick: () -> Unit,
+    onShopCardClick: () -> Unit,
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
@@ -30,6 +32,8 @@ fun DashboardScreen(
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
 ) {
     DashboardScreenContent(
+        onCategoryCardClick = onCategoryCardClick,
+        onShopCardClick = onShopCardClick,
         totalSpentData = totalSpentData.collectAsState(0F).value,
         spentByShopData = spentByShopData.collectAsState(emptyList()).value,
         spentByCategoryData = spentByCategoryData.collectAsState(emptyList()).value,
@@ -44,6 +48,8 @@ private val tileInnerPadding: Dp = 12.dp
 
 @Composable
 private fun DashboardScreenContent(
+    onCategoryCardClick: () -> Unit,
+    onShopCardClick: () -> Unit,
     totalSpentData: Float,
     spentByShopData: List<ItemSpentByShop>,
     spentByCategoryData: List<ItemSpentByCategory>,
@@ -93,26 +99,30 @@ private fun DashboardScreenContent(
             modifier = Modifier
                 .padding(tileOuterPadding)
                 .clickable {
-
+                    onCategoryCardClick()
                 },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
         ) {
             RankingList(
-                modifier = Modifier.padding(tileInnerPadding),
+                innerItemPadding = PaddingValues(tileInnerPadding),
                 items = spentByCategoryData,
             )
         }
 
         Card(
-            modifier = Modifier.padding(tileOuterPadding),
+            modifier = Modifier
+                .padding(tileOuterPadding)
+                .clickable {
+                    onShopCardClick()
+                },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
         ) {
             RankingList(
-                modifier = Modifier.padding(tileInnerPadding),
+                innerItemPadding = PaddingValues(tileInnerPadding),
                 items = spentByShopData,
             )
         }
@@ -137,6 +147,8 @@ fun DashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreenContent(
+                onCategoryCardClick = {},
+                onShopCardClick = {},
                 totalSpentData = 16832.18F,
                 spentByShopData = getFakeSpentByShopData(),
                 spentByCategoryData = getFakeSpentByCategoryData(),

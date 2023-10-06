@@ -1,49 +1,55 @@
 package com.kssidll.arrugarq.ui.component.other
 
 import android.content.res.*
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondaryAppBar(
     onBack: () -> Unit,
-    content: @Composable () -> Unit
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    Box(
-        contentAlignment = Alignment.CenterStart,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-    ) {
-
-        IconButton(
-            onClick = onBack
-        ) {
-            Icon(
-                Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = "Go back",
-                modifier = Modifier.size(30.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            content()
-        }
-    }
+    CenterAlignedTopAppBar(
+        title = title,
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(
+                onClick = onBack
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(com.kssidll.arrugarq.R.string.navigate_to_previous_screen),
+                    modifier = Modifier.size(30.dp),
+                )
+            }
+        },
+        actions = actions,
+        windowInsets = windowInsets,
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        scrollBehavior = scrollBehavior,
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(
     group = "Secondary App Bar",
     name = "Light",
@@ -61,8 +67,11 @@ fun SecondaryAppBarPreview() {
     ArrugarqTheme {
         Surface {
             SecondaryAppBar(
-                onBack = {}
-            ) {}
+                onBack = {},
+                title = {
+                    Text(text = "test")
+                },
+            )
         }
     }
 }

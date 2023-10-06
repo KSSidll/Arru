@@ -11,7 +11,9 @@ import com.kssidll.arrugarq.ui.screen.addproductcategory.*
 import com.kssidll.arrugarq.ui.screen.addproductproducer.*
 import com.kssidll.arrugarq.ui.screen.addproductvariant.*
 import com.kssidll.arrugarq.ui.screen.addshop.*
+import com.kssidll.arrugarq.ui.screen.categoryranking.*
 import com.kssidll.arrugarq.ui.screen.home.*
+import com.kssidll.arrugarq.ui.screen.shopranking.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
@@ -24,7 +26,8 @@ sealed class Screen: Parcelable {
     data object AddProductCategory: Screen()
     data object AddProductProducer: Screen()
     data object AddShop: Screen()
-    data object AddFilterGroup: Screen()
+    data object CategoryRanking: Screen()
+    data object ShopRanking: Screen()
 }
 
 @Composable
@@ -102,7 +105,13 @@ fun Navigation(
                 HomeRoute(
                     onAddItem = {
                         navController.navigate(Screen.AddItem)
-                    }
+                    },
+                    onDashboardCategoryCardClick = {
+                        navController.navigate(Screen.CategoryRanking)
+                    },
+                    onDashboardShopCardClick = {
+                        navController.navigate(Screen.ShopRanking)
+                    },
                 )
             }
 
@@ -158,10 +167,17 @@ fun Navigation(
                 )
             }
 
-            is Screen.AddFilterGroup -> {
-
+            is Screen.CategoryRanking -> {
+                CategoryRankingRoute(
+                    onBack = onBack,
+                )
             }
 
+            is Screen.ShopRanking -> {
+                ShopRankingRoute(
+                    onBack = onBack,
+                )
+            }
         }
     }
 }

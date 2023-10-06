@@ -61,7 +61,6 @@ data class ItemSpentByTime(
     val time: String,
     val total: Long,
 ): Chartable {
-
     override fun getValue(): Float {
         return total.toFloat()
             .div(100)
@@ -78,6 +77,10 @@ data class ItemSpentByTime(
         )
     }
 
+    override fun startAxisLabel(): String? {
+        return null
+    }
+
     override fun topAxisLabel(): String {
         return getValue().formatToCurrency(dropDecimal = true)
     }
@@ -86,6 +89,9 @@ data class ItemSpentByTime(
         return time
     }
 
+    override fun endAxisLabel(): String? {
+        return null
+    }
 }
 
 data class ItemSpentByShop(
@@ -109,6 +115,10 @@ data class ItemSpentByShop(
         return getValue()
             .formatToCurrency(dropDecimal = true)
     }
+
+    override fun getIdentificator(): Long {
+        return shop.id
+    }
 }
 
 data class ItemSpentByCategory(
@@ -131,5 +141,9 @@ data class ItemSpentByCategory(
     override fun getDisplayValue(): String {
         return getValue()
             .formatToCurrency(dropDecimal = true)
+    }
+
+    override fun getIdentificator(): Long {
+        return category.id
     }
 }

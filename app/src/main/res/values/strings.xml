@@ -46,4 +46,7 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="dashboard_nav_label">Dashboard</string>
+    <string name="navigate_to_previous_screen">Return to previous screen</string>
+    <string name="categories">Categories</string>
+    <string name="shops">Shops</string>
 </resources>

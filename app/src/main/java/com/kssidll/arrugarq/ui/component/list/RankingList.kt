@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
@@ -19,7 +20,12 @@ private val firstTextStyle: TextStyle = Typography.titleLarge
 private val secondTextStyle: TextStyle = Typography.titleMedium
 private val otherTextStyle: TextStyle = Typography.titleSmall
 
-private fun getTextStyle(position: Int): TextStyle {
+private fun getTextStyle(
+    position: Int,
+    scaleByRank: Boolean
+): TextStyle {
+    if (!scaleByRank) return secondTextStyle
+
     return when (position) {
         0 -> firstTextStyle
         1 -> secondTextStyle
@@ -27,7 +33,12 @@ private fun getTextStyle(position: Int): TextStyle {
     }
 }
 
-private fun getRowHeight(position: Int): Dp {
+private fun getRowHeight(
+    position: Int,
+    scaleByRank: Boolean
+): Dp {
+    if (!scaleByRank) return 60.dp
+
     return when (position) {
         0 -> 70.dp
         1 -> 60.dp
@@ -36,19 +47,26 @@ private fun getRowHeight(position: Int): Dp {
 }
 
 /**
+ * @param T: Type of item, needs to implement Rankable
  * @param items: List of items to display, the items will be sorted by their value
  * @param modifier: Modifier applied to the container
+ * @param innerItemPadding: Padding applied to the item container
  * @param displayCount: How many items to display, 0 means all
  * @param animationSpec: Animation Spec for the item relative to max value animation
+ * @param scaleByRank: Whether to scale the item values based on their position
+ * @param onItemClick: Function to call when an item is clicked, null disables click event
  */
 @Composable
-fun RankingList(
-    items: List<Rankable>,
+fun <T> RankingList(
+    items: List<T>,
     modifier: Modifier = Modifier,
+    innerItemPadding: PaddingValues = PaddingValues(0.dp),
     displayCount: Int = 6,
     animationSpec: AnimationSpec<Float> = tween(1200),
-) {
-    val displayItems: SnapshotStateList<Rankable> = remember { mutableStateListOf() }
+    scaleByRank: Boolean = true,
+    onItemClick: ((T) -> Unit)? = null,
+) where T: Rankable {
+    val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
 
     LaunchedEffect(items) {
@@ -64,70 +82,144 @@ fun RankingList(
         }
     }
 
-    Row(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .widthIn(max = 160.dp)
-        ) {
-            displayItems.forEachIndexed { index, it ->
-                Box(
-                    modifier = Modifier
-                        .height(getRowHeight(index))
-                        .padding(4.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterStart),
-                        text = it.getDisplayName(),
-                        style = getTextStyle(index),
-                        maxLines = 2,
-                    )
-                }
-            }
-        }
+    val layoutDirection = LocalLayoutDirection.current
+    val startPadding = innerItemPadding.calculateStartPadding(layoutDirection)
+    val topPadding = innerItemPadding.calculateTopPadding()
+    val bottomPadding = innerItemPadding.calculateBottomPadding()
+    val endPadding = innerItemPadding.calculateEndPadding(layoutDirection)
 
-        Column(
-            modifier = Modifier
-                .horizontalScroll(state = rememberScrollState())
-                .width(IntrinsicSize.Min)
-                .widthIn(
-                    min = 40.dp,
-                    max = 128.dp
-                )
-        ) {
-            displayItems.forEachIndexed { index, it ->
-                Box(
-                    modifier = Modifier
-                        .height(getRowHeight(index))
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = it.getDisplayValue(),
-                        style = getTextStyle(index),
-                    )
-                }
-            }
-        }
-
-        Column {
-            displayItems.forEachIndexed { index, it ->
-                Box(
-                    modifier = Modifier
-                        .height(getRowHeight(index))
-                        .padding(4.dp)
-                ) {
-                    RankingItemProgressBar(
-                        progressValue = it.getSortValue() / maxItemValue.toFloat(),
+    Box(modifier = modifier) {
+        Row {
+            Column(
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .widthIn(max = 160.dp)
+            ) {
+                displayItems.forEachIndexed { index, it ->
+                    Box(
                         modifier = Modifier
-                            .align(alignment = Alignment.Center)
+                            .height(
+                                getRowHeight(
+                                    index,
+                                    scaleByRank
+                                )
+                            )
+                            .padding(
+                                start = startPadding + 4.dp,
+                                top = topPadding,
+                                bottom = bottomPadding,
+                                end = 4.dp,
+                            )
                             .fillMaxWidth()
-                            .height(getTextStyle(index).fontSize.value.dp.minus(6.dp)),
-                        animationSpec = animationSpec,
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterStart),
+                            text = it.getDisplayName(),
+                            style = getTextStyle(
+                                index,
+                                scaleByRank
+                            ),
+                            maxLines = 2,
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .horizontalScroll(state = rememberScrollState())
+                    .width(IntrinsicSize.Min)
+                    .widthIn(
+                        min = 40.dp,
+                        max = 128.dp
+                    )
+            ) {
+                displayItems.forEachIndexed { index, it ->
+                    Box(
+                        modifier = Modifier
+                            .height(
+                                getRowHeight(
+                                    index,
+                                    scaleByRank
+                                )
+                            )
+                            .padding(
+                                start = 8.dp,
+                                top = topPadding,
+                                bottom = bottomPadding,
+                                end = 8.dp,
+                            )
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = it.getDisplayValue(),
+                            style = getTextStyle(
+                                index,
+                                scaleByRank
+                            ),
+                        )
+                    }
+                }
+            }
+
+            Column {
+                displayItems.forEachIndexed { index, it ->
+                    Box(
+                        modifier = Modifier
+                            .height(
+                                getRowHeight(
+                                    index,
+                                    scaleByRank
+                                )
+                            )
+                            .padding(
+                                start = 4.dp,
+                                top = topPadding,
+                                bottom = bottomPadding,
+                                end = endPadding + 4.dp,
+                            )
+                    ) {
+                        RankingItemProgressBar(
+                            progressValue = it.getSortValue() / maxItemValue.toFloat(),
+                            modifier = Modifier
+                                .align(alignment = Alignment.Center)
+                                .fillMaxWidth()
+                                .height(
+                                    getTextStyle(
+                                        index,
+                                        scaleByRank
+                                    ).fontSize.value.dp.minus(6.dp)
+                                ),
+                            animationSpec = animationSpec,
+                        )
+                    }
+                }
+            }
+        }
+
+        if (onItemClick != null) {
+            Column(
+                modifier = Modifier.matchParentSize()
+            ) {
+                displayItems.forEachIndexed { index, it ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                getRowHeight(
+                                    index,
+                                    scaleByRank
+                                )
+                            )
+                            .clickable {
+                                onItemClick(it)
+                            }
                     )
                 }
             }
         }
+
     }
 }
 
