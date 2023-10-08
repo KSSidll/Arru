@@ -8,7 +8,93 @@ import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
-import kotlin.jvm.optionals.*
+
+internal data class AddItemScreenState(
+    val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
+
+    val selectedProduct: MutableState<Product?> = mutableStateOf(null),
+    val selectedProductError: MutableState<Boolean> = mutableStateOf(false),
+
+    val selectedVariant: MutableState<ProductVariant?> = mutableStateOf(null),
+
+    val selectedShop: MutableState<Shop?> = mutableStateOf(null),
+
+    val quantity: MutableState<String> = mutableStateOf(String()),
+    val quantityError: MutableState<Boolean> = mutableStateOf(false),
+
+    val price: MutableState<String> = mutableStateOf(String()),
+    val priceError: MutableState<Boolean> = mutableStateOf(false),
+
+    val date: MutableState<Long?> = mutableStateOf(null),
+    val dateError: MutableState<Boolean> = mutableStateOf(false),
+
+    var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+)
+
+/**
+ * Validates selectedProduct field and updates its error flag
+ * @return true if field is of correct value, false otherwise
+ */
+internal fun AddItemScreenState.validateSelectedProduct(): Boolean {
+    return (selectedProduct.value == null).also { selectedProductError.value = it }
+}
+
+/**
+ * Validates quantity field and updates its error flag
+ * @return true if field is of correct value, false otherwise
+ */
+internal fun AddItemScreenState.validateQuantity(): Boolean {
+    return (quantity.value.toFloatOrNull() == null).also { quantityError.value = it }
+}
+
+/**
+ * Validates price field and updates its error flag
+ * @return true if field is of correct value, false otherwise
+ */
+internal fun AddItemScreenState.validatePrice(): Boolean {
+    return (price.value.toFloatOrNull() == null).also { priceError.value = it }
+}
+
+/**
+ * Validates date field and updates its error flag
+ * @return true if field is of correct value, false otherwise
+ */
+internal fun AddItemScreenState.validateDate(): Boolean {
+    return (date.value == null).also { dateError.value = it }
+}
+
+/**
+ * Validates state fields and updates state flags
+ * @return true if all fields are of correct value, false otherwise
+ */
+internal fun AddItemScreenState.validate(): Boolean {
+    val product = validateSelectedProduct()
+    val quantity = validateQuantity()
+    val price = validatePrice()
+    val date = validateDate()
+
+    return product && quantity && price && date
+}
+
+/**
+ * performs data validation and tries to extract embedded data
+ * @return Null if validation sets error flags, extracted data otherwise
+ */
+internal fun AddItemScreenState.extractItemOrNull(): Item? {
+    if (!validate()) return null
+
+    return Item(
+        productId = selectedProduct.value!!.id,
+        variantId = selectedVariant.value?.id,
+        shopId = selectedShop.value?.id,
+        actualQuantity = quantity.value.toFloat(),
+        actualPrice = price.value.toFloat(),
+        date = date.value!!,
+    )
+}
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
@@ -17,12 +103,12 @@ class AddItemViewModel @Inject constructor(
     variantsRepository: IProductVariantRepository,
     shopRepository: IShopRepository,
 ): ViewModel() {
+    internal val addItemScreenState: AddItemScreenState = AddItemScreenState()
+
     private val itemRepository: IItemRepository
     private val productRepository: IProductRepository
     private val variantsRepository: IProductVariantRepository
     private val shopRepository: IShopRepository
-
-    var addItemState: AddItemState = AddItemState()
 
     private var variantsJob: Job? = null
     var variants: MutableState<Flow<List<ProductVariant>>> = mutableStateOf(flowOf())
@@ -37,31 +123,26 @@ class AddItemViewModel @Inject constructor(
     suspend fun fetch() {
         val lastItem: Item? = itemRepository.getLast()
 
-        if (addItemState.selectedShop.value == null) {
-            addItemState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
+        if (addItemScreenState.selectedShop.value == null) {
+            addItemScreenState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
         }
 
-        if (addItemState.date.value == null) {
-            addItemState.date.value = lastItem?.date
+        if (addItemScreenState.date.value == null) {
+            addItemScreenState.date.value = lastItem?.date
         }
     }
 
     /**
-     * Doesn't ensure validity of non optional values as they should be validated on Screen level
-     * to allow for UI changes depending on data validity
+     * Tries to add item to the repository
+     * @return Id of newly inserted row, null if operation failed
      */
-    fun addItem(itemData: AddItemData) = viewModelScope.launch {
-        itemRepository.insert(
-            Item(
-                productId = itemData.productId,
-                variantId = itemData.variantId.getOrNull(),
-                shopId = itemData.shopId.getOrNull(),
-                actualQuantity = itemData.quantity,
-                actualPrice = itemData.price,
-                date = itemData.date,
-            )
-        )
+    suspend fun addItem(): Long? = viewModelScope.async {
+        addItemScreenState.attemptedToSubmit.value = true
+        val item = addItemScreenState.extractItemOrNull() ?: return@async null
+
+        return@async itemRepository.insert(item)
     }
+        .await()
 
     fun getShopsFlow(): Flow<List<Shop>> {
         return shopRepository.getAllFlow()
@@ -71,34 +152,39 @@ class AddItemViewModel @Inject constructor(
         return productRepository.getAllWithAltNamesFlow()
     }
 
-    fun queryProductVariants(productId: Long) {
-        variantsJob?.cancel()
+    fun queryProductVariants() {
+        with(addItemScreenState.selectedProduct) {
+            if (value != null) {
+                variantsJob?.cancel()
 
-        variantsJob = viewModelScope.launch {
-            variants.value = variantsRepository.getByProductFlow(productId)
-                .cancellable()
+                variantsJob = viewModelScope.launch {
+                    variants.value = variantsRepository.getByProductFlow(value!!.id)
+                        .cancellable()
+                }
+            }
         }
     }
 
     suspend fun fillStateWithSelectedProductLatestData() {
         val lastItemByProduct =
-            itemRepository.getLastByProductId(addItemState.selectedProduct.value!!.id)
+            itemRepository.getLastByProductId(addItemScreenState.selectedProduct.value!!.id)
+                ?: return
 
-        if (lastItemByProduct == null) return
-
-        addItemState.selectedVariant.value = lastItemByProduct.variantId?.let {
+        addItemScreenState.selectedVariant.value = lastItemByProduct.variantId?.let {
             variantsRepository.get(it)
         }
 
-        addItemState.price.value = String.format(
+        addItemScreenState.price.value = String.format(
             "%.2f",
             lastItemByProduct.price / 100f
         )
 
-        addItemState.quantity.value = String.format(
+        addItemScreenState.quantity.value = String.format(
             "%.3f",
             lastItemByProduct.quantity / 1000f
         )
+
+        addItemScreenState.validate()
     }
 
 }

@@ -7,7 +7,6 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
 import androidx.compose.ui.*
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.platform.*
@@ -23,9 +22,10 @@ import com.kssidll.arrugarq.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductProducerScreen(
+internal fun AddProductProducerScreen(
     onBack: () -> Unit,
-    onProducerAdd: (AddProductProducerData) -> Unit,
+    state: AddProductProducerScreenState,
+    onProducerAdd: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -39,7 +39,7 @@ fun AddProductProducerScreen(
     ) {
         Box(modifier = Modifier.padding(it)) {
             AddProductProducerScreenContent(
-                onBack = onBack,
+                state = state,
                 onProducerAdd = onProducerAdd,
             )
         }
@@ -48,8 +48,8 @@ fun AddProductProducerScreen(
 
 @Composable
 private fun AddProductProducerScreenContent(
-    onBack: () -> Unit,
-    onProducerAdd: (AddProductProducerData) -> Unit,
+    state: AddProductProducerScreenState,
+    onProducerAdd: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -72,14 +72,6 @@ private fun AddProductProducerScreenContent(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
         Column {
-            var name: String by rememberSaveable {
-                mutableStateOf(String())
-            }
-
-            var nameError: Boolean by remember {
-                mutableStateOf(false)
-            }
-
             Row(
                 modifier = Modifier.fillMaxHeight(0.6f),
                 horizontalArrangement = Arrangement.Center,
@@ -88,9 +80,10 @@ private fun AddProductProducerScreenContent(
 
                 StyledOutlinedTextField(
                     singleLine = true,
-                    value = name,
+                    value = state.name.value,
                     onValueChange = {
-                        name = it
+                        state.name.value = it
+                        state.validateName()
                     },
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -100,16 +93,7 @@ private fun AddProductProducerScreenContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            nameError = name.isEmpty()
-
-                            if (
-                                !nameError
-                            ) {
-                                onProducerAdd(
-                                    AddProductProducerData(name)
-                                )
-                                onBack()
-                            }
+                            onProducerAdd()
                         }
                     ),
                     label = {
@@ -117,7 +101,7 @@ private fun AddProductProducerScreenContent(
                             text = stringResource(R.string.item_product_producer),
                         )
                     },
-                    isError = nameError
+                    isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
                 )
             }
             Row(
@@ -137,16 +121,7 @@ private fun AddProductProducerScreenContent(
                         disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     onClick = {
-                        nameError = name.isEmpty()
-
-                        if (
-                            !nameError
-                        ) {
-                            onProducerAdd(
-                                AddProductProducerData(name)
-                            )
-                            onBack()
-                        }
+                        onProducerAdd()
                     },
                 ) {
                     Row(
@@ -189,6 +164,7 @@ fun AddProductProducerScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             AddProductProducerScreen(
                 onBack = {},
+                state = AddProductProducerScreenState(),
                 onProducerAdd = {},
             )
         }

@@ -24,24 +24,19 @@ import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
-private fun isDateError(value: Long?) = value == null
-private fun isPriceError(value: Float?) = value == null
-private fun isQuantityError(value: Float?) = value == null
-private fun isProductError(value: Product?) = value == null
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddItemScreen(
+internal fun AddItemScreen(
     onBack: () -> Unit,
-    onItemAdd: (AddItemData) -> Unit,
+    state: AddItemScreenState,
+    onItemAdd: () -> Unit,
     onProductAdd: () -> Unit,
-    onVariantAdd: (Long) -> Unit,
+    onVariantAdd: () -> Unit,
     onShopAdd: () -> Unit,
     productsWithAltNames: Flow<List<ProductWithAltNames>>,
     variants: Flow<List<ProductVariant>>,
     shops: Flow<List<Shop>>,
-    state: AddItemState,
-    onSelectProduct: (Product) -> Unit = {},
+    onSelectProduct: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -55,7 +50,7 @@ fun AddItemScreen(
     ) {
         Box(modifier = Modifier.padding(it)) {
             AddItemScreenContent(
-                onBack = onBack,
+                state = state,
                 onItemAdd = onItemAdd,
                 onProductAdd = onProductAdd,
                 onVariantAdd = onVariantAdd,
@@ -63,7 +58,6 @@ fun AddItemScreen(
                 productsWithAltNames = productsWithAltNames,
                 variants = variants,
                 shops = shops,
-                state = state,
                 onSelectProduct = onSelectProduct,
             )
         }
@@ -73,53 +67,34 @@ fun AddItemScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddItemScreenContent(
-    onBack: () -> Unit,
-    onItemAdd: (AddItemData) -> Unit,
+    state: AddItemScreenState,
+    onItemAdd: () -> Unit,
     onProductAdd: () -> Unit,
-    onVariantAdd: (Long) -> Unit,
+    onVariantAdd: () -> Unit,
     onShopAdd: () -> Unit,
     productsWithAltNames: Flow<List<ProductWithAltNames>>,
     variants: Flow<List<ProductVariant>>,
     shops: Flow<List<Shop>>,
-    state: AddItemState,
-    onSelectProduct: (Product) -> Unit = {},
+    onSelectProduct: () -> Unit = {},
 ) {
     val datePickerState = rememberDatePickerState()
-
-    var isDatePickerDialogExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
-    var isShopSearchDialogExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
-    var isProductSearchDialogExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
-    var isVariantSearchDialogExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-    var attemptedToSubmit: Boolean by remember {
-        mutableStateOf(false)
-    }
 
     Box(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
 
-        if (isDatePickerDialogExpanded) {
+        if (state.isDatePickerDialogExpanded.value) {
 
             DatePickerDialog(
                 onDismissRequest = {
-                    isDatePickerDialogExpanded = false
+                    state.isDatePickerDialogExpanded.value = false
                 },
                 confirmButton = {
                     Button(
                         onClick = {
-                            isDatePickerDialogExpanded = false
-                            if (datePickerState.selectedDateMillis != null) {
-                                state.date.value = datePickerState.selectedDateMillis
-                            }
+                            state.isDatePickerDialogExpanded.value = false
+                            state.date.value = datePickerState.selectedDateMillis
+                            state.validateDate()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -147,16 +122,16 @@ private fun AddItemScreenContent(
             }
         }
 
-        if (isShopSearchDialogExpanded) {
+        if (state.isShopSearchDialogExpanded.value) {
             FuzzySearchableListDialog(
                 onDismissRequest = {
-                    isShopSearchDialogExpanded = false
+                    state.isShopSearchDialogExpanded.value = false
                 },
                 items = shops.collectAsState(emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedShop.value = it
-                    isShopSearchDialogExpanded = false
+                    state.isShopSearchDialogExpanded.value = false
                 },
                 onAddButtonClick = onShopAdd,
                 addButtonDescription = stringResource(R.string.add_shop_description),
@@ -165,16 +140,17 @@ private fun AddItemScreenContent(
             )
         }
 
-        if (isProductSearchDialogExpanded) {
+        if (state.isProductSearchDialogExpanded.value) {
             FuzzySearchableListDialog(
                 onDismissRequest = {
-                    isProductSearchDialogExpanded = false
+                    state.isProductSearchDialogExpanded.value = false
                 },
                 items = productsWithAltNames.collectAsState(emptyList()).value,
                 onItemClick = {
                     state.selectedProduct.value = it?.product
-                    isProductSearchDialogExpanded = false
-                    it?.product?.let { product -> onSelectProduct(product) }
+                    state.isProductSearchDialogExpanded.value = false
+                    state.validateSelectedProduct()
+                    onSelectProduct()
                 },
                 itemText = { it.product.name },
                 onAddButtonClick = onProductAdd,
@@ -182,18 +158,18 @@ private fun AddItemScreenContent(
             )
         }
 
-        if (isVariantSearchDialogExpanded) {
+        if (state.isVariantSearchDialogExpanded.value) {
             FuzzySearchableListDialog(
                 onDismissRequest = {
-                    isVariantSearchDialogExpanded = false
+                    state.isVariantSearchDialogExpanded.value = false
                 },
                 items = variants.collectAsState(emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedVariant.value = it
-                    isVariantSearchDialogExpanded = false
+                    state.isVariantSearchDialogExpanded.value = false
                 },
-                onAddButtonClick = { onVariantAdd(state.selectedProduct.value!!.id) },
+                onAddButtonClick = { onVariantAdd() },
                 addButtonDescription = stringResource(R.string.add_product_variant_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.item_product_variant_default_value),
@@ -224,9 +200,9 @@ private fun AddItemScreenContent(
                         showAddButton = false,
                         label = stringResource(R.string.item_date),
                         onClick = {
-                            isDatePickerDialogExpanded = true
+                            state.isDatePickerDialogExpanded.value = true
                         },
-                        error = if (attemptedToSubmit) isDateError(state.date.value) else false
+                        error = if (state.attemptedToSubmit.value) state.dateError.value else false
                     )
                 }
 
@@ -248,6 +224,7 @@ private fun AddItemScreenContent(
                         ),
                         onValueChange = {
                             state.price.value = it
+                            state.validatePrice()
                         },
                         label = {
                             Text(
@@ -257,7 +234,7 @@ private fun AddItemScreenContent(
                                     .alpha(0.5F)
                             )
                         },
-                        isError = if (attemptedToSubmit) isPriceError(state.price.value.toFloatOrNull()) else false
+                        isError = if (state.attemptedToSubmit.value) state.priceError.value else false,
                     )
                 }
 
@@ -279,6 +256,7 @@ private fun AddItemScreenContent(
                         ),
                         onValueChange = {
                             state.quantity.value = it
+                            state.validateQuantity()
                         },
                         label = {
                             Text(
@@ -291,7 +269,7 @@ private fun AddItemScreenContent(
                                     .alpha(0.5F)
                             )
                         },
-                        isError = if (attemptedToSubmit) isQuantityError(state.quantity.value.toFloatOrNull()) else false,
+                        isError = if (state.attemptedToSubmit.value) state.quantityError.value else false,
                     )
                 }
 
@@ -306,7 +284,7 @@ private fun AddItemScreenContent(
                     optional = true,
                     value = state.selectedShop.value?.name ?: String(),
                     onClick = {
-                        isShopSearchDialogExpanded = true
+                        state.isShopSearchDialogExpanded.value = true
                     },
                     label = stringResource(R.string.item_shop),
                     onAddButtonClick = {
@@ -323,10 +301,10 @@ private fun AddItemScreenContent(
                         .height(60.dp),
                     value = state.selectedProduct.value?.name ?: String(),
                     onClick = {
-                        isProductSearchDialogExpanded = true
+                        state.isProductSearchDialogExpanded.value = true
                     },
                     label = stringResource(R.string.item_product),
-                    error = if (attemptedToSubmit) isProductError(state.selectedProduct.value) else false,
+                    error = if (state.attemptedToSubmit.value) state.selectedProductError.value else false,
                     onAddButtonClick = {
                         onProductAdd()
                     },
@@ -345,11 +323,11 @@ private fun AddItemScreenContent(
                     value = state.selectedVariant.value?.name
                         ?: stringResource(R.string.item_product_variant_default_value),
                     onClick = {
-                        isVariantSearchDialogExpanded = true
+                        state.isVariantSearchDialogExpanded.value = true
                     },
                     label = stringResource(R.string.item_product_variant),
                     onAddButtonClick = {
-                        state.selectedProduct.value?.let { onVariantAdd(it.id) }
+                        onVariantAdd()
                     },
                     addButtonDescription = stringResource(R.string.add_product_variant_description),
                 )
@@ -372,34 +350,7 @@ private fun AddItemScreenContent(
                         disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     onClick = {
-                        attemptedToSubmit = true
-
-                        val product: Product? = state.selectedProduct.value
-                        val variant: ProductVariant? = state.selectedVariant.value
-                        val shop: Shop? = state.selectedShop.value
-
-                        val quantity: Float? = state.quantity.value.toFloatOrNull()
-                        val price: Float? = state.price.value.toFloatOrNull()
-                        val date: Long? = state.date.value
-
-                        if (
-                            !isDateError(date) &&
-                            !isPriceError(price) &&
-                            !isQuantityError(quantity) &&
-                            !isProductError(product)
-                        ) {
-                            onItemAdd(
-                                AddItemData(
-                                    productId = product!!.id,
-                                    variantId = Optional.ofNullable(variant?.id),
-                                    shopId = Optional.ofNullable(shop?.id),
-                                    quantity = quantity!!,
-                                    price = price!!,
-                                    date = date!!,
-                                )
-                            )
-                            onBack()
-                        }
+                        onItemAdd()
                     },
                 ) {
                     Row(
@@ -442,6 +393,7 @@ fun AddItemScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             AddItemScreen(
                 onBack = {},
+                state = AddItemScreenState(),
                 onItemAdd = {},
                 onProductAdd = {},
                 onVariantAdd = {},
@@ -456,7 +408,6 @@ fun AddItemScreenPreview() {
                         )
                     )
                 ),
-                state = AddItemState()
             )
         }
     }

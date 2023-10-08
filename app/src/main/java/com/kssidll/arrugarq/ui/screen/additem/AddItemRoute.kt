@@ -32,17 +32,26 @@ fun AddItemRoute(
         AddItemScreen(
             onBack = onBack,
             onItemAdd = {
-                addItemViewModel.addItem(it)
+                scope.launch {
+                    val result = addItemViewModel.addItem()
+                    if (result != null) onBack()
+                }
             },
             onProductAdd = onProductAdd,
             onShopAdd = onShopAdd,
-            onVariantAdd = onVariantAdd,
+            onVariantAdd = {
+                with(addItemViewModel.addItemScreenState.selectedProduct) {
+                    if (value != null) {
+                        onVariantAdd(value!!.id)
+                    }
+                }
+            },
             productsWithAltNames = addItemViewModel.getProductsWithAltNamesFlow(),
             variants = addItemViewModel.variants.value,
             shops = addItemViewModel.getShopsFlow(),
-            state = addItemViewModel.addItemState,
+            state = addItemViewModel.addItemScreenState,
             onSelectProduct = {
-                addItemViewModel.queryProductVariants(it.id)
+                addItemViewModel.queryProductVariants()
                 scope.launch {
                     isLoading = true
                     addItemViewModel.fillStateWithSelectedProductLatestData()

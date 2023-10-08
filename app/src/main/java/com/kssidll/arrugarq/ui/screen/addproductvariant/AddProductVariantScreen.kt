@@ -7,7 +7,6 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
 import androidx.compose.ui.*
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.platform.*
@@ -23,10 +22,10 @@ import com.kssidll.arrugarq.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductVariantScreen(
-    productId: Long,
+internal fun AddProductVariantScreen(
     onBack: () -> Unit,
-    onVariantAdd: (AddProductVariantData) -> Unit,
+    state: AddProductVariantScreenState,
+    onVariantAdd: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -40,8 +39,7 @@ fun AddProductVariantScreen(
     ) {
         Box(modifier = Modifier.padding(it)) {
             AddProductVariantScreenContent(
-                productId = productId,
-                onBack = onBack,
+                state = state,
                 onVariantAdd = onVariantAdd,
             )
         }
@@ -50,9 +48,8 @@ fun AddProductVariantScreen(
 
 @Composable
 private fun AddProductVariantScreenContent(
-    productId: Long,
-    onBack: () -> Unit,
-    onVariantAdd: (AddProductVariantData) -> Unit,
+    state: AddProductVariantScreenState,
+    onVariantAdd: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -75,14 +72,6 @@ private fun AddProductVariantScreenContent(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
         Column {
-            var name: String by rememberSaveable {
-                mutableStateOf(String())
-            }
-
-            var nameError: Boolean by remember {
-                mutableStateOf(false)
-            }
-
             Row(
                 modifier = Modifier.fillMaxHeight(0.6f),
                 horizontalArrangement = Arrangement.Center,
@@ -91,9 +80,10 @@ private fun AddProductVariantScreenContent(
 
                 StyledOutlinedTextField(
                     singleLine = true,
-                    value = name,
+                    value = state.name.value,
                     onValueChange = {
-                        name = it
+                        state.name.value = it
+                        state.validateName()
                     },
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -103,19 +93,7 @@ private fun AddProductVariantScreenContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            nameError = name.isEmpty()
-
-                            if (
-                                !nameError
-                            ) {
-                                onVariantAdd(
-                                    AddProductVariantData(
-                                        productId,
-                                        name
-                                    )
-                                )
-                                onBack()
-                            }
+                            onVariantAdd()
                         }
                     ),
                     label = {
@@ -123,7 +101,7 @@ private fun AddProductVariantScreenContent(
                             text = stringResource(R.string.item_product_variant),
                         )
                     },
-                    isError = nameError
+                    isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
                 )
             }
             Row(
@@ -143,19 +121,7 @@ private fun AddProductVariantScreenContent(
                         disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     onClick = {
-                        nameError = name.isEmpty()
-
-                        if (
-                            !nameError
-                        ) {
-                            onVariantAdd(
-                                AddProductVariantData(
-                                    productId,
-                                    name
-                                )
-                            )
-                            onBack()
-                        }
+                        onVariantAdd()
                     },
                 ) {
                     Row(
@@ -197,8 +163,8 @@ fun AddProductVariantScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             AddProductVariantScreen(
-                productId = 0,
                 onBack = {},
+                state = AddProductVariantScreenState(),
                 onVariantAdd = {},
             )
         }

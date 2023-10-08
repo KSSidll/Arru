@@ -17,21 +17,17 @@ import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
-import java.util.*
-
-fun isNameError(value: String?) = value.isNullOrBlank()
-fun isCategoryError(value: ProductCategory?) = value == null
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(
+internal fun AddProductScreen(
     onBack: () -> Unit,
+    state: AddProductScreenState,
     onCategoryAdd: () -> Unit,
     onProducerAdd: () -> Unit,
-    onProductAdd: (AddProductData) -> Unit,
+    onProductAdd: () -> Unit,
     categoriesWithAltNames: Flow<List<ProductCategoryWithAltNames>>,
     producers: Flow<List<ProductProducer>>,
-    state: AddProductState,
 ) {
     Scaffold(
         topBar = {
@@ -45,13 +41,12 @@ fun AddProductScreen(
     ) {
         Box(modifier = Modifier.padding(it)) {
             AddProductScreenContent(
-                onBack = onBack,
+                state = state,
                 onCategoryAdd = onCategoryAdd,
                 onProducerAdd = onProducerAdd,
                 onProductAdd = onProductAdd,
                 categoriesWithAltNames = categoriesWithAltNames,
                 producers = producers,
-                state = state,
             )
         }
     }
@@ -59,54 +54,42 @@ fun AddProductScreen(
 
 @Composable
 private fun AddProductScreenContent(
-    onBack: () -> Unit,
+    state: AddProductScreenState,
     onCategoryAdd: () -> Unit,
     onProducerAdd: () -> Unit,
-    onProductAdd: (AddProductData) -> Unit,
+    onProductAdd: () -> Unit,
     categoriesWithAltNames: Flow<List<ProductCategoryWithAltNames>>,
     producers: Flow<List<ProductProducer>>,
-    state: AddProductState,
 ) {
-    var isCategorySearchDialogExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-    var isProducerSearchDialogExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
-
-    var attemptedToSubmit: Boolean by remember {
-        mutableStateOf(false)
-    }
-
     Box(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
-        if (isProducerSearchDialogExpanded) {
+        if (state.isProducerSearchDialogExpanded.value) {
             FuzzySearchableListDialog(
                 onDismissRequest = {
-                    isProducerSearchDialogExpanded = false
+                    state.isProducerSearchDialogExpanded.value = false
                 },
                 items = producers.collectAsState(emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedProductProducer.value = it
-                    isProducerSearchDialogExpanded = false
+                    state.isProducerSearchDialogExpanded.value = false
                 },
                 onAddButtonClick = onProducerAdd,
                 addButtonDescription = stringResource(R.string.add_product_producer_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
             )
-        } else if (isCategorySearchDialogExpanded) {
+        } else if (state.isCategorySearchDialogExpanded.value) {
             FuzzySearchableListDialog(
                 onDismissRequest = {
-                    isCategorySearchDialogExpanded = false
+                    state.isCategorySearchDialogExpanded.value = false
                 },
                 items = categoriesWithAltNames.collectAsState(emptyList()).value,
                 onItemClick = {
                     state.selectedProductCategory.value = it?.productCategory
-                    isCategorySearchDialogExpanded = false
+                    state.validateSelectedProductCategory()
+                    state.isCategorySearchDialogExpanded.value = false
                 },
                 itemText = { it.productCategory.name },
                 onAddButtonClick = onCategoryAdd,
@@ -130,13 +113,14 @@ private fun AddProductScreenContent(
                                 value = state.name.value,
                                 onValueChange = {
                                     state.name.value = it
+                                    state.validateName()
                                 },
                                 label = {
                                     Text(
                                         text = stringResource(R.string.item_product)
                                     )
                                 },
-                                isError = if (attemptedToSubmit) isNameError(state.name.value) else false
+                                isError = if (state.attemptedToSubmit.value) state.nameError.value else false
                             )
                         }
                     }
@@ -151,7 +135,7 @@ private fun AddProductScreenContent(
                             .height(60.dp),
                         value = state.selectedProductProducer.value?.name ?: String(),
                         onClick = {
-                            isProducerSearchDialogExpanded = true
+                            state.isProducerSearchDialogExpanded.value = true
                         },
                         label = stringResource(R.string.item_product_producer),
                         onAddButtonClick = {
@@ -169,14 +153,14 @@ private fun AddProductScreenContent(
                             .height(60.dp),
                         value = state.selectedProductCategory.value?.name ?: String(),
                         onClick = {
-                            isCategorySearchDialogExpanded = true
+                            state.isCategorySearchDialogExpanded.value = true
                         },
                         label = stringResource(R.string.item_product_category),
                         onAddButtonClick = {
                             onCategoryAdd()
                         },
                         addButtonDescription = stringResource(R.string.add_product_category_description),
-                        error = if (attemptedToSubmit) isCategoryError(state.selectedProductCategory.value) else false,
+                        error = if (state.attemptedToSubmit.value) state.selectedProductCategoryError.value else false,
                     )
                 }
 
@@ -197,25 +181,7 @@ private fun AddProductScreenContent(
                             disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         ),
                         onClick = {
-                            attemptedToSubmit = true
-
-                            val category: ProductCategory? = state.selectedProductCategory.value
-                            val producer: ProductProducer? = state.selectedProductProducer.value
-                            val name: String = state.name.value
-
-                            if (
-                                !isCategoryError(category) &&
-                                !isNameError(name)
-                            ) {
-                                onProductAdd(
-                                    AddProductData(
-                                        categoryId = category!!.id,
-                                        producerId = Optional.ofNullable(producer?.id),
-                                        name = name,
-                                    )
-                                )
-                                onBack()
-                            }
+                            onProductAdd()
                         },
                     ) {
                         Row(
@@ -259,12 +225,12 @@ fun AddProductScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             AddProductScreen(
                 onBack = {},
+                state = AddProductScreenState(),
                 onCategoryAdd = {},
                 onProducerAdd = {},
                 onProductAdd = {},
                 categoriesWithAltNames = flowOf(),
                 producers = flowOf(),
-                state = AddProductState(),
             )
         }
     }

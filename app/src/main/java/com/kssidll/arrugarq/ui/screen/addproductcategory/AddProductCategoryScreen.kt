@@ -7,7 +7,6 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
 import androidx.compose.ui.*
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.platform.*
@@ -23,9 +22,10 @@ import com.kssidll.arrugarq.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductCategoryScreen(
+internal fun AddProductCategoryScreen(
     onBack: () -> Unit,
-    onCategoryAdd: (AddProductCategoryData) -> Unit,
+    state: AddProductCategoryScreenState,
+    onCategoryAdd: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -39,7 +39,7 @@ fun AddProductCategoryScreen(
     ) {
         Box(modifier = Modifier.padding(it)) {
             AddProductCategoryScreenContent(
-                onBack = onBack,
+                state = state,
                 onCategoryAdd = onCategoryAdd,
             )
         }
@@ -49,8 +49,8 @@ fun AddProductCategoryScreen(
 
 @Composable
 private fun AddProductCategoryScreenContent(
-    onBack: () -> Unit,
-    onCategoryAdd: (AddProductCategoryData) -> Unit,
+    state: AddProductCategoryScreenState,
+    onCategoryAdd: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -73,14 +73,6 @@ private fun AddProductCategoryScreenContent(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
         Column {
-            var name: String by rememberSaveable {
-                mutableStateOf(String())
-            }
-
-            var nameError: Boolean by remember {
-                mutableStateOf(false)
-            }
-
             Row(
                 modifier = Modifier.fillMaxHeight(0.6f),
                 horizontalArrangement = Arrangement.Center,
@@ -89,9 +81,10 @@ private fun AddProductCategoryScreenContent(
 
                 StyledOutlinedTextField(
                     singleLine = true,
-                    value = name,
+                    value = state.name.value,
                     onValueChange = {
-                        name = it
+                        state.name.value = it
+                        state.validateName()
                     },
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -101,16 +94,7 @@ private fun AddProductCategoryScreenContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            nameError = name.isEmpty()
-
-                            if (
-                                !nameError
-                            ) {
-                                onCategoryAdd(
-                                    AddProductCategoryData(name)
-                                )
-                                onBack()
-                            }
+                            onCategoryAdd()
                         }
                     ),
                     label = {
@@ -118,7 +102,7 @@ private fun AddProductCategoryScreenContent(
                             text = stringResource(R.string.item_product_category),
                         )
                     },
-                    isError = nameError
+                    isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
                 )
             }
             Row(
@@ -138,16 +122,7 @@ private fun AddProductCategoryScreenContent(
                         disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     onClick = {
-                        nameError = name.isEmpty()
-
-                        if (
-                            !nameError
-                        ) {
-                            onCategoryAdd(
-                                AddProductCategoryData(name)
-                            )
-                            onBack()
-                        }
+                        onCategoryAdd()
                     },
                 ) {
                     Row(
@@ -190,6 +165,7 @@ fun AddProductCategoryScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             AddProductCategoryScreen(
                 onBack = {},
+                state = AddProductCategoryScreenState(),
                 onCategoryAdd = {},
             )
         }
