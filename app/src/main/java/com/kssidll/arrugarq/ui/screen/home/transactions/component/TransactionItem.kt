@@ -12,7 +12,6 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
-import java.sql.*
 
 @Composable
 fun LazyItemScope.TransactionItem(
@@ -92,10 +91,7 @@ fun TransactionItemPreview() {
             LazyColumn {
                 item {
                     TransactionItem(
-                        embeddedItem = generateRandomEmbeddedItem(
-                            itemDateTimeFrom = Date.valueOf("2022-06-01").time,
-                            itemDateTimeUntil = Date.valueOf("2022-06-04").time,
-                        ),
+                        embeddedItem = generateRandomEmbeddedItem(),
                     )
                 }
             }

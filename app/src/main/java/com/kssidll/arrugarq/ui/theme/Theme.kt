@@ -12,6 +12,9 @@ import com.kssidll.arrugarq.ui.theme.schema.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 
+const val disabledAlpha = 0.38f
+const val optionalAlpha = 0.60f
+
 fun setNavigationBarColor(
     color: Color,
     darkTheme: Boolean,

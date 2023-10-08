@@ -38,7 +38,7 @@ fun SearchField(
         lineColor =
             if (error) colors.errorIndicatorColor
             else if (!enabled) colors.disabledIndicatorColor
-            else if (optional) optionalUnfocusedIndicatorColor
+            else if (optional) optionalUnfocusedIndicator
             else colors.unfocusedIndicatorColor
     }
 

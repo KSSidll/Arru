@@ -222,8 +222,8 @@ private fun PeriodButtons(
                 },
                 colors = SegmentedButtonDefaults.colors(
                     activeContainerColor = MaterialTheme.colorScheme.tertiary,
-                    activeContentColor = MaterialTheme.colorScheme.onTertiary,
                     inactiveContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    activeContentColor = MaterialTheme.colorScheme.onTertiary,
                     inactiveContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     activeBorderColor = Color.Transparent,
                     inactiveBorderColor = Color.Transparent,

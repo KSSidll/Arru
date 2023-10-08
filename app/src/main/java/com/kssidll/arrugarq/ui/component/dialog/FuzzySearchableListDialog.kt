@@ -120,8 +120,8 @@ fun <T> FuzzySearchableListDialog(
                             )
                         },
                         colors = styledTextFieldColorDefaults(
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedIndicator = Color.Transparent,
+                            unfocusedIndicator = Color.Transparent,
                         ),
                         trailingIcon = {
                             if (showAddButton) {
