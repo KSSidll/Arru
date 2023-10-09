@@ -40,8 +40,8 @@ class HomeViewModel @Inject constructor(
         switchToSpentByTimePeriod(spentByTimePeriod)
     }
 
-    fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>> {
-        return itemRepository.getAllEmbeddedItemSortedFlow()
+    fun getAllFullItemFlow(): Flow<List<FullItem>> {
+        return itemRepository.getAllFullItemFlow()
     }
 
     fun getTotalSpent(): Flow<Float> {

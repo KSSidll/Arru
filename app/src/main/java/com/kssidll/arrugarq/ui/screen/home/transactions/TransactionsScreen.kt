@@ -20,7 +20,7 @@ import java.util.*
 
 @Composable
 fun TransactionsScreen(
-    items: Flow<List<EmbeddedItem>>,
+    items: Flow<List<FullItem>>,
 ) {
     TransactionsScreenContent(
         items = items.collectAsState(emptyList()).value,
@@ -29,15 +29,15 @@ fun TransactionsScreen(
 
 @Composable
 private fun TransactionsScreenContent(
-    items: List<EmbeddedItem>,
+    items: List<FullItem>,
 ) {
-    val grouppedItems: SnapshotStateList<Pair<Long, List<EmbeddedItem>>> =
+    val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
         remember { mutableStateListOf() }
 
     LaunchedEffect(items) {
         grouppedItems.clear()
         grouppedItems.addAll(
-            items.groupBy { it.item.date / 86400000 }
+            items.groupBy { it.embeddedItem.item.date / 86400000 }
                 .toList()
                 .sortedByDescending { it.first })
     }
@@ -90,7 +90,7 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreenContent(
-                items = generateRandomEmbeddedItemList(
+                items = generateRandomFullItemList(
                     itemDateTimeFrom = Date.valueOf("2022-06-01").time,
                     itemDateTimeUntil = Date.valueOf("2022-06-04").time,
                 ),

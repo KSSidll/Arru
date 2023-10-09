@@ -103,3 +103,16 @@ data class ProductWithAltNames(
     }
 
 }
+
+data class EmbeddedProduct(
+    @Embedded val product: Product,
+    @Relation(
+        parentColumn = "categoryId",
+        entityColumn = "id",
+    ) val category: ProductCategory,
+    @Relation(
+        parentColumn = "producerId",
+        entityColumn = "id",
+    ) val producer: ProductProducer?,
+)
+

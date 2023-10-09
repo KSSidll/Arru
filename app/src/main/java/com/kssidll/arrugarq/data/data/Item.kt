@@ -100,6 +100,11 @@ data class EmbeddedItem(
     ) val shop: Shop?,
 )
 
+data class FullItem(
+    val embeddedItem: EmbeddedItem,
+    val embeddedProduct: EmbeddedProduct,
+)
+
 data class ItemSpentByTime(
     val time: String,
     val total: Long,

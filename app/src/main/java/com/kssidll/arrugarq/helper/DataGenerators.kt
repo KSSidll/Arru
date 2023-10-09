@@ -21,10 +21,13 @@ private const val defaultStringAllowedCharacters: String = "pyfgcrlaoeuidhtnsqjk
 private const val defaultLongValueFrom: Long = 10000
 private const val defaultLongValueUntil: Long = 100000
 private const val defaultItemAmount: Int = 10
+private const val defaultProducerAmount: Int = 10
 private const val defaultItemSpentByTimeAmount: Int = 10
 private const val defaultItemSpentByShopAmount: Int = 10
 private const val defaultItemSpentByCategoryAmount: Int = 10
 private const val defaultEmbeddedItemAmount: Int = 10
+private const val defaultEmbeddedProductAmount: Int = 10
+private const val defaultFullItemAmount: Int = 10
 private const val defaultShopId: Long = 0
 private const val defaultCategoryId: Long = 0
 private const val defaultItemId: Long = 0
@@ -593,6 +596,341 @@ fun generateRandomEmbeddedItemListFlow(
             shopNameLengthFrom = shopNameLengthFrom,
             shopNameLengthUntil = shopNameLengthUntil,
             shopNameAllowedCharacters = shopNameAllowedCharacters,
+        )
+    )
+}
+
+fun generateRandomProducer(
+    producerId: Long = defaultProducerId,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): ProductProducer {
+    return ProductProducer(
+        id = producerId,
+        name = generateRandomStringValue(
+            stringLengthFrom = producerNameLengthFrom,
+            stringLengthUntil = producerNameLengthUntil,
+            allowedCharacters = producerNameAllowedCharacters,
+        )
+    )
+}
+
+fun generateRandomProducerList(
+    amount: Int = defaultProducerAmount,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): List<ProductProducer> {
+    return List(amount) {
+        generateRandomProducer(
+            producerId = it.toLong(),
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    }
+}
+
+fun generateRandomProducerListFlow(
+    amount: Int = defaultProducerAmount,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): Flow<List<ProductProducer>> {
+    return flowOf(
+        generateRandomProducerList(
+            amount = amount,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    )
+}
+
+fun generateRandomEmbeddedProduct(
+    productId: Long = defaultProductId,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+    categoryNameLengthFrom: Int = defaultStringLengthFrom,
+    categoryNameLengthUntil: Int = defaultStringLengthUntil,
+    categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): EmbeddedProduct {
+    return EmbeddedProduct(
+        product = generateRandomProduct(
+            productId = productId,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+        ),
+        category = generateRandomProductCategory(
+            categoryId = categoryId,
+            categoryNameLengthFrom = categoryNameLengthFrom,
+            categoryNameLengthUntil = categoryNameLengthUntil,
+            categoryNameAllowedCharacters = categoryNameAllowedCharacters,
+        ),
+        producer = generateRandomProducer(
+            producerId = producerId,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        ),
+    )
+}
+
+fun generateRandomEmbeddedProductList(
+    amount: Int = defaultEmbeddedProductAmount,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+    categoryNameLengthFrom: Int = defaultStringLengthFrom,
+    categoryNameLengthUntil: Int = defaultStringLengthUntil,
+    categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): List<EmbeddedProduct> {
+    return List(amount) {
+        generateRandomEmbeddedProduct(
+            productId = it.toLong(),
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+            categoryNameLengthFrom = categoryNameLengthFrom,
+            categoryNameLengthUntil = categoryNameLengthUntil,
+            categoryNameAllowedCharacters = categoryNameAllowedCharacters,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    }
+}
+
+fun generateRandomEmbeddedProductListFlow(
+    amount: Int = defaultEmbeddedProductAmount,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+    categoryNameLengthFrom: Int = defaultStringLengthFrom,
+    categoryNameLengthUntil: Int = defaultStringLengthUntil,
+    categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): Flow<List<EmbeddedProduct>> {
+    return flowOf(
+        generateRandomEmbeddedProductList(
+            amount = amount,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+            categoryNameLengthFrom = categoryNameLengthFrom,
+            categoryNameLengthUntil = categoryNameLengthUntil,
+            categoryNameAllowedCharacters = categoryNameAllowedCharacters,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    )
+}
+
+fun generateRandomFullItem(
+    itemId: Long = defaultItemId,
+    productId: Long = defaultProductId,
+    variantId: Long = defaultVariantId,
+    shopId: Long = defaultShopId,
+    itemQuantityFrom: Long = defaultItemQuantityFrom,
+    itemQuantityUntil: Long = defaultItemQuantityUntil,
+    itemPriceFrom: Long = defaultItemPriceFrom,
+    itemPriceUntil: Long = defaultItemPriceUntil,
+    itemDateTimeFrom: Long = defaultTimeFrom,
+    itemDateTimeUntil: Long = defaultTimeUntil,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+    variantNameLengthFrom: Int = defaultStringLengthFrom,
+    variantNameLengthUntil: Int = defaultStringLengthUntil,
+    shopNameLengthFrom: Int = defaultStringLengthFrom,
+    shopNameLengthUntil: Int = defaultStringLengthUntil,
+    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    categoryNameLengthFrom: Int = defaultStringLengthFrom,
+    categoryNameLengthUntil: Int = defaultStringLengthUntil,
+    categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): FullItem {
+    return FullItem(
+        embeddedItem = generateRandomEmbeddedItem(
+            itemId = itemId,
+            productId = productId,
+            variantId = variantId,
+            shopId = shopId,
+            itemQuantityFrom = itemQuantityFrom,
+            itemQuantityUntil = itemQuantityUntil,
+            itemPriceFrom = itemPriceFrom,
+            itemPriceUntil = itemPriceUntil,
+            itemDateTimeFrom = itemDateTimeFrom,
+            itemDateTimeUntil = itemDateTimeUntil,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+            variantNameLengthFrom = variantNameLengthFrom,
+            variantNameLengthUntil = variantNameLengthUntil,
+            shopNameLengthFrom = shopNameLengthFrom,
+            shopNameLengthUntil = shopNameLengthUntil,
+            shopNameAllowedCharacters = shopNameAllowedCharacters,
+        ),
+        embeddedProduct = generateRandomEmbeddedProduct(
+            productId = productId,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+            categoryNameLengthFrom = categoryNameLengthFrom,
+            categoryNameLengthUntil = categoryNameLengthUntil,
+            categoryNameAllowedCharacters = categoryNameAllowedCharacters,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    )
+}
+
+fun generateRandomFullItemList(
+    amount: Int = defaultFullItemAmount,
+    variantId: Long = defaultVariantId,
+    shopId: Long = defaultShopId,
+    itemQuantityFrom: Long = defaultItemQuantityFrom,
+    itemQuantityUntil: Long = defaultItemQuantityUntil,
+    itemPriceFrom: Long = defaultItemPriceFrom,
+    itemPriceUntil: Long = defaultItemPriceUntil,
+    itemDateTimeFrom: Long = defaultTimeFrom,
+    itemDateTimeUntil: Long = defaultTimeUntil,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+    variantNameLengthFrom: Int = defaultStringLengthFrom,
+    variantNameLengthUntil: Int = defaultStringLengthUntil,
+    shopNameLengthFrom: Int = defaultStringLengthFrom,
+    shopNameLengthUntil: Int = defaultStringLengthUntil,
+    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    categoryNameLengthFrom: Int = defaultStringLengthFrom,
+    categoryNameLengthUntil: Int = defaultStringLengthUntil,
+    categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): List<FullItem> {
+    return List(amount) {
+        generateRandomFullItem(
+            itemId = it.toLong(),
+            productId = it.toLong(),
+            variantId = variantId,
+            shopId = shopId,
+            itemQuantityFrom = itemQuantityFrom,
+            itemQuantityUntil = itemQuantityUntil,
+            itemPriceFrom = itemPriceFrom,
+            itemPriceUntil = itemPriceUntil,
+            itemDateTimeFrom = itemDateTimeFrom,
+            itemDateTimeUntil = itemDateTimeUntil,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+            variantNameLengthFrom = variantNameLengthFrom,
+            variantNameLengthUntil = variantNameLengthUntil,
+            shopNameLengthFrom = shopNameLengthFrom,
+            shopNameLengthUntil = shopNameLengthUntil,
+            shopNameAllowedCharacters = shopNameAllowedCharacters,
+            categoryNameLengthFrom = categoryNameLengthFrom,
+            categoryNameLengthUntil = categoryNameLengthUntil,
+            categoryNameAllowedCharacters = categoryNameAllowedCharacters,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    }
+}
+
+fun generateRandomFullItemListFlow(
+    amount: Int = defaultFullItemAmount,
+    variantId: Long = defaultVariantId,
+    shopId: Long = defaultShopId,
+    itemQuantityFrom: Long = defaultItemQuantityFrom,
+    itemQuantityUntil: Long = defaultItemQuantityUntil,
+    itemPriceFrom: Long = defaultItemPriceFrom,
+    itemPriceUntil: Long = defaultItemPriceUntil,
+    itemDateTimeFrom: Long = defaultTimeFrom,
+    itemDateTimeUntil: Long = defaultTimeUntil,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+    variantNameLengthFrom: Int = defaultStringLengthFrom,
+    variantNameLengthUntil: Int = defaultStringLengthUntil,
+    shopNameLengthFrom: Int = defaultStringLengthFrom,
+    shopNameLengthUntil: Int = defaultStringLengthUntil,
+    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    categoryNameLengthFrom: Int = defaultStringLengthFrom,
+    categoryNameLengthUntil: Int = defaultStringLengthUntil,
+    categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    producerNameLengthFrom: Int = defaultStringLengthFrom,
+    producerNameLengthUntil: Int = defaultStringLengthUntil,
+    producerNameAllowedCharacters: String = defaultStringAllowedCharacters,
+): Flow<List<FullItem>> {
+    return flowOf(
+        generateRandomFullItemList(
+            amount = amount,
+            variantId = variantId,
+            shopId = shopId,
+            itemQuantityFrom = itemQuantityFrom,
+            itemQuantityUntil = itemQuantityUntil,
+            itemPriceFrom = itemPriceFrom,
+            itemPriceUntil = itemPriceUntil,
+            itemDateTimeFrom = itemDateTimeFrom,
+            itemDateTimeUntil = itemDateTimeUntil,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+            variantNameLengthFrom = variantNameLengthFrom,
+            variantNameLengthUntil = variantNameLengthUntil,
+            shopNameLengthFrom = shopNameLengthFrom,
+            shopNameLengthUntil = shopNameLengthUntil,
+            shopNameAllowedCharacters = shopNameAllowedCharacters,
+            categoryNameLengthFrom = categoryNameLengthFrom,
+            categoryNameLengthUntil = categoryNameLengthUntil,
+            categoryNameAllowedCharacters = categoryNameAllowedCharacters,
+            producerNameLengthFrom = producerNameLengthFrom,
+            producerNameLengthUntil = producerNameLengthUntil,
+            producerNameAllowedCharacters = producerNameAllowedCharacters,
         )
     )
 }
