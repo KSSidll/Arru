@@ -1,9 +1,11 @@
 package com.kssidll.arrugarq.ui.screen.home.transactions.component
 
 import android.content.res.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +27,9 @@ fun LazyItemScope.TransactionItem(
 ) {
     Column(
         modifier = Modifier
+            .clickable {
+
+            }
             .heightIn(min = 60.dp)
             .fillParentMaxWidth()
             .padding(
@@ -36,53 +41,85 @@ fun LazyItemScope.TransactionItem(
             modifier = Modifier.padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(Modifier.weight(1F)) {
-                Text(fullItem.embeddedItem.product.name)
+            Row(
+                modifier = Modifier.weight(1F),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Text(
+                    text = fullItem.embeddedItem.product.name,
+                    style = Typography.titleLarge,
+                )
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ProvideTextStyle(
-                    value = Typography.bodyLarge
+            Column(
+                modifier = Modifier.width(IntrinsicSize.Min),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = fullItem.embeddedItem.item.actualQuantity().toString().removeSuffix(".0"),
+                        style = Typography.bodyLarge,
+                    )
 
-                    Row(
-                        modifier = Modifier.widthIn(min = 16.dp),
-                        horizontalArrangement = Arrangement.Start,
-                    ) {
-                        Text(
-                            fullItem.embeddedItem.item.actualQuantity()
-                                .toString()
-                                .removeSuffix(".0")
-                        )
-                    }
+                    Spacer(Modifier.width(3.dp))
 
-                    Text(" x ")
+                    Icon(
+                        imageVector = Icons.Outlined.ShoppingBasket,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
 
-                    Row(
-                        modifier = Modifier.widthIn(min = 60.dp),
-                        horizontalArrangement = Arrangement.End,
-                    ) {
-                        Text(
-                            fullItem.embeddedItem.item.actualPrice()
-                                .formatToCurrency()
-                        )
-                    }
+                Spacer(Modifier.height(2.dp))
 
-                    Spacer(Modifier.width(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = fullItem.embeddedItem.item.actualPrice().formatToCurrency(),
+                        style = Typography.bodyLarge,
+                    )
 
-                    Row(
-                        modifier = Modifier.widthIn(min = 80.dp),
-                        horizontalArrangement = Arrangement.End,
-                    ) {
-                        Text(
-                            (fullItem.embeddedItem.item.actualQuantity() * fullItem.embeddedItem.item.actualPrice())
-                                .formatToCurrency()
-                        )
-                    }
+                    Spacer(Modifier.width(3.dp))
+
+                    Icon(
+                        imageVector = Icons.Outlined.Sell,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+
+                Spacer(Modifier.height(2.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.tertiary)
+                Spacer(Modifier.height(2.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = (fullItem.embeddedItem.item.actualQuantity() * fullItem.embeddedItem.item.actualPrice()).formatToCurrency(),
+                        style = Typography.bodyLarge,
+                    )
+
+                    Spacer(Modifier.width(3.dp))
+
+                    Icon(
+                        imageVector = Icons.Outlined.Payment,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
             }
         }
+
+        Spacer(Modifier.height(3.dp))
 
         Row {
             FlowRow(
