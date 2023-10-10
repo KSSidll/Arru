@@ -3,10 +3,12 @@ package com.kssidll.arrugarq.ui.screen.home.transactions
 import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
@@ -46,23 +48,31 @@ private fun TransactionsScreenContent(
         grouppedItems.forEachIndexed { index, group ->
             item {
                 Column(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillParentMaxWidth()
                 ) {
-                    if (index != 0) {
-                        HorizontalDivider()
-                        Spacer(Modifier.height(6.dp))
-                    }
+                    val shape = if (index != 0) RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    else RectangleShape
 
-                    Text(
-                        text = SimpleDateFormat(
-                            "yyyy-MM-dd",
-                            Locale.getDefault()
-                        ).format(group.first * 86400000),
-                        style = Typography.titleLarge,
-                    )
+                    Surface(
+                        modifier = Modifier.fillParentMaxWidth(),
+                        shape = shape,
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                    ) {
+                        Box(
+                            Modifier
+                                .fillParentMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                text = SimpleDateFormat(
+                                    "MMM d, yyyy",
+                                    Locale.getDefault()
+                                ).format(group.first * 86400000),
+                                style = Typography.headlineMedium,
+                            )
+                        }
+                    }
                 }
             }
 
