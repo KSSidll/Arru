@@ -10,6 +10,7 @@ import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.domain.data.*
@@ -92,8 +93,8 @@ fun <T> RankingList(
         Row {
             Column(
                 modifier = Modifier
-                    .width(IntrinsicSize.Min)
-                    .widthIn(max = 160.dp)
+                    .width(IntrinsicSize.Max)
+                    .widthIn(max = 180.dp)
             ) {
                 displayItems.forEachIndexed { index, it ->
                     Box(
@@ -120,6 +121,7 @@ fun <T> RankingList(
                                 scaleByRank
                             ),
                             maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -131,7 +133,7 @@ fun <T> RankingList(
                     .width(IntrinsicSize.Min)
                     .widthIn(
                         min = 40.dp,
-                        max = 128.dp
+                        max = 144.dp
                     )
             ) {
                 displayItems.forEachIndexed { index, it ->
@@ -269,7 +271,12 @@ fun RankingListPreview() {
     ArrugarqTheme {
         Surface {
             RankingList(
-                items = generateRandomItemSpentByShopList(),
+                items = generateRandomItemSpentByShopList(
+                    shopNameLengthFrom = 10,
+                    shopNameLengthUntil = 100,
+                    valueFrom = 100000000000,
+                    valueUntil = 10000000000000,
+                ),
             )
         }
     }
