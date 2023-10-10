@@ -3,6 +3,8 @@ package com.kssidll.arrugarq.ui.screen.home.transactions.component
 import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -67,6 +69,7 @@ fun LazyItemScope.TransactionItem(
                         )
                     }
 
+                    Spacer(Modifier.width(6.dp))
 
                     Row(
                         modifier = Modifier.widthIn(min = 80.dp),
@@ -86,12 +89,34 @@ fun LazyItemScope.TransactionItem(
                 modifier = Modifier.weight(1F),
                 verticalArrangement = Arrangement.Center,
             ) {
-                val category = fullItem.embeddedProduct.category
+                val variant = fullItem.embeddedItem.variant
                 Button(
-                    modifier = Modifier.padding(end = 4.dp),
+                    modifier = Modifier
+                        .padding(end = 3.dp),
                     onClick = {
 
                     },
+                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FilterList,
+                        contentDescription = null,
+                        modifier = Modifier.size(17.dp),
+                    )
+                    Text(
+                        text = variant?.name ?: stringResource(R.string.item_product_variant_default_value),
+                        textAlign = TextAlign.Center,
+                        style = Typography.labelSmall,
+                    )
+                }
+
+                val category = fullItem.embeddedProduct.category
+                Button(
+                    modifier = Modifier.padding(end = 3.dp),
+                    onClick = {
+
+                    },
+                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
                 ) {
                     Text(
                         text = category.name,
@@ -100,28 +125,20 @@ fun LazyItemScope.TransactionItem(
                     )
                 }
 
-                val variant = fullItem.embeddedItem.variant
-                Button(
-                    modifier = Modifier.padding(end = 4.dp),
-                    onClick = {
-
-                    },
-                ) {
-                    Text(
-                        text = variant?.name ?: stringResource(R.string.item_product_variant_default_value),
-                        textAlign = TextAlign.Center,
-                        style = Typography.labelSmall,
-                    )
-                }
-
                 val producer = fullItem.embeddedProduct.producer
                 if (producer != null) {
                     Button(
-                        modifier = Modifier.padding(end = 4.dp),
+                        modifier = Modifier.padding(end = 3.dp),
                         onClick = {
 
                         },
+                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
                     ) {
+                        Icon(
+                            imageVector = Icons.Rounded.PrecisionManufacturing,
+                            contentDescription = null,
+                            modifier = Modifier.size(17.dp),
+                        )
                         Text(
                             text = producer.name,
                             textAlign = TextAlign.Center,
@@ -134,15 +151,20 @@ fun LazyItemScope.TransactionItem(
             val shop = fullItem.embeddedItem.shop
             if (shop != null) {
                 Button(
-                    modifier = Modifier.padding(start = 4.dp),
                     onClick = {
 
                     },
+                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
                 ) {
                     Text(
                         text = shop.name,
                         textAlign = TextAlign.Center,
                         style = Typography.labelSmall,
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.Store,
+                        contentDescription = null,
+                        modifier = Modifier.size(17.dp),
                     )
                 }
             }
