@@ -20,8 +20,7 @@ internal data class AddProductCategoryScreenState(
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddProductCategoryScreenState.validateName(): Boolean {
-    return name.value.isBlank()
-        .also { nameError.value = it }
+    return !(name.value.isBlank()).also { nameError.value = it }
 }
 
 /**

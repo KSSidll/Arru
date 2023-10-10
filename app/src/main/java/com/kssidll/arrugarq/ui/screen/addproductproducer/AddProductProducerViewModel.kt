@@ -20,8 +20,7 @@ internal data class AddProductProducerScreenState(
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddProductProducerScreenState.validateName(): Boolean {
-    return name.value.isBlank()
-        .also { nameError.value = it }
+    return !(name.value.isBlank()).also { nameError.value = it }
 }
 
 /**

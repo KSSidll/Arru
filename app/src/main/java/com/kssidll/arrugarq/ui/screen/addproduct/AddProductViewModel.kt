@@ -29,7 +29,7 @@ internal data class AddProductScreenState(
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddProductScreenState.validateSelectedProductCategory(): Boolean {
-    return (selectedProductCategory.value == null).also { selectedProductCategoryError.value = it }
+    return !(selectedProductCategory.value == null).also { selectedProductCategoryError.value = it }
 }
 
 /**
@@ -37,8 +37,7 @@ internal fun AddProductScreenState.validateSelectedProductCategory(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddProductScreenState.validateName(): Boolean {
-    return name.value.isBlank()
-        .also { nameError.value = it }
+    return !(name.value.isBlank()).also { nameError.value = it }
 }
 
 /**

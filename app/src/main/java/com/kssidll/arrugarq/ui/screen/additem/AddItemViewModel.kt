@@ -39,7 +39,7 @@ internal data class AddItemScreenState(
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddItemScreenState.validateSelectedProduct(): Boolean {
-    return (selectedProduct.value == null).also { selectedProductError.value = it }
+    return !(selectedProduct.value == null).also { selectedProductError.value = it }
 }
 
 /**
@@ -47,7 +47,11 @@ internal fun AddItemScreenState.validateSelectedProduct(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddItemScreenState.validateQuantity(): Boolean {
-    return (quantity.value.toFloatOrNull() == null).also { quantityError.value = it }
+    return !(quantity.value.replace(
+        ',',
+        '.'
+    )
+        .toFloatOrNull() == null).also { quantityError.value = it }
 }
 
 /**
@@ -55,7 +59,11 @@ internal fun AddItemScreenState.validateQuantity(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddItemScreenState.validatePrice(): Boolean {
-    return (price.value.toFloatOrNull() == null).also { priceError.value = it }
+    return !(price.value.replace(
+        ',',
+        '.'
+    )
+        .toFloatOrNull() == null).also { priceError.value = it }
 }
 
 /**
@@ -63,7 +71,7 @@ internal fun AddItemScreenState.validatePrice(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 internal fun AddItemScreenState.validateDate(): Boolean {
-    return (date.value == null).also { dateError.value = it }
+    return !(date.value == null).also { dateError.value = it }
 }
 
 /**
@@ -90,8 +98,16 @@ internal fun AddItemScreenState.extractItemOrNull(): Item? {
         productId = selectedProduct.value!!.id,
         variantId = selectedVariant.value?.id,
         shopId = selectedShop.value?.id,
-        actualQuantity = quantity.value.toFloat(),
-        actualPrice = price.value.toFloat(),
+        actualQuantity = quantity.value.replace(
+            ',',
+            '.'
+        )
+            .toFloat(),
+        actualPrice = price.value.replace(
+            ',',
+            '.'
+        )
+            .toFloat(),
         date = date.value!!,
     )
 }
