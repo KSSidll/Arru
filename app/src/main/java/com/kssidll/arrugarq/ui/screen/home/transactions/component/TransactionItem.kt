@@ -16,6 +16,7 @@ import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LazyItemScope.TransactionItem(
     fullItem: FullItem,
@@ -80,30 +81,51 @@ fun LazyItemScope.TransactionItem(
             }
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(Modifier.weight(1F)) {
-                val variant = fullItem.embeddedItem.variant
+        Row {
+            FlowRow(
+                modifier = Modifier.weight(1F),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                val category = fullItem.embeddedProduct.category
                 Button(
+                    modifier = Modifier.padding(end = 4.dp),
                     onClick = {
 
                     },
                 ) {
                     Text(
-                        variant?.name ?: stringResource(R.string.item_product_variant_default_value)
+                        text = category.name,
+                        textAlign = TextAlign.Center,
+                        style = Typography.labelSmall,
+                    )
+                }
+
+                val variant = fullItem.embeddedItem.variant
+                Button(
+                    modifier = Modifier.padding(end = 4.dp),
+                    onClick = {
+
+                    },
+                ) {
+                    Text(
+                        text = variant?.name ?: stringResource(R.string.item_product_variant_default_value),
+                        textAlign = TextAlign.Center,
+                        style = Typography.labelSmall,
                     )
                 }
 
                 val producer = fullItem.embeddedProduct.producer
                 if (producer != null) {
                     Button(
+                        modifier = Modifier.padding(end = 4.dp),
                         onClick = {
 
                         },
                     ) {
                         Text(
-                            producer.name
+                            text = producer.name,
+                            textAlign = TextAlign.Center,
+                            style = Typography.labelSmall,
                         )
                     }
                 }
@@ -112,28 +134,17 @@ fun LazyItemScope.TransactionItem(
             val shop = fullItem.embeddedItem.shop
             if (shop != null) {
                 Button(
+                    modifier = Modifier.padding(start = 4.dp),
                     onClick = {
 
                     },
                 ) {
-                    Text(shop.name)
+                    Text(
+                        text = shop.name,
+                        textAlign = TextAlign.Center,
+                        style = Typography.labelSmall,
+                    )
                 }
-            }
-
-            val category = fullItem.embeddedProduct.category
-            Button(
-                onClick = {
-
-                },
-            ) {
-                Text(
-                    modifier = Modifier.widthIn(
-                        min = 76.dp,
-                        max = 88.dp
-                    ),
-                    text = category.name,
-                    textAlign = TextAlign.Center,
-                )
             }
         }
     }
