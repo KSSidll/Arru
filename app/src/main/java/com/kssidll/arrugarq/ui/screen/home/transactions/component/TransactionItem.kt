@@ -72,6 +72,7 @@ fun LazyItemScope.TransactionItem(
                         imageVector = Icons.Outlined.ShoppingBasket,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.tertiary,
                     )
                 }
 
@@ -94,6 +95,7 @@ fun LazyItemScope.TransactionItem(
                         imageVector = Icons.Outlined.Sell,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.tertiary,
                     )
                 }
 
@@ -117,6 +119,7 @@ fun LazyItemScope.TransactionItem(
                         imageVector = Icons.Outlined.Payment,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.tertiary,
                     )
                 }
             }
