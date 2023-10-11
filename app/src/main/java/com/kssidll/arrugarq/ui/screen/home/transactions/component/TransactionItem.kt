@@ -60,7 +60,9 @@ fun LazyItemScope.TransactionItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = fullItem.embeddedItem.item.actualQuantity().toString().removeSuffix(".0"),
+                        text = fullItem.embeddedItem.item.actualQuantity()
+                            .toString()
+                            .removeSuffix(".0"),
                         style = Typography.bodyLarge,
                     )
 
@@ -81,7 +83,8 @@ fun LazyItemScope.TransactionItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = fullItem.embeddedItem.item.actualPrice().formatToCurrency(),
+                        text = fullItem.embeddedItem.item.actualPrice()
+                            .formatToCurrency(),
                         style = Typography.bodyLarge,
                     )
 
@@ -133,7 +136,10 @@ fun LazyItemScope.TransactionItem(
                     onClick = {
 
                     },
-                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
+                    contentPadding = PaddingValues(
+                        vertical = 0.dp,
+                        horizontal = 12.dp
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.FilterList,
@@ -141,7 +147,8 @@ fun LazyItemScope.TransactionItem(
                         modifier = Modifier.size(17.dp),
                     )
                     Text(
-                        text = variant?.name ?: stringResource(R.string.item_product_variant_default_value),
+                        text = variant?.name
+                            ?: stringResource(R.string.item_product_variant_default_value),
                         textAlign = TextAlign.Center,
                         style = Typography.labelSmall,
                     )
@@ -153,7 +160,10 @@ fun LazyItemScope.TransactionItem(
                     onClick = {
 
                     },
-                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
+                    contentPadding = PaddingValues(
+                        vertical = 0.dp,
+                        horizontal = 12.dp
+                    )
                 ) {
                     Text(
                         text = category.name,
@@ -169,7 +179,10 @@ fun LazyItemScope.TransactionItem(
                         onClick = {
 
                         },
-                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
+                        contentPadding = PaddingValues(
+                            vertical = 0.dp,
+                            horizontal = 12.dp
+                        )
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.PrecisionManufacturing,
@@ -191,7 +204,10 @@ fun LazyItemScope.TransactionItem(
                     onClick = {
 
                     },
-                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp)
+                    contentPadding = PaddingValues(
+                        vertical = 0.dp,
+                        horizontal = 12.dp
+                    )
                 ) {
                     Text(
                         text = shop.name,

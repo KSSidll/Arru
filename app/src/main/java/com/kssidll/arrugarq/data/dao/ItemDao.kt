@@ -33,6 +33,20 @@ interface ItemDao {
     fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>>
 
     @Transaction
+    @Query("SELECT * FROM item ORDER BY date DESC LIMIT :count OFFSET :offset")
+    suspend fun getEmbeddedItemsSorted(
+        offset: Int,
+        count: Int
+    ): List<EmbeddedItem>
+
+    @Transaction
+    @Query("SELECT * FROM item ORDER BY date DESC LIMIT :count OFFSET :offset")
+    fun getEmbeddedItemsSortedFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<EmbeddedItem>>
+
+    @Transaction
     @Query("SELECT * FROM product WHERE id = :productId")
     suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct
 
@@ -41,8 +55,14 @@ interface ItemDao {
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
 
     @Transaction
-    suspend fun getALlFullItem(): List<FullItem> {
-        val items = getAllEmbeddedItemSorted()
+    suspend fun getFullItems(
+        offset: Int,
+        count: Int
+    ): List<FullItem> {
+        val items = getEmbeddedItemsSorted(
+            offset,
+            count
+        )
         return items.map {
             FullItem(
                 embeddedItem = it,
@@ -51,8 +71,14 @@ interface ItemDao {
         }
     }
 
-    fun getAllFullItemFlow(): Flow<List<FullItem>> {
-        val items = getAllEmbeddedItemSortedFlow()
+    fun getFullItemsFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<FullItem>> {
+        val items = getEmbeddedItemsSortedFlow(
+            offset,
+            count
+        )
         return items.map {
             it.map { item ->
                 FullItem(

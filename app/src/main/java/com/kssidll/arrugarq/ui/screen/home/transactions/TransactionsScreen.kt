@@ -15,28 +15,44 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.screen.home.transactions.component.*
 import com.kssidll.arrugarq.ui.theme.*
-import kotlinx.coroutines.flow.*
 import java.sql.Date
 import java.text.*
 import java.util.*
 
+private const val pageSize = 25 // called twice when scrolling, so effectively 50
+
+/**
+ * @param requestItems: Function called when the screen request more items with param count,
+ * which the new expected size of the item list, is never lower than previous requests
+ * but can request the same amount several times
+ */
 @Composable
 fun TransactionsScreen(
-    items: Flow<List<FullItem>>,
+    requestItems: (count: Int) -> Unit,
+    items: List<FullItem>,
 ) {
     TransactionsScreenContent(
-        items = items.collectAsState(emptyList()).value,
+        requestItems = requestItems,
+        items = items,
     )
 }
 
 @Composable
 private fun TransactionsScreenContent(
+    requestItems: (count: Int) -> Unit,
     items: List<FullItem>,
 ) {
     val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
         remember { mutableStateListOf() }
 
-    LaunchedEffect(items) {
+    val listState = rememberLazyListState()
+    val firstItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
+    LaunchedEffect(firstItemIndex + pageSize > items.size) {
+        requestItems(items.size + pageSize)
+    }
+
+    LaunchedEffect(items.size) {
         grouppedItems.clear()
         grouppedItems.addAll(
             items.groupBy { it.embeddedItem.item.date / 86400000 }
@@ -44,13 +60,18 @@ private fun TransactionsScreenContent(
                 .sortedByDescending { it.first })
     }
 
-    LazyColumn {
+    LazyColumn(
+        state = listState,
+    ) {
         grouppedItems.forEachIndexed { index, group ->
             item {
                 Column(
                     modifier = Modifier.fillParentMaxWidth()
                 ) {
-                    val shape = if (index != 0) RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    val shape = if (index != 0) RoundedCornerShape(
+                        topStart = 24.dp,
+                        topEnd = 24.dp
+                    )
                     else RectangleShape
 
                     Surface(
@@ -100,6 +121,7 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreenContent(
+                requestItems = {},
                 items = generateRandomFullItemList(
                     itemDateTimeFrom = Date.valueOf("2022-06-01").time,
                     itemDateTimeUntil = Date.valueOf("2022-06-04").time,

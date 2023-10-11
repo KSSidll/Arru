@@ -12,10 +12,28 @@ interface IItemRepository {
     fun getLastFlow(): Flow<Item>
     suspend fun getAllEmbeddedItemSorted(): List<EmbeddedItem>
     fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>>
+    suspend fun getEmbeddedItemsSorted(
+        offset: Int,
+        count: Int
+    ): List<EmbeddedItem>
+
+    fun getEmbeddedItemsSortedFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<EmbeddedItem>>
+
     suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
-    suspend fun getALlFullItem(): List<FullItem>
-    fun getAllFullItemFlow(): Flow<List<FullItem>>
+    suspend fun getFullItems(
+        offset: Int,
+        count: Int
+    ): List<FullItem>
+
+    fun getFullItemsFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<FullItem>>
+
     suspend fun getShopTotalSpent(): List<ItemSpentByShop>
     fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>>
     suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory>

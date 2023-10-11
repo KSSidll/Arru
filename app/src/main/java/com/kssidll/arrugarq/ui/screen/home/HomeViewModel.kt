@@ -4,6 +4,7 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.graphics.painter.*
 import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.res.*
@@ -33,15 +34,33 @@ class HomeViewModel @Inject constructor(
         mutableStateOf(SpentByTimePeriod.Month)
     val spentByTimePeriod by _spentByTimePeriod
 
+    private var fullItemsDataQuery: Job
+    var fullItemsData: SnapshotStateList<FullItem> = mutableStateListOf()
+
     init {
         this.shopRepository = shopRepository
         this.itemRepository = itemRepository
 
         switchToSpentByTimePeriod(spentByTimePeriod)
+        fullItemsDataQuery = performFullItemsQuery(50)
     }
 
-    fun getAllFullItemFlow(): Flow<List<FullItem>> {
-        return itemRepository.getAllFullItemFlow()
+    fun queryFullItems(newListSize: Int) {
+        if (fullItemsDataQuery.isCompleted) {
+            fullItemsDataQuery = performFullItemsQuery(newListSize)
+        }
+    }
+
+    private fun performFullItemsQuery(newListSize: Int): Job {
+        return viewModelScope.launch {
+            val queryCount = newListSize - fullItemsData.size
+            fullItemsData.addAll(
+                itemRepository.getFullItems(
+                    fullItemsData.size,
+                    queryCount
+                )
+            )
+        }
     }
 
     fun getTotalSpent(): Flow<Float> {

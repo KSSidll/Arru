@@ -38,6 +38,26 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getAllEmbeddedItemSortedFlow()
     }
 
+    override suspend fun getEmbeddedItemsSorted(
+        offset: Int,
+        count: Int
+    ): List<EmbeddedItem> {
+        return itemDao.getEmbeddedItemsSorted(
+            offset,
+            count
+        )
+    }
+
+    override fun getEmbeddedItemsSortedFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<EmbeddedItem>> {
+        return itemDao.getEmbeddedItemsSortedFlow(
+            offset,
+            count
+        )
+    }
+
     override suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct {
         return itemDao.getItemEmbeddedProduct(productId)
     }
@@ -46,12 +66,24 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getItemEmbeddedProductFlow(productId)
     }
 
-    override suspend fun getALlFullItem(): List<FullItem> {
-        return itemDao.getALlFullItem()
+    override suspend fun getFullItems(
+        offset: Int,
+        count: Int
+    ): List<FullItem> {
+        return itemDao.getFullItems(
+            offset,
+            count
+        )
     }
 
-    override fun getAllFullItemFlow(): Flow<List<FullItem>> {
-        return itemDao.getAllFullItemFlow()
+    override fun getFullItemsFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<FullItem>> {
+        return itemDao.getFullItemsFlow(
+            offset,
+            count
+        )
     }
 
     override suspend fun getShopTotalSpent(): List<ItemSpentByShop> {
