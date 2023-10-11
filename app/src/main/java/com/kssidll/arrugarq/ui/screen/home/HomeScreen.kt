@@ -34,6 +34,10 @@ fun HomeScreen(
     spentByTimeData: Flow<List<ItemSpentByTime>>,
     spentByTimePeriod: SpentByTimePeriod,
     onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    onTransactionItemClick: (item: FullItem) -> Unit,
+    onTransactionCategoryClick: (category: ProductCategory) -> Unit,
+    onTransactionProducerClick: (producer: ProductProducer) -> Unit,
+    onTransactionShopClick: (shop: Shop) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
@@ -85,6 +89,10 @@ fun HomeScreen(
                         TransactionsScreen(
                             requestItems = requestFullItems,
                             items = fullItems,
+                            onItemClick = onTransactionItemClick,
+                            onProducerClick = onTransactionProducerClick,
+                            onCategoryClick = onTransactionCategoryClick,
+                            onShopClick = onTransactionShopClick,
                         )
                     }
                 }
@@ -128,6 +136,10 @@ fun HomeScreenPreview() {
                     spentByTimeData = generateRandomItemSpentByTimeListFlow(),
                     spentByTimePeriod = SpentByTimePeriod.Month,
                     onSpentByTimePeriodSwitch = {},
+                    onTransactionCategoryClick = {},
+                    onTransactionItemClick = {},
+                    onTransactionProducerClick = {},
+                    onTransactionShopClick = {},
                 )
             }
         }

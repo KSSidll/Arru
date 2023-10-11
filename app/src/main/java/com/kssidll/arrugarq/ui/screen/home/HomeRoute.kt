@@ -8,6 +8,10 @@ fun HomeRoute(
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
+    onTransactionItemClick: (productId: Long) -> Unit,
+    onTransactionCategoryClick: (categoryId: Long) -> Unit,
+    onTransactionProducerClick: (producerId: Long) -> Unit,
+    onTransactionShopClick: (shopId: Long) -> Unit,
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
 
@@ -26,6 +30,18 @@ fun HomeRoute(
         spentByTimePeriod = homeViewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             homeViewModel.switchToSpentByTimePeriod(it)
-        }
+        },
+        onTransactionItemClick = {
+            onTransactionItemClick(it.embeddedItem.item.productId)
+        },
+        onTransactionCategoryClick = {
+            onTransactionCategoryClick(it.id)
+        },
+        onTransactionProducerClick = {
+            onTransactionProducerClick(it.id)
+        },
+        onTransactionShopClick = {
+            onTransactionShopClick(it.id)
+        },
     )
 }

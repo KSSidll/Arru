@@ -35,10 +35,18 @@ private const val pageSize = 25 // called twice when scrolling, so effectively 5
 fun TransactionsScreen(
     requestItems: (count: Int) -> Unit,
     items: List<FullItem>,
+    onItemClick: (item: FullItem) -> Unit,
+    onCategoryClick: (category: ProductCategory) -> Unit,
+    onProducerClick: (producer: ProductProducer) -> Unit,
+    onShopClick: (shop: Shop) -> Unit,
 ) {
     TransactionsScreenContent(
         requestItems = requestItems,
         items = items,
+        onItemClick = onItemClick,
+        onCategoryClick = onCategoryClick,
+        onProducerClick = onProducerClick,
+        onShopClick = onShopClick,
     )
 }
 
@@ -46,6 +54,10 @@ fun TransactionsScreen(
 private fun TransactionsScreenContent(
     requestItems: (count: Int) -> Unit,
     items: List<FullItem>,
+    onItemClick: (item: FullItem) -> Unit,
+    onCategoryClick: (category: ProductCategory) -> Unit,
+    onProducerClick: (producer: ProductProducer) -> Unit,
+    onShopClick: (shop: Shop) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
@@ -88,8 +100,6 @@ private fun TransactionsScreenContent(
                 .toList()
                 .sortedByDescending { it.first })
     }
-
-
 
     Scaffold(
         floatingActionButton = {
@@ -165,8 +175,14 @@ private fun TransactionsScreenContent(
                     }
                 }
 
-                items(group.second) { embeddedItem ->
-                    TransactionItem(embeddedItem)
+                items(group.second) { item ->
+                    TransactionItem(
+                        fullItem = item,
+                        onItemClick = onItemClick,
+                        onCategoryClick = onCategoryClick,
+                        onProducerClick = onProducerClick,
+                        onShopClick = onShopClick,
+                    )
                 }
             }
         }
@@ -195,6 +211,10 @@ fun TransactionsScreenPreview() {
                     itemDateTimeFrom = Date.valueOf("2022-06-01").time,
                     itemDateTimeUntil = Date.valueOf("2022-06-04").time,
                 ),
+                onItemClick = {},
+                onCategoryClick = {},
+                onProducerClick = {},
+                onShopClick = {},
             )
         }
     }

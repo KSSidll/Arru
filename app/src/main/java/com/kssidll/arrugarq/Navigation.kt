@@ -11,8 +11,12 @@ import com.kssidll.arrugarq.ui.screen.addproductcategory.*
 import com.kssidll.arrugarq.ui.screen.addproductproducer.*
 import com.kssidll.arrugarq.ui.screen.addproductvariant.*
 import com.kssidll.arrugarq.ui.screen.addshop.*
+import com.kssidll.arrugarq.ui.screen.category.*
 import com.kssidll.arrugarq.ui.screen.categoryranking.*
 import com.kssidll.arrugarq.ui.screen.home.*
+import com.kssidll.arrugarq.ui.screen.producer.*
+import com.kssidll.arrugarq.ui.screen.product.*
+import com.kssidll.arrugarq.ui.screen.shop.*
 import com.kssidll.arrugarq.ui.screen.shopranking.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
@@ -28,6 +32,10 @@ sealed class Screen: Parcelable {
     data object AddShop: Screen()
     data object CategoryRanking: Screen()
     data object ShopRanking: Screen()
+    data class Product(val productId: Long): Screen()
+    data class Category(val categoryId: Long): Screen()
+    data class Producer(val producerId: Long): Screen()
+    data class Shop(val shopId: Long): Screen()
 }
 
 @Composable
@@ -112,6 +120,18 @@ fun Navigation(
                     onDashboardShopCardClick = {
                         navController.navigate(Screen.ShopRanking)
                     },
+                    onTransactionItemClick = {
+                        navController.navigate(Screen.Product(it))
+                    },
+                    onTransactionCategoryClick = {
+                        navController.navigate(Screen.Category(it))
+                    },
+                    onTransactionProducerClick = {
+                        navController.navigate(Screen.Producer(it))
+                    },
+                    onTransactionShopClick = {
+                        navController.navigate(Screen.Shop(it))
+                    },
                 )
             }
 
@@ -170,11 +190,45 @@ fun Navigation(
             is Screen.CategoryRanking -> {
                 CategoryRankingRoute(
                     onBack = onBack,
+                    onItemClick = {
+                        navController.navigate(Screen.Category(it))
+                    },
                 )
             }
 
             is Screen.ShopRanking -> {
                 ShopRankingRoute(
+                    onBack = onBack,
+                    onItemClick = {
+                        navController.navigate(Screen.Shop(it))
+                    },
+                )
+            }
+
+            is Screen.Category -> {
+                CategoryRoute(
+                    categoryId = screen.categoryId,
+                    onBack = onBack,
+                )
+            }
+
+            is Screen.Producer -> {
+                ProducerRoute(
+                    producerId = screen.producerId,
+                    onBack = onBack,
+                )
+            }
+
+            is Screen.Product -> {
+                ProductRoute(
+                    productId = screen.productId,
+                    onBack = onBack,
+                )
+            }
+
+            is Screen.Shop -> {
+                ShopRoute(
+                    shopId = screen.shopId,
                     onBack = onBack,
                 )
             }

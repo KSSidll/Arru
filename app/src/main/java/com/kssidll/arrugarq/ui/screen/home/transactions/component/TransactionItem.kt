@@ -24,11 +24,15 @@ import com.kssidll.arrugarq.ui.theme.*
 @Composable
 fun LazyItemScope.TransactionItem(
     fullItem: FullItem,
+    onItemClick: (item: FullItem) -> Unit,
+    onCategoryClick: (category: ProductCategory) -> Unit,
+    onProducerClick: (producer: ProductProducer) -> Unit,
+    onShopClick: (shop: Shop) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .clickable {
-
+                onItemClick(fullItem)
             }
             .heightIn(min = 60.dp)
             .fillParentMaxWidth()
@@ -38,17 +42,38 @@ fun LazyItemScope.TransactionItem(
             ),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .height(IntrinsicSize.Min),
         ) {
-            Row(
-                modifier = Modifier.weight(1F),
-                horizontalArrangement = Arrangement.Start,
+            Column(
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxHeight(),
             ) {
-                Text(
-                    text = fullItem.embeddedItem.product.name,
-                    style = Typography.titleLarge,
-                )
+                Box(
+                    modifier = Modifier.weight(1F),
+                ) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        text = fullItem.embeddedItem.product.name,
+                        style = Typography.titleLarge,
+                    )
+                }
+
+                Row {
+                    Icon(
+                        imageVector = Icons.Rounded.FilterList,
+                        contentDescription = null,
+                        modifier = Modifier.size(17.dp),
+                    )
+                    Text(
+                        text = fullItem.embeddedItem.variant?.name
+                            ?: stringResource(R.string.item_product_variant_default_value),
+                        textAlign = TextAlign.Center,
+                        style = Typography.labelMedium,
+                    )
+                }
             }
 
             Column(
@@ -132,40 +157,11 @@ fun LazyItemScope.TransactionItem(
                 modifier = Modifier.weight(1F),
                 verticalArrangement = Arrangement.Center,
             ) {
-                val variant = fullItem.embeddedItem.variant
-                Button(
-                    modifier = Modifier
-                        .padding(end = 3.dp),
-                    onClick = {
-
-                    },
-                    contentPadding = PaddingValues(
-                        vertical = 0.dp,
-                        horizontal = 12.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    ),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.FilterList,
-                        contentDescription = null,
-                        modifier = Modifier.size(17.dp),
-                    )
-                    Text(
-                        text = variant?.name
-                            ?: stringResource(R.string.item_product_variant_default_value),
-                        textAlign = TextAlign.Center,
-                        style = Typography.labelMedium,
-                    )
-                }
-
                 val category = fullItem.embeddedProduct.category
                 Button(
                     modifier = Modifier.padding(end = 3.dp),
                     onClick = {
-
+                        onCategoryClick(category)
                     },
                     contentPadding = PaddingValues(
                         vertical = 0.dp,
@@ -188,7 +184,7 @@ fun LazyItemScope.TransactionItem(
                     Button(
                         modifier = Modifier.padding(end = 3.dp),
                         onClick = {
-
+                            onProducerClick(producer)
                         },
                         contentPadding = PaddingValues(
                             vertical = 0.dp,
@@ -217,7 +213,7 @@ fun LazyItemScope.TransactionItem(
             if (shop != null) {
                 Button(
                     onClick = {
-
+                        onShopClick(shop)
                     },
                     contentPadding = PaddingValues(
                         vertical = 0.dp,
@@ -264,6 +260,10 @@ fun TransactionItemPreview() {
                 item {
                     TransactionItem(
                         fullItem = generateRandomFullItem(),
+                        onItemClick = {},
+                        onCategoryClick = {},
+                        onProducerClick = {},
+                        onShopClick = {},
                     )
                 }
             }

@@ -9,6 +9,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 @Composable
 fun CategoryRankingRoute(
     onBack: () -> Unit,
+    onItemClick: (categoryId: Long) -> Unit,
 ) {
     val categoryRankingViewModel: CategoryRankingViewModel = hiltViewModel()
 
@@ -18,7 +19,7 @@ fun CategoryRankingRoute(
         data = categoryRankingViewModel.getSpentByCategory()
             .collectAsState(emptyList()).value,
         onItemClick = {
-
+            onItemClick(it.category.id)
         }
     )
 }
