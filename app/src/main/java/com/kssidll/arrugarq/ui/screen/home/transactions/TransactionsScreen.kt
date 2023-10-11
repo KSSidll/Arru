@@ -52,9 +52,32 @@ private fun TransactionsScreenContent(
         remember { mutableStateListOf() }
 
     val listState = rememberLazyListState()
-    val firstItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+    val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
 
-    LaunchedEffect(firstItemIndex + pageSize > items.size) {
+    var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
+
+    var returnActionButtonVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(firstVisibleItemIndex) {
+        if (
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
+            firstVisibleItemIndex >= pageSize
+        ) {
+            // scrolling up
+            returnActionButtonVisible = true
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+        } else if (
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
+            firstVisibleItemIndex < pageSize
+        ) {
+            // scrolling down
+            returnActionButtonVisible = false
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+        }
+
+    }
+
+    LaunchedEffect(firstVisibleItemIndex + pageSize > items.size) {
         requestItems(items.size + pageSize)
     }
 
@@ -66,10 +89,12 @@ private fun TransactionsScreenContent(
                 .sortedByDescending { it.first })
     }
 
+
+
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                visible = firstItemIndex >= 10,
+                visible = returnActionButtonVisible,
                 enter = slideInHorizontally(
                     animationSpec = tween(
                         durationMillis = 300,
