@@ -139,7 +139,11 @@ fun LazyItemScope.TransactionItem(
                     contentPadding = PaddingValues(
                         vertical = 0.dp,
                         horizontal = 12.dp
-                    )
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.FilterList,
@@ -150,7 +154,7 @@ fun LazyItemScope.TransactionItem(
                         text = variant?.name
                             ?: stringResource(R.string.item_product_variant_default_value),
                         textAlign = TextAlign.Center,
-                        style = Typography.labelSmall,
+                        style = Typography.labelMedium,
                     )
                 }
 
@@ -163,12 +167,16 @@ fun LazyItemScope.TransactionItem(
                     contentPadding = PaddingValues(
                         vertical = 0.dp,
                         horizontal = 12.dp
-                    )
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ),
                 ) {
                     Text(
                         text = category.name,
                         textAlign = TextAlign.Center,
-                        style = Typography.labelSmall,
+                        style = Typography.labelMedium,
                     )
                 }
 
@@ -182,7 +190,11 @@ fun LazyItemScope.TransactionItem(
                         contentPadding = PaddingValues(
                             vertical = 0.dp,
                             horizontal = 12.dp
-                        )
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        ),
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.PrecisionManufacturing,
@@ -192,7 +204,7 @@ fun LazyItemScope.TransactionItem(
                         Text(
                             text = producer.name,
                             textAlign = TextAlign.Center,
-                            style = Typography.labelSmall,
+                            style = Typography.labelMedium,
                         )
                     }
                 }
@@ -207,12 +219,16 @@ fun LazyItemScope.TransactionItem(
                     contentPadding = PaddingValues(
                         vertical = 0.dp,
                         horizontal = 12.dp
-                    )
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary,
+                    ),
                 ) {
                     Text(
                         text = shop.name,
                         textAlign = TextAlign.Center,
-                        style = Typography.labelSmall,
+                        style = Typography.labelMedium,
                     )
                     Icon(
                         imageVector = Icons.Rounded.Store,
