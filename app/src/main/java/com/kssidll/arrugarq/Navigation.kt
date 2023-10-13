@@ -230,6 +230,15 @@ fun Navigation(
                 ShopRoute(
                     shopId = screen.shopId,
                     onBack = onBack,
+                    onItemClick = {
+                        navController.navigate(Screen.Product(it))
+                    },
+                    onCategoryClick = {
+                        navController.navigate(Screen.Category(it))
+                    },
+                    onProducerClick = {
+                        navController.navigate(Screen.Producer(it))
+                    },
                 )
             }
         }

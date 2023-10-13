@@ -47,6 +47,22 @@ interface ItemDao {
     ): Flow<List<EmbeddedItem>>
 
     @Transaction
+    @Query("SELECT * FROM item WHERE shopId = :shopId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    suspend fun getEmbeddedItemsByShopSorted(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): List<EmbeddedItem>
+
+    @Transaction
+    @Query("SELECT * FROM item WHERE shopId = :shopId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    fun getEmbeddedItemsByShopSortedFlow(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    @Transaction
     @Query("SELECT * FROM product WHERE id = :productId")
     suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct
 
@@ -59,8 +75,8 @@ interface ItemDao {
         count: Int
     ): List<FullItem> {
         val items = getEmbeddedItemsSorted(
-            offset,
-            count
+            offset = offset,
+            count = count,
         )
         return items.map {
             FullItem(
@@ -75,8 +91,46 @@ interface ItemDao {
         count: Int
     ): Flow<List<FullItem>> {
         val items = getEmbeddedItemsSortedFlow(
-            offset,
-            count
+            offset = offset,
+            count = count,
+        )
+        return items.map {
+            it.map { item ->
+                FullItem(
+                    embeddedItem = item,
+                    embeddedProduct = getItemEmbeddedProduct(item.product.id),
+                )
+            }
+        }
+    }
+
+    suspend fun getFullItemsByShop(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): List<FullItem> {
+        val items = getEmbeddedItemsByShopSorted(
+            offset = offset,
+            count = count,
+            shopId = shopId,
+        )
+        return items.map {
+            FullItem(
+                embeddedItem = it,
+                embeddedProduct = getItemEmbeddedProduct(it.product.id),
+            )
+        }
+    }
+
+    fun getFullItemsByShopFlow(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): Flow<List<FullItem>> {
+        val items = getEmbeddedItemsByShopSortedFlow(
+            offset = offset,
+            count = count,
+            shopId = shopId,
         )
         return items.map {
             it.map { item ->
@@ -105,6 +159,50 @@ interface ItemDao {
 
     @Query("SELECT SUM(price * quantity) AS total FROM item")
     fun getTotalSpentFlow(): Flow<Long>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    WHERE item.shopId = :shopId
+    UNION ALL
+    SELECT (start_date + $DAY_MS) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / $DAY_MS) = ((item.date) / $DAY_MS)
+WHERE item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByShopByDay(shopId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    WHERE item.shopId = :shopId
+    UNION ALL
+    SELECT (start_date + $DAY_MS) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / $DAY_MS) = ((item.date) / $DAY_MS)
+WHERE item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(QUERY_SPENDING_BY_DAY)
     suspend fun getTotalSpentByDay(): List<ItemSpentByTime>

@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.transactions.component
+package com.kssidll.arrugarq.ui.component.list
 
 import android.content.res.*
 import androidx.compose.foundation.*
@@ -22,12 +22,15 @@ import com.kssidll.arrugarq.ui.theme.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LazyItemScope.TransactionItem(
+fun LazyItemScope.FullItemCard(
     fullItem: FullItem,
     onItemClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
+    showCategory: Boolean = true,
     onProducerClick: (producer: ProductProducer) -> Unit,
+    showProducer: Boolean = true,
     onShopClick: (shop: Shop) -> Unit,
+    showShop: Boolean = true,
 ) {
     Column(
         modifier = Modifier
@@ -157,34 +160,12 @@ fun LazyItemScope.TransactionItem(
                 modifier = Modifier.weight(1F),
                 verticalArrangement = Arrangement.Center,
             ) {
-                val category = fullItem.embeddedProduct.category
-                Button(
-                    modifier = Modifier.padding(end = 3.dp),
-                    onClick = {
-                        onCategoryClick(category)
-                    },
-                    contentPadding = PaddingValues(
-                        vertical = 0.dp,
-                        horizontal = 12.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    ),
-                ) {
-                    Text(
-                        text = category.name,
-                        textAlign = TextAlign.Center,
-                        style = Typography.labelMedium,
-                    )
-                }
-
-                val producer = fullItem.embeddedProduct.producer
-                if (producer != null) {
+                if (showCategory) {
+                    val category = fullItem.embeddedProduct.category
                     Button(
                         modifier = Modifier.padding(end = 3.dp),
                         onClick = {
-                            onProducerClick(producer)
+                            onCategoryClick(category)
                         },
                         contentPadding = PaddingValues(
                             vertical = 0.dp,
@@ -195,45 +176,74 @@ fun LazyItemScope.TransactionItem(
                             contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                         ),
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.PrecisionManufacturing,
-                            contentDescription = null,
-                            modifier = Modifier.size(17.dp),
-                        )
                         Text(
-                            text = producer.name,
+                            text = category.name,
                             textAlign = TextAlign.Center,
                             style = Typography.labelMedium,
                         )
                     }
+
+                }
+
+                if (showProducer) {
+                    val producer = fullItem.embeddedProduct.producer
+                    if (producer != null) {
+                        Button(
+                            modifier = Modifier.padding(end = 3.dp),
+                            onClick = {
+                                onProducerClick(producer)
+                            },
+                            contentPadding = PaddingValues(
+                                vertical = 0.dp,
+                                horizontal = 12.dp
+                            ),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                            ),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.PrecisionManufacturing,
+                                contentDescription = null,
+                                modifier = Modifier.size(17.dp),
+                            )
+                            Text(
+                                text = producer.name,
+                                textAlign = TextAlign.Center,
+                                style = Typography.labelMedium,
+                            )
+                        }
+                    }
                 }
             }
 
-            val shop = fullItem.embeddedItem.shop
-            if (shop != null) {
-                Button(
-                    onClick = {
-                        onShopClick(shop)
-                    },
-                    contentPadding = PaddingValues(
-                        vertical = 0.dp,
-                        horizontal = 12.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                    ),
-                ) {
-                    Text(
-                        text = shop.name,
-                        textAlign = TextAlign.Center,
-                        style = Typography.labelMedium,
-                    )
-                    Icon(
-                        imageVector = Icons.Rounded.Store,
-                        contentDescription = null,
-                        modifier = Modifier.size(17.dp),
-                    )
+            if (showShop) {
+                val shop = fullItem.embeddedItem.shop
+                if (shop != null) {
+                    Button(
+                        onClick = {
+                            onShopClick(shop)
+                        },
+                        contentPadding = PaddingValues(
+                            vertical = 0.dp,
+                            horizontal = 12.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary,
+                        ),
+                    ) {
+                        Text(
+                            text = shop.name,
+                            textAlign = TextAlign.Center,
+                            style = Typography.labelMedium,
+                        )
+                        Icon(
+                            imageVector = Icons.Rounded.Store,
+                            contentDescription = null,
+                            modifier = Modifier.size(17.dp),
+                        )
+                    }
                 }
             }
         }
@@ -241,24 +251,24 @@ fun LazyItemScope.TransactionItem(
 }
 
 @Preview(
-    group = "Transaction Item",
+    group = "Full Item Card",
     name = "Dark",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "Transaction Item",
+    group = "Full Item Card",
     name = "Light",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO
 )
 @Composable
-fun TransactionItemPreview() {
+fun FullItemCardPreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
             LazyColumn {
                 item {
-                    TransactionItem(
+                    FullItemCard(
                         fullItem = generateRandomFullItem(),
                         onItemClick = {},
                         onCategoryClick = {},

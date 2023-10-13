@@ -17,8 +17,8 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.helper.*
+import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.screen.home.*
-import com.kssidll.arrugarq.ui.screen.home.transactions.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
 import java.sql.Date
@@ -172,7 +172,7 @@ private fun TransactionsScreenContent(
                 }
 
                 items(group.second) { item ->
-                    TransactionItem(
+                    FullItemCard(
                         fullItem = item,
                         onItemClick = onItemClick,
                         onCategoryClick = onCategoryClick,

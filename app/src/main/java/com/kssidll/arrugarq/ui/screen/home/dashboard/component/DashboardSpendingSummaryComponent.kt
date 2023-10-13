@@ -45,8 +45,8 @@ fun DashboardSpendingSummaryComponent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        OneDimensionalChart(
-            spentByTimeData = spentByTimeData,
+        OneDimensionalColumnChart(
+            data = spentByTimeData,
             modifier = chartModifier,
             autoScrollSpec = autoScrollSpec,
             scrollState = scrollState,

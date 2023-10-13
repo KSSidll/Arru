@@ -40,21 +40,21 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
 
     override suspend fun getEmbeddedItemsSorted(
         offset: Int,
-        count: Int
+        count: Int,
     ): List<EmbeddedItem> {
         return itemDao.getEmbeddedItemsSorted(
-            offset,
-            count
+            offset = offset,
+            count = count,
         )
     }
 
     override fun getEmbeddedItemsSortedFlow(
         offset: Int,
-        count: Int
+        count: Int,
     ): Flow<List<EmbeddedItem>> {
         return itemDao.getEmbeddedItemsSortedFlow(
-            offset,
-            count
+            offset = offset,
+            count = count,
         )
     }
 
@@ -68,21 +68,45 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
 
     override suspend fun getFullItems(
         offset: Int,
-        count: Int
+        count: Int,
     ): List<FullItem> {
         return itemDao.getFullItems(
-            offset,
-            count
+            offset = offset,
+            count = count,
         )
     }
 
     override fun getFullItemsFlow(
         offset: Int,
-        count: Int
+        count: Int,
     ): Flow<List<FullItem>> {
         return itemDao.getFullItemsFlow(
-            offset,
-            count
+            offset = offset,
+            count = count,
+        )
+    }
+
+    override suspend fun getFullItemsByShop(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): List<FullItem> {
+        return itemDao.getFullItemsByShop(
+            offset = offset,
+            count = count,
+            shopId = shopId,
+        )
+    }
+
+    override fun getFullItemsByShopFlow(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): Flow<List<FullItem>> {
+        return itemDao.getFullItemsByShopFlow(
+            offset = offset,
+            count = count,
+            shopId = shopId,
         )
     }
 
@@ -108,6 +132,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
 
     override fun getTotalSpentFlow(): Flow<Long> {
         return itemDao.getTotalSpentFlow()
+    }
+
+    override suspend fun getTotalSpentByShopByDay(shopId: Long): List<ItemSpentByTime> {
+        return itemDao.getTotalSpentByShopByDay(shopId)
+    }
+
+    override fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
+        return itemDao.getTotalSpentByShopByDayFlow(shopId)
     }
 
     override suspend fun getTotalSpentByDay(): List<ItemSpentByTime> {
@@ -192,21 +224,21 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
 
     override suspend fun getBetweenDates(
         lowerBoundDate: Long,
-        higherBoundDate: Long
+        higherBoundDate: Long,
     ): List<Item> {
         return itemDao.getBetweenDates(
-            lowerBoundDate,
-            higherBoundDate
+            lowerBoundDate = lowerBoundDate,
+            higherBoundDate = higherBoundDate,
         )
     }
 
     override fun getBetweenDatesFlow(
         lowerBoundDate: Long,
-        higherBoundDate: Long
+        higherBoundDate: Long,
     ): Flow<List<Item>> {
         return itemDao.getBetweenDatesFlow(
-            lowerBoundDate,
-            higherBoundDate
+            lowerBoundDate = lowerBoundDate,
+            higherBoundDate = higherBoundDate,
         )
     }
 

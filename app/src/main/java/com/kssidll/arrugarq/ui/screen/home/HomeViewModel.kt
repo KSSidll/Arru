@@ -17,7 +17,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
-internal const val fullItemFetchCount = 6
+internal const val fullItemFetchCount = 8
 internal const val fullItemMaxPrefetchCount = 50
 
 @HiltViewModel
@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
         mutableStateOf(SpentByTimePeriod.Month)
     val spentByTimePeriod by _spentByTimePeriod
 
-    private var fullItemsDataQuery: Job
+    private var fullItemsDataQuery: Job = Job()
     var fullItemsData: SnapshotStateList<FullItem> = mutableStateListOf()
     private val newFullItemFlow: Flow<List<FullItem>>
     private var fullItemOffset: Int = 0
@@ -47,8 +47,10 @@ class HomeViewModel @Inject constructor(
         this.itemRepository = itemRepository
 
         switchToSpentByTimePeriod(spentByTimePeriod)
-        fullItemsDataQuery = Job()
-        newFullItemFlow = itemRepository.getFullItemsFlow(0, 1)
+        newFullItemFlow = itemRepository.getFullItemsFlow(
+            0,
+            1
+        )
 
         viewModelScope.launch {
             newFullItemFlow.collect {
@@ -68,15 +70,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun performFullItemsQuery(queryOffset: Int = 0): Job {
-        return viewModelScope.launch {
-            fullItemsData.addAll(
-                itemRepository.getFullItems(
-                    offset = queryOffset,
-                    count = fullItemFetchCount
-                )
+    private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
+        fullItemsData.addAll(
+            itemRepository.getFullItems(
+                offset = queryOffset,
+                count = fullItemFetchCount
             )
-        }
+        )
     }
 
     fun getTotalSpent(): Flow<Float> {

@@ -24,9 +24,10 @@ import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
 
 @Composable
-fun OneDimensionalChart(
-    spentByTimeData: List<Chartable>,
+fun OneDimensionalColumnChart(
+    data: List<Chartable>,
     modifier: Modifier = Modifier,
+    chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
     fadingEdges: FadingEdges? = null,
     isZoomEnabled: Boolean = false,
     columnWidth: Dp = 75.dp,
@@ -36,7 +37,6 @@ fun OneDimensionalChart(
     scrollState: ChartScrollState = rememberChartScrollState()
 ) {
     val scope = rememberCoroutineScope()
-    val chartEntryModelProducer = remember { ChartEntryModelProducer() }
 
     val defaultColumns = currentChartStyle.columnChart.columns
 
@@ -53,8 +53,8 @@ fun OneDimensionalChart(
         spacing = columnSpacing,
     )
 
-    LaunchedEffect(spentByTimeData) {
-        chartEntryModelProducer.setEntries(spentByTimeData.mapIndexed { index, iChartable -> iChartable.chartEntry(index) })
+    LaunchedEffect(data) {
+        chartEntryModelProducer.setEntries(data.mapIndexed { index, iChartable -> iChartable.chartEntry(index) })
     }
 
     com.patrykandpatrick.vico.compose.chart.Chart(
@@ -66,7 +66,7 @@ fun OneDimensionalChart(
             autoScrollCondition = { _, oldModel ->
                 if (oldModel == null) return@rememberChartScrollSpec false
 
-                val newDataSize = spentByTimeData.size
+                val newDataSize = data.size
                 val previousDataSize = oldModel.entries.getOrElse(0) { emptyList() }
                     .indexOfLast { it.y > 0F }
 
@@ -96,14 +96,14 @@ fun OneDimensionalChart(
         chartModelProducer = chartEntryModelProducer,
         topAxis = rememberTopAxis(
             valueFormatter = { value, _ ->
-                spentByTimeData.getOrNull(value.toInt())
+                data.getOrNull(value.toInt())
                     ?.topAxisLabel()
                     .orEmpty()
             },
         ),
         bottomAxis = rememberBottomAxis(
             valueFormatter = { value, _ ->
-                spentByTimeData.getOrNull(value.toInt())
+                data.getOrNull(value.toInt())
                     ?.bottomAxisLabel()
                     .orEmpty()
             },
@@ -115,23 +115,23 @@ fun OneDimensionalChart(
 }
 
 @Preview(
-    group = "One Dimensional Chart",
+    group = "One Dimensional Column Chart",
     name = "Dark",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "One Dimensional Chart",
+    group = "One Dimensional Column Chart",
     name = "Light",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO
 )
 @Composable
-fun OneDimesionalChartPreview() {
+fun OneDimesionalColumnChartPreview() {
     ArrugarqTheme {
         Surface {
-            OneDimensionalChart(
-                spentByTimeData = generateRandomItemSpentByTimeList(),
+            OneDimensionalColumnChart(
+                data = generateRandomItemSpentByTimeList(),
             )
         }
     }

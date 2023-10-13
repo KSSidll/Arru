@@ -26,12 +26,24 @@ interface IItemRepository {
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
     suspend fun getFullItems(
         offset: Int,
-        count: Int
+        count: Int,
     ): List<FullItem>
 
     fun getFullItemsFlow(
         offset: Int,
-        count: Int
+        count: Int,
+    ): Flow<List<FullItem>>
+
+    suspend fun getFullItemsByShop(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): List<FullItem>
+
+    fun getFullItemsByShopFlow(
+        offset: Int,
+        count: Int,
+        shopId: Long,
     ): Flow<List<FullItem>>
 
     suspend fun getShopTotalSpent(): List<ItemSpentByShop>
@@ -40,6 +52,8 @@ interface IItemRepository {
     fun getCategoryTotalSpentFlow(): Flow<List<ItemSpentByCategory>>
     suspend fun getTotalSpent(): Long
     fun getTotalSpentFlow(): Flow<Long>
+    suspend fun getTotalSpentByShopByDay(shopId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByDay(): List<ItemSpentByTime>
     fun getTotalSpentByDayFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByWeek(): List<ItemSpentByTime>
