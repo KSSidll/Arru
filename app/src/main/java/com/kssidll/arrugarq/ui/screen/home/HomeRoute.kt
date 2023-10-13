@@ -19,8 +19,8 @@ fun HomeRoute(
         onAddItem = onAddItem,
         onDashboardCategoryCardClick = onDashboardCategoryCardClick,
         onDashboardShopCardClick = onDashboardShopCardClick,
-        requestFullItems = {
-            homeViewModel.queryFullItems(it)
+        requestMoreFullItems = {
+            homeViewModel.queryMoreFullItems()
         },
         fullItems = homeViewModel.fullItemsData,
         totalSpentData = homeViewModel.getTotalSpent(),

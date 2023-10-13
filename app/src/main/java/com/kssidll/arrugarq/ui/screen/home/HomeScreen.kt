@@ -26,7 +26,7 @@ fun HomeScreen(
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
-    requestFullItems: (count: Int) -> Unit,
+    requestMoreFullItems: () -> Unit,
     fullItems: List<FullItem>,
     totalSpentData: Flow<Float>,
     spentByShopData: Flow<List<ItemSpentByShop>>,
@@ -87,7 +87,7 @@ fun HomeScreen(
 
                     HomeScreenLocations.Transactions -> {
                         TransactionsScreen(
-                            requestItems = requestFullItems,
+                            requestMoreItems = requestMoreFullItems,
                             items = fullItems,
                             onItemClick = onTransactionItemClick,
                             onProducerClick = onTransactionProducerClick,
@@ -128,7 +128,7 @@ fun HomeScreenPreview() {
                     onAddItem = {},
                     onDashboardCategoryCardClick = {},
                     onDashboardShopCardClick = {},
-                    requestFullItems = {},
+                    requestMoreFullItems = {},
                     fullItems = generateRandomFullItemList().toMutableStateList(),
                     totalSpentData = flowOf(1357452F),
                     spentByShopData = generateRandomItemSpentByShopListFlow(),

@@ -54,7 +54,6 @@ interface ItemDao {
     @Query("SELECT * FROM product WHERE id = :productId")
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
 
-    @Transaction
     suspend fun getFullItems(
         offset: Int,
         count: Int

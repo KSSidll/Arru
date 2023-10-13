@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.helper.*
+import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.home.transactions.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
@@ -24,16 +25,9 @@ import java.sql.Date
 import java.text.*
 import java.util.*
 
-private const val pageSize = 25 // called twice when scrolling, so effectively 50
-
-/**
- * @param requestItems: Function called when the screen request more items with param count,
- * which the new expected size of the item list, is never lower than previous requests
- * but can request the same amount several times
- */
 @Composable
 fun TransactionsScreen(
-    requestItems: (count: Int) -> Unit,
+    requestMoreItems: () -> Unit,
     items: List<FullItem>,
     onItemClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
@@ -41,7 +35,7 @@ fun TransactionsScreen(
     onShopClick: (shop: Shop) -> Unit,
 ) {
     TransactionsScreenContent(
-        requestItems = requestItems,
+        requestMoreItems = requestMoreItems,
         items = items,
         onItemClick = onItemClick,
         onCategoryClick = onCategoryClick,
@@ -52,7 +46,7 @@ fun TransactionsScreen(
 
 @Composable
 private fun TransactionsScreenContent(
-    requestItems: (count: Int) -> Unit,
+    requestMoreItems: () -> Unit,
     items: List<FullItem>,
     onItemClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
@@ -73,27 +67,29 @@ private fun TransactionsScreenContent(
     LaunchedEffect(firstVisibleItemIndex) {
         if (
             previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-            firstVisibleItemIndex >= pageSize
+            firstVisibleItemIndex >= 10
         ) {
             // scrolling up
             returnActionButtonVisible = true
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         } else if (
             previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-            firstVisibleItemIndex < pageSize
+            firstVisibleItemIndex < 10
         ) {
             // scrolling down
             returnActionButtonVisible = false
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         }
 
-    }
-
-    LaunchedEffect(firstVisibleItemIndex + pageSize > items.size) {
-        requestItems(items.size + pageSize)
+        if (firstVisibleItemIndex + fullItemMaxPrefetchCount > items.size) {
+            requestMoreItems()
+        }
     }
 
     LaunchedEffect(items.size) {
+        if (items.isEmpty()) {
+            listState.scrollToItem(0)
+        }
         grouppedItems.clear()
         grouppedItems.addAll(
             items.groupBy { it.embeddedItem.item.date / 86400000 }
@@ -206,7 +202,7 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreenContent(
-                requestItems = {},
+                requestMoreItems = {},
                 items = generateRandomFullItemList(
                     itemDateTimeFrom = Date.valueOf("2022-06-01").time,
                     itemDateTimeUntil = Date.valueOf("2022-06-04").time,

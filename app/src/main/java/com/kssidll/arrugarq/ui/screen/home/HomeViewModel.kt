@@ -17,6 +17,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
+internal const val fullItemFetchCount = 6
+internal const val fullItemMaxPrefetchCount = 50
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     itemRepository: IItemRepository,
@@ -36,28 +39,41 @@ class HomeViewModel @Inject constructor(
 
     private var fullItemsDataQuery: Job
     var fullItemsData: SnapshotStateList<FullItem> = mutableStateListOf()
+    private val newFullItemFlow: Flow<List<FullItem>>
+    private var fullItemOffset: Int = 0
 
     init {
         this.shopRepository = shopRepository
         this.itemRepository = itemRepository
 
         switchToSpentByTimePeriod(spentByTimePeriod)
-        fullItemsDataQuery = performFullItemsQuery(50)
-    }
+        fullItemsDataQuery = Job()
+        newFullItemFlow = itemRepository.getFullItemsFlow(0, 1)
 
-    fun queryFullItems(newListSize: Int) {
-        if (fullItemsDataQuery.isCompleted) {
-            fullItemsDataQuery = performFullItemsQuery(newListSize)
+        viewModelScope.launch {
+            newFullItemFlow.collect {
+                fullItemOffset = 0
+                fullItemsDataQuery.cancel()
+                fullItemsData.clear()
+                fullItemsDataQuery = performFullItemsQuery()
+                fullItemOffset += fullItemFetchCount
+            }
         }
     }
 
-    private fun performFullItemsQuery(newListSize: Int): Job {
+    fun queryMoreFullItems() {
+        if (fullItemsDataQuery.isCompleted) {
+            fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
+            fullItemOffset += fullItemFetchCount
+        }
+    }
+
+    private fun performFullItemsQuery(queryOffset: Int = 0): Job {
         return viewModelScope.launch {
-            val queryCount = newListSize - fullItemsData.size
             fullItemsData.addAll(
                 itemRepository.getFullItems(
-                    fullItemsData.size,
-                    queryCount
+                    offset = queryOffset,
+                    count = fullItemFetchCount
                 )
             )
         }
