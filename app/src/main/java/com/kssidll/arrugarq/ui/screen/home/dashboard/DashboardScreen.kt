@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.ui.screen.home.dashboard
 
 import android.content.res.*
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,10 +11,9 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
-import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
+import com.kssidll.arrugarq.ui.component.*
 import com.kssidll.arrugarq.ui.component.list.*
-import com.kssidll.arrugarq.ui.screen.home.dashboard.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
@@ -63,33 +61,14 @@ private fun DashboardScreenContent(
     ) {
         Spacer(Modifier.height(40.dp))
 
-        Box(Modifier.fillMaxWidth()) {
-            var targetValue by remember { mutableFloatStateOf(totalSpentData) }
-
-            LaunchedEffect(totalSpentData) {
-                targetValue = totalSpentData
-            }
-
-            val animatedValue = animateFloatAsState(
-                targetValue = targetValue,
-                animationSpec = tween(1200),
-                label = "total spent value animation"
-            )
-
-            Text(
-                text = animatedValue.value.formatToCurrency(),
-                modifier = Modifier.align(Alignment.Center),
-                style = Typography.headlineLarge,
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        DashboardAverageAndMedianSpendingComponent(spentByTimeData)
+        TotalAverageAndMedianSpendingComponent(
+            spentByTimeData = spentByTimeData,
+            totalSpentData = totalSpentData,
+        )
 
         Spacer(Modifier.height(28.dp))
 
-        DashboardSpendingSummaryComponent(
+        SpendingSummaryComponent(
             modifier = Modifier.animateContentSize(),
             spentByTimeData = spentByTimeData,
             spentByTimePeriod = spentByTimePeriod,

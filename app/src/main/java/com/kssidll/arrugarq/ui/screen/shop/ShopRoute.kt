@@ -21,6 +21,9 @@ fun ShopRoute(
     ShopScreen(
         onBack = onBack,
         state = shopViewModel.shopScreenState,
+        onSpentByTimePeriodSwitch = {
+            shopViewModel.switchPeriod(it)
+        },
         requestMoreItems = {
             shopViewModel.queryMoreFullItems()
         },

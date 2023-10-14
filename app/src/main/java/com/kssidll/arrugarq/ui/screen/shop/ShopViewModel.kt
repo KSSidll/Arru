@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.domain.repository.*
+import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -16,6 +17,12 @@ internal data class ShopScreenState(
     val shop: MutableState<Shop?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
     val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
+    val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
+
+    val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
+
+    val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
+    val smaChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
 )
 
 internal const val fullItemFetchCount = 8
@@ -37,10 +44,25 @@ class ShopViewModel @Inject constructor(
     private var newFullItemFlowJob: Job? = null
     private var newFullItemFlow: (Flow<Item>)? = null
 
+    fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
+        timePeriodFlowHandler?.switchPeriod(newPeriod)
+        shopScreenState.spentByTimePeriod.value = newPeriod
+
+        timePeriodFlowHandlerJob?.cancel()
+        timePeriodFlowHandlerJob = viewModelScope.launch {
+            shopScreenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
+        }
+    }
+
     fun performDataUpdate(shopId: Long) = viewModelScope.launch {
         shopScreenState.shop.value = shopRepository.get(shopId)
 
-        timePeriodFlowHandlerJob?.cancel()
+        viewModelScope.launch {
+            shopScreenState.totalSpentData.floatValue = itemRepository.getTotalSpentByShop(shopId)
+                .toFloat()
+                .div(100000)
+        }
+
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
@@ -49,20 +71,22 @@ class ShopViewModel @Inject constructor(
                     .cancellable()
             },
             cancellableWeekFlow = {
-                itemRepository.getTotalSpentByWeekFlow()
+                itemRepository.getTotalSpentByShopByWeekFlow(shopId)
                     .cancellable()
             },
             cancellableMonthFlow = {
-                itemRepository.getTotalSpentByMonthFlow()
+                itemRepository.getTotalSpentByShopByMonthFlow(shopId)
                     .cancellable()
             },
             cancellableYearFlow = {
-                itemRepository.getTotalSpentByYearFlow()
+                itemRepository.getTotalSpentByShopByYearFlow(shopId)
                     .cancellable()
             },
-            startPeriod = TimePeriodFlowHandler.Periods.Day,
         )
 
+        shopScreenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
+
+        timePeriodFlowHandlerJob?.cancel()
         timePeriodFlowHandlerJob = viewModelScope.launch {
             shopScreenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
         }

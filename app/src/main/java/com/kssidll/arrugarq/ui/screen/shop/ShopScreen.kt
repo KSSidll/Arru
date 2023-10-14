@@ -16,12 +16,12 @@ import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.helper.*
-import com.kssidll.arrugarq.ui.component.chart.*
+import com.kssidll.arrugarq.ui.component.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
-import com.patrykandpatrick.vico.core.entry.*
 import kotlinx.coroutines.*
 import java.text.*
 import java.util.*
@@ -32,6 +32,7 @@ import java.util.*
 internal fun ShopScreen(
     onBack: () -> Unit,
     state: ShopScreenState,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
@@ -53,6 +54,7 @@ internal fun ShopScreen(
         Box(Modifier.padding(it)) {
             ShopScreenContent(
                 state = state,
+                onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                 requestMoreItems = requestMoreItems,
                 onItemClick = onItemClick,
                 onCategoryClick = onCategoryClick,
@@ -65,6 +67,7 @@ internal fun ShopScreen(
 @Composable
 internal fun ShopScreenContent(
     state: ShopScreenState,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
@@ -80,8 +83,6 @@ internal fun ShopScreenContent(
     var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
 
     var returnActionButtonVisible by remember { mutableStateOf(false) }
-
-    val chartEntryModelProducer = remember { ChartEntryModelProducer() }
 
     LaunchedEffect(firstVisibleItemIndex) {
         if (
@@ -158,11 +159,25 @@ internal fun ShopScreenContent(
         ) {
             item {
                 Column {
-                    val chart = state.chartData.value
-                    OneDimensionalColumnChart(
-                        data = chart.collectAsState(emptyList()).value,
-                        chartEntryModelProducer = chartEntryModelProducer,
+                    Spacer(Modifier.height(40.dp))
+
+                    TotalAverageAndMedianSpendingComponent(
+                        spentByTimeData = state.chartData.value.collectAsState(emptyList()).value,
+                        totalSpentData = state.totalSpentData.floatValue,
                     )
+
+                    Spacer(Modifier.height(28.dp))
+
+                    SpendingSummaryComponent(
+                        modifier = Modifier.animateContentSize(),
+                        spentByTimeData = state.chartData.value.collectAsState(emptyList()).value,
+                        spentByTimePeriod = state.spentByTimePeriod.value,
+                        onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+                        columnChartEntryModelProducer = state.columnChartEntryModelProducer,
+                        smaChartEntryModelProducer = state.smaChartEntryModelProducer,
+                    )
+
+                    Spacer(Modifier.height(12.dp))
                 }
             }
 
@@ -233,6 +248,7 @@ fun ShopScreenPreview() {
                     items = generateRandomFullItemList().toMutableStateList(),
                     chartData = remember { mutableStateOf(generateRandomItemSpentByTimeListFlow()) },
                 ),
+                onSpentByTimePeriodSwitch = {},
                 requestMoreItems = {},
                 onItemClick = {},
                 onCategoryClick = {},

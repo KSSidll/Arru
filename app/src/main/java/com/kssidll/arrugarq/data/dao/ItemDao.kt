@@ -160,6 +160,12 @@ interface ItemDao {
     @Query("SELECT SUM(price * quantity) AS total FROM item")
     fun getTotalSpentFlow(): Flow<Long>
 
+    @Query("SELECT SUM(price * quantity) AS total FROM item WHERE shopId = :shopId")
+    suspend fun getTotalSpentByShop(shopId: Long): Long
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item WHERE shopId = :shopId")
+    fun getTotalSpentByShopFlow(shopId: Long): Flow<Long>
+
     @Query(
         """
 WITH date_series AS (
@@ -204,28 +210,296 @@ ORDER BY time
     )
     fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>>
 
-    @Query(QUERY_SPENDING_BY_DAY)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+GROUP BY time
+ORDER BY time
+    """
+    )
     suspend fun getTotalSpentByDay(): List<ItemSpentByTime>
 
-    @Query(QUERY_SPENDING_BY_DAY)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+GROUP BY time
+ORDER BY time
+    """
+    )
     fun getTotalSpentByDayFlow(): Flow<List<ItemSpentByTime>>
 
-    @Query(QUERY_SPENDING_BY_WEEK)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    WHERE shopId = :shopId
+    UNION ALL
+    SELECT (start_date + 604800000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+    AND item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    suspend fun getTotalSpentByShopByWeek(shopId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    WHERE shopId = :shopId
+    UNION ALL
+    SELECT (start_date + 604800000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+    AND item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    fun getTotalSpentByShopByWeekFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    UNION ALL
+    SELECT (start_date + 604800000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+GROUP BY time
+ORDER BY time
+    """
+    )
     suspend fun getTotalSpentByWeek(): List<ItemSpentByTime>
 
-    @Query(QUERY_SPENDING_BY_WEEK)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    UNION ALL
+    SELECT (start_date + 604800000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+GROUP BY time
+ORDER BY time
+    """
+    )
     fun getTotalSpentByWeekFlow(): Flow<List<ItemSpentByTime>>
 
-    @Query(QUERY_SPENDING_BY_MONTH)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    WHERE shopId = :shopId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+    AND item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    suspend fun getTotalSpentByShopByMonth(shopId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    WHERE shopId = :shopId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+    AND item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    fun getTotalSpentByShopByMonthFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+GROUP BY time
+ORDER BY time
+    """
+    )
     suspend fun getTotalSpentByMonth(): List<ItemSpentByTime>
 
-    @Query(QUERY_SPENDING_BY_MONTH)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+GROUP BY time
+ORDER BY time
+    """
+    )
     fun getTotalSpentByMonthFlow(): Flow<List<ItemSpentByTime>>
 
-    @Query(QUERY_SPENDING_BY_YEAR)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    WHERE shopId = :shopId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+    AND item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    suspend fun getTotalSpentByShopByYear(shopId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    WHERE shopId = :shopId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+    AND item.shopId = :shopId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    fun getTotalSpentByShopByYearFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+GROUP BY time
+ORDER BY time
+    """
+    )
     suspend fun getTotalSpentByYear(): List<ItemSpentByTime>
 
-    @Query(QUERY_SPENDING_BY_YEAR)
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+GROUP BY time
+ORDER BY time
+    """
+    )
     fun getTotalSpentByYearFlow(): Flow<List<ItemSpentByTime>>
 
     @Query("SELECT * FROM item WHERE productId == :productId")
@@ -285,79 +559,3 @@ ORDER BY time
     @Delete
     suspend fun delete(item: Item)
 }
-
-private const val DAY_MS = 86400000
-private const val WEEK_MS = 604800000
-
-private const val QUERY_SPENDING_BY_DAY = """
-WITH date_series AS (
-    SELECT MIN(item.date) AS start_date,
-           MAX(item.date) AS end_date
-    FROM item
-    UNION ALL
-    SELECT (start_date + $DAY_MS) AS start_date, end_date
-    FROM date_series
-    WHERE date_series.end_date > date_series.start_date
-)
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
-FROM date_series
-LEFT JOIN item ON (date_series.start_date / $DAY_MS) = ((item.date) / $DAY_MS)
-GROUP BY time
-ORDER BY time
-"""
-
-/**
- * Query that gets aggregate spending grouped by the week
- * We define week as time period between consecutive mondays
- * As such this ignores the week count reset on new year
- */
-private const val QUERY_SPENDING_BY_WEEK = """
-WITH date_series AS (
-    SELECT (((MIN(item.date) / $DAY_MS) - ((MIN(item.date - ${4 * DAY_MS}) / $DAY_MS) % 7 )) * $DAY_MS) AS start_date,
-             (MAX(item.date) - $WEEK_MS) AS end_date
-    FROM item
-    UNION ALL
-    SELECT (start_date + $WEEK_MS) AS start_date, end_date
-    FROM date_series
-    WHERE date_series.end_date > date_series.start_date
-)
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
-FROM date_series
-LEFT JOIN item ON (date_series.start_date / $WEEK_MS) = ((item.date - ${4 * DAY_MS}) / $WEEK_MS)
-GROUP BY time
-ORDER BY time
-"""
-
-private const val QUERY_SPENDING_BY_MONTH = """
-WITH date_series AS (
-    SELECT DATE(MIN(item.date) / 1000, 'unixepoch') AS start_date,
-           DATE(MAX(item.date) / 1000, 'unixepoch') AS end_date
-    FROM item
-    UNION ALL
-    SELECT DATE(start_date, '+1 month') AS start_date, end_date
-    FROM date_series
-    WHERE date_series.end_date > date_series.start_date
-)
-SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
-FROM date_series
-LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-GROUP BY time
-ORDER BY time
-"""
-
-private const val QUERY_SPENDING_BY_YEAR = """
-        WITH date_series AS (
-            SELECT DATE(MIN(item.date) / 1000, 'unixepoch') AS start_date,
-                   DATE(MAX(item.date) / 1000, 'unixepoch') AS end_date
-            FROM item
-            UNION ALL
-            SELECT DATE(start_date, '+1 year') AS start_date, end_date
-            FROM date_series
-            WHERE date_series.end_date > date_series.start_date
-        )
-        SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
-        FROM date_series
-        LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
-        GROUP BY time
-        ORDER BY time
-"""

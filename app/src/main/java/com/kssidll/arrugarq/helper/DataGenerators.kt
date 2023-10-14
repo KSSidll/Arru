@@ -38,6 +38,7 @@ private const val defaultItemQuantityFrom: Long = 500
 private const val defaultItemQuantityUntil: Long = 10000
 private const val defaultItemPriceFrom: Long = 10000
 private const val defaultItemPriceUntil: Long = 100000
+private const val defaultFloatDivisionFactor: Long = 100
 
 fun generateRandomTime(
     timeFrom: Long = defaultTimeFrom,
@@ -110,6 +111,19 @@ fun generateRandomLongValue(
         from = valueFrom,
         until = valueUntil,
     )
+}
+
+fun generateRandomFloatValue(
+    valueFrom: Long = defaultLongValueFrom,
+    valueUntil: Long = defaultLongValueUntil,
+    divisionFactor: Long = defaultFloatDivisionFactor,
+): Float {
+    return Random.nextLong(
+        from = valueFrom,
+        until = valueUntil,
+    )
+        .toFloat()
+        .div(divisionFactor)
 }
 
 fun generateRandomItem(

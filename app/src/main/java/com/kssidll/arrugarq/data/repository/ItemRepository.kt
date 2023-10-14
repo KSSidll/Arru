@@ -134,6 +134,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getTotalSpentFlow()
     }
 
+    override suspend fun getTotalSpentByShop(shopId: Long): Long {
+        return itemDao.getTotalSpentByShop(shopId)
+    }
+
+    override fun getTotalSpentByShopFlow(shopId: Long): Flow<Long> {
+        return itemDao.getTotalSpentByShopFlow(shopId)
+    }
+
     override suspend fun getTotalSpentByShopByDay(shopId: Long): List<ItemSpentByTime> {
         return itemDao.getTotalSpentByShopByDay(shopId)
     }
@@ -150,6 +158,14 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getTotalSpentByDayFlow()
     }
 
+    override suspend fun getTotalSpentByShopByWeek(shopId: Long): List<ItemSpentByTime> {
+        return itemDao.getTotalSpentByShopByWeek(shopId)
+    }
+
+    override fun getTotalSpentByShopByWeekFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
+        return itemDao.getTotalSpentByShopByWeekFlow(shopId)
+    }
+
     override suspend fun getTotalSpentByWeek(): List<ItemSpentByTime> {
         return itemDao.getTotalSpentByWeek()
     }
@@ -158,12 +174,28 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         return itemDao.getTotalSpentByWeekFlow()
     }
 
+    override suspend fun getTotalSpentByShopByMonth(shopId: Long): List<ItemSpentByTime> {
+        return itemDao.getTotalSpentByShopByMonth(shopId)
+    }
+
+    override fun getTotalSpentByShopByMonthFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
+        return itemDao.getTotalSpentByShopByMonthFlow(shopId)
+    }
+
     override suspend fun getTotalSpentByMonth(): List<ItemSpentByTime> {
         return itemDao.getTotalSpentByMonth()
     }
 
     override fun getTotalSpentByMonthFlow(): Flow<List<ItemSpentByTime>> {
         return itemDao.getTotalSpentByMonthFlow()
+    }
+
+    override suspend fun getTotalSpentByShopByYear(shopId: Long): List<ItemSpentByTime> {
+        return itemDao.getTotalSpentByShopByYear(shopId)
+    }
+
+    override fun getTotalSpentByShopByYearFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
+        return itemDao.getTotalSpentByShopByYearFlow(shopId)
     }
 
     override suspend fun getTotalSpentByYear(): List<ItemSpentByTime> {

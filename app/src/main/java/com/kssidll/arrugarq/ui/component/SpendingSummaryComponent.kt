@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.dashboard.component
+package com.kssidll.arrugarq.ui.component
 
 import android.content.res.*
 import androidx.compose.animation.core.*
@@ -25,18 +25,19 @@ import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
 
 @Composable
-fun DashboardSpendingSummaryComponent(
+fun SpendingSummaryComponent(
     spentByTimeData: List<Chartable>,
-    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     modifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
+    scrollState: ChartScrollState = rememberChartScrollState(),
+    columnChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    smaChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
 ) {
-    val scrollState = rememberChartScrollState()
-
     Column(modifier = modifier) {
         PeriodButtons(
             spentByTimePeriod = spentByTimePeriod,
@@ -48,6 +49,7 @@ fun DashboardSpendingSummaryComponent(
         OneDimensionalColumnChart(
             data = spentByTimeData,
             modifier = chartModifier,
+            chartEntryModelProducer = columnChartEntryModelProducer,
             autoScrollSpec = autoScrollSpec,
             scrollState = scrollState,
             columnWidth = columnWidth,
@@ -62,6 +64,7 @@ fun DashboardSpendingSummaryComponent(
                 TimePeriodFlowHandler.Periods.Week -> 14
                 TimePeriodFlowHandler.Periods.Month -> 7
                 TimePeriodFlowHandler.Periods.Year -> 3
+                null -> 1
             }
 
             SMAChart(
@@ -70,6 +73,7 @@ fun DashboardSpendingSummaryComponent(
                 scrollState = scrollState,
                 period = period,
                 lineSpacing = columnWidth + columnSpacing,
+                chartEntryModelProducer = smaChartEntryModelProducer,
             )
         }
 
@@ -92,6 +96,7 @@ private fun SMAChart(
     scrollState: ChartScrollState = rememberChartScrollState(),
     lineSpacing: Dp = 87.dp,
     scrollOwner: Boolean = false,
+    chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() }
 ) {
     fun isVisible(): Boolean {
         return data.size >= visibilityThreshold + period
@@ -104,8 +109,6 @@ private fun SMAChart(
     )
 
     if (isVisible() || alwaysReserveSpace) {
-        val chartEntryModelProducer = remember { ChartEntryModelProducer() }
-
         LaunchedEffect(
             data,
             period
@@ -182,7 +185,7 @@ private fun SMAChart(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PeriodButtons(
-    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(
@@ -235,22 +238,22 @@ private fun PeriodButtons(
 }
 
 @Preview(
-    group = "Dashboard Spending Summary Component",
+    group = "Spending Summary Component",
     name = "Dark",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "Dashboard Spending Summary Component",
+    group = "Spending Summary Component",
     name = "Light",
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO
 )
 @Composable
-fun DashboardSpendingSummaryComponentPreview() {
+fun SpendingSummaryComponentPreview() {
     ArrugarqTheme {
         Surface {
-            DashboardSpendingSummaryComponent(
+            SpendingSummaryComponent(
                 spentByTimeData = generateRandomItemSpentByTimeList(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
