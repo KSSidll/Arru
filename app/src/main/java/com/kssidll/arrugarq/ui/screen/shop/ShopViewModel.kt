@@ -16,13 +16,14 @@ import javax.inject.*
 internal data class ShopScreenState(
     val shop: MutableState<Shop?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
-    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
+    val chartData: SnapshotStateList<ItemSpentByTime> = mutableStateListOf(),
     val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
     val smaChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
+    var finishedChartAnimation: Boolean = false,
 )
 
 internal const val fullItemFetchCount = 8
@@ -50,7 +51,10 @@ class ShopViewModel @Inject constructor(
 
         timePeriodFlowHandlerJob?.cancel()
         timePeriodFlowHandlerJob = viewModelScope.launch {
-            shopScreenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
+            timePeriodFlowHandler!!.spentByTimeData.collect {
+                shopScreenState.chartData.clear()
+                shopScreenState.chartData.addAll(it)
+            }
         }
     }
 
@@ -88,7 +92,10 @@ class ShopViewModel @Inject constructor(
 
         timePeriodFlowHandlerJob?.cancel()
         timePeriodFlowHandlerJob = viewModelScope.launch {
-            shopScreenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
+            shopScreenState.chartData.clear()
+            timePeriodFlowHandler!!.spentByTimeData.collect {
+                shopScreenState.chartData.addAll(it)
+            }
         }
 
 

@@ -35,6 +35,7 @@ fun SpendingSummaryComponent(
     scrollState: ChartScrollState = rememberChartScrollState(),
     columnChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
     smaChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    runInitialAnimation: Boolean = true,
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
 ) {
@@ -52,6 +53,7 @@ fun SpendingSummaryComponent(
             chartEntryModelProducer = columnChartEntryModelProducer,
             autoScrollSpec = autoScrollSpec,
             scrollState = scrollState,
+            runInitialAnimation = runInitialAnimation,
             columnWidth = columnWidth,
             columnSpacing = columnSpacing,
         )
@@ -74,6 +76,7 @@ fun SpendingSummaryComponent(
                 period = period,
                 lineSpacing = columnWidth + columnSpacing,
                 chartEntryModelProducer = smaChartEntryModelProducer,
+                runInitialAnimation = runInitialAnimation,
             )
         }
 
@@ -96,7 +99,8 @@ private fun SMAChart(
     scrollState: ChartScrollState = rememberChartScrollState(),
     lineSpacing: Dp = 87.dp,
     scrollOwner: Boolean = false,
-    chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() }
+    chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    runInitialAnimation: Boolean = true,
 ) {
     fun isVisible(): Boolean {
         return data.size >= visibilityThreshold + period
@@ -175,6 +179,7 @@ private fun SMAChart(
                 } else AutoScrollCondition.Never,
                 autoScrollAnimationSpec = autoScrollSpec,
             ),
+            runInitialAnimation = runInitialAnimation,
             isZoomEnabled = false,
             diffAnimationSpec = diffAnimationSpec,
             autoScaleUp = AutoScaleUp.None,

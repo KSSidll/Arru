@@ -34,7 +34,8 @@ fun OneDimensionalColumnChart(
     columnSpacing: Dp = 12.dp,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
     diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
-    scrollState: ChartScrollState = rememberChartScrollState()
+    scrollState: ChartScrollState = rememberChartScrollState(),
+    runInitialAnimation: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -108,6 +109,7 @@ fun OneDimensionalColumnChart(
                     .orEmpty()
             },
         ),
+        runInitialAnimation = runInitialAnimation,
         fadingEdges = fadingEdges,
         isZoomEnabled = isZoomEnabled,
         autoScaleUp = AutoScaleUp.None,

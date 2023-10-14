@@ -162,7 +162,7 @@ internal fun ShopScreenContent(
                     Spacer(Modifier.height(40.dp))
 
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = state.chartData.value.collectAsState(emptyList()).value,
+                        spentByTimeData = state.chartData.toList(),
                         totalSpentData = state.totalSpentData.floatValue,
                     )
 
@@ -170,12 +170,15 @@ internal fun ShopScreenContent(
 
                     SpendingSummaryComponent(
                         modifier = Modifier.animateContentSize(),
-                        spentByTimeData = state.chartData.value.collectAsState(emptyList()).value,
+                        spentByTimeData = state.chartData.toList(),
                         spentByTimePeriod = state.spentByTimePeriod.value,
                         onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                         columnChartEntryModelProducer = state.columnChartEntryModelProducer,
                         smaChartEntryModelProducer = state.smaChartEntryModelProducer,
+                        runInitialAnimation = !state.finishedChartAnimation
                     )
+
+                    state.finishedChartAnimation = true
 
                     Spacer(Modifier.height(12.dp))
                 }
@@ -246,7 +249,7 @@ fun ShopScreenPreview() {
             ShopScreenContent(
                 state = ShopScreenState(
                     items = generateRandomFullItemList().toMutableStateList(),
-                    chartData = remember { mutableStateOf(generateRandomItemSpentByTimeListFlow()) },
+                    chartData = generateRandomItemSpentByTimeList().toMutableStateList(),
                 ),
                 onSpentByTimePeriodSwitch = {},
                 requestMoreItems = {},
