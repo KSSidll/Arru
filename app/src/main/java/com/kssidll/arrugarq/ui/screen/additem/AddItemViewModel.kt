@@ -114,27 +114,15 @@ internal fun AddItemScreenState.extractItemOrNull(): Item? {
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
-    itemRepository: IItemRepository,
-    productRepository: IProductRepository,
-    variantsRepository: IProductVariantRepository,
-    shopRepository: IShopRepository,
+    private val itemRepository: IItemRepository,
+    private val productRepository: IProductRepository,
+    private val variantsRepository: IProductVariantRepository,
+    private val shopRepository: IShopRepository,
 ): ViewModel() {
     internal val addItemScreenState: AddItemScreenState = AddItemScreenState()
 
-    private val itemRepository: IItemRepository
-    private val productRepository: IProductRepository
-    private val variantsRepository: IProductVariantRepository
-    private val shopRepository: IShopRepository
-
     private var variantsJob: Job? = null
     var variants: MutableState<Flow<List<ProductVariant>>> = mutableStateOf(flowOf())
-
-    init {
-        this.itemRepository = itemRepository
-        this.productRepository = productRepository
-        this.variantsRepository = variantsRepository
-        this.shopRepository = shopRepository
-    }
 
     suspend fun fetch() {
         val lastItem: Item? = itemRepository.getLast()

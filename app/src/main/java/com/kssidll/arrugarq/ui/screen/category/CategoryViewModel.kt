@@ -10,8 +10,4 @@ class CategoryViewModel @Inject constructor(
 
 ): ViewModel() {
 
-
-    init {
-
-    }
 }

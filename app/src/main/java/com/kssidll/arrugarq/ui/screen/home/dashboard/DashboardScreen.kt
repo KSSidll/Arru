@@ -11,10 +11,10 @@ import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
-import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
@@ -27,8 +27,8 @@ fun DashboardScreen(
     spentByShopData: Flow<List<ItemSpentByShop>>,
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
     spentByTimeData: Flow<List<ItemSpentByTime>>,
-    spentByTimePeriod: SpentByTimePeriod,
-    onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     DashboardScreenContent(
         onCategoryCardClick = onCategoryCardClick,
@@ -53,8 +53,8 @@ private fun DashboardScreenContent(
     spentByShopData: List<ItemSpentByShop>,
     spentByCategoryData: List<ItemSpentByCategory>,
     spentByTimeData: List<ItemSpentByTime>,
-    spentByTimePeriod: SpentByTimePeriod,
-    onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -156,7 +156,7 @@ fun DashboardScreenPreview() {
                 spentByShopData = generateRandomItemSpentByShopList(),
                 spentByCategoryData = generateRandomItemSpentByCategoryList(),
                 spentByTimeData = generateRandomItemSpentByTimeList(),
-                spentByTimePeriod = SpentByTimePeriod.Month,
+                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
             )
         }

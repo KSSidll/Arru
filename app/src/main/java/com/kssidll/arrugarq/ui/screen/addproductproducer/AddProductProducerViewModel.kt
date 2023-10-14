@@ -45,16 +45,10 @@ internal fun AddProductProducerScreenState.extractProducerOrNull(): ProductProdu
 
 @HiltViewModel
 class AddProductProducerViewModel @Inject constructor(
-    productProducerRepository: IProductProducerRepository,
+    private val productProducerRepository: IProductProducerRepository,
 ): ViewModel() {
     internal val addProductProducerScreenState: AddProductProducerScreenState =
         AddProductProducerScreenState()
-
-    private val productProducerRepository: IProductProducerRepository
-
-    init {
-        this.productProducerRepository = productProducerRepository
-    }
 
     /**
      * Tries to add a product variant to the repository

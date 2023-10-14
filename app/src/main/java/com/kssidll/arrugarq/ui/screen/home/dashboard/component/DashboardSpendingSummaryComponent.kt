@@ -11,10 +11,10 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.chart.*
-import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.chart.*
 import com.patrykandpatrick.vico.compose.chart.line.*
@@ -27,8 +27,8 @@ import kotlinx.coroutines.*
 @Composable
 fun DashboardSpendingSummaryComponent(
     spentByTimeData: List<Chartable>,
-    spentByTimePeriod: SpentByTimePeriod,
-    onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     modifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
@@ -58,10 +58,10 @@ fun DashboardSpendingSummaryComponent(
 
         Box(modifier = Modifier.heightIn(max = 120.dp)) {
             val period = when (spentByTimePeriod) {
-                SpentByTimePeriod.Day -> 28
-                SpentByTimePeriod.Week -> 14
-                SpentByTimePeriod.Month -> 7
-                SpentByTimePeriod.Year -> 3
+                TimePeriodFlowHandler.Periods.Day -> 28
+                TimePeriodFlowHandler.Periods.Week -> 14
+                TimePeriodFlowHandler.Periods.Month -> 7
+                TimePeriodFlowHandler.Periods.Year -> 3
             }
 
             SMAChart(
@@ -182,8 +182,8 @@ private fun SMAChart(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PeriodButtons(
-    spentByTimePeriod: SpentByTimePeriod,
-    onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(
         modifier = Modifier
@@ -193,14 +193,14 @@ private fun PeriodButtons(
                 end = 10.dp
             )
     ) {
-        SpentByTimePeriod.entries.forEachIndexed { index, it ->
+        TimePeriodFlowHandler.Periods.entries.forEachIndexed { index, it ->
             val shape = when (index) {
                 0 -> RoundedCornerShape(
                     topStartPercent = 50,
                     bottomStartPercent = 50
                 )
 
-                SpentByTimePeriod.entries.size - 1 -> RoundedCornerShape(
+                TimePeriodFlowHandler.Periods.entries.size - 1 -> RoundedCornerShape(
                     topEndPercent = 50,
                     bottomEndPercent = 50
                 )
@@ -252,7 +252,7 @@ fun DashboardSpendingSummaryComponentPreview() {
         Surface {
             DashboardSpendingSummaryComponent(
                 spentByTimeData = generateRandomItemSpentByTimeList(),
-                spentByTimePeriod = SpentByTimePeriod.Month,
+                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
             )
         }

@@ -158,8 +158,9 @@ internal fun ShopScreenContent(
         ) {
             item {
                 Column {
+                    val chart = state.chartData.value
                     OneDimensionalColumnChart(
-                        data = state.chartData.value.collectAsState(emptyList()).value,
+                        data = chart.collectAsState(emptyList()).value,
                         chartEntryModelProducer = chartEntryModelProducer,
                     )
                 }

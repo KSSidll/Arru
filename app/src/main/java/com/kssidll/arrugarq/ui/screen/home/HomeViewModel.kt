@@ -11,6 +11,7 @@ import androidx.compose.ui.res.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.domain.repository.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -22,36 +23,37 @@ internal const val fullItemMaxPrefetchCount = 50
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    itemRepository: IItemRepository,
-    shopRepository: IShopRepository,
+    private val itemRepository: IItemRepository,
 ): ViewModel() {
-    private val shopRepository: IShopRepository
-    private val itemRepository: IItemRepository
+    private val timePeriodFlowHandler: TimePeriodFlowHandler = TimePeriodFlowHandler(
+        scope = viewModelScope,
+        cancellableDayFlow = {
+            itemRepository.getTotalSpentByDayFlow()
+                .cancellable()
+        },
+        cancellableWeekFlow = {
+            itemRepository.getTotalSpentByWeekFlow()
+                .cancellable()
+        },
+        cancellableMonthFlow = {
+            itemRepository.getTotalSpentByMonthFlow()
+                .cancellable()
+        },
+        cancellableYearFlow = {
+            itemRepository.getTotalSpentByYearFlow()
+                .cancellable()
+        },
+    )
 
-    private var spentByTimeQuery: Job? = null
-    private var _spentByTimeData: MutableState<Flow<List<ItemSpentByTime>>> =
-        mutableStateOf(flowOf())
-    val spentByTimeData by _spentByTimeData
-
-    private var _spentByTimePeriod: MutableState<SpentByTimePeriod> =
-        mutableStateOf(SpentByTimePeriod.Month)
-    val spentByTimePeriod by _spentByTimePeriod
+    val spentByTimeData get() = timePeriodFlowHandler.spentByTimeData
+    val spentByTimePeriod get() = timePeriodFlowHandler.currentPeriod
 
     private var fullItemsDataQuery: Job = Job()
     var fullItemsData: SnapshotStateList<FullItem> = mutableStateListOf()
-    private val newFullItemFlow: Flow<List<FullItem>>
+    private val newFullItemFlow: Flow<Item> = itemRepository.getLastFlow()
     private var fullItemOffset: Int = 0
 
     init {
-        this.shopRepository = shopRepository
-        this.itemRepository = itemRepository
-
-        switchToSpentByTimePeriod(spentByTimePeriod)
-        newFullItemFlow = itemRepository.getFullItemsFlow(
-            0,
-            1
-        )
-
         viewModelScope.launch {
             newFullItemFlow.collect {
                 fullItemOffset = 0
@@ -61,6 +63,10 @@ class HomeViewModel @Inject constructor(
                 fullItemOffset += fullItemFetchCount
             }
         }
+    }
+
+    fun switchToSpentByTimePeriod(newPeriod: TimePeriodFlowHandler.Periods) {
+        timePeriodFlowHandler.switchPeriod(newPeriod)
     }
 
     fun queryMoreFullItems() {
@@ -92,47 +98,6 @@ class HomeViewModel @Inject constructor(
 
     fun getSpentByCategory(): Flow<List<ItemSpentByCategory>> {
         return itemRepository.getCategoryTotalSpentFlow()
-    }
-
-    fun switchToSpentByTimePeriod(newPeriod: SpentByTimePeriod) {
-        _spentByTimePeriod.value = newPeriod
-        spentByTimeQuery?.cancel()
-
-        spentByTimeQuery = viewModelScope.launch {
-            with(itemRepository) {
-                when (newPeriod) {
-                    SpentByTimePeriod.Day -> _spentByTimeData.value =
-                        getTotalSpentByDayFlow().cancellable()
-
-                    SpentByTimePeriod.Week -> _spentByTimeData.value =
-                        getTotalSpentByWeekFlow().cancellable()
-
-                    SpentByTimePeriod.Month -> _spentByTimeData.value =
-                        getTotalSpentByMonthFlow().cancellable()
-
-                    SpentByTimePeriod.Year -> _spentByTimeData.value =
-                        getTotalSpentByYearFlow().cancellable()
-                }
-            }
-        }
-    }
-}
-
-enum class SpentByTimePeriod {
-    Day,
-    Week,
-    Month,
-    Year,
-}
-
-@Composable
-@ReadOnlyComposable
-fun SpentByTimePeriod.getTranslation(): String {
-    return when (this) {
-        SpentByTimePeriod.Day -> stringResource(R.string.day)
-        SpentByTimePeriod.Week -> stringResource(R.string.week)
-        SpentByTimePeriod.Month -> stringResource(R.string.month)
-        SpentByTimePeriod.Year -> stringResource(R.string.year)
     }
 }
 

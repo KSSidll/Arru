@@ -45,15 +45,9 @@ internal fun AddShopScreenState.extractShopOrNull(): Shop? {
 
 @HiltViewModel
 class AddShopViewModel @Inject constructor(
-    shopRepository: IShopRepository,
+    private val shopRepository: IShopRepository,
 ): ViewModel() {
     internal val addShopScreenState: AddShopScreenState = AddShopScreenState()
-
-    private val shopRepository: IShopRepository
-
-    init {
-        this.shopRepository = shopRepository
-    }
 
     /**
      * Tries to add a shop to the repository

@@ -9,14 +9,8 @@ import javax.inject.*
 
 @HiltViewModel
 class ShopRankingViewModel @Inject constructor(
-    itemRepository: IItemRepository,
+    private val itemRepository: IItemRepository,
 ): ViewModel() {
-    private val itemRepository: IItemRepository
-
-    init {
-        this.itemRepository = itemRepository
-    }
-
     fun getSpentByShop(): Flow<List<ItemSpentByShop>> {
         return itemRepository.getShopTotalSpentFlow()
     }

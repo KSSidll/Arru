@@ -45,16 +45,10 @@ internal fun AddProductCategoryScreenState.extractCategoryOrNull(): ProductCateg
 
 @HiltViewModel
 class AddProductCategoryViewModel @Inject constructor(
-    categoryRepository: IProductCategoryRepository,
+    private val categoryRepository: IProductCategoryRepository,
 ): ViewModel() {
     internal val addProductCategoryScreenState: AddProductCategoryScreenState =
         AddProductCategoryScreenState()
-
-    private val categoryRepository: IProductCategoryRepository
-
-    init {
-        this.categoryRepository = categoryRepository
-    }
 
     /**
      * Tries to add a product category to the repository

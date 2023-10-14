@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.*
@@ -32,8 +33,8 @@ fun HomeScreen(
     spentByShopData: Flow<List<ItemSpentByShop>>,
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
     spentByTimeData: Flow<List<ItemSpentByTime>>,
-    spentByTimePeriod: SpentByTimePeriod,
-    onSpentByTimePeriodSwitch: (SpentByTimePeriod) -> Unit,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     onTransactionItemClick: (item: FullItem) -> Unit,
     onTransactionCategoryClick: (category: ProductCategory) -> Unit,
     onTransactionProducerClick: (producer: ProductProducer) -> Unit,
@@ -134,7 +135,7 @@ fun HomeScreenPreview() {
                     spentByShopData = generateRandomItemSpentByShopListFlow(),
                     spentByCategoryData = generateRandomItemSpentByCategoryListFlow(),
                     spentByTimeData = generateRandomItemSpentByTimeListFlow(),
-                    spentByTimePeriod = SpentByTimePeriod.Month,
+                    spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                     onSpentByTimePeriodSwitch = {},
                     onTransactionCategoryClick = {},
                     onTransactionItemClick = {},

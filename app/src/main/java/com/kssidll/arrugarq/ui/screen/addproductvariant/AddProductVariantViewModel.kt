@@ -47,16 +47,10 @@ internal fun AddProductVariantScreenState.extractProducerOrNull(productId: Long)
 
 @HiltViewModel
 class AddProductVariantViewModel @Inject constructor(
-    productVariantRepository: IProductVariantRepository,
+    private val productVariantRepository: IProductVariantRepository,
 ): ViewModel() {
     internal val addProductVariantScreenState: AddProductVariantScreenState =
         AddProductVariantScreenState()
-
-    private val productVariantRepository: IProductVariantRepository
-
-    init {
-        this.productVariantRepository = productVariantRepository
-    }
 
     /**
      * Tries to add a product variant to the repository

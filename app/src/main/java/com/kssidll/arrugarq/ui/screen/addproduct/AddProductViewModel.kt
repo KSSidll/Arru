@@ -67,21 +67,11 @@ internal fun AddProductScreenState.extractProductOrNull(): Product? {
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
-    productRepository: IProductRepository,
-    productCategoryRepository: IProductCategoryRepository,
-    productProducerRepository: IProductProducerRepository,
+    private val productRepository: IProductRepository,
+    private val productCategoryRepository: IProductCategoryRepository,
+    private val productProducerRepository: IProductProducerRepository,
 ): ViewModel() {
     internal val addProductScreenState: AddProductScreenState = AddProductScreenState()
-
-    private val productRepository: IProductRepository
-    private val productCategoryRepository: IProductCategoryRepository
-    private val productProducerRepository: IProductProducerRepository
-
-    init {
-        this.productRepository = productRepository
-        this.productCategoryRepository = productCategoryRepository
-        this.productProducerRepository = productProducerRepository
-    }
 
     /**
      * Tries to add a product to the repository

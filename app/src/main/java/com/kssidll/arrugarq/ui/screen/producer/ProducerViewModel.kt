@@ -10,8 +10,4 @@ class ProducerViewModel @Inject constructor(
 
 ): ViewModel() {
 
-
-    init {
-
-    }
 }

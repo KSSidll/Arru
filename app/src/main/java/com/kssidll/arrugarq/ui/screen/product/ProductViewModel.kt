@@ -10,8 +10,4 @@ class ProductViewModel @Inject constructor(
 
 ): ViewModel() {
 
-
-    init {
-
-    }
 }

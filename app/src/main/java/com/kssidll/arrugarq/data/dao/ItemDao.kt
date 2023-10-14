@@ -168,14 +168,14 @@ WITH date_series AS (
     FROM item
     WHERE item.shopId = :shopId
     UNION ALL
-    SELECT (start_date + $DAY_MS) AS start_date, end_date
+    SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / $DAY_MS) = ((item.date) / $DAY_MS)
-WHERE item.shopId = :shopId
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+    AND item.shopId = :shopId
 GROUP BY time
 ORDER BY time
 """
@@ -190,14 +190,14 @@ WITH date_series AS (
     FROM item
     WHERE item.shopId = :shopId
     UNION ALL
-    SELECT (start_date + $DAY_MS) AS start_date, end_date
+    SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / $DAY_MS) = ((item.date) / $DAY_MS)
-WHERE item.shopId = :shopId
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+    AND item.shopId = :shopId
 GROUP BY time
 ORDER BY time
 """
