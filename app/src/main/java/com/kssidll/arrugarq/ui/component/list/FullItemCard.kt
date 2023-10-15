@@ -25,6 +25,7 @@ import com.kssidll.arrugarq.ui.theme.*
 fun LazyItemScope.FullItemCard(
     fullItem: FullItem,
     onItemClick: (item: FullItem) -> Unit,
+    itemClickable: Boolean = true,
     onCategoryClick: (category: ProductCategory) -> Unit,
     showCategory: Boolean = true,
     onProducerClick: (producer: ProductProducer) -> Unit,
@@ -32,11 +33,15 @@ fun LazyItemScope.FullItemCard(
     onShopClick: (shop: Shop) -> Unit,
     showShop: Boolean = true,
 ) {
-    Column(
-        modifier = Modifier
-            .clickable {
+    val itemModifier =
+        if (itemClickable)
+            Modifier.clickable {
                 onItemClick(fullItem)
             }
+        else Modifier
+
+    Column(
+        modifier = itemModifier
             .heightIn(min = 60.dp)
             .fillParentMaxWidth()
             .padding(

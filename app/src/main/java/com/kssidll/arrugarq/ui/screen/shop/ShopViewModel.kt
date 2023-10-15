@@ -31,8 +31,8 @@ internal const val fullItemMaxPrefetchCount = 50
 
 @HiltViewModel
 class ShopViewModel @Inject constructor(
-    private val shopRepository: IShopRepository,
     private val itemRepository: IItemRepository,
+    private val shopRepository: IShopRepository,
 ): ViewModel() {
     internal val shopScreenState: ShopScreenState = ShopScreenState()
 
@@ -67,7 +67,6 @@ class ShopViewModel @Inject constructor(
                 .div(100000)
         }
 
-
         timePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             cancellableDayFlow = {
@@ -97,7 +96,6 @@ class ShopViewModel @Inject constructor(
                 shopScreenState.chartData.addAll(it)
             }
         }
-
 
         newFullItemFlowJob?.cancel()
         newFullItemFlowJob = viewModelScope.launch {

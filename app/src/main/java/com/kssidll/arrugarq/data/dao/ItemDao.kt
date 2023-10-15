@@ -396,7 +396,7 @@ WITH date_series AS (
     SELECT MIN(item.date) AS start_date,
            MAX(item.date) AS end_date
     FROM item
-    WHERE item.shopId = :productId
+    WHERE item.productId = :productId
     UNION ALL
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
@@ -418,7 +418,7 @@ WITH date_series AS (
     SELECT MIN(item.date) AS start_date,
            MAX(item.date) AS end_date
     FROM item
-    WHERE item.shopId = :productId
+    WHERE item.productId = :productId
     UNION ALL
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
