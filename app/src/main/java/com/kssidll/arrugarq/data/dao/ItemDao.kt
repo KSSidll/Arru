@@ -451,7 +451,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -475,7 +475,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -499,7 +499,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -523,7 +523,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -675,7 +675,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -699,7 +699,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -723,7 +723,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -747,7 +747,7 @@ SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(it
 FROM date_series
 LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -899,7 +899,7 @@ SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.pric
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -923,7 +923,7 @@ SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.pric
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -947,7 +947,7 @@ SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.pric
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -971,7 +971,7 @@ SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.pric
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -1123,7 +1123,7 @@ SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price *
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -1147,7 +1147,7 @@ SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price *
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND producerId = :producerId
+WHERE producerId = :producerId
 GROUP BY time
 ORDER BY time
 """
@@ -1171,7 +1171,7 @@ SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price *
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """
@@ -1195,7 +1195,7 @@ SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price *
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
 LEFT JOIN product ON product.id = item.productId
-    AND categoryId = :categoryId
+WHERE categoryId = :categoryId
 GROUP BY time
 ORDER BY time
 """

@@ -216,6 +216,15 @@ fun Navigation(
                 ProducerRoute(
                     producerId = screen.producerId,
                     onBack = onBack,
+                    onItemClick = {
+                        navController.navigate(Screen.Product(it))
+                    },
+                    onCategoryClick = {
+                        navController.navigate(Screen.Category(it))
+                    },
+                    onShopClick = {
+                        navController.navigate(Screen.Shop(it))
+                    },
                 )
             }
 
@@ -231,7 +240,7 @@ fun Navigation(
                     },
                     onShopClick = {
                         navController.navigate(Screen.Shop(it))
-                    }
+                    },
                 )
             }
 
