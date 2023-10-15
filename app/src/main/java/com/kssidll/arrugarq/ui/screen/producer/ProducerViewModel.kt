@@ -125,7 +125,7 @@ class ProducerViewModel @Inject constructor(
     }
 
     /**
-     * Requires product value of productScreenState to be a non null.
+     * Requires producer value of producerScreenState to be a non null.
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
