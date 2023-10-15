@@ -12,6 +12,54 @@ interface IItemRepository {
     fun getLastFlow(): Flow<Item>
     suspend fun getAllEmbeddedItemSorted(): List<EmbeddedItem>
     fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>>
+    suspend fun getEmbeddedItemsByShopSorted(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): List<EmbeddedItem>
+
+    fun getEmbeddedItemsByShopSortedFlow(
+        offset: Int,
+        count: Int,
+        shopId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    suspend fun getEmbeddedItemsByProductSorted(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): List<EmbeddedItem>
+
+    fun getEmbeddedItemsByProductSortedFlow(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    suspend fun getEmbeddedItemsByProducerSorted(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): List<EmbeddedItem>
+
+    fun getEmbeddedItemsByProducerSortedFlow(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    suspend fun getEmbeddedItemsByCategorySorted(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): List<EmbeddedItem>
+
+    fun getEmbeddedItemsByCategorySortedFlow(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): Flow<List<EmbeddedItem>>
+
     suspend fun getEmbeddedItemsSorted(
         offset: Int,
         count: Int
@@ -46,6 +94,42 @@ interface IItemRepository {
         shopId: Long,
     ): Flow<List<FullItem>>
 
+    suspend fun getFullItemsByProduct(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): List<FullItem>
+
+    fun getFullItemsByProductFlow(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): Flow<List<FullItem>>
+
+    suspend fun getFullItemsByProducer(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): List<FullItem>
+
+    fun getFullItemsByProducerFlow(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): Flow<List<FullItem>>
+
+    suspend fun getFullItemsByCategory(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): List<FullItem>
+
+    fun getFullItemsByCategoryFlow(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): Flow<List<FullItem>>
+
     suspend fun getShopTotalSpent(): List<ItemSpentByShop>
     fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>>
     suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory>
@@ -54,20 +138,50 @@ interface IItemRepository {
     fun getTotalSpentFlow(): Flow<Long>
     suspend fun getTotalSpentByShop(shopId: Long): Long
     fun getTotalSpentByShopFlow(shopId: Long): Flow<Long>
+    suspend fun getTotalSpentByProduct(productId: Long): Long
+    fun getTotalSpentByProductFlow(productId: Long): Flow<Long>
+    suspend fun getTotalSpentByProducer(producerId: Long): Long
+    fun getTotalSpentByProducerFlow(producerId: Long): Flow<Long>
+    suspend fun getTotalSpentByCategory(categoryId: Long): Long
+    fun getTotalSpentByCategoryFlow(categoryId: Long): Flow<Long>
     suspend fun getTotalSpentByShopByDay(shopId: Long): List<ItemSpentByTime>
     fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProductByDay(productId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProductByDayFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProducerByDay(producerId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProducerByDayFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByCategoryByDay(categoryId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByCategoryByDayFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByDay(): List<ItemSpentByTime>
     fun getTotalSpentByDayFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByShopByWeek(shopId: Long): List<ItemSpentByTime>
     fun getTotalSpentByShopByWeekFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProductByWeek(productId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProductByWeekFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProducerByWeek(producerId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProducerByWeekFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByCategoryByWeek(categoryId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByCategoryByWeekFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByWeek(): List<ItemSpentByTime>
     fun getTotalSpentByWeekFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByShopByMonth(shopId: Long): List<ItemSpentByTime>
     fun getTotalSpentByShopByMonthFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProductByMonth(productId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProductByMonthFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProducerByMonth(producerId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProducerByMonthFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByCategoryByMonth(categoryId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByCategoryByMonthFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByMonth(): List<ItemSpentByTime>
     fun getTotalSpentByMonthFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByShopByYear(shopId: Long): List<ItemSpentByTime>
     fun getTotalSpentByShopByYearFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProductByYear(productId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProductByYearFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByProducerByYear(producerId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByProducerByYearFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+    suspend fun getTotalSpentByCategoryByYear(categoryId: Long): List<ItemSpentByTime>
+    fun getTotalSpentByCategoryByYearFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
     suspend fun getTotalSpentByYear(): List<ItemSpentByTime>
     fun getTotalSpentByYearFlow(): Flow<List<ItemSpentByTime>>
     suspend fun getByProductId(productId: Long): List<Item>

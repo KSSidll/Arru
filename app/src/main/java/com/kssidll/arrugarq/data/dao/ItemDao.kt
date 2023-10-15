@@ -33,20 +33,6 @@ interface ItemDao {
     fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>>
 
     @Transaction
-    @Query("SELECT * FROM item ORDER BY date DESC LIMIT :count OFFSET :offset")
-    suspend fun getEmbeddedItemsSorted(
-        offset: Int,
-        count: Int
-    ): List<EmbeddedItem>
-
-    @Transaction
-    @Query("SELECT * FROM item ORDER BY date DESC LIMIT :count OFFSET :offset")
-    fun getEmbeddedItemsSortedFlow(
-        offset: Int,
-        count: Int
-    ): Flow<List<EmbeddedItem>>
-
-    @Transaction
     @Query("SELECT * FROM item WHERE shopId = :shopId ORDER BY date DESC LIMIT :count OFFSET :offset")
     suspend fun getEmbeddedItemsByShopSorted(
         offset: Int,
@@ -63,46 +49,74 @@ interface ItemDao {
     ): Flow<List<EmbeddedItem>>
 
     @Transaction
+    @Query("SELECT * FROM item WHERE productId = :productId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    suspend fun getEmbeddedItemsByProductSorted(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): List<EmbeddedItem>
+
+    @Transaction
+    @Query("SELECT * FROM item WHERE productId = :productId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    fun getEmbeddedItemsByProductSortedFlow(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    @Transaction
+    @Query("SELECT * FROM item INNER JOIN product ON product.id = item.productId WHERE product.producerId = :producerId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    suspend fun getEmbeddedItemsByProducerSorted(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): List<EmbeddedItem>
+
+    @Transaction
+    @Query("SELECT * FROM item INNER JOIN product ON product.id = item.productId WHERE product.producerId = :producerId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    fun getEmbeddedItemsByProducerSortedFlow(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    @Transaction
+    @Query("SELECT * FROM item INNER JOIN product ON product.id = item.productId WHERE product.categoryId = :categoryId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    suspend fun getEmbeddedItemsByCategorySorted(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): List<EmbeddedItem>
+
+    @Transaction
+    @Query("SELECT * FROM item INNER JOIN product ON product.id = item.productId WHERE product.categoryId = :categoryId ORDER BY date DESC LIMIT :count OFFSET :offset")
+    fun getEmbeddedItemsByCategorySortedFlow(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): Flow<List<EmbeddedItem>>
+
+    @Transaction
+    @Query("SELECT * FROM item ORDER BY date DESC LIMIT :count OFFSET :offset")
+    suspend fun getEmbeddedItemsSorted(
+        offset: Int,
+        count: Int
+    ): List<EmbeddedItem>
+
+    @Transaction
+    @Query("SELECT * FROM item ORDER BY date DESC LIMIT :count OFFSET :offset")
+    fun getEmbeddedItemsSortedFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<EmbeddedItem>>
+
+    @Transaction
     @Query("SELECT * FROM product WHERE id = :productId")
     suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct
 
     @Transaction
     @Query("SELECT * FROM product WHERE id = :productId")
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
-
-    suspend fun getFullItems(
-        offset: Int,
-        count: Int
-    ): List<FullItem> {
-        val items = getEmbeddedItemsSorted(
-            offset = offset,
-            count = count,
-        )
-        return items.map {
-            FullItem(
-                embeddedItem = it,
-                embeddedProduct = getItemEmbeddedProduct(it.product.id),
-            )
-        }
-    }
-
-    fun getFullItemsFlow(
-        offset: Int,
-        count: Int
-    ): Flow<List<FullItem>> {
-        val items = getEmbeddedItemsSortedFlow(
-            offset = offset,
-            count = count,
-        )
-        return items.map {
-            it.map { item ->
-                FullItem(
-                    embeddedItem = item,
-                    embeddedProduct = getItemEmbeddedProduct(item.product.id),
-                )
-            }
-        }
-    }
 
     suspend fun getFullItemsByShop(
         offset: Int,
@@ -142,6 +156,154 @@ interface ItemDao {
         }
     }
 
+    suspend fun getFullItemsByProduct(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): List<FullItem> {
+        val items = getEmbeddedItemsByProductSorted(
+            offset = offset,
+            count = count,
+            productId = productId,
+        )
+        return items.map {
+            FullItem(
+                embeddedItem = it,
+                embeddedProduct = getItemEmbeddedProduct(it.product.id),
+            )
+        }
+    }
+
+    fun getFullItemsByProductFlow(
+        offset: Int,
+        count: Int,
+        productId: Long,
+    ): Flow<List<FullItem>> {
+        val items = getEmbeddedItemsByProductSortedFlow(
+            offset = offset,
+            count = count,
+            productId = productId,
+        )
+        return items.map {
+            it.map { item ->
+                FullItem(
+                    embeddedItem = item,
+                    embeddedProduct = getItemEmbeddedProduct(item.product.id),
+                )
+            }
+        }
+    }
+
+    suspend fun getFullItemsByProducer(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): List<FullItem> {
+        val items = getEmbeddedItemsByProducerSorted(
+            offset = offset,
+            count = count,
+            producerId = producerId,
+        )
+        return items.map {
+            FullItem(
+                embeddedItem = it,
+                embeddedProduct = getItemEmbeddedProduct(it.product.id),
+            )
+        }
+    }
+
+    fun getFullItemsByProducerFlow(
+        offset: Int,
+        count: Int,
+        producerId: Long,
+    ): Flow<List<FullItem>> {
+        val items = getEmbeddedItemsByProducerSortedFlow(
+            offset = offset,
+            count = count,
+            producerId = producerId,
+        )
+        return items.map {
+            it.map { item ->
+                FullItem(
+                    embeddedItem = item,
+                    embeddedProduct = getItemEmbeddedProduct(item.product.id),
+                )
+            }
+        }
+    }
+
+    suspend fun getFullItemsByCategory(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): List<FullItem> {
+        val items = getEmbeddedItemsByCategorySorted(
+            offset = offset,
+            count = count,
+            categoryId = categoryId,
+        )
+        return items.map {
+            FullItem(
+                embeddedItem = it,
+                embeddedProduct = getItemEmbeddedProduct(it.product.id),
+            )
+        }
+    }
+
+    fun getFullItemsByCategoryFlow(
+        offset: Int,
+        count: Int,
+        categoryId: Long,
+    ): Flow<List<FullItem>> {
+        val items = getEmbeddedItemsByCategorySortedFlow(
+            offset = offset,
+            count = count,
+            categoryId = categoryId,
+        )
+        return items.map {
+            it.map { item ->
+                FullItem(
+                    embeddedItem = item,
+                    embeddedProduct = getItemEmbeddedProduct(item.product.id),
+                )
+            }
+        }
+    }
+
+    suspend fun getFullItems(
+        offset: Int,
+        count: Int
+    ): List<FullItem> {
+        val items = getEmbeddedItemsSorted(
+            offset = offset,
+            count = count,
+        )
+        return items.map {
+            FullItem(
+                embeddedItem = it,
+                embeddedProduct = getItemEmbeddedProduct(it.product.id),
+            )
+        }
+    }
+
+    fun getFullItemsFlow(
+        offset: Int,
+        count: Int
+    ): Flow<List<FullItem>> {
+        val items = getEmbeddedItemsSortedFlow(
+            offset = offset,
+            count = count,
+        )
+        return items.map {
+            it.map { item ->
+                FullItem(
+                    embeddedItem = item,
+                    embeddedProduct = getItemEmbeddedProduct(item.product.id),
+                )
+            }
+        }
+    }
+
     @Query("SELECT shop.*, SUM(item.price * item.quantity) as total FROM item INNER JOIN shop ON item.shopId = shop.id GROUP BY item.shopId")
     suspend fun getShopTotalSpent(): List<ItemSpentByShop>
 
@@ -165,6 +327,24 @@ interface ItemDao {
 
     @Query("SELECT SUM(price * quantity) AS total FROM item WHERE shopId = :shopId")
     fun getTotalSpentByShopFlow(shopId: Long): Flow<Long>
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item WHERE productId = :productId")
+    suspend fun getTotalSpentByProduct(productId: Long): Long
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item WHERE productId = :productId")
+    fun getTotalSpentByProductFlow(productId: Long): Flow<Long>
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item INNER JOIN product ON product.id = item.productId WHERE producerId = :producerId")
+    suspend fun getTotalSpentByProducer(producerId: Long): Long
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item INNER JOIN product ON product.id = item.productId WHERE producerId = :producerId")
+    fun getTotalSpentByProducerFlow(producerId: Long): Flow<Long>
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item INNER JOIN product ON product.id = item.productId WHERE categoryId = :categoryId")
+    suspend fun getTotalSpentByCategory(categoryId: Long): Long
+
+    @Query("SELECT SUM(price * quantity) AS total FROM item INNER JOIN product ON product.id = item.productId WHERE categoryId = :categoryId")
+    fun getTotalSpentByCategoryFlow(categoryId: Long): Flow<Long>
 
     @Query(
         """
@@ -209,6 +389,146 @@ ORDER BY time
 """
     )
     fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    WHERE item.shopId = :productId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByProductByDay(productId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    WHERE item.shopId = :productId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByProductByDayFlow(productId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByProducerByDay(producerId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByProducerByDayFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByCategoryByDay(categoryId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT MIN(item.date) AS start_date,
+           MAX(item.date) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByCategoryByDayFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -300,6 +620,146 @@ WITH date_series AS (
     SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
              (MAX(item.date) - 604800000) AS end_date
     FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT (start_date + 604800000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    suspend fun getTotalSpentByProductByWeek(productId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT (start_date + 604800000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    fun getTotalSpentByProductByWeekFlow(productId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByProducerByWeek(producerId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByProducerByWeekFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByCategoryByWeek(categoryId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT (start_date + 86400000) AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByCategoryByWeekFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT (((MIN(item.date) / 86400000) - ((MIN(item.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+             (MAX(item.date) - 604800000) AS end_date
+    FROM item
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
@@ -384,6 +844,146 @@ WITH date_series AS (
     SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
            DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
     FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    suspend fun getTotalSpentByProductByMonth(productId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    fun getTotalSpentByProductByMonthFlow(productId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByProducerByMonth(producerId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByProducerByMonthFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByCategoryByMonth(categoryId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByCategoryByMonthFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
     UNION ALL
     SELECT DATE(start_date, '+1 month') AS start_date, end_date
     FROM date_series
@@ -461,6 +1061,146 @@ ORDER BY time
     """
     )
     fun getTotalSpentByShopByYearFlow(shopId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    suspend fun getTotalSpentByProductByYear(productId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) as time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+    AND item.productId = :productId
+GROUP BY time
+ORDER BY time
+    """
+    )
+    fun getTotalSpentByProductByYearFlow(productId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByProducerByYear(producerId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND producerId = :producerId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByProducerByYearFlow(producerId: Long): Flow<List<ItemSpentByTime>>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    suspend fun getTotalSpentByCategoryByYear(categoryId: Long): List<ItemSpentByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of year') AS end_date
+    FROM item
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    UNION ALL
+    SELECT DATE(start_date, '+1 year') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
+LEFT JOIN product ON product.id = item.productId
+    AND categoryId = :categoryId
+GROUP BY time
+ORDER BY time
+"""
+    )
+    fun getTotalSpentByCategoryByYearFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
