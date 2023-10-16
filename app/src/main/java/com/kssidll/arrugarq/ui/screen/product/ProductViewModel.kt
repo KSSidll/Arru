@@ -23,7 +23,6 @@ internal data class ProductScreenState(
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-    val smaChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
     var finishedChartAnimation: Boolean = false,
 )
 

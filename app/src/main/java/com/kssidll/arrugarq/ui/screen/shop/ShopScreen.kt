@@ -174,7 +174,6 @@ internal fun ShopScreenContent(
                         spentByTimePeriod = state.spentByTimePeriod.value,
                         onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                         columnChartEntryModelProducer = state.columnChartEntryModelProducer,
-                        smaChartEntryModelProducer = state.smaChartEntryModelProducer,
                         runInitialAnimation = !state.finishedChartAnimation
                     )
 
