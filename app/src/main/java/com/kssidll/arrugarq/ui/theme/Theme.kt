@@ -6,6 +6,7 @@ import androidx.compose.foundation.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.colorspace.*
 import androidx.compose.ui.platform.*
 import com.google.accompanist.systemuicontroller.*
 import com.kssidll.arrugarq.ui.theme.schema.*
@@ -14,6 +15,7 @@ import com.patrykandpatrick.vico.compose.style.*
 
 const val disabledAlpha = 0.38f
 const val optionalAlpha = 0.60f
+val colorSpace = ColorSpaces.Srgb
 
 fun setNavigationBarColor(
     color: Color,

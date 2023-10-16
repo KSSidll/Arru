@@ -2,42 +2,216 @@ package com.kssidll.arrugarq.ui.theme.schema
 
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.*
+import com.kssidll.arrugarq.ui.theme.*
 
 val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF425AA9),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFDCE1FF),
-    onPrimaryContainer = Color(0xFF00164F),
-    inversePrimary = Color(0xFFB6C4FF),
-    secondary = Color(0xFF684FA3),
-    onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFE9DDFF),
-    onSecondaryContainer = Color(0xFF23005B),
-    tertiary = Color(0xFF714C9F),
-    onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFEEDBFF),
-    onTertiaryContainer = Color(0xFF2A0054),
-    background = Color(0xFFFEFBFF),
-    onBackground = Color(0xFF1B1B1F),
-    surface = Color(0xFFFCFCFC),
-    onSurface = Color(0xFF1B1B1F),
-    surfaceVariant = Color(0xFFE2E1EC),
-    onSurfaceVariant = Color(0xFF45464F),
-    surfaceTint = Color(0xFF425AA9),
-    inverseSurface = Color(0xFF303034),
-    inverseOnSurface = Color(0xFFF2F0F4),
-    error = Color(0xFFBA1A1A),
-    errorContainer = Color(0xFFFFDAD6),
-    onError = Color(0xFFFFFFFF),
-    onErrorContainer = Color(0xFF410002),
-    outline = Color(0xFF767680),
-    outlineVariant = Color(0xFFC6C6D0),
-    scrim = Color(0xFF000000),
-    surfaceBright = Color(0xFFFCFCFC),
-    surfaceContainer = Color(0xFFF2F3F5),
-    surfaceContainerHigh = Color(0xFFEBEDEF),
-    surfaceContainerHighest = Color(0xFFE3E5E8),
-    surfaceContainerLow = Color(0xFFF8F8F8),
-    surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceDim = Color(0xFFDCDCDC),
+    primary = Color.hsl(
+        hue = 226f,
+        saturation = 0.44f,
+        lightness = 0.4f,
+        colorSpace = colorSpace
+    ),
+    onPrimary = Color.hsl(
+        hue = 226f,
+        saturation = 0.44f,
+        lightness = 1f,
+        colorSpace = colorSpace
+    ),
+    primaryContainer = Color.hsl(
+        hue = 226f,
+        saturation = 0.44f,
+        lightness = 0.9f,
+        colorSpace = colorSpace
+    ),
+    onPrimaryContainer = Color.hsl(
+        hue = 226f,
+        saturation = 0.44f,
+        lightness = 0.1f,
+        colorSpace = colorSpace
+    ),
+    inversePrimary = Color.hsl(
+        hue = 226f,
+        saturation = 0.44f,
+        lightness = 0.8f,
+        colorSpace = colorSpace
+    ),
+
+    secondary = Color.hsl(
+        hue = 259f,
+        saturation = 1f,
+        lightness = 0.4f,
+        colorSpace = colorSpace
+    ),
+    onSecondary = Color.hsl(
+        hue = 259f,
+        saturation = 1f,
+        lightness = 1f,
+        colorSpace = colorSpace
+    ),
+    secondaryContainer = Color.hsl(
+        hue = 259f,
+        saturation = 1f,
+        lightness = 0.9f,
+        colorSpace = colorSpace
+    ),
+    onSecondaryContainer = Color.hsl(
+        hue = 259f,
+        saturation = 1f,
+        lightness = 0.1f,
+        colorSpace = colorSpace
+    ),
+
+    tertiary = Color.hsl(
+        hue = 270f,
+        saturation = 0.6f,
+        lightness = 0.4f,
+        colorSpace = colorSpace
+    ),
+    onTertiary = Color.hsl(
+        hue = 270f,
+        saturation = 0.6f,
+        lightness = 1f,
+        colorSpace = colorSpace
+    ),
+    tertiaryContainer = Color.hsl(
+        hue = 270f,
+        saturation = 0.6f,
+        lightness = 0.9f,
+        colorSpace = colorSpace
+    ),
+    onTertiaryContainer = Color.hsl(
+        hue = 270f,
+        saturation = 0.6f,
+        lightness = 0.1f,
+        colorSpace = colorSpace
+    ),
+
+    error = Color.hsl(
+        hue = 357f,
+        saturation = 1f,
+        lightness = 0.4f,
+        colorSpace = colorSpace
+    ),
+    onError = Color.hsl(
+        hue = 357f,
+        saturation = 1f,
+        lightness = 1f,
+        colorSpace = colorSpace
+    ),
+    errorContainer = Color.hsl(
+        hue = 357f,
+        saturation = 1f,
+        lightness = 0.9f,
+        colorSpace = colorSpace
+    ),
+    onErrorContainer = Color.hsl(
+        hue = 357f,
+        saturation = 1f,
+        lightness = 0.1f,
+        colorSpace = colorSpace
+    ),
+
+    background = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.99f,
+        colorSpace = colorSpace
+    ),
+    onBackground = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.1f,
+        colorSpace = colorSpace
+    ),
+    surfaceDim = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.87f,
+        colorSpace = colorSpace
+    ),
+    surface = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.98f,
+        colorSpace = colorSpace
+    ),
+    surfaceBright = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.98f,
+        colorSpace = colorSpace
+    ),
+    surfaceContainerLowest = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 1f,
+        colorSpace = colorSpace
+    ),
+    surfaceContainerLow = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.96f,
+        colorSpace = colorSpace
+    ),
+    surfaceContainer = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.94f,
+        colorSpace = colorSpace
+    ),
+    surfaceContainerHigh = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.92f,
+        colorSpace = colorSpace
+    ),
+    surfaceContainerHighest = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.90f,
+        colorSpace = colorSpace
+    ),
+    onSurface = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.1f,
+        colorSpace = colorSpace
+    ),
+    inverseSurface = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.04f,
+        colorSpace = colorSpace
+    ),
+    inverseOnSurface = Color.hsl(
+        hue = 240f,
+        saturation = 0.21f,
+        lightness = 0.9f,
+        colorSpace = colorSpace
+    ),
+
+    surfaceVariant = Color.hsl(
+        hue = 240f,
+        saturation = 0.05f,
+        lightness = 0.3f,
+        colorSpace = colorSpace
+    ),
+    onSurfaceVariant = Color.hsl(
+        hue = 240f,
+        saturation = 0.05f,
+        lightness = 0.3f,
+        colorSpace = colorSpace
+    ),
+    outline = Color.hsl(
+        hue = 240f,
+        saturation = 0.05f,
+        lightness = 0.5f,
+        colorSpace = colorSpace
+    ),
+    outlineVariant = Color.hsl(
+        hue = 240f,
+        saturation = 0.05f,
+        lightness = 0.8f,
+        colorSpace = colorSpace
+    ),
 )
