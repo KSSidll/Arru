@@ -28,6 +28,7 @@ private const val defaultItemSpentByCategoryAmount: Int = 10
 private const val defaultEmbeddedItemAmount: Int = 10
 private const val defaultEmbeddedProductAmount: Int = 10
 private const val defaultFullItemAmount: Int = 10
+private const val defaultProductPriceByShopByTimeAmount: Int = 10
 private const val defaultShopId: Long = 0
 private const val defaultCategoryId: Long = 0
 private const val defaultItemId: Long = 0
@@ -945,6 +946,120 @@ fun generateRandomFullItemListFlow(
             producerNameLengthFrom = producerNameLengthFrom,
             producerNameLengthUntil = producerNameLengthUntil,
             producerNameAllowedCharacters = producerNameAllowedCharacters,
+        )
+    )
+}
+
+fun generateRandomProductPriceByShopByTime(
+    productId: Long = defaultProductId,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    productAllowedCharacters: String = defaultStringAllowedCharacters,
+    priceValueFrom: Long = defaultLongValueFrom,
+    priceValueUntil: Long = defaultLongValueUntil,
+    shopNameStringLengthFrom: Int = defaultStringLengthFrom,
+    shopNameStringLengthUntil: Int = defaultStringLengthUntil,
+    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    timeFrom: Long = defaultTimeFrom,
+    timeUntil: Long = defaultTimeUntil,
+    dateFormatting: String = defaultDateStringFormatting,
+    dateLocale: Locale = defaultLocale,
+): ProductPriceByShopByTime {
+    return ProductPriceByShopByTime(
+        product = generateRandomProduct(
+            productId = productId,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = productAllowedCharacters,
+        ),
+        price = generateRandomLongValue(
+            valueFrom = priceValueFrom,
+            valueUntil = priceValueUntil,
+        ),
+        shopName = generateRandomStringValue(
+            stringLengthFrom = shopNameStringLengthFrom,
+            stringLengthUntil = shopNameStringLengthUntil,
+            allowedCharacters = shopNameAllowedCharacters,
+        ),
+        time = generateRandomDateString(
+            timeFrom = timeFrom,
+            timeUntil = timeUntil,
+            dateFormatting = dateFormatting,
+            dateLocale = dateLocale,
+        )
+    )
+}
+
+fun generateRandomProductPriceByShopByTimeList(
+    amount: Int = defaultProductPriceByShopByTimeAmount,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    productAllowedCharacters: String = defaultStringAllowedCharacters,
+    priceValueFrom: Long = defaultLongValueFrom,
+    priceValueUntil: Long = defaultLongValueUntil,
+    shopNameStringLengthFrom: Int = defaultStringLengthFrom,
+    shopNameStringLengthUntil: Int = defaultStringLengthUntil,
+    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    timeFrom: Long = defaultTimeFrom,
+    timeUntil: Long = defaultTimeUntil,
+    dateFormatting: String = defaultDateStringFormatting,
+    dateLocale: Locale = defaultLocale,
+): List<ProductPriceByShopByTime> {
+    return List(amount) {
+        generateRandomProductPriceByShopByTime(
+            productId = it.toLong(),
+            categoryId = it.toLong(),
+            producerId = it.toLong(),
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            productAllowedCharacters = productAllowedCharacters,
+            priceValueFrom = priceValueFrom,
+            priceValueUntil = priceValueUntil,
+            shopNameStringLengthFrom = shopNameStringLengthFrom,
+            shopNameStringLengthUntil = shopNameStringLengthUntil,
+            shopNameAllowedCharacters = shopNameAllowedCharacters,
+            timeFrom = timeFrom,
+            timeUntil = timeUntil,
+            dateFormatting = dateFormatting,
+            dateLocale = dateLocale,
+        )
+    }
+}
+
+fun generateRandomProductPriceByShopByTimeListFlow(
+    amount: Int = defaultProductPriceByShopByTimeAmount,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    productAllowedCharacters: String = defaultStringAllowedCharacters,
+    priceValueFrom: Long = defaultLongValueFrom,
+    priceValueUntil: Long = defaultLongValueUntil,
+    shopNameStringLengthFrom: Int = defaultStringLengthFrom,
+    shopNameStringLengthUntil: Int = defaultStringLengthUntil,
+    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    timeFrom: Long = defaultTimeFrom,
+    timeUntil: Long = defaultTimeUntil,
+    dateFormatting: String = defaultDateStringFormatting,
+    dateLocale: Locale = defaultLocale,
+): Flow<List<ProductPriceByShopByTime>> {
+    return flowOf(
+        generateRandomProductPriceByShopByTimeList(
+            amount = amount,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            productAllowedCharacters = productAllowedCharacters,
+            priceValueFrom = priceValueFrom,
+            priceValueUntil = priceValueUntil,
+            shopNameStringLengthFrom = shopNameStringLengthFrom,
+            shopNameStringLengthUntil = shopNameStringLengthUntil,
+            shopNameAllowedCharacters = shopNameAllowedCharacters,
+            timeFrom = timeFrom,
+            timeUntil = timeUntil,
+            dateFormatting = dateFormatting,
+            dateLocale = dateLocale,
         )
     )
 }

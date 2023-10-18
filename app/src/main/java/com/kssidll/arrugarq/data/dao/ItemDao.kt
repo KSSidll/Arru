@@ -118,6 +118,54 @@ interface ItemDao {
     @Query("SELECT * FROM product WHERE id = :productId")
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
 
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, STRFTIME('%Y-%m', date_series.start_date) AS time
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+    AND productId = :productId
+LEFT JOIN shop ON shopId = shop.id
+LEFT JOIN product ON productId = product.id
+GROUP BY time, shopName
+ORDER BY time
+    """
+    )
+    suspend fun getProductsAveragePriceByShopByMonthSorted(productId: Long): List<ProductPriceByShopByTime>
+
+    @Query(
+        """
+WITH date_series AS (
+    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
+    FROM item
+    WHERE productId = :productId
+    UNION ALL
+    SELECT DATE(start_date, '+1 month') AS start_date, end_date
+    FROM date_series
+    WHERE date_series.end_date > date_series.start_date
+)
+SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, STRFTIME('%Y-%m', date_series.start_date) AS time
+FROM date_series
+LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
+    AND productId = :productId
+LEFT JOIN shop ON shopId = shop.id
+LEFT JOIN product ON productId = product.id
+GROUP BY time, shopName
+ORDER BY time
+    """
+    )
+    fun getProductsAveragePriceByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>>
+
     suspend fun getFullItemsByShop(
         offset: Int,
         count: Int,

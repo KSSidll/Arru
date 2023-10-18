@@ -20,6 +20,7 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.*
+import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -178,6 +179,12 @@ internal fun ProductScreenContent(
                     )
 
                     state.finishedChartAnimation = true
+
+                    Spacer(Modifier.height(12.dp))
+
+                    ShopPriceCompareChart(
+                        items = state.productPriceByShopByTimeItems.toList(),
+                    )
 
                     Spacer(Modifier.height(12.dp))
                 }

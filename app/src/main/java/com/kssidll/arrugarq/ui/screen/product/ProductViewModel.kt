@@ -17,6 +17,7 @@ import javax.inject.*
 internal data class ProductScreenState(
     val product: MutableState<Product?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
+    val productPriceByShopByTimeItems: SnapshotStateList<ProductPriceByShopByTime> = mutableStateListOf(),
     val chartData: SnapshotStateList<ItemSpentByTime> = mutableStateListOf(),
     val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
 
@@ -45,6 +46,8 @@ class ProductViewModel @Inject constructor(
     private var newFullItemFlowJob: Job? = null
     private var newFullItemFlow: (Flow<Item>)? = null
 
+    private var productPriceByShopByTimeJob: Job? = null
+
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         productScreenState.spentByTimePeriod.value = newPeriod
@@ -66,6 +69,16 @@ class ProductViewModel @Inject constructor(
                 itemRepository.getTotalSpentByProduct(productId)
                     .toFloat()
                     .div(100000)
+        }
+
+        productPriceByShopByTimeJob?.cancel()
+        productPriceByShopByTimeJob = viewModelScope.launch {
+            val itemFlow = itemRepository.getProductsAveragePriceByShopByMonthSortedFlow(productId)
+
+            itemFlow.collect {
+                productScreenState.productPriceByShopByTimeItems.clear()
+                productScreenState.productPriceByShopByTimeItems.addAll(it)
+            }
         }
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
