@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="navigate_to_previous_screen">Wróć do poprzedniego ekranu</string>
+
     <string name="dashboard_nav_label">Pulpit</string>
     <string name="navigate_to_dashboard_description">Przejdź do pulpitu / głównego ekranu</string>
 
@@ -13,45 +15,45 @@
 
     <string name="no_value">Brak</string>
 
-    <string name="add_item_description">Dodaj nowy przedmiot</string>
-    <string name="add_product_description">Dodaj nowy produkt</string>
-    <string name="add_product_variant_description">Dodaj nową wariację produktu</string>
-    <string name="add_shop_description">Dodaj nowy Sklep</string>
-    <string name="add_product_category_description">Dodaj nową kategorię produktów</string>
-    <string name="add_product_producer_description">Dodaj nowego producenta produktów</string>
-
-    <string name="item">Przedmiot</string>
-    <string name="item_add">Dodaj Przedmiot</string>
-
     <string name="item_unit_measure">Jednostka Miary</string>
     <string name="item_date">Data</string>
     <string name="item_price">Cena</string>
     <string name="item_quantity">Ilość</string>
 
+    <string name="item">Przedmiot</string>
+    <string name="item_add">Dodaj Przedmiot</string>
+    <string name="item_add_description">Dodaj nowy przedmiot</string>
+
     <string name="item_shop">Sklep</string>
     <string name="item_shop_add">Dodaj Sklep</string>
+    <string name="item_shop_add_description">Dodaj nowy Sklep</string>
 
     <string name="item_product">Produkt</string>
     <string name="item_product_add">Dodaj Produkt</string>
+    <string name="item_product_add_description">Dodaj nowy produkt</string>
 
-    <string name="item_full_product_variant">Wariant Produktu</string>
     <string name="item_product_variant">Wariant</string>
+    <string name="item_product_variant_full">Wariant Produktu</string>
     <string name="item_product_variant_add">Dodaj Wariant</string>
+    <string name="item_product_variant_add_description">Dodaj nową wariację produktu</string>
     <string name="item_product_variant_default_value">Kilogramy</string>
 
-    <string name="item_full_product_producer">Producent Produktów</string>
     <string name="item_product_producer">Producent</string>
+    <string name="item_product_producer_full">Producent Produktów</string>
     <string name="item_product_producer_add">Dodaj Producenta</string>
+    <string name="item_product_producer_add_description">Dodaj nowego producenta produktów</string>
 
-    <string name="item_full_product_category">Kategoria Produktów</string>
     <string name="item_product_category">Kategoria</string>
+    <string name="item_product_category_full">Kategoria Produktów</string>
     <string name="item_product_category_add">Dodaj Kategorię</string>
+    <string name="item_product_category_add_description">Dodaj nową kategorię produktów</string>
 
     <string name="day">Dzień</string>
     <string name="week">Tydzień</string>
     <string name="month">Miesiąć</string>
     <string name="year">Rok</string>
-    <string name="navigate_to_previous_screen">Wróć do poprzedniego ekranu</string>
+
     <string name="categories">Kategorie</string>
     <string name="shops">Sklepy</string>
+    <string name="delete">Usuń</string>
 </resources>

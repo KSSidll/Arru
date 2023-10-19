@@ -32,7 +32,7 @@ internal fun AddProductProducerScreen(
             SecondaryAppBar(
                 onBack = onBack,
                 title = {
-                    Text(text = stringResource(R.string.item_full_product_producer))
+                    Text(text = stringResource(R.string.item_product_producer_full))
                 }
             )
         }
@@ -131,7 +131,7 @@ private fun AddProductProducerScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(R.string.add_product_producer_description),
+                            contentDescription = stringResource(R.string.item_product_producer_add_description),
                             modifier = Modifier.size(30.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))

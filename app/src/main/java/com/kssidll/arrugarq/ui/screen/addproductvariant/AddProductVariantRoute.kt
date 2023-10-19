@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.addproductvariant
 
 import androidx.compose.runtime.*
+import com.kssidll.arrugarq.ui.screen.shared.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
 
@@ -12,10 +13,10 @@ fun AddProductVariantRoute(
     val scope = rememberCoroutineScope()
     val addProductVariantViewModel: AddProductVariantViewModel = hiltViewModel()
 
-    AddProductVariantScreen(
+    EditProductVariantScreen(
         onBack = onBack,
-        state = addProductVariantViewModel.addProductVariantScreenState,
-        onVariantAdd = {
+        state = addProductVariantViewModel.screenState,
+        onSubmit = {
             scope.launch {
                 val result = addProductVariantViewModel.addVariant(productId)
                 if (result != null) onBack()

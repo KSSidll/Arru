@@ -132,7 +132,7 @@ private fun AddProductCategoryScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(R.string.add_product_category_description),
+                            contentDescription = stringResource(R.string.item_product_category_add_description),
                             modifier = Modifier.size(30.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))

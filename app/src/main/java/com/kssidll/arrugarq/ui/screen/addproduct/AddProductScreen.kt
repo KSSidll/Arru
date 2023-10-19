@@ -76,7 +76,7 @@ private fun AddProductScreenContent(
                     state.isProducerSearchDialogExpanded.value = false
                 },
                 onAddButtonClick = onProducerAdd,
-                addButtonDescription = stringResource(R.string.add_product_producer_description),
+                addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
             )
@@ -93,7 +93,7 @@ private fun AddProductScreenContent(
                 },
                 itemText = { it.productCategory.name },
                 onAddButtonClick = onCategoryAdd,
-                addButtonDescription = stringResource(R.string.add_product_category_description),
+                addButtonDescription = stringResource(R.string.item_product_category_add_description),
             )
         } else {
             Column {
@@ -141,7 +141,7 @@ private fun AddProductScreenContent(
                         onAddButtonClick = {
                             onProducerAdd()
                         },
-                        addButtonDescription = stringResource(R.string.add_product_producer_description),
+                        addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                         optional = true,
                     )
 
@@ -159,7 +159,7 @@ private fun AddProductScreenContent(
                         onAddButtonClick = {
                             onCategoryAdd()
                         },
-                        addButtonDescription = stringResource(R.string.add_product_category_description),
+                        addButtonDescription = stringResource(R.string.item_product_category_add_description),
                         error = if (state.attemptedToSubmit.value) state.selectedProductCategoryError.value else false,
                     )
                 }
@@ -191,7 +191,7 @@ private fun AddProductScreenContent(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(R.string.add_product_description),
+                                contentDescription = stringResource(R.string.item_product_add_description),
                                 modifier = Modifier.size(30.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))

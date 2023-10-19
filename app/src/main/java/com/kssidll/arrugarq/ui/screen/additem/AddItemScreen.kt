@@ -134,7 +134,7 @@ private fun AddItemScreenContent(
                     state.isShopSearchDialogExpanded.value = false
                 },
                 onAddButtonClick = onShopAdd,
-                addButtonDescription = stringResource(R.string.add_shop_description),
+                addButtonDescription = stringResource(R.string.item_shop_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
             )
@@ -154,7 +154,7 @@ private fun AddItemScreenContent(
                 },
                 itemText = { it.product.name },
                 onAddButtonClick = onProductAdd,
-                addButtonDescription = stringResource(R.string.add_product_description),
+                addButtonDescription = stringResource(R.string.item_product_add_description),
             )
         }
 
@@ -170,7 +170,7 @@ private fun AddItemScreenContent(
                     state.isVariantSearchDialogExpanded.value = false
                 },
                 onAddButtonClick = { onVariantAdd() },
-                addButtonDescription = stringResource(R.string.add_product_variant_description),
+                addButtonDescription = stringResource(R.string.item_product_variant_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.item_product_variant_default_value),
             )
@@ -290,7 +290,7 @@ private fun AddItemScreenContent(
                     onAddButtonClick = {
                         onShopAdd()
                     },
-                    addButtonDescription = stringResource(R.string.add_shop_description),
+                    addButtonDescription = stringResource(R.string.item_shop_add_description),
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -308,7 +308,7 @@ private fun AddItemScreenContent(
                     onAddButtonClick = {
                         onProductAdd()
                     },
-                    addButtonDescription = stringResource(R.string.add_product_description),
+                    addButtonDescription = stringResource(R.string.item_product_add_description),
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -329,7 +329,7 @@ private fun AddItemScreenContent(
                     onAddButtonClick = {
                         onVariantAdd()
                     },
-                    addButtonDescription = stringResource(R.string.add_product_variant_description),
+                    addButtonDescription = stringResource(R.string.item_product_variant_add_description),
                 )
             }
 
@@ -360,7 +360,7 @@ private fun AddItemScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(R.string.add_item_description),
+                            contentDescription = stringResource(R.string.item_add_description),
                             modifier = Modifier.size(30.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Arrugarq</string>
 
+    <string name="navigate_to_previous_screen">Return to previous screen</string>
+
     <string name="dashboard_nav_label">Dashboard</string>
     <string name="navigate_to_dashboard_description">Navigate to the dashboard</string>
 
@@ -14,45 +16,45 @@
 
     <string name="no_value">None</string>
 
-    <string name="add_item_description">Add new Item</string>
-    <string name="add_product_description">Add new Product</string>
-    <string name="add_product_variant_description">Add new Product Variant</string>
-    <string name="add_shop_description">Add new Shop</string>
-    <string name="add_product_category_description">Add new Product Category</string>
-    <string name="add_product_producer_description">Add new Product Producer</string>
-
-    <string name="item">Item</string>
-    <string name="item_add">Add Item</string>
-
     <string name="item_unit_measure">Unit Measure</string>
     <string name="item_date">Date</string>
     <string name="item_price">Price</string>
     <string name="item_quantity">Quantity</string>
 
+    <string name="item">Item</string>
+    <string name="item_add">Add Item</string>
+    <string name="item_add_description">Add new Item</string>
+
     <string name="item_shop">Shop</string>
     <string name="item_shop_add">Add Shop</string>
+    <string name="item_shop_add_description">Add new Shop</string>
 
     <string name="item_product">Product</string>
     <string name="item_product_add">Add Product</string>
+    <string name="item_product_add_description">Add new Product</string>
 
-    <string name="item_full_product_variant">Product Variant</string>
     <string name="item_product_variant">Variant</string>
+    <string name="item_product_variant_full">Product Variant</string>
     <string name="item_product_variant_add">Add Variant</string>
+    <string name="item_product_variant_add_description">Add new Product Variant</string>
     <string name="item_product_variant_default_value">Kilograms</string>
 
-    <string name="item_full_product_producer">Product Producer</string>
     <string name="item_product_producer">Producer</string>
+    <string name="item_product_producer_full">Product Producer</string>
     <string name="item_product_producer_add">Add Producer</string>
+    <string name="item_product_producer_add_description">Add new Product Producer</string>
 
-    <string name="item_full_product_category">Product Category</string>
     <string name="item_product_category">Category</string>
+    <string name="item_product_category_full">Product Category</string>
     <string name="item_product_category_add">Add Category</string>
+    <string name="item_product_category_add_description">Add new Product Category</string>
 
     <string name="day">Day</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
-    <string name="navigate_to_previous_screen">Return to previous screen</string>
+
     <string name="categories">Categories</string>
     <string name="shops">Shops</string>
+    <string name="delete">Delete</string>
 </resources>
