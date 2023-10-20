@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.addproduct
 
 import androidx.compose.runtime.*
+import com.kssidll.arrugarq.ui.screen.shared.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
 
@@ -13,18 +14,16 @@ fun AddProductRoute(
     val scope = rememberCoroutineScope()
     val addProductViewModel: AddProductViewModel = hiltViewModel()
 
-    AddProductScreen(
+    EditProductScreen(
         onBack = onBack,
-        state = addProductViewModel.addProductScreenState,
-        onCategoryAdd = onProductCategoryAdd,
-        onProducerAdd = onProductProducerAdd,
-        onProductAdd = {
+        state = addProductViewModel.screenState,
+        onSubmit = {
             scope.launch {
                 val result = addProductViewModel.addProduct()
                 if (result != null) onBack()
             }
         },
-        categoriesWithAltNames = addProductViewModel.getProductCategoriesWithAltNamesFlow(),
-        producers = addProductViewModel.getProductProducersFlow(),
+        onProducerAdd = onProductProducerAdd,
+        onCategoryAdd = onProductCategoryAdd,
     )
 }

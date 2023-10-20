@@ -51,7 +51,7 @@ fun EditProductVariantScreen(
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_product_variant_add),
-        submitButtonDescription = stringResource(id = R.string.item_product_variant_add_description)
+        submitButtonDescription = stringResource(id = R.string.item_product_variant_add_description),
     ) {
         StyledOutlinedTextField(
             singleLine = true,

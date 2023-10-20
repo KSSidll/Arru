@@ -51,7 +51,7 @@ fun EditProductCategoryScreen(
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_product_category_add),
-        submitButtonDescription = stringResource(id = R.string.item_product_category_add_description)
+        submitButtonDescription = stringResource(id = R.string.item_product_category_add_description),
     ) {
         StyledOutlinedTextField(
             singleLine = true,
