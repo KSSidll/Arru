@@ -103,8 +103,8 @@ fun EditProductScreen(
                 addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                 optional = true,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .height(60.dp)
+                    .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding)
             )
 
@@ -122,8 +122,8 @@ fun EditProductScreen(
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
                 error = if (state.attemptedToSubmit.value) state.selectedProductCategoryError.value else false,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .height(60.dp)
+                    .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding)
             )
         }
