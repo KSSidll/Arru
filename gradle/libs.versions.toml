@@ -12,9 +12,9 @@ accompanist-systemuicontroller = "0.32.0"
 reimagined = "1.5.0"
 
 # Compose
-compose-ui = "1.6.0-alpha08"
-material3 = "1.2.0-alpha10"
-material = "1.6.0-alpha08"
+compose-ui = "1.6.0-alpha07"
+material3 = "1.2.0-alpha09"
+material = "1.6.0-alpha07"
 
 # DI
 hilt = "2.48"
