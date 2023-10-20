@@ -12,15 +12,15 @@ accompanist-systemuicontroller = "0.32.0"
 reimagined = "1.5.0"
 
 # Compose
-compose-ui = "1.6.0-alpha07"
-material3 = "1.2.0-alpha09"
-material = "1.6.0-alpha07"
+compose-ui = "1.6.0-alpha08"
+material3 = "1.2.0-alpha10"
+material = "1.6.0-alpha08"
 
 # DI
 hilt = "2.48"
 
 # Room
-room = "2.6.0-rc01"
+room = "2.6.0"
 
 # Other
 fuzzywuzzy = "1.4.0"
