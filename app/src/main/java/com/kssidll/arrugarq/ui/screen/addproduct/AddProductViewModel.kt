@@ -32,19 +32,28 @@ class AddProductViewModel @Inject constructor(
     }
         .await()
 
-    /**
-     * Clears and then fetches new data to screen state
-     */
-    private fun fillStateCategoriesWithAltNames() = viewModelScope.launch {
-        screenState.categoriesWithAltNames.clear()
-        screenState.categoriesWithAltNames.addAll(productCategoryRepository.getAllWithAltNames())
-    }
+    private var fillStateCategoriesWithAltNamesJob: Job? = null
 
     /**
      * Clears and then fetches new data to screen state
      */
-    private fun fillStateProducers() = viewModelScope.launch {
-        screenState.producers.clear()
-        screenState.producers.addAll(productProducerRepository.getAll())
+    private fun fillStateCategoriesWithAltNames() {
+        fillStateCategoriesWithAltNamesJob?.cancel()
+        fillStateCategoriesWithAltNamesJob = viewModelScope.launch {
+            screenState.categoriesWithAltNames.value =
+                productCategoryRepository.getAllWithAltNamesFlow()
+        }
+    }
+
+    private var fillStateProducers: Job? = null
+
+    /**
+     * Clears and then fetches new data to screen state
+     */
+    private fun fillStateProducers() {
+        fillStateProducers?.cancel()
+        fillStateProducers = viewModelScope.launch {
+            screenState.producers.value = productProducerRepository.getAllFlow()
+        }
     }
 }

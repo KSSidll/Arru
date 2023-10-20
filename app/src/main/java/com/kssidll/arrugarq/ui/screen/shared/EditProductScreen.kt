@@ -5,7 +5,6 @@ import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
@@ -15,6 +14,7 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
 import androidx.compose.material3.Surface as Surface1
 
 private val ItemHorizontalPadding: Dp = 20.dp
@@ -42,7 +42,7 @@ fun EditProductScreen(
                 onDismissRequest = {
                     state.isProducerSearchDialogExpanded.value = false
                 },
-                items = state.producers.toList(),
+                items = state.producers.value.collectAsState(initial = emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedProductProducer.value = it
@@ -58,7 +58,7 @@ fun EditProductScreen(
                 onDismissRequest = {
                     state.isCategorySearchDialogExpanded.value = false
                 },
-                items = state.categoriesWithAltNames.toList(),
+                items = state.categoriesWithAltNames.value.collectAsState(initial = emptyList()).value,
                 onItemClick = {
                     state.selectedProductCategory.value = it?.productCategory
                     state.validateSelectedProductCategory()
@@ -144,8 +144,8 @@ data class EditProductScreenState(
     val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 
-    val categoriesWithAltNames: SnapshotStateList<ProductCategoryWithAltNames> = mutableStateListOf(),
-    val producers: SnapshotStateList<ProductProducer> = mutableStateListOf(),
+    val categoriesWithAltNames: MutableState<Flow<List<ProductCategoryWithAltNames>>> = mutableStateOf(flowOf()),
+    val producers: MutableState<Flow<List<ProductProducer>>> = mutableStateOf(flowOf()),
 )
 
 /**

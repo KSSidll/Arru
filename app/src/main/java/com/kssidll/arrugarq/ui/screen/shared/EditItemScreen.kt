@@ -8,7 +8,6 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.res.*
@@ -20,6 +19,7 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
@@ -88,7 +88,7 @@ fun EditItemScreen(
                 onDismissRequest = {
                     state.isShopSearchDialogExpanded.value = false
                 },
-                items = state.shops.toList(),
+                items = state.shops.value.collectAsState(initial = emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedShop.value = it
@@ -104,7 +104,7 @@ fun EditItemScreen(
                 onDismissRequest = {
                     state.isProductSearchDialogExpanded.value = false
                 },
-                items = state.productsWithAltNames.toList(),
+                items = state.productsWithAltNames.value.collectAsState(initial = emptyList()).value,
                 onItemClick = {
                     state.selectedProduct.value = it?.product
                     state.isProductSearchDialogExpanded.value = false
@@ -120,7 +120,7 @@ fun EditItemScreen(
                 onDismissRequest = {
                     state.isVariantSearchDialogExpanded.value = false
                 },
-                items = state.variants.toList(),
+                items = state.variants.value.collectAsState(initial = emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedVariant.value = it
@@ -295,9 +295,9 @@ data class EditItemScreenState(
     var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 
-    val shops: SnapshotStateList<Shop> = mutableStateListOf(),
-    val productsWithAltNames: SnapshotStateList<ProductWithAltNames> = mutableStateListOf(),
-    val variants: SnapshotStateList<ProductVariant> = mutableStateListOf(),
+    val shops: MutableState<Flow<List<Shop>>> = mutableStateOf(flowOf()),
+    val productsWithAltNames: MutableState<Flow<List<ProductWithAltNames>>> = mutableStateOf(flowOf()),
+    val variants: MutableState<Flow<List<ProductVariant>>> = mutableStateOf(flowOf()),
 
     val loadingShop: MutableState<Boolean> = mutableStateOf(false),
     val loadingQuantity: MutableState<Boolean> = mutableStateOf(false),

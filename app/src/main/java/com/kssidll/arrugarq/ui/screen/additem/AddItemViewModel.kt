@@ -19,8 +19,8 @@ class AddItemViewModel @Inject constructor(
 
     init {
         computeStartState()
-        fillShops()
-        fillProductsWithAltNames()
+        fillStateShops()
+        fillStateProductsWithAltNames()
     }
 
     private fun computeStartState() = viewModelScope.launch {
@@ -65,7 +65,7 @@ class AddItemViewModel @Inject constructor(
                 lastItemByProduct.quantity / 1000f
             )
 
-            fillProductVariants()
+            fillStateProductVariants()
         }
 
         screenState.loadingVariants.value = false
@@ -85,34 +85,46 @@ class AddItemViewModel @Inject constructor(
     }
         .await()
 
+    private var fillStateShopsJob: Job? = null
+
     /**
      * Clears and then fetches new data to screen state
      */
-    private fun fillShops() = viewModelScope.launch {
-        screenState.shops.clear()
-        screenState.shops.addAll(shopRepository.getAll())
+    private fun fillStateShops() {
+        fillStateShopsJob?.cancel()
+        fillStateShopsJob = viewModelScope.launch {
+            screenState.shops.value = shopRepository.getAllFlow()
+        }
     }
 
+    private var fillStateProductsWithAltNamesJob: Job? = null
+
     /**
      * Clears and then fetches new data to screen state
      */
-    private fun fillProductsWithAltNames() = viewModelScope.launch {
-        screenState.productsWithAltNames.clear()
-        screenState.productsWithAltNames.addAll(productRepository.getAllWithAltNames())
+    private fun fillStateProductsWithAltNames() {
+        fillStateProductsWithAltNamesJob?.cancel()
+        fillStateProductsWithAltNamesJob = viewModelScope.launch {
+            screenState.productsWithAltNames.value = productRepository.getAllWithAltNamesFlow()
+        }
     }
 
+    private var fillStateProductVariantsJob: Job? = null
+
     /**
      * Clears and then fetches new data to screen state
      */
-    private fun fillProductVariants() = viewModelScope.launch {
-        with(screenState.selectedProduct) {
-            if (value != null) {
-                screenState.loadingVariants.value = true
+    private fun fillStateProductVariants() {
+        fillStateProductVariantsJob?.cancel()
+        fillStateProductVariantsJob = viewModelScope.launch {
+            with(screenState.selectedProduct) {
+                if (value != null) {
+                    screenState.loadingVariants.value = true
 
-                screenState.variants.clear()
-                screenState.variants.addAll(variantsRepository.getByProduct(value!!.id))
+                    screenState.variants.value = variantsRepository.getByProductFlow(value!!.id)
 
-                screenState.loadingVariants.value = false
+                    screenState.loadingVariants.value = false
+                }
             }
         }
     }
