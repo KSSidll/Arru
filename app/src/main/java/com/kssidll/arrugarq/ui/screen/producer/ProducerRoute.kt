@@ -20,7 +20,7 @@ fun ProducerRoute(
 
     ProducerScreen(
         onBack = onBack,
-        state = producerViewModel.producerScreenState,
+        state = producerViewModel.screenState,
         onSpentByTimePeriodSwitch = {
             producerViewModel.switchPeriod(it)
         },

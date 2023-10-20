@@ -20,7 +20,7 @@ fun ShopRoute(
 
     ShopScreen(
         onBack = onBack,
-        state = shopViewModel.shopScreenState,
+        state = shopViewModel.screenState,
         onSpentByTimePeriodSwitch = {
             shopViewModel.switchPeriod(it)
         },

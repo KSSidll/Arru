@@ -18,7 +18,7 @@ internal data class ProductScreenState(
     val product: MutableState<Product?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
     val productPriceByShopByTimeItems: SnapshotStateList<ProductPriceByShopByTime> = mutableStateListOf(),
-    val chartData: SnapshotStateList<ItemSpentByTime> = mutableStateListOf(),
+    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
     val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
@@ -35,9 +35,8 @@ class ProductViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
     private val productRepository: IProductRepository,
 ): ViewModel() {
-    internal val productScreenState: ProductScreenState = ProductScreenState()
+    internal val screenState: ProductScreenState = ProductScreenState()
 
-    private var timePeriodFlowHandlerJob: Job? = null
     private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
 
     private var fullItemsDataQuery: Job? = null
@@ -50,22 +49,18 @@ class ProductViewModel @Inject constructor(
 
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
-        productScreenState.spentByTimePeriod.value = newPeriod
+        screenState.spentByTimePeriod.value = newPeriod
 
-        timePeriodFlowHandlerJob?.cancel()
-        timePeriodFlowHandlerJob = viewModelScope.launch {
-            timePeriodFlowHandler!!.spentByTimeData.collect {
-                productScreenState.chartData.clear()
-                productScreenState.chartData.addAll(it)
-            }
-        }
+        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
     fun performDataUpdate(productId: Long) = viewModelScope.launch {
-        productScreenState.product.value = productRepository.get(productId)
+        if (productId == screenState.product.value?.id) return@launch
+
+        screenState.product.value = productRepository.get(productId)
 
         viewModelScope.launch {
-            productScreenState.totalSpentData.floatValue =
+            screenState.totalSpentData.floatValue =
                 itemRepository.getTotalSpentByProduct(productId)
                     .toFloat()
                     .div(100000)
@@ -76,8 +71,8 @@ class ProductViewModel @Inject constructor(
             val itemFlow = itemRepository.getProductsAveragePriceByShopByMonthSortedFlow(productId)
 
             itemFlow.collect {
-                productScreenState.productPriceByShopByTimeItems.clear()
-                productScreenState.productPriceByShopByTimeItems.addAll(it)
+                screenState.productPriceByShopByTimeItems.clear()
+                screenState.productPriceByShopByTimeItems.addAll(it)
             }
         }
 
@@ -101,15 +96,9 @@ class ProductViewModel @Inject constructor(
             },
         )
 
-        productScreenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
+        screenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
 
-        timePeriodFlowHandlerJob?.cancel()
-        timePeriodFlowHandlerJob = viewModelScope.launch {
-            productScreenState.chartData.clear()
-            timePeriodFlowHandler!!.spentByTimeData.collect {
-                productScreenState.chartData.addAll(it)
-            }
-        }
+        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
 
         newFullItemFlowJob?.cancel()
         newFullItemFlowJob = viewModelScope.launch {
@@ -118,7 +107,7 @@ class ProductViewModel @Inject constructor(
 
             newFullItemFlow?.collect {
                 fullItemOffset = 0
-                productScreenState.items.clear()
+                screenState.items.clear()
                 fullItemsDataQuery?.cancel()
                 fullItemsDataQuery = performFullItemsQuery()
                 fullItemOffset += fullItemFetchCount
@@ -130,7 +119,7 @@ class ProductViewModel @Inject constructor(
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted && productScreenState.product.value != null) {
+        if (fullItemsDataQuery!!.isCompleted && screenState.product.value != null) {
             fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
             fullItemOffset += fullItemFetchCount
         }
@@ -141,11 +130,11 @@ class ProductViewModel @Inject constructor(
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        productScreenState.items.addAll(
+        screenState.items.addAll(
             itemRepository.getFullItemsByProduct(
                 offset = queryOffset,
                 count = fullItemFetchCount,
-                productId = productScreenState.product.value!!.id,
+                productId = screenState.product.value!!.id,
             )
         )
     }

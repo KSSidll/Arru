@@ -20,7 +20,7 @@ fun ProductRoute(
 
     ProductScreen(
         onBack = onBack,
-        state = productViewModel.productScreenState,
+        state = productViewModel.screenState,
         onSpentByTimePeriodSwitch = {
             productViewModel.switchPeriod(it)
         },

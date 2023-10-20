@@ -20,7 +20,7 @@ fun CategoryRoute(
 
     CategoryScreen(
         onBack = onBack,
-        state = categoryViewModel.categoryScreenState,
+        state = categoryViewModel.screenState,
         onSpentByTimePeriodSwitch = {
             categoryViewModel.switchPeriod(it)
         },

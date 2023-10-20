@@ -17,7 +17,7 @@ import javax.inject.*
 internal data class ProducerScreenState(
     val producer: MutableState<ProductProducer?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
-    val chartData: SnapshotStateList<ItemSpentByTime> = mutableStateListOf(),
+    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
     val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
@@ -34,9 +34,8 @@ class ProducerViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
     private val productProducerRepository: IProductProducerRepository,
 ): ViewModel() {
-    internal val producerScreenState: ProducerScreenState = ProducerScreenState()
+    internal val screenState: ProducerScreenState = ProducerScreenState()
 
-    private var timePeriodFlowHandlerJob: Job? = null
     private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
 
     private var fullItemsDataQuery: Job? = null
@@ -47,22 +46,18 @@ class ProducerViewModel @Inject constructor(
 
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
-        producerScreenState.spentByTimePeriod.value = newPeriod
+        screenState.spentByTimePeriod.value = newPeriod
 
-        timePeriodFlowHandlerJob?.cancel()
-        timePeriodFlowHandlerJob = viewModelScope.launch {
-            timePeriodFlowHandler!!.spentByTimeData.collect {
-                producerScreenState.chartData.clear()
-                producerScreenState.chartData.addAll(it)
-            }
-        }
+        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
     fun performDataUpdate(producerId: Long) = viewModelScope.launch {
-        producerScreenState.producer.value = productProducerRepository.get(producerId)
+        if (producerId == screenState.producer.value?.id) return@launch
+
+        screenState.producer.value = productProducerRepository.get(producerId)
 
         viewModelScope.launch {
-            producerScreenState.totalSpentData.floatValue =
+            screenState.totalSpentData.floatValue =
                 itemRepository.getTotalSpentByProducer(producerId)
                     .toFloat()
                     .div(100000)
@@ -88,15 +83,9 @@ class ProducerViewModel @Inject constructor(
             },
         )
 
-        producerScreenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
+        screenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
 
-        timePeriodFlowHandlerJob?.cancel()
-        timePeriodFlowHandlerJob = viewModelScope.launch {
-            producerScreenState.chartData.clear()
-            timePeriodFlowHandler!!.spentByTimeData.collect {
-                producerScreenState.chartData.addAll(it)
-            }
-        }
+        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
 
         newFullItemFlowJob?.cancel()
         newFullItemFlowJob = viewModelScope.launch {
@@ -105,7 +94,7 @@ class ProducerViewModel @Inject constructor(
 
             newFullItemFlow?.collect {
                 fullItemOffset = 0
-                producerScreenState.items.clear()
+                screenState.items.clear()
                 fullItemsDataQuery?.cancel()
                 fullItemsDataQuery = performFullItemsQuery()
                 fullItemOffset += fullItemFetchCount
@@ -117,7 +106,7 @@ class ProducerViewModel @Inject constructor(
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted && producerScreenState.producer.value != null) {
+        if (fullItemsDataQuery!!.isCompleted && screenState.producer.value != null) {
             fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
             fullItemOffset += fullItemFetchCount
         }
@@ -128,11 +117,11 @@ class ProducerViewModel @Inject constructor(
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        producerScreenState.items.addAll(
+        screenState.items.addAll(
             itemRepository.getFullItemsByProducer(
                 offset = queryOffset,
                 count = fullItemFetchCount,
-                producerId = producerScreenState.producer.value!!.id,
+                producerId = screenState.producer.value!!.id,
             )
         )
     }

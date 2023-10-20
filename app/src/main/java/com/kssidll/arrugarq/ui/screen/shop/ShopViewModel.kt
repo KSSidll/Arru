@@ -16,7 +16,7 @@ import javax.inject.*
 internal data class ShopScreenState(
     val shop: MutableState<Shop?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
-    val chartData: SnapshotStateList<ItemSpentByTime> = mutableStateListOf(),
+    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
     val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
@@ -33,9 +33,8 @@ class ShopViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
     private val shopRepository: IShopRepository,
 ): ViewModel() {
-    internal val shopScreenState: ShopScreenState = ShopScreenState()
+    internal val screenState: ShopScreenState = ShopScreenState()
 
-    private var timePeriodFlowHandlerJob: Job? = null
     private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
 
     private var fullItemsDataQuery: Job? = null
@@ -46,22 +45,18 @@ class ShopViewModel @Inject constructor(
 
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
-        shopScreenState.spentByTimePeriod.value = newPeriod
+        screenState.spentByTimePeriod.value = newPeriod
 
-        timePeriodFlowHandlerJob?.cancel()
-        timePeriodFlowHandlerJob = viewModelScope.launch {
-            timePeriodFlowHandler!!.spentByTimeData.collect {
-                shopScreenState.chartData.clear()
-                shopScreenState.chartData.addAll(it)
-            }
-        }
+        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
     fun performDataUpdate(shopId: Long) = viewModelScope.launch {
-        shopScreenState.shop.value = shopRepository.get(shopId)
+        if (shopId == screenState.shop.value?.id) return@launch
+
+        screenState.shop.value = shopRepository.get(shopId)
 
         viewModelScope.launch {
-            shopScreenState.totalSpentData.floatValue = itemRepository.getTotalSpentByShop(shopId)
+            screenState.totalSpentData.floatValue = itemRepository.getTotalSpentByShop(shopId)
                 .toFloat()
                 .div(100000)
         }
@@ -86,15 +81,9 @@ class ShopViewModel @Inject constructor(
             },
         )
 
-        shopScreenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
+        screenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
 
-        timePeriodFlowHandlerJob?.cancel()
-        timePeriodFlowHandlerJob = viewModelScope.launch {
-            shopScreenState.chartData.clear()
-            timePeriodFlowHandler!!.spentByTimeData.collect {
-                shopScreenState.chartData.addAll(it)
-            }
-        }
+        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
 
         newFullItemFlowJob?.cancel()
         newFullItemFlowJob = viewModelScope.launch {
@@ -103,7 +92,7 @@ class ShopViewModel @Inject constructor(
 
             newFullItemFlow?.collect {
                 fullItemOffset = 0
-                shopScreenState.items.clear()
+                screenState.items.clear()
                 fullItemsDataQuery?.cancel()
                 fullItemsDataQuery = performFullItemsQuery()
                 fullItemOffset += fullItemFetchCount
@@ -115,7 +104,7 @@ class ShopViewModel @Inject constructor(
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted && shopScreenState.shop.value != null) {
+        if (fullItemsDataQuery!!.isCompleted && screenState.shop.value != null) {
             fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
             fullItemOffset += fullItemFetchCount
         }
@@ -126,11 +115,11 @@ class ShopViewModel @Inject constructor(
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        shopScreenState.items.addAll(
+        screenState.items.addAll(
             itemRepository.getFullItemsByShop(
                 offset = queryOffset,
                 count = fullItemFetchCount,
-                shopId = shopScreenState.shop.value!!.id
+                shopId = screenState.shop.value!!.id
             )
         )
     }
