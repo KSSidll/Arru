@@ -42,7 +42,7 @@ fun <T> RankingScreen(
                 .padding(it)
                 .verticalScroll(state = rememberScrollState())
         ) {
-            CategoryScreenContent(
+            RankingScreenContent(
                 data = data,
                 onItemClick = onItemClick,
             )
@@ -51,7 +51,7 @@ fun <T> RankingScreen(
 }
 
 @Composable
-private fun <T> CategoryScreenContent(
+private fun <T> RankingScreenContent(
     data: List<T>,
     onItemClick: (T) -> Unit,
 ) where T: Rankable {

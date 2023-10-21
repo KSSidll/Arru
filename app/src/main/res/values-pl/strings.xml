@@ -20,6 +20,11 @@
     <string name="item_price">Cena</string>
     <string name="item_quantity">Ilość</string>
 
+    <string name="item_price_increment_by_half">Zwiększ cenę o 0.5</string>
+    <string name="item_price_decrement_by_half">Zmniejsz cenę o 0.5</string>
+    <string name="item_quantity_increment_by_one">Zwiększ ilość o 1</string>
+    <string name="item_quantity_decrement_by_one">Zmniejsz ilość o 1</string>
+
     <string name="item">Przedmiot</string>
     <string name="item_add">Dodaj Przedmiot</string>
     <string name="item_add_description">Dodaj nowy przedmiot</string>

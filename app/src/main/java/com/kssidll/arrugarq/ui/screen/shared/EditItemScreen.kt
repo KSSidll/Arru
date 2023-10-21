@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
@@ -151,64 +151,194 @@ fun EditItemScreen(
                 .padding(horizontal = ItemHorizontalPadding.times(2))
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        StyledOutlinedTextField(
-            singleLine = true,
-            enabled = state.selectedProduct.value != null && !state.loadingPrice.value,
-            value = state.price.value,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            ),
-            onValueChange = {
-                state.price.value = it
-                state.validatePrice()
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.item_price),
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .alpha(0.5F)
-                )
-            },
-            isError = if (state.attemptedToSubmit.value) state.priceError.value else false,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding.times(2))
-        )
+        ) {
+            val priceEnabled = state.selectedProduct.value != null && !state.loadingPrice.value
 
-        Spacer(modifier = Modifier.height(12.dp))
+            StyledOutlinedTextField(
+                singleLine = true,
+                enabled = priceEnabled,
+                value = state.price.value,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                onValueChange = {
+                    if (it.isBlank()) {
+                        state.price.value = String()
+                    } else if (it.matches(Regex("""\d+?\.?\d{0,2}"""))) {
+                        state.price.value = it
+                    }
 
-        StyledOutlinedTextField(
-            singleLine = true,
-            enabled = state.selectedProduct.value != null && !state.loadingQuantity.value,
-            value = state.quantity.value,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            ),
-            onValueChange = {
-                state.quantity.value = it
-                state.validateQuantity()
-            },
-            label = {
-                Text(
-                    text = if (state.selectedVariant.value == null)
-                        stringResource(R.string.item_product_variant_default_value)
-                    else
-                        stringResource(R.string.item_quantity),
-                    fontSize = 16.sp,
+                    state.validatePrice()
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.item_price),
+                        fontSize = 16.sp,
+                    )
+                },
+                isError = if (state.attemptedToSubmit.value) state.priceError.value else false,
+                modifier = Modifier.weight(1f)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                IconButton(
+                    enabled = priceEnabled,
+                    onClick = {
+                        if (state.validatePrice()) {
+                            val value = state.price.value.toFloat()
+
+                            state.price.value = "%.2f".format(
+                                value.plus(0.5f)
+                            )
+                        }
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                    ),
                     modifier = Modifier
-                        .alpha(0.5F)
-                )
-            },
-            isError = if (state.attemptedToSubmit.value) state.quantityError.value else false,
+                        .minimumInteractiveComponentSize()
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowUp,
+                        contentDescription = stringResource(id = R.string.item_price_increment_by_half),
+                    )
+                }
+
+                IconButton(
+                    enabled = priceEnabled,
+                    onClick = {
+                        if (state.validatePrice()) {
+                            val value = state.price.value.toFloat()
+
+                            state.price.value = "%.2f".format(
+                                if (value > 0.5f) {
+                                    value.minus(0.5f)
+                                } else {
+                                    0f
+                                }
+                            )
+                        }
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                    ),
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = stringResource(id = R.string.item_price_decrement_by_half),
+                    )
+                }
+            }
+
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding.times(2))
-        )
+        ) {
+            val quantityEnabled =
+                state.selectedProduct.value != null && !state.loadingQuantity.value
 
-        Spacer(modifier = Modifier.height(12.dp))
+            StyledOutlinedTextField(
+                singleLine = true,
+                enabled = quantityEnabled,
+                value = state.quantity.value,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                onValueChange = {
+                    if (it.isBlank()) {
+                        state.quantity.value = String()
+                    } else if (it.matches(Regex("""\d+?\.?\d{0,3}"""))) {
+                        state.quantity.value = it
+                    }
+
+                    state.validateQuantity()
+                },
+                label = {
+                    Text(
+                        text = if (state.selectedVariant.value == null)
+                            stringResource(R.string.item_product_variant_default_value)
+                        else
+                            stringResource(R.string.item_quantity),
+                        fontSize = 16.sp,
+                    )
+                },
+                isError = if (state.attemptedToSubmit.value) state.quantityError.value else false,
+                modifier = Modifier.weight(1f)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                IconButton(
+                    enabled = quantityEnabled,
+                    onClick = {
+                        if (state.validateQuantity()) {
+                            val value = state.quantity.value.toFloat()
+
+                            state.quantity.value = "%.3f".format(
+                                value.plus(1f)
+                            )
+                        }
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                    ),
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowUp,
+                        contentDescription = stringResource(id = R.string.item_quantity_increment_by_one),
+                    )
+                }
+
+                IconButton(
+                    enabled = quantityEnabled,
+                    onClick = {
+                        if (state.validateQuantity()) {
+                            val value = state.quantity.value.toFloat()
+
+                            state.quantity.value = "%.3f".format(
+                                if (value > 1f) {
+                                    value.minus(1f)
+                                } else {
+                                    0f
+                                }
+                            )
+                        }
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                    ),
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = stringResource(id = R.string.item_quantity_decrement_by_one),
+                    )
+                }
+            }
+
+        }
+
         HorizontalDivider()
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -319,11 +449,7 @@ fun EditItemScreenState.validateSelectedProduct(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 fun EditItemScreenState.validateQuantity(): Boolean {
-    return !(quantity.value.replace(
-        ',',
-        '.'
-    )
-        .toFloatOrNull() == null).also { quantityError.value = it }
+    return !(quantity.value.toFloatOrNull() == null).also { quantityError.value = it }
 }
 
 /**
@@ -331,11 +457,7 @@ fun EditItemScreenState.validateQuantity(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 fun EditItemScreenState.validatePrice(): Boolean {
-    return !(price.value.replace(
-        ',',
-        '.'
-    )
-        .toFloatOrNull() == null).also { priceError.value = it }
+    return !(price.value.toFloatOrNull() == null).also { priceError.value = it }
 }
 
 /**

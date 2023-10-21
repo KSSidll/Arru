@@ -20,6 +20,10 @@
     <string name="item_date">Date</string>
     <string name="item_price">Price</string>
     <string name="item_quantity">Quantity</string>
+    <string name="item_price_increment_by_half">Increment price by 0.5</string>
+    <string name="item_price_decrement_by_half">Decrement price by 0.5</string>
+    <string name="item_quantity_increment_by_one">Increment quantity by 1</string>
+    <string name="item_quantity_decrement_by_one">Decrement quantity by 1</string>
 
     <string name="item">Item</string>
     <string name="item_add">Add Item</string>

@@ -71,6 +71,9 @@ class AddItemViewModel @Inject constructor(
         screenState.loadingVariants.value = false
         screenState.loadingQuantity.value = false
         screenState.loadingPrice.value = false
+
+        screenState.validateQuantity()
+        screenState.validatePrice()
     }
 
     /**
