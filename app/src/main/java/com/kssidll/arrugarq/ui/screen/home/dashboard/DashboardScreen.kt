@@ -78,34 +78,36 @@ private fun DashboardScreenContent(
         Spacer(Modifier.height(4.dp))
 
         Card(
-            modifier = Modifier
-                .padding(tileOuterPadding)
-                .clickable {
-                    onCategoryCardClick()
-                },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
-            )
+            ),
+            modifier = Modifier
+                .padding(tileOuterPadding)
         ) {
             RankingList(
                 innerItemPadding = PaddingValues(tileInnerPadding),
                 items = spentByCategoryData,
+                modifier = Modifier
+                    .clickable {
+                        onCategoryCardClick()
+                    }
             )
         }
 
         Card(
-            modifier = Modifier
-                .padding(tileOuterPadding)
-                .clickable {
-                    onShopCardClick()
-                },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
-            )
+            ),
+            modifier = Modifier
+                .padding(tileOuterPadding)
         ) {
             RankingList(
                 innerItemPadding = PaddingValues(tileInnerPadding),
                 items = spentByShopData,
+                modifier = Modifier
+                    .clickable {
+                        onShopCardClick()
+                    }
             )
         }
 
