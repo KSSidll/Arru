@@ -15,7 +15,7 @@ fun AddItemRoute(
     val scope = rememberCoroutineScope()
     val addItemViewModel: AddItemViewModel = hiltViewModel()
 
-    EditItemScreen(
+    EditItemScreenImpl(
         onBack = onBack,
         state = addItemViewModel.screenState,
         onSubmit = {

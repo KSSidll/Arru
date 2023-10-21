@@ -22,7 +22,7 @@ import com.kssidll.arrugarq.ui.theme.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 @Composable
-fun EditProductVariantScreen(
+fun EditProductVariantScreenImpl(
     onBack: () -> Unit,
     state: EditProductVariantScreenState,
     onSubmit: () -> Unit,
@@ -120,22 +120,22 @@ fun EditProductVariantScreenState.extractProducerOrNull(productId: Long): Produc
 }
 
 @Preview(
-    group = "EditProductVariantScreen",
+    group = "EditProductVariantScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditProductVariantScreen",
+    group = "EditProductVariantScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditProductVariantScreenPreview() {
+fun EditProductVariantScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditProductVariantScreen(
+            EditProductVariantScreenImpl(
                 onBack = {},
                 state = EditProductVariantScreenState(),
                 onSubmit = {},

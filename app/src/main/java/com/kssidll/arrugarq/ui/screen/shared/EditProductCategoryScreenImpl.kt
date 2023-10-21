@@ -22,9 +22,9 @@ import com.kssidll.arrugarq.ui.theme.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 @Composable
-fun EditShopScreen(
+fun EditProductCategoryScreenImpl(
     onBack: () -> Unit,
-    state: EditShopScreenState,
+    state: EditProductCategoryScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
 ) {
@@ -47,11 +47,11 @@ fun EditShopScreen(
 
     EditScreen(
         onBack = onBack,
-        title = stringResource(id = R.string.item_shop),
+        title = stringResource(id = R.string.item_product_category),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_shop_add),
-        submitButtonDescription = stringResource(id = R.string.item_shop_add_description),
+        submitButtonText = stringResource(id = R.string.item_product_category_add),
+        submitButtonDescription = stringResource(id = R.string.item_product_category_add_description),
     ) {
         StyledOutlinedTextField(
             singleLine = true,
@@ -70,7 +70,7 @@ fun EditShopScreen(
             ),
             label = {
                 Text(
-                    text = stringResource(R.string.item_shop),
+                    text = stringResource(R.string.item_product_category),
                 )
             },
             isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
@@ -80,10 +80,9 @@ fun EditShopScreen(
                 .padding(horizontal = ItemHorizontalPadding)
         )
     }
-
 }
 
-data class EditShopScreenState(
+data class EditProductCategoryScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
     val name: MutableState<String> = mutableStateOf(String()),
@@ -94,7 +93,7 @@ data class EditShopScreenState(
  * Validates name field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditShopScreenState.validateName(): Boolean {
+fun EditProductCategoryScreenState.validateName(): Boolean {
     return !(name.value.isBlank()).also { nameError.value = it }
 }
 
@@ -102,7 +101,7 @@ fun EditShopScreenState.validateName(): Boolean {
  * Validates state fields and updates state flags
  * @return true if all fields are of correct value, false otherwise
  */
-fun EditShopScreenState.validate(): Boolean {
+fun EditProductCategoryScreenState.validate(): Boolean {
     return validateName()
 }
 
@@ -110,33 +109,33 @@ fun EditShopScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditShopScreenState.extractShopOrNull(): Shop? {
+fun EditProductCategoryScreenState.extractCategoryOrNull(): ProductCategory? {
     if (!validate()) return null
 
-    return Shop(
+    return ProductCategory(
         name = name.value.trim(),
     )
 }
 
 @Preview(
-    group = "EditShopScreen",
+    group = "EditProductCategoryScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditShopScreen",
+    group = "EditProductCategoryScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditShopScreenPreview() {
+fun EditProductCategoryScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditShopScreen(
+            EditProductCategoryScreenImpl(
                 onBack = {},
-                state = EditShopScreenState(),
+                state = EditProductCategoryScreenState(),
                 onSubmit = {},
             )
         }

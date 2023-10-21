@@ -20,7 +20,7 @@ import androidx.compose.material3.Surface as Surface1
 private val ItemHorizontalPadding: Dp = 20.dp
 
 @Composable
-fun EditProductScreen(
+fun EditProductScreenImpl(
     onBack: () -> Unit,
     state: EditProductScreenState,
     onSubmit: () -> Unit,
@@ -202,10 +202,10 @@ fun EditProductScreenState.extractProductOrNull(): Product? {
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditProductScreenPreview() {
+fun EditProductScreenImplPreview() {
     ArrugarqTheme {
         Surface1(modifier = Modifier.fillMaxSize()) {
-            EditProductScreen(
+            EditProductScreenImpl(
                 onBack = {},
                 state = EditProductScreenState(),
                 onSubmit = {},

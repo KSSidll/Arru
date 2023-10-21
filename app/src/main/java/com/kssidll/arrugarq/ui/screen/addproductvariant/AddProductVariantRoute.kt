@@ -13,7 +13,7 @@ fun AddProductVariantRoute(
     val scope = rememberCoroutineScope()
     val addProductVariantViewModel: AddProductVariantViewModel = hiltViewModel()
 
-    EditProductVariantScreen(
+    EditProductVariantScreenImpl(
         onBack = onBack,
         state = addProductVariantViewModel.screenState,
         onSubmit = {

@@ -27,7 +27,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditItemScreen(
+fun EditItemScreenImpl(
     onBack: () -> Unit,
     state: EditItemScreenState,
     onSubmit: () -> Unit,
@@ -507,22 +507,22 @@ fun EditItemScreenState.extractItemOrNull(): Item? {
 }
 
 @Preview(
-    group = "EditItemScreen",
+    group = "EditItemScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditItemScreen",
+    group = "EditItemScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditItemScreenPreview() {
+fun EditItemScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditItemScreen(
+            EditItemScreenImpl(
                 onBack = {},
                 state = EditItemScreenState(),
                 onSubmit = {},
