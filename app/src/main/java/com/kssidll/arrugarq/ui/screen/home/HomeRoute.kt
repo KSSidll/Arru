@@ -13,23 +13,23 @@ fun HomeRoute(
     onTransactionProducerClick: (producerId: Long) -> Unit,
     onTransactionShopClick: (shopId: Long) -> Unit,
 ) {
-    val homeViewModel: HomeViewModel = hiltViewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
 
     HomeScreen(
         onAddItem = onAddItem,
         onDashboardCategoryCardClick = onDashboardCategoryCardClick,
         onDashboardShopCardClick = onDashboardShopCardClick,
         requestMoreFullItems = {
-            homeViewModel.queryMoreFullItems()
+            viewModel.queryMoreFullItems()
         },
-        fullItems = homeViewModel.fullItemsData,
-        totalSpentData = homeViewModel.getTotalSpent(),
-        spentByShopData = homeViewModel.getSpentByShop(),
-        spentByCategoryData = homeViewModel.getSpentByCategory(),
-        spentByTimeData = homeViewModel.spentByTimeData,
-        spentByTimePeriod = homeViewModel.spentByTimePeriod,
+        fullItems = viewModel.fullItemsData,
+        totalSpentData = viewModel.getTotalSpent(),
+        spentByShopData = viewModel.getSpentByShop(),
+        spentByCategoryData = viewModel.getSpentByCategory(),
+        spentByTimeData = viewModel.spentByTimeData,
+        spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
-            homeViewModel.switchToSpentByTimePeriod(it)
+            viewModel.switchToSpentByTimePeriod(it)
         },
         onTransactionItemClick = {
             onTransactionItemClick(it.embeddedItem.item.productId)

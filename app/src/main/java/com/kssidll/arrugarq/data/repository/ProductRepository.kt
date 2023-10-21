@@ -5,84 +5,84 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.repository.*
 import kotlinx.coroutines.flow.*
 
-class ProductRepository(private val productDao: ProductDao): IProductRepository {
+class ProductRepository(private val dao: ProductDao): IProductRepository {
     override suspend fun getAll(): List<Product> {
-        return productDao.getAll()
+        return dao.getAll()
     }
 
     override fun getAllFlow(): Flow<List<Product>> {
-        return productDao.getAllFlow()
+        return dao.getAllFlow()
     }
 
     override suspend fun get(id: Long): Product? {
-        return productDao.get(id)
+        return dao.get(id)
     }
 
     override fun getFlow(id: Long): Flow<Product> {
-        return productDao.getFlow(id)
+        return dao.getFlow(id)
     }
 
     override suspend fun getByCategoryId(categoryId: Long): List<Product> {
-        return productDao.getByCategoryId(categoryId)
+        return dao.getByCategoryId(categoryId)
     }
 
     override fun getByCategoryIdFlow(categoryId: Long): Flow<List<Product>> {
-        return productDao.getByCategoryIdFlow(categoryId)
+        return dao.getByCategoryIdFlow(categoryId)
     }
 
     override suspend fun getByProducerId(producerId: Long): List<Product> {
-        return productDao.getByProducerId(producerId)
+        return dao.getByProducerId(producerId)
     }
 
     override fun getByProducerIdFlow(producerId: Long): Flow<List<Product>> {
-        return productDao.getByProducerIdFlow(producerId)
+        return dao.getByProducerIdFlow(producerId)
     }
 
     override suspend fun getByName(name: String): Product? {
-        return productDao.getByName(name)
+        return dao.getByName(name)
     }
 
     override fun getByNameFlow(name: String): Flow<Product> {
-        return productDao.getByNameFlow(name)
+        return dao.getByNameFlow(name)
     }
 
     override suspend fun findLike(name: String): List<Product> {
-        return productDao.findLike(name)
+        return dao.findLike(name)
     }
 
     override fun findLikeFlow(name: String): Flow<List<Product>> {
-        return productDao.findLikeFlow(name)
+        return dao.findLikeFlow(name)
     }
 
     override suspend fun getAllWithAltNames(): List<ProductWithAltNames> {
-        return productDao.getAllWithAltNames()
+        return dao.getAllWithAltNames()
     }
 
     override fun getAllWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
-        return productDao.getAllWithAltNamesFlow()
+        return dao.getAllWithAltNamesFlow()
     }
 
     override suspend fun insert(product: Product): Long {
-        return productDao.insert(product)
+        return dao.insert(product)
     }
 
     override suspend fun addAltName(alternativeName: ProductAltName): Long {
-        return productDao.addAltName(alternativeName)
+        return dao.addAltName(alternativeName)
     }
 
     override suspend fun update(product: Product) {
-        productDao.update(product)
+        dao.update(product)
     }
 
     override suspend fun updateAltName(alternativeName: ProductAltName) {
-        productDao.updateAltName(alternativeName)
+        dao.updateAltName(alternativeName)
     }
 
     override suspend fun delete(product: Product) {
-        productDao.delete(product)
+        dao.delete(product)
     }
 
     override suspend fun deleteAltName(alternativeName: ProductAltName) {
-        productDao.deleteAltName(alternativeName)
+        dao.deleteAltName(alternativeName)
     }
 }

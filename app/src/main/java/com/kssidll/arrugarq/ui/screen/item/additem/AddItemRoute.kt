@@ -1,0 +1,40 @@
+package com.kssidll.arrugarq.ui.screen.item.additem
+
+import androidx.compose.runtime.*
+import com.kssidll.arrugarq.ui.screen.item.*
+import dev.olshevski.navigation.reimagined.hilt.*
+import kotlinx.coroutines.*
+
+@Composable
+fun AddItemRoute(
+    onBack: () -> Unit,
+    onProductAdd: () -> Unit,
+    onVariantAdd: (Long) -> Unit,
+    onShopAdd: () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    val viewModel: AddItemViewModel = hiltViewModel()
+
+    EditItemScreenImpl(
+        onBack = onBack,
+        state = viewModel.screenState,
+        onSubmit = {
+            scope.launch {
+                val result = viewModel.addItem()
+                if (result != null) onBack()
+            }
+        },
+        onProductAdd = onProductAdd,
+        onShopAdd = onShopAdd,
+        onVariantAdd = {
+            with(viewModel.screenState.selectedProduct) {
+                if (value != null) {
+                    onVariantAdd(value!!.id)
+                }
+            }
+        },
+        onProductChange = {
+            viewModel.onProductChange()
+        }
+    )
+}

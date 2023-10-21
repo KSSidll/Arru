@@ -5,37 +5,37 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.repository.*
 import kotlinx.coroutines.flow.*
 
-class ItemRepository(private val itemDao: ItemDao): IItemRepository {
+class ItemRepository(private val dao: ItemDao): IItemRepository {
     override suspend fun getAll(): List<Item> {
-        return itemDao.getAll()
+        return dao.getAll()
     }
 
     override fun getAllFlow(): Flow<List<Item>> {
-        return itemDao.getAllFlow()
+        return dao.getAllFlow()
     }
 
     override suspend fun get(id: Long): Item? {
-        return itemDao.get(id)
+        return dao.get(id)
     }
 
     override fun getFlow(id: Long): Flow<Item> {
-        return itemDao.getFlow(id)
+        return dao.getFlow(id)
     }
 
     override suspend fun getLast(): Item? {
-        return itemDao.getLast()
+        return dao.getLast()
     }
 
     override fun getLastFlow(): Flow<Item> {
-        return itemDao.getLastFlow()
+        return dao.getLastFlow()
     }
 
     override suspend fun getAllEmbeddedItemSorted(): List<EmbeddedItem> {
-        return itemDao.getAllEmbeddedItemSorted()
+        return dao.getAllEmbeddedItemSorted()
     }
 
     override fun getAllEmbeddedItemSortedFlow(): Flow<List<EmbeddedItem>> {
-        return itemDao.getAllEmbeddedItemSortedFlow()
+        return dao.getAllEmbeddedItemSortedFlow()
     }
 
     override suspend fun getEmbeddedItemsByShopSorted(
@@ -43,7 +43,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         shopId: Long
     ): List<EmbeddedItem> {
-        return itemDao.getEmbeddedItemsByShopSorted(
+        return dao.getEmbeddedItemsByShopSorted(
             offset = offset,
             count = count,
             shopId = shopId,
@@ -55,7 +55,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         shopId: Long
     ): Flow<List<EmbeddedItem>> {
-        return itemDao.getEmbeddedItemsByShopSortedFlow(
+        return dao.getEmbeddedItemsByShopSortedFlow(
             offset = offset,
             count = count,
             shopId = shopId,
@@ -67,7 +67,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         productId: Long
     ): List<EmbeddedItem> {
-        return itemDao.getEmbeddedItemsByProductSorted(
+        return dao.getEmbeddedItemsByProductSorted(
             offset = offset,
             count = count,
             productId = productId,
@@ -79,7 +79,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         productId: Long
     ): Flow<List<EmbeddedItem>> {
-        return itemDao.getEmbeddedItemsByProductSortedFlow(
+        return dao.getEmbeddedItemsByProductSortedFlow(
             offset = offset,
             count = count,
             productId = productId,
@@ -91,7 +91,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         producerId: Long
     ): List<EmbeddedItem> {
-        return itemDao.getEmbeddedItemsByProducerSorted(
+        return dao.getEmbeddedItemsByProducerSorted(
             offset = offset,
             count = count,
             producerId = producerId,
@@ -103,7 +103,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         producerId: Long
     ): Flow<List<EmbeddedItem>> {
-        return itemDao.getEmbeddedItemsByProducerSortedFlow(
+        return dao.getEmbeddedItemsByProducerSortedFlow(
             offset = offset,
             count = count,
             producerId = producerId,
@@ -115,7 +115,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         categoryId: Long
     ): List<EmbeddedItem> {
-        return itemDao.getEmbeddedItemsByCategorySorted(
+        return dao.getEmbeddedItemsByCategorySorted(
             offset = offset,
             count = count,
             categoryId = categoryId,
@@ -127,7 +127,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         categoryId: Long
     ): Flow<List<EmbeddedItem>> {
-        return itemDao.getEmbeddedItemsByCategorySortedFlow(
+        return dao.getEmbeddedItemsByCategorySortedFlow(
             offset = offset,
             count = count,
             categoryId = categoryId,
@@ -138,7 +138,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         offset: Int,
         count: Int,
     ): List<EmbeddedItem> {
-        return itemDao.getEmbeddedItemsSorted(
+        return dao.getEmbeddedItemsSorted(
             offset = offset,
             count = count,
         )
@@ -148,33 +148,33 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         offset: Int,
         count: Int,
     ): Flow<List<EmbeddedItem>> {
-        return itemDao.getEmbeddedItemsSortedFlow(
+        return dao.getEmbeddedItemsSortedFlow(
             offset = offset,
             count = count,
         )
     }
 
     override suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct {
-        return itemDao.getItemEmbeddedProduct(productId)
+        return dao.getItemEmbeddedProduct(productId)
     }
 
     override fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct> {
-        return itemDao.getItemEmbeddedProductFlow(productId)
+        return dao.getItemEmbeddedProductFlow(productId)
     }
 
     override suspend fun getProductsAveragePriceByShopByMonthSorted(productId: Long): List<ProductPriceByShopByTime> {
-        return itemDao.getProductsAveragePriceByShopByMonthSorted(productId)
+        return dao.getProductsAveragePriceByShopByMonthSorted(productId)
     }
 
     override fun getProductsAveragePriceByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>> {
-        return itemDao.getProductsAveragePriceByShopByMonthSortedFlow(productId)
+        return dao.getProductsAveragePriceByShopByMonthSortedFlow(productId)
     }
 
     override suspend fun getFullItems(
         offset: Int,
         count: Int,
     ): List<FullItem> {
-        return itemDao.getFullItems(
+        return dao.getFullItems(
             offset = offset,
             count = count,
         )
@@ -184,7 +184,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         offset: Int,
         count: Int,
     ): Flow<List<FullItem>> {
-        return itemDao.getFullItemsFlow(
+        return dao.getFullItemsFlow(
             offset = offset,
             count = count,
         )
@@ -195,7 +195,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         shopId: Long,
     ): List<FullItem> {
-        return itemDao.getFullItemsByShop(
+        return dao.getFullItemsByShop(
             offset = offset,
             count = count,
             shopId = shopId,
@@ -207,7 +207,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         shopId: Long,
     ): Flow<List<FullItem>> {
-        return itemDao.getFullItemsByShopFlow(
+        return dao.getFullItemsByShopFlow(
             offset = offset,
             count = count,
             shopId = shopId,
@@ -219,7 +219,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         productId: Long
     ): List<FullItem> {
-        return itemDao.getFullItemsByProduct(
+        return dao.getFullItemsByProduct(
             offset = offset,
             count = count,
             productId = productId,
@@ -231,7 +231,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         productId: Long
     ): Flow<List<FullItem>> {
-        return itemDao.getFullItemsByProductFlow(
+        return dao.getFullItemsByProductFlow(
             offset = offset,
             count = count,
             productId = productId,
@@ -243,7 +243,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         producerId: Long
     ): List<FullItem> {
-        return itemDao.getFullItemsByProducer(
+        return dao.getFullItemsByProducer(
             offset = offset,
             count = count,
             producerId = producerId,
@@ -255,7 +255,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         producerId: Long
     ): Flow<List<FullItem>> {
-        return itemDao.getFullItemsByProducerFlow(
+        return dao.getFullItemsByProducerFlow(
             offset = offset,
             count = count,
             producerId = producerId,
@@ -267,7 +267,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         categoryId: Long
     ): List<FullItem> {
-        return itemDao.getFullItemsByCategory(
+        return dao.getFullItemsByCategory(
             offset = offset,
             count = count,
             categoryId = categoryId,
@@ -279,7 +279,7 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         count: Int,
         categoryId: Long
     ): Flow<List<FullItem>> {
-        return itemDao.getFullItemsByCategoryFlow(
+        return dao.getFullItemsByCategoryFlow(
             offset = offset,
             count = count,
             categoryId = categoryId,
@@ -287,274 +287,274 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
     }
 
     override suspend fun getShopTotalSpent(): List<ItemSpentByShop> {
-        return itemDao.getShopTotalSpent()
+        return dao.getShopTotalSpent()
     }
 
     override fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>> {
-        return itemDao.getShopTotalSpentFlow()
+        return dao.getShopTotalSpentFlow()
     }
 
     override suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory> {
-        return itemDao.getCategoryTotalSpent()
+        return dao.getCategoryTotalSpent()
     }
 
     override fun getCategoryTotalSpentFlow(): Flow<List<ItemSpentByCategory>> {
-        return itemDao.getCategoryTotalSpentFlow()
+        return dao.getCategoryTotalSpentFlow()
     }
 
     override suspend fun getTotalSpent(): Long {
-        return itemDao.getTotalSpent()
+        return dao.getTotalSpent()
     }
 
     override fun getTotalSpentFlow(): Flow<Long> {
-        return itemDao.getTotalSpentFlow()
+        return dao.getTotalSpentFlow()
     }
 
     override suspend fun getTotalSpentByShop(shopId: Long): Long {
-        return itemDao.getTotalSpentByShop(shopId)
+        return dao.getTotalSpentByShop(shopId)
     }
 
     override fun getTotalSpentByShopFlow(shopId: Long): Flow<Long> {
-        return itemDao.getTotalSpentByShopFlow(shopId)
+        return dao.getTotalSpentByShopFlow(shopId)
     }
 
     override suspend fun getTotalSpentByProduct(productId: Long): Long {
-        return itemDao.getTotalSpentByProduct(productId)
+        return dao.getTotalSpentByProduct(productId)
     }
 
     override fun getTotalSpentByProductFlow(productId: Long): Flow<Long> {
-        return itemDao.getTotalSpentByProductFlow(productId)
+        return dao.getTotalSpentByProductFlow(productId)
     }
 
     override suspend fun getTotalSpentByProducer(producerId: Long): Long {
-        return itemDao.getTotalSpentByProducer(producerId)
+        return dao.getTotalSpentByProducer(producerId)
     }
 
     override fun getTotalSpentByProducerFlow(producerId: Long): Flow<Long> {
-        return itemDao.getTotalSpentByProducerFlow(producerId)
+        return dao.getTotalSpentByProducerFlow(producerId)
     }
 
     override suspend fun getTotalSpentByCategory(categoryId: Long): Long {
-        return itemDao.getTotalSpentByCategory(categoryId)
+        return dao.getTotalSpentByCategory(categoryId)
     }
 
     override fun getTotalSpentByCategoryFlow(categoryId: Long): Flow<Long> {
-        return itemDao.getTotalSpentByCategoryFlow(categoryId)
+        return dao.getTotalSpentByCategoryFlow(categoryId)
     }
 
     override suspend fun getTotalSpentByShopByDay(shopId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByShopByDay(shopId)
+        return dao.getTotalSpentByShopByDay(shopId)
     }
 
     override fun getTotalSpentByShopByDayFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByShopByDayFlow(shopId)
+        return dao.getTotalSpentByShopByDayFlow(shopId)
     }
 
     override suspend fun getTotalSpentByProductByDay(productId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProductByDay(productId)
+        return dao.getTotalSpentByProductByDay(productId)
     }
 
     override fun getTotalSpentByProductByDayFlow(productId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProductByDayFlow(productId)
+        return dao.getTotalSpentByProductByDayFlow(productId)
     }
 
     override suspend fun getTotalSpentByProducerByDay(producerId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProducerByDay(producerId)
+        return dao.getTotalSpentByProducerByDay(producerId)
     }
 
     override fun getTotalSpentByProducerByDayFlow(producerId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProducerByDayFlow(producerId)
+        return dao.getTotalSpentByProducerByDayFlow(producerId)
     }
 
     override suspend fun getTotalSpentByCategoryByDay(categoryId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByCategoryByDay(categoryId)
+        return dao.getTotalSpentByCategoryByDay(categoryId)
     }
 
     override fun getTotalSpentByCategoryByDayFlow(categoryId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByCategoryByDayFlow(categoryId)
+        return dao.getTotalSpentByCategoryByDayFlow(categoryId)
     }
 
     override suspend fun getTotalSpentByDay(): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByDay()
+        return dao.getTotalSpentByDay()
     }
 
     override fun getTotalSpentByDayFlow(): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByDayFlow()
+        return dao.getTotalSpentByDayFlow()
     }
 
     override suspend fun getTotalSpentByShopByWeek(shopId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByShopByWeek(shopId)
+        return dao.getTotalSpentByShopByWeek(shopId)
     }
 
     override fun getTotalSpentByShopByWeekFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByShopByWeekFlow(shopId)
+        return dao.getTotalSpentByShopByWeekFlow(shopId)
     }
 
     override suspend fun getTotalSpentByProductByWeek(productId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProductByWeek(productId)
+        return dao.getTotalSpentByProductByWeek(productId)
     }
 
     override fun getTotalSpentByProductByWeekFlow(productId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProductByWeekFlow(productId)
+        return dao.getTotalSpentByProductByWeekFlow(productId)
     }
 
     override suspend fun getTotalSpentByProducerByWeek(producerId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProducerByWeek(producerId)
+        return dao.getTotalSpentByProducerByWeek(producerId)
     }
 
     override fun getTotalSpentByProducerByWeekFlow(producerId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProducerByWeekFlow(producerId)
+        return dao.getTotalSpentByProducerByWeekFlow(producerId)
     }
 
     override suspend fun getTotalSpentByCategoryByWeek(categoryId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByCategoryByWeek(categoryId)
+        return dao.getTotalSpentByCategoryByWeek(categoryId)
     }
 
     override fun getTotalSpentByCategoryByWeekFlow(categoryId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByCategoryByWeekFlow(categoryId)
+        return dao.getTotalSpentByCategoryByWeekFlow(categoryId)
     }
 
     override suspend fun getTotalSpentByWeek(): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByWeek()
+        return dao.getTotalSpentByWeek()
     }
 
     override fun getTotalSpentByWeekFlow(): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByWeekFlow()
+        return dao.getTotalSpentByWeekFlow()
     }
 
     override suspend fun getTotalSpentByShopByMonth(shopId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByShopByMonth(shopId)
+        return dao.getTotalSpentByShopByMonth(shopId)
     }
 
     override fun getTotalSpentByShopByMonthFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByShopByMonthFlow(shopId)
+        return dao.getTotalSpentByShopByMonthFlow(shopId)
     }
 
     override suspend fun getTotalSpentByProductByMonth(productId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProductByMonth(productId)
+        return dao.getTotalSpentByProductByMonth(productId)
     }
 
     override fun getTotalSpentByProductByMonthFlow(productId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProductByMonthFlow(productId)
+        return dao.getTotalSpentByProductByMonthFlow(productId)
     }
 
     override suspend fun getTotalSpentByProducerByMonth(producerId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProducerByMonth(producerId)
+        return dao.getTotalSpentByProducerByMonth(producerId)
     }
 
     override fun getTotalSpentByProducerByMonthFlow(producerId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProducerByMonthFlow(producerId)
+        return dao.getTotalSpentByProducerByMonthFlow(producerId)
     }
 
     override suspend fun getTotalSpentByCategoryByMonth(categoryId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByCategoryByMonth(categoryId)
+        return dao.getTotalSpentByCategoryByMonth(categoryId)
     }
 
     override fun getTotalSpentByCategoryByMonthFlow(categoryId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByCategoryByMonthFlow(categoryId)
+        return dao.getTotalSpentByCategoryByMonthFlow(categoryId)
     }
 
     override suspend fun getTotalSpentByMonth(): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByMonth()
+        return dao.getTotalSpentByMonth()
     }
 
     override fun getTotalSpentByMonthFlow(): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByMonthFlow()
+        return dao.getTotalSpentByMonthFlow()
     }
 
     override suspend fun getTotalSpentByShopByYear(shopId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByShopByYear(shopId)
+        return dao.getTotalSpentByShopByYear(shopId)
     }
 
     override fun getTotalSpentByShopByYearFlow(shopId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByShopByYearFlow(shopId)
+        return dao.getTotalSpentByShopByYearFlow(shopId)
     }
 
     override suspend fun getTotalSpentByProductByYear(productId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProductByYear(productId)
+        return dao.getTotalSpentByProductByYear(productId)
     }
 
     override fun getTotalSpentByProductByYearFlow(productId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProductByYearFlow(productId)
+        return dao.getTotalSpentByProductByYearFlow(productId)
     }
 
     override suspend fun getTotalSpentByProducerByYear(producerId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByProducerByYear(producerId)
+        return dao.getTotalSpentByProducerByYear(producerId)
     }
 
     override fun getTotalSpentByProducerByYearFlow(producerId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByProducerByYearFlow(producerId)
+        return dao.getTotalSpentByProducerByYearFlow(producerId)
     }
 
     override suspend fun getTotalSpentByCategoryByYear(categoryId: Long): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByCategoryByYear(categoryId)
+        return dao.getTotalSpentByCategoryByYear(categoryId)
     }
 
     override fun getTotalSpentByCategoryByYearFlow(categoryId: Long): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByCategoryByYearFlow(categoryId)
+        return dao.getTotalSpentByCategoryByYearFlow(categoryId)
     }
 
     override suspend fun getTotalSpentByYear(): List<ItemSpentByTime> {
-        return itemDao.getTotalSpentByYear()
+        return dao.getTotalSpentByYear()
     }
 
     override fun getTotalSpentByYearFlow(): Flow<List<ItemSpentByTime>> {
-        return itemDao.getTotalSpentByYearFlow()
+        return dao.getTotalSpentByYearFlow()
     }
 
     override suspend fun getByProductId(productId: Long): List<Item> {
-        return itemDao.getByProductId(productId)
+        return dao.getByProductId(productId)
     }
 
     override fun getByProductIdFlow(productId: Long): Flow<List<Item>> {
-        return itemDao.getByProductIdFlow(productId)
+        return dao.getByProductIdFlow(productId)
     }
 
     override suspend fun getLastByProductId(productId: Long): Item? {
-        return itemDao.getLastByProductId(productId)
+        return dao.getLastByProductId(productId)
     }
 
     override fun getLastByProductIdFlow(productId: Long): Flow<Item?> {
-        return itemDao.getLastByProductIdFlow(productId)
+        return dao.getLastByProductIdFlow(productId)
     }
 
     override suspend fun getByVariant(variantId: Long): List<Item> {
-        return itemDao.getByVariant(variantId)
+        return dao.getByVariant(variantId)
     }
 
     override fun getByVariantFlow(variantId: Long): Flow<List<Item>> {
-        return itemDao.getByVariantFlow(variantId)
+        return dao.getByVariantFlow(variantId)
     }
 
     override suspend fun getByShopId(shopId: Long): List<Item> {
-        return itemDao.getByShopId(shopId)
+        return dao.getByShopId(shopId)
     }
 
     override fun getByShopIdFlow(shopId: Long): Flow<List<Item>> {
-        return itemDao.getByShopIdFlow(shopId)
+        return dao.getByShopIdFlow(shopId)
     }
 
     override suspend fun getNewerThan(date: Long): List<Item> {
-        return itemDao.getNewerThan(date)
+        return dao.getNewerThan(date)
     }
 
     override fun getNewerThanFlow(date: Long): Flow<List<Item>> {
-        return itemDao.getNewerThanFlow(date)
+        return dao.getNewerThanFlow(date)
     }
 
     override suspend fun getOlderThan(date: Long): List<Item> {
-        return itemDao.getOlderThan(date)
+        return dao.getOlderThan(date)
     }
 
     override fun getOlderThanFlow(date: Long): Flow<List<Item>> {
-        return itemDao.getOlderThanFlow(date)
+        return dao.getOlderThanFlow(date)
     }
 
     override suspend fun getBetweenDates(
         lowerBoundDate: Long,
         higherBoundDate: Long,
     ): List<Item> {
-        return itemDao.getBetweenDates(
+        return dao.getBetweenDates(
             lowerBoundDate = lowerBoundDate,
             higherBoundDate = higherBoundDate,
         )
@@ -564,22 +564,22 @@ class ItemRepository(private val itemDao: ItemDao): IItemRepository {
         lowerBoundDate: Long,
         higherBoundDate: Long,
     ): Flow<List<Item>> {
-        return itemDao.getBetweenDatesFlow(
+        return dao.getBetweenDatesFlow(
             lowerBoundDate = lowerBoundDate,
             higherBoundDate = higherBoundDate,
         )
     }
 
     override suspend fun insert(item: Item): Long {
-        return itemDao.insert(item)
+        return dao.insert(item)
     }
 
     override suspend fun update(item: Item) {
-        itemDao.update(item)
+        dao.update(item)
     }
 
     override suspend fun delete(item: Item) {
-        itemDao.delete(item)
+        dao.delete(item)
     }
 
 }

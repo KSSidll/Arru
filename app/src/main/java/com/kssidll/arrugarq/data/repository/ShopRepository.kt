@@ -5,40 +5,40 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.repository.*
 import kotlinx.coroutines.flow.*
 
-class ShopRepository(private val shopDao: ShopDao): IShopRepository {
+class ShopRepository(private val dao: ShopDao): IShopRepository {
     override suspend fun getAll(): List<Shop> {
-        return shopDao.getAll()
+        return dao.getAll()
     }
 
     override fun getAllFlow(): Flow<List<Shop>> {
-        return shopDao.getAllFlow()
+        return dao.getAllFlow()
     }
 
     override suspend fun get(id: Long): Shop? {
-        return shopDao.get(id)
+        return dao.get(id)
     }
 
     override fun getFlow(id: Long): Flow<Shop> {
-        return shopDao.getFlow(id)
+        return dao.getFlow(id)
     }
 
     override suspend fun getByName(name: String): Shop? {
-        return shopDao.getByName(name)
+        return dao.getByName(name)
     }
 
     override fun getByNameFlow(name: String): Flow<Shop> {
-        return shopDao.getByNameFlow(name)
+        return dao.getByNameFlow(name)
     }
 
     override suspend fun insert(shop: Shop): Long {
-        return shopDao.insert(shop)
+        return dao.insert(shop)
     }
 
     override suspend fun update(shop: Shop) {
-        shopDao.update(shop)
+        dao.update(shop)
     }
 
     override suspend fun delete(shop: Shop) {
-        shopDao.delete(shop)
+        dao.delete(shop)
     }
 }

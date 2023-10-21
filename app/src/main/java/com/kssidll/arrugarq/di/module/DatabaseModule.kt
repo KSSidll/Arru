@@ -48,24 +48,24 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProductVariantDao(appDatabase: AppDatabase): ProductVariantDao {
-        return appDatabase.getProductVariantDao()
+    fun provideVariantDao(appDatabase: AppDatabase): VariantDao {
+        return appDatabase.getVariantDao()
     }
 
     @Provides
-    fun provideProductVariantRepository(productVariantDao: ProductVariantDao): IProductVariantRepository {
-        return ProductVariantRepository(productVariantDao)
+    fun provideVariantRepository(productVariantDao: VariantDao): IVariantRepository {
+        return VariantRepository(productVariantDao)
     }
 
     @Provides
-    fun provideProductCategoryDao(appDatabase: AppDatabase): ProductCategoryDao {
-        return appDatabase.getProductCategoryDao()
+    fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
+        return appDatabase.getCategoryDao()
     }
 
 
     @Provides
-    fun provideProductCategoryRepository(productCategoryDao: ProductCategoryDao): IProductCategoryRepository {
-        return ProductCategoryRepository(productCategoryDao)
+    fun provideCategoryRepository(productCategoryDao: CategoryDao): ICategoryRepository {
+        return CategoryRepository(productCategoryDao)
     }
 
     @Provides
@@ -79,12 +79,12 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProductProducerDao(appDatabase: AppDatabase): ProductProducerDao {
-        return appDatabase.getProductProducerDao()
+    fun provideProducerDao(appDatabase: AppDatabase): ProducerDao {
+        return appDatabase.getProducerDao()
     }
 
     @Provides
-    fun provideProductProducerRepository(productProducerDao: ProductProducerDao): IProductProducerRepository {
-        return ProductProducerRepository(productProducerDao)
+    fun provideProducerRepository(productProducerDao: ProducerDao): IProducerRepository {
+        return ProducerRepository(productProducerDao)
     }
 }

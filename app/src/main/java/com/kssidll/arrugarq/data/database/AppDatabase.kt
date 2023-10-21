@@ -9,8 +9,8 @@ import com.kssidll.arrugarq.data.data.*
     entities = [
         Item::class,
         Product::class,
-        ProductVariant::class,
         ProductAltName::class,
+        ProductVariant::class,
         ProductCategory::class,
         ProductCategoryAltName::class,
         Shop::class,
@@ -20,14 +20,14 @@ import com.kssidll.arrugarq.data.data.*
         AutoMigration(
             from = 1,
             to = 2
-        )
+        ),
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getItemDao(): ItemDao
     abstract fun getProductDao(): ProductDao
-    abstract fun getProductVariantDao(): ProductVariantDao
-    abstract fun getProductCategoryDao(): ProductCategoryDao
+    abstract fun getVariantDao(): VariantDao
+    abstract fun getCategoryDao(): CategoryDao
     abstract fun getShopDao(): ShopDao
-    abstract fun getProductProducerDao(): ProductProducerDao
+    abstract fun getProducerDao(): ProducerDao
 }

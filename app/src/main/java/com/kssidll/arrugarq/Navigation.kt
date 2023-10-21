@@ -5,19 +5,20 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
-import com.kssidll.arrugarq.ui.screen.additem.*
-import com.kssidll.arrugarq.ui.screen.addproduct.*
-import com.kssidll.arrugarq.ui.screen.addproductcategory.*
-import com.kssidll.arrugarq.ui.screen.addproductproducer.*
-import com.kssidll.arrugarq.ui.screen.addproductvariant.*
-import com.kssidll.arrugarq.ui.screen.addshop.*
-import com.kssidll.arrugarq.ui.screen.category.*
-import com.kssidll.arrugarq.ui.screen.categoryranking.*
+import com.kssidll.arrugarq.ui.screen.category.addcategory.*
+import com.kssidll.arrugarq.ui.screen.category.category.*
+import com.kssidll.arrugarq.ui.screen.category.categoryranking.*
 import com.kssidll.arrugarq.ui.screen.home.*
-import com.kssidll.arrugarq.ui.screen.producer.*
-import com.kssidll.arrugarq.ui.screen.product.*
-import com.kssidll.arrugarq.ui.screen.shop.*
-import com.kssidll.arrugarq.ui.screen.shopranking.*
+import com.kssidll.arrugarq.ui.screen.item.additem.*
+import com.kssidll.arrugarq.ui.screen.producer.addproducer.*
+import com.kssidll.arrugarq.ui.screen.producer.producer.*
+import com.kssidll.arrugarq.ui.screen.product.addproduct.*
+import com.kssidll.arrugarq.ui.screen.product.product.*
+import com.kssidll.arrugarq.ui.screen.shop.addshop.*
+import com.kssidll.arrugarq.ui.screen.shop.editshop.*
+import com.kssidll.arrugarq.ui.screen.shop.shop.*
+import com.kssidll.arrugarq.ui.screen.shop.shopranking.*
+import com.kssidll.arrugarq.ui.screen.variant.addvariant.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
@@ -30,6 +31,7 @@ sealed class Screen: Parcelable {
     data object AddProductCategory: Screen()
     data object AddProductProducer: Screen()
     data object AddShop: Screen()
+    data class EditShop(val shopId: Long): Screen()
     data object CategoryRanking: Screen()
     data object ShopRanking: Screen()
     data class Product(val productId: Long): Screen()
@@ -163,20 +165,20 @@ fun Navigation(
             }
 
             is Screen.AddProductVariant -> {
-                AddProductVariantRoute(
+                AddVariantRoute(
                     productId = screen.productId,
                     onBack = onBack,
                 )
             }
 
             is Screen.AddProductCategory -> {
-                AddProductCategoryRoute(
+                AddCategoryRoute(
                     onBack = onBack,
                 )
             }
 
             is Screen.AddProductProducer -> {
-                AddProductProducerRoute(
+                AddProducerRoute(
                     onBack = onBack,
                 )
             }
@@ -257,6 +259,9 @@ fun Navigation(
                 ShopRoute(
                     shopId = screen.shopId,
                     onBack = onBack,
+                    onEdit = {
+                        navController.navigate(Screen.EditShop(screen.shopId))
+                    },
                     onItemClick = {
                         navController.navigate(Screen.Product(it))
                     },
@@ -266,6 +271,13 @@ fun Navigation(
                     onProducerClick = {
                         navController.navigate(Screen.Producer(it))
                     },
+                )
+            }
+
+            is Screen.EditShop -> {
+                EditShopRoute(
+                    shopId = screen.shopId,
+                    onBack = onBack,
                 )
             }
         }
