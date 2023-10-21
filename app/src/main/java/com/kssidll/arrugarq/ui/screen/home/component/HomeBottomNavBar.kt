@@ -43,10 +43,16 @@ fun HomeBottomNavBar(
                     },
                     label = {
                         Text(it.getTranslation())
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        indicatorColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                    )
                 )
             }
-
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -61,7 +67,9 @@ fun HomeBottomNavBar(
                     modifier = Modifier.size(36.dp)
                 )
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 0.dp,
     )
 }
 
