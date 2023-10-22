@@ -32,7 +32,7 @@
     <string name="item_shop">Sklep</string>
     <string name="item_shop_add">Dodaj Sklep</string>
     <string name="item_shop_add_description">Dodaj nowy Sklep</string>
-    <string name="item_shop_delete_warning_text">Ta akcja usunie wszystkie tranzakcje skojarzone z tym sklepem</string>
+    <string name="item_shop_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tym sklepem</string>
 
     <string name="item_product">Produkt</string>
     <string name="item_product_add">Dodaj Produkt</string>
@@ -43,6 +43,7 @@
     <string name="item_product_variant_add">Dodaj Wariant</string>
     <string name="item_product_variant_add_description">Dodaj nową wariację produktu</string>
     <string name="item_product_variant_default_value">Kilogramy</string>
+    <string name="item_product_variant_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tym wariantem tego produktu</string>
 
     <string name="item_product_producer">Producent</string>
     <string name="item_product_producer_full">Producent Produktów</string>

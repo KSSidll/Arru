@@ -9,7 +9,8 @@ import kotlinx.coroutines.*
 fun AddItemRoute(
     onBack: () -> Unit,
     onProductAdd: () -> Unit,
-    onVariantAdd: (variantId: Long) -> Unit,
+    onVariantAdd: (productId: Long) -> Unit,
+    onVariantEdit: (variantId: Long) -> Unit,
     onShopAdd: () -> Unit,
     onShopEdit: (shopId: Long) -> Unit,
 ) {
@@ -36,6 +37,9 @@ fun AddItemRoute(
                     onVariantAdd(value!!.id)
                 }
             }
+        },
+        onVariantEdit = {
+            onVariantEdit(it.id)
         },
         onProductChange = {
             viewModel.onProductChange()

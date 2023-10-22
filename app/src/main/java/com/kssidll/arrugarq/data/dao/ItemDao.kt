@@ -1303,10 +1303,10 @@ ORDER BY time
     fun getLastByProductIdFlow(productId: Long): Flow<Item?>
 
     @Query("SELECT * FROM item WHERE variantId == :variantId")
-    suspend fun getByVariant(variantId: Long): List<Item>
+    suspend fun getByVariantId(variantId: Long): List<Item>
 
     @Query("SELECT * FROM item WHERE variantId == :variantId")
-    fun getByVariantFlow(variantId: Long): Flow<List<Item>>
+    fun getByVariantIdFlow(variantId: Long): Flow<List<Item>>
 
     @Query("SELECT * FROM item WHERE shopId == :shopId")
     suspend fun getByShopId(shopId: Long): List<Item>

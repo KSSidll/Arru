@@ -32,6 +32,9 @@ fun EditVariantScreenImpl(
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_product_variant_add),
+        showDeleteWarning = state.showDeleteWarning,
+        deleteWarningConfirmed = state.deleteWarningConfirmed,
+        deleteWarningMessage = stringResource(id = R.string.item_product_variant_delete_warning_text),
     ) {
         StyledOutlinedTextField(
             singleLine = true,
@@ -66,6 +69,10 @@ data class EditVariantScreenState(
 
     val name: MutableState<String> = mutableStateOf(String()),
     val nameError: MutableState<Boolean> = mutableStateOf(false),
+
+    val loadingName: MutableState<Boolean> = mutableStateOf(false),
+    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
+    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
 )
 
 /**
@@ -86,13 +93,18 @@ fun EditVariantScreenState.validate(): Boolean {
 
 /**
  * performs data validation and tries to extract embedded data
- * @param productId: Id of the product that the variant is being created for
+ * @param productId Id of the product that the variant is being created for
+ * @param variantId Optional Id of the variant
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditVariantScreenState.extractProducerOrNull(productId: Long): ProductVariant? {
+fun EditVariantScreenState.extractVariantOrNull(
+    productId: Long,
+    variantId: Long = 0
+): ProductVariant? {
     if (!validate()) return null
 
     return ProductVariant(
+        id = variantId,
         productId = productId,
         name = name.value.trim(),
     )

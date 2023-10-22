@@ -19,6 +19,7 @@ import com.kssidll.arrugarq.ui.screen.shop.editshop.*
 import com.kssidll.arrugarq.ui.screen.shop.shop.*
 import com.kssidll.arrugarq.ui.screen.shop.shopranking.*
 import com.kssidll.arrugarq.ui.screen.variant.addvariant.*
+import com.kssidll.arrugarq.ui.screen.variant.editvariant.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
@@ -28,6 +29,7 @@ sealed class Screen: Parcelable {
     data object AddItem: Screen()
     data object AddProduct: Screen()
     data class AddProductVariant(val productId: Long): Screen()
+    data class EditProductVariant(val variantId: Long): Screen()
     data object AddProductCategory: Screen()
     data object AddProductProducer: Screen()
     data object AddShop: Screen()
@@ -50,6 +52,18 @@ fun Navigation(
         navController.apply {
             if (backstack.entries.size > 1) pop()
         }
+    }
+
+    val onBackDelete: (screen: Screen) -> Unit = { screen ->
+        navController.replaceAll(
+            navController.backstack.entries.map {
+                it.destination
+            }
+                .filter {
+                    it != screen
+                }
+        )
+        onBack()
     }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
@@ -144,7 +158,10 @@ fun Navigation(
                         navController.navigate(Screen.AddProduct)
                     },
                     onVariantAdd = { productId ->
-                        navController.navigate(Screen.AddProductVariant(productId = productId))
+                        navController.navigate(Screen.AddProductVariant(productId))
+                    },
+                    onVariantEdit = {
+                        navController.navigate(Screen.EditProductVariant(it))
                     },
                     onShopAdd = {
                         navController.navigate(Screen.AddShop)
@@ -284,15 +301,19 @@ fun Navigation(
                         onBack()
                     },
                     onBackDelete = {
-                        navController.replaceAll(
-                            navController.backstack.entries.map {
-                                it.destination
-                            }
-                                .filter {
-                                    it != screen
-                                }
-                        )
+                        onBackDelete(screen)
+                    }
+                )
+            }
+
+            is Screen.EditProductVariant -> {
+                EditVariantRoute(
+                    variantId = screen.variantId,
+                    onBack = {
                         onBack()
+                    },
+                    onBackDelete = {
+                        onBackDelete(screen)
                     }
                 )
             }

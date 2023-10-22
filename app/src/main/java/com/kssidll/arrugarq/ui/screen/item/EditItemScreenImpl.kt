@@ -37,6 +37,7 @@ fun EditItemScreenImpl(
     onShopEdit: (shop: Shop) -> Unit,
     onProductAdd: () -> Unit,
     onVariantAdd: () -> Unit,
+    onVariantEdit: (variant: ProductVariant) -> Unit,
     onProductChange: () -> Unit,
 ) {
     val datePickerState = rememberDatePickerState()
@@ -130,9 +131,15 @@ fun EditItemScreenImpl(
                 items = state.variants.value.collectAsState(initial = emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
-                    state.selectedVariant.value = it
                     state.isVariantSearchDialogExpanded.value = false
+                    state.selectedVariant.value = it
                 },
+                onItemClickLabel = stringResource(id = R.string.select),
+                onItemLongClick = {
+                    state.isVariantSearchDialogExpanded.value = false
+                    onVariantEdit(it)
+                },
+                onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = { onVariantAdd() },
                 addButtonDescription = stringResource(R.string.item_product_variant_add_description),
                 showDefaultValueItem = true,
@@ -537,6 +544,7 @@ fun EditItemScreenImplPreview() {
                 onShopEdit = {},
                 onProductAdd = {},
                 onVariantAdd = {},
+                onVariantEdit = {},
                 onProductChange = {},
             )
         }

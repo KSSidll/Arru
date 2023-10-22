@@ -22,7 +22,7 @@ class AddVariantViewModel @Inject constructor(
     suspend fun addVariant(productId: Long): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
         val variant =
-            screenState.extractProducerOrNull(productId) ?: return@async null
+            screenState.extractVariantOrNull(productId) ?: return@async null
 
         return@async variantRepository.insert(variant)
     }
