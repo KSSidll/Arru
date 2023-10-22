@@ -34,6 +34,7 @@ fun EditItemScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onShopAdd: () -> Unit,
+    onShopEdit: (shop: Shop) -> Unit,
     onProductAdd: () -> Unit,
     onVariantAdd: () -> Unit,
     onProductChange: () -> Unit,
@@ -91,9 +92,15 @@ fun EditItemScreenImpl(
                 items = state.shops.value.collectAsState(initial = emptyList()).value,
                 itemText = { it.name },
                 onItemClick = {
-                    state.selectedShop.value = it
                     state.isShopSearchDialogExpanded.value = false
+                    state.selectedShop.value = it
                 },
+                onItemClickLabel = stringResource(id = R.string.select),
+                onItemLongClick = {
+                    state.isShopSearchDialogExpanded.value = false
+                    onShopEdit(it)
+                },
+                onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = onShopAdd,
                 addButtonDescription = stringResource(R.string.item_shop_add_description),
                 showDefaultValueItem = true,
@@ -527,6 +534,7 @@ fun EditItemScreenImplPreview() {
                 state = EditItemScreenState(),
                 onSubmit = {},
                 onShopAdd = {},
+                onShopEdit = {},
                 onProductAdd = {},
                 onVariantAdd = {},
                 onProductChange = {},

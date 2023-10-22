@@ -40,6 +40,9 @@ fun <T> FuzzySearchableListDialog(
     items: List<T>,
     itemText: (T) -> String,
     onItemClick: ((T?) -> Unit)? = null,
+    onItemClickLabel: String? = null,
+    onItemLongClick: ((T) -> Unit)? = null,
+    onItemLongClickLabel: String? = null,
     showAddButton: Boolean = true,
     onAddButtonClick: (() -> Unit)? = null,
     addButtonDescription: String? = null,
@@ -79,10 +82,15 @@ fun <T> FuzzySearchableListDialog(
                 ) {
                     items(items = displayedItems) {
                         BaseClickableListItem(
+                            text = itemText(it),
                             onClick = {
                                 onItemClick?.invoke(it)
                             },
-                            text = itemText(it)
+                            onClickLabel = onItemClickLabel,
+                            onLongClick = {
+                                onItemLongClick?.invoke(it)
+                            },
+                            onLongClickLabel = onItemLongClickLabel,
                         )
                         HorizontalDivider()
                     }
@@ -95,6 +103,7 @@ fun <T> FuzzySearchableListDialog(
                         onClick = {
                             onItemClick?.invoke(null)
                         },
+                        onClickLabel = onItemClickLabel,
                         text = defaultItemText
                     )
                 }

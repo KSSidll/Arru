@@ -62,6 +62,7 @@
     <string name="categories">Categories</string>
     <string name="shops">Shops</string>
     <string name="delete">Delete</string>
+    <string name="select">Select</string>
     <string name="edit">Edit</string>
     <string name="destructive_action_confirmation_text">I know what I am doing</string>
     <string name="destructive_action_cancel">Cancel</string>

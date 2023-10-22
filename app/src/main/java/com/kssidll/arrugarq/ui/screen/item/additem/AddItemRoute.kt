@@ -9,8 +9,9 @@ import kotlinx.coroutines.*
 fun AddItemRoute(
     onBack: () -> Unit,
     onProductAdd: () -> Unit,
-    onVariantAdd: (Long) -> Unit,
+    onVariantAdd: (variantId: Long) -> Unit,
     onShopAdd: () -> Unit,
+    onShopEdit: (shopId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddItemViewModel = hiltViewModel()
@@ -26,6 +27,9 @@ fun AddItemRoute(
         },
         onProductAdd = onProductAdd,
         onShopAdd = onShopAdd,
+        onShopEdit = {
+            onShopEdit(it.id)
+        },
         onVariantAdd = {
             with(viewModel.screenState.selectedProduct) {
                 if (value != null) {

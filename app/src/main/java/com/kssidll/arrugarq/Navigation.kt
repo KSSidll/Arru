@@ -149,6 +149,9 @@ fun Navigation(
                     onShopAdd = {
                         navController.navigate(Screen.AddShop)
                     },
+                    onShopEdit = {
+                        navController.navigate(Screen.EditShop(it))
+                    }
                 )
             }
 
