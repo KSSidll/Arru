@@ -42,6 +42,27 @@ sealed class Screen: Parcelable {
     data class Shop(val shopId: Long): Screen()
 }
 
+/**
+ * Replaces the backstack with itself after filtering it to contain only destinations matching the given [predicate].
+ */
+fun <T> NavController<T>.replaceAllFilter(
+    action: NavAction,
+    predicate: (Screen) -> Boolean
+) where T: Screen {
+    setNewBackstack(
+        entries = backstack.entries.map {
+            it.destination
+        }
+            .filter {
+                predicate(it)
+            }
+            .map {
+                navEntry(it)
+            },
+        action = action,
+    )
+}
+
 @Composable
 fun Navigation(
     navController: NavController<Screen> = rememberNavController(startDestination = Screen.Home)
@@ -54,16 +75,16 @@ fun Navigation(
         }
     }
 
-    val onBackDelete: (screen: Screen) -> Unit = { screen ->
-        navController.replaceAll(
-            navController.backstack.entries.map {
-                it.destination
-            }
-                .filter {
-                    it != screen
-                }
-        )
-        onBack()
+    val onBackDeleteShop: (shopId: Long) -> Unit = { shopId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.EditShop(shopId) && it != Screen.Shop(shopId)
+        }
+    }
+
+    val onBackDeleteVariant: (variantId: Long) -> Unit = { variantId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.EditProductVariant(variantId)
+        }
     }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
@@ -301,7 +322,7 @@ fun Navigation(
                         onBack()
                     },
                     onBackDelete = {
-                        onBackDelete(screen)
+                        onBackDeleteShop(screen.shopId)
                     }
                 )
             }
@@ -313,7 +334,7 @@ fun Navigation(
                         onBack()
                     },
                     onBackDelete = {
-                        onBackDelete(screen)
+                        onBackDeleteVariant(screen.variantId)
                     }
                 )
             }
