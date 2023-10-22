@@ -11,6 +11,7 @@ import javax.inject.*
 @HiltViewModel
 class EditShopViewModel @Inject constructor(
     private val shopRepository: IShopRepository,
+    private val itemRepository: IItemRepository,
 ): ViewModel() {
     internal val screenState: EditShopScreenState = EditShopScreenState()
 
@@ -26,11 +27,25 @@ class EditShopViewModel @Inject constructor(
 
     /**
      * Tries to delete shop with provided id
+     * @return True if operation started, false otherwise
      */
-    fun deleteShop(shopId: Long) = viewModelScope.launch {
-        val shop = shopRepository.get(shopId) ?: return@launch
+    suspend fun deleteShop(shopId: Long): Boolean {
+        return viewModelScope.async {
+            // return true if no such shop exists
+            val shop = shopRepository.get(shopId) ?: return@async true
 
-        shopRepository.delete(shop)
+            val items = itemRepository.getByShopId(shopId)
+
+            if (items.isNotEmpty() && !screenState.deleteWarningConfirmed.value) {
+                screenState.showDeleteWarning.value = true
+                return@async false
+            } else {
+                itemRepository.delete(items)
+                shopRepository.delete(shop)
+                return@async true
+            }
+        }
+            .await()
     }
 
     /**

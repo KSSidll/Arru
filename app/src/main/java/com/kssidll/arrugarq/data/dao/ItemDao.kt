@@ -1346,4 +1346,7 @@ ORDER BY time
 
     @Delete
     suspend fun delete(item: Item)
+
+    @Delete
+    suspend fun delete(item: List<Item>)
 }

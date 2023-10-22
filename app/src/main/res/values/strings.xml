@@ -32,6 +32,7 @@
     <string name="item_shop">Shop</string>
     <string name="item_shop_add">Add Shop</string>
     <string name="item_shop_add_description">Add new Shop</string>
+    <string name="item_shop_delete_warning_text">This action will delete all of the transactions associated with this Shop</string>
 
     <string name="item_product">Product</string>
     <string name="item_product_add">Add Product</string>
@@ -62,4 +63,7 @@
     <string name="shops">Shops</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
+    <string name="destructive_action_confirmation_text">I know what I am doing</string>
+    <string name="destructive_action_cancel">Cancel</string>
+    <string name="destructive_action_confirm">Confirm</string>
 </resources>

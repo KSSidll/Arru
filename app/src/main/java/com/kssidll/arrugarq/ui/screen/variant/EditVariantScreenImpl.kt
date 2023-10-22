@@ -7,13 +7,10 @@ import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.focus.*
-import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.ui.component.field.*
@@ -29,30 +26,12 @@ fun EditVariantScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(Unit) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                focusRequester.requestFocus()
-            }
-        }
-        lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
-    }
-
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_product_variant_add),
-        submitButtonDescription = stringResource(id = R.string.item_product_variant_add_description),
     ) {
         StyledOutlinedTextField(
             singleLine = true,
@@ -76,7 +55,6 @@ fun EditVariantScreenImpl(
             },
             isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
             modifier = Modifier
-                .focusRequester(focusRequester)
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding)
         )

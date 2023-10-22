@@ -46,7 +46,6 @@ fun EditItemScreenImpl(
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_add),
-        submitButtonDescription = stringResource(id = R.string.item_add_description),
     ) {
         if (state.isDatePickerDialogExpanded.value) {
             DatePickerDialog(

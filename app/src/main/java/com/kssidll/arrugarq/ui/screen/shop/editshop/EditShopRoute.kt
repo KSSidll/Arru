@@ -4,12 +4,16 @@ package com.kssidll.arrugarq.ui.screen.shop.editshop
 import androidx.compose.runtime.*
 import com.kssidll.arrugarq.ui.screen.shop.*
 import dev.olshevski.navigation.reimagined.hilt.*
+import kotlinx.coroutines.*
 
 @Composable
 fun EditShopRoute(
     shopId: Long,
     onBack: () -> Unit,
+    onBackDelete: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     val viewModel: EditShopViewModel = hiltViewModel()
 
     LaunchedEffect(shopId) {
@@ -23,7 +27,12 @@ fun EditShopRoute(
             viewModel.updateShop(shopId)
             onBack()
         },
-        // TODO implement shop deletion with warnings when shop contains values
-        onDelete = null
+        onDelete = {
+            scope.launch {
+                if (viewModel.deleteShop(shopId)) {
+                    onBackDelete()
+                }
+            }
+        }
     )
 }

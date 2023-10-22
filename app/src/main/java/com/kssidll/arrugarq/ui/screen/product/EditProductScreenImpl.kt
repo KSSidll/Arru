@@ -35,7 +35,6 @@ fun EditProductScreenImpl(
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_product_add),
-        submitButtonDescription = stringResource(id = R.string.item_product_add_description),
     ) {
 
         if (state.isProducerSearchDialogExpanded.value) {

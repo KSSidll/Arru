@@ -277,7 +277,20 @@ fun Navigation(
             is Screen.EditShop -> {
                 EditShopRoute(
                     shopId = screen.shopId,
-                    onBack = onBack,
+                    onBack = {
+                        onBack()
+                    },
+                    onBackDelete = {
+                        navController.replaceAll(
+                            navController.backstack.entries.map {
+                                it.destination
+                            }
+                                .filter {
+                                    it != screen
+                                }
+                        )
+                        onBack()
+                    }
                 )
             }
         }

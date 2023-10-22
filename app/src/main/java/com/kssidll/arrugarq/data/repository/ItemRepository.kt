@@ -582,4 +582,8 @@ class ItemRepository(private val dao: ItemDao): IItemRepository {
         dao.delete(item)
     }
 
+    override suspend fun delete(items: List<Item>) {
+        dao.delete(items)
+    }
+
 }

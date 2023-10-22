@@ -29,30 +29,15 @@ fun EditShopScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(Unit) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                focusRequester.requestFocus()
-            }
-        }
-        lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
-    }
-
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_shop),
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = stringResource(id = R.string.item_shop_add),
-        submitButtonDescription = stringResource(id = R.string.item_shop_add_description),
+        showDeleteWarning = state.showDeleteWarning,
+        deleteWarningConfirmed = state.deleteWarningConfirmed,
+        deleteWarningMessage = stringResource(id = R.string.item_shop_delete_warning_text)
     ) {
         StyledOutlinedTextField(
             enabled = !state.loadingName.value,
@@ -77,7 +62,6 @@ fun EditShopScreenImpl(
             },
             isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
             modifier = Modifier
-                .focusRequester(focusRequester)
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding)
         )
@@ -92,6 +76,9 @@ data class EditShopScreenState(
     val nameError: MutableState<Boolean> = mutableStateOf(false),
 
     val loadingName: MutableState<Boolean> = mutableStateOf(false),
+
+    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
+    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
 )
 
 /**
