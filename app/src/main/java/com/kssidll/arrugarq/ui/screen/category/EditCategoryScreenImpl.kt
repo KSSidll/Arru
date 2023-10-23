@@ -33,8 +33,12 @@ fun EditCategoryScreenImpl(
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = submitButtonText,
+        showDeleteWarning = state.showDeleteWarning,
+        deleteWarningConfirmed = state.deleteWarningConfirmed,
+        deleteWarningMessage = stringResource(id = R.string.item_product_category_delete_warning_text),
     ) {
         StyledOutlinedTextField(
+            enabled = !state.loadingName.value,
             singleLine = true,
             value = state.name.value,
             onValueChange = {
@@ -67,6 +71,11 @@ data class EditCategoryScreenState(
 
     val name: MutableState<String> = mutableStateOf(String()),
     val nameError: MutableState<Boolean> = mutableStateOf(false),
+
+    val loadingName: MutableState<Boolean> = mutableStateOf(false),
+
+    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
+    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
 )
 
 /**
@@ -89,10 +98,11 @@ fun EditCategoryScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditCategoryScreenState.extractCategoryOrNull(): ProductCategory? {
+fun EditCategoryScreenState.extractCategoryOrNull(categoryId: Long = 0): ProductCategory? {
     if (!validate()) return null
 
     return ProductCategory(
+        id = categoryId,
         name = name.value.trim(),
     )
 }

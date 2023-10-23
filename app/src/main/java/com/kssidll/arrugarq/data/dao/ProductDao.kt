@@ -66,5 +66,8 @@ interface ProductDao {
     suspend fun delete(product: Product)
 
     @Delete
+    suspend fun delete(products: List<Product>)
+
+    @Delete
     suspend fun deleteAltName(alternativeName: ProductAltName)
 }

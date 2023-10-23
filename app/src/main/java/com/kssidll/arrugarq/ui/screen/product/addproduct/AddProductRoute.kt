@@ -8,8 +8,9 @@ import kotlinx.coroutines.*
 @Composable
 fun AddProductRoute(
     onBack: () -> Unit,
-    onProductCategoryAdd: () -> Unit,
-    onProductProducerAdd: () -> Unit,
+    onCategoryAdd: () -> Unit,
+    onProducerAdd: () -> Unit,
+    onCategoryEdit: (categoryId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddProductViewModel = hiltViewModel()
@@ -23,7 +24,10 @@ fun AddProductRoute(
                 if (result != null) onBack()
             }
         },
-        onProducerAdd = onProductProducerAdd,
-        onCategoryAdd = onProductCategoryAdd,
+        onProducerAdd = onProducerAdd,
+        onCategoryAdd = onCategoryAdd,
+        onCategoryEdit = {
+            onCategoryEdit(it.id)
+        },
     )
 }

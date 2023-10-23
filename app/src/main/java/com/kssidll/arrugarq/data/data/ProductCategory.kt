@@ -57,7 +57,7 @@ data class ProductCategoryAltName(
 }
 
 data class ProductCategoryWithAltNames(
-    @Embedded val productCategory: ProductCategory,
+    @Embedded val category: ProductCategory,
     @Relation(
         parentColumn = "id",
         entityColumn = "productId"
@@ -66,7 +66,7 @@ data class ProductCategoryWithAltNames(
     override fun getFuzzyScore(query: String): Int {
         val productNameScore = FuzzySearch.extractOne(
             query,
-            listOf(productCategory.name)
+            listOf(category.name)
         ).score
         val bestAlternativeNamesScore = if (alternativeNames.isNotEmpty()) {
             FuzzySearch.extractOne(

@@ -8,6 +8,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 fun CategoryRoute(
     categoryId: Long,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onProducerClick: (producerId: Long) -> Unit,
     onShopClick: (shopId: Long) -> Unit,
@@ -23,6 +24,7 @@ fun CategoryRoute(
     CategoryScreen(
         onBack = onBack,
         state = viewModel.screenState,
+        onEdit = onEdit,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },

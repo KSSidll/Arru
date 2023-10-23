@@ -28,6 +28,7 @@ fun EditProductScreenImpl(
     onDelete: (() -> Unit)? = null,
     onProducerAdd: () -> Unit,
     onCategoryAdd: () -> Unit,
+    onCategoryEdit: (category: ProductCategory) -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
 ) {
     EditScreen(
@@ -64,11 +65,17 @@ fun EditProductScreenImpl(
                 },
                 items = state.categoriesWithAltNames.value.collectAsState(initial = emptyList()).value,
                 onItemClick = {
-                    state.selectedProductCategory.value = it?.productCategory
+                    state.selectedProductCategory.value = it?.category
                     state.validateSelectedProductCategory()
                     state.isCategorySearchDialogExpanded.value = false
                 },
-                itemText = { it.productCategory.name },
+                onItemClickLabel = stringResource(id = R.string.select),
+                onItemLongClick = {
+                    state.isCategorySearchDialogExpanded.value = false
+                    onCategoryEdit(it.category)
+                },
+                onItemLongClickLabel = stringResource(id = R.string.edit),
+                itemText = { it.category.name },
                 onAddButtonClick = onCategoryAdd,
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
             )
@@ -226,6 +233,7 @@ fun EditProductScreenImplPreview() {
                 onSubmit = {},
                 onProducerAdd = {},
                 onCategoryAdd = {},
+                onCategoryEdit = {},
             )
         }
     }

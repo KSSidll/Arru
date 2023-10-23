@@ -82,6 +82,10 @@ class ProductRepository(private val dao: ProductDao): IProductRepository {
         dao.delete(product)
     }
 
+    override suspend fun delete(products: List<Product>) {
+        dao.delete(products)
+    }
+
     override suspend fun deleteAltName(alternativeName: ProductAltName) {
         dao.deleteAltName(alternativeName)
     }

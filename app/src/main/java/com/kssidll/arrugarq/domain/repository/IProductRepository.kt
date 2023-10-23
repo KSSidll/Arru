@@ -23,5 +23,6 @@ interface IProductRepository {
     suspend fun update(product: Product)
     suspend fun updateAltName(alternativeName: ProductAltName)
     suspend fun delete(product: Product)
+    suspend fun delete(products: List<Product>)
     suspend fun deleteAltName(alternativeName: ProductAltName)
 }

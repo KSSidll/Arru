@@ -15,6 +15,7 @@ fun EditProductRoute(
     onBackDelete: () -> Unit,
     onProducerAdd: () -> Unit,
     onCategoryAdd: () -> Unit,
+    onCategoryEdit: (categoryId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -42,6 +43,9 @@ fun EditProductRoute(
         },
         onProducerAdd = onProducerAdd,
         onCategoryAdd = onCategoryAdd,
+        onCategoryEdit = {
+            onCategoryEdit(it.id)
+        },
         submitButtonText = stringResource(id = R.string.item_product_edit),
     )
 }

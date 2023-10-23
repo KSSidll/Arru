@@ -47,7 +47,7 @@ fun EditScreen(
                 onDismissRequest = {},
                 modifier = Modifier
                     .width(360.dp)
-                    .height(200.dp)
+                    .heightIn(min = 200.dp)
             ) {
                 Surface(
                     shape = ShapeDefaults.ExtraLarge,
@@ -59,11 +59,12 @@ fun EditScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
+                            .height(IntrinsicSize.Min)
                     ) {
                         Text(
                             text = deleteWarningMessage,
                             style = Typography.bodyLarge,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1F)
                         )
 
                         val warningConfirmationInteractionSource =
