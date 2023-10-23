@@ -8,6 +8,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 fun ProducerRoute(
     producerId: Long,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onCategoryClick: (categoryId: Long) -> Unit,
     onShopClick: (shopId: Long) -> Unit,
@@ -23,6 +24,7 @@ fun ProducerRoute(
     ProducerScreen(
         onBack = onBack,
         state = viewModel.screenState,
+        onEdit = onEdit,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },

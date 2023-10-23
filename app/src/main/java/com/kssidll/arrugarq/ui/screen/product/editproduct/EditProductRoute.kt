@@ -14,6 +14,7 @@ fun EditProductRoute(
     onBack: () -> Unit,
     onBackDelete: () -> Unit,
     onProducerAdd: () -> Unit,
+    onProducerEdit: (producerId: Long) -> Unit,
     onCategoryAdd: () -> Unit,
     onCategoryEdit: (categoryId: Long) -> Unit,
 ) {
@@ -42,6 +43,9 @@ fun EditProductRoute(
             }
         },
         onProducerAdd = onProducerAdd,
+        onProducerEdit = {
+            onProducerEdit(it.id)
+        },
         onCategoryAdd = onCategoryAdd,
         onCategoryEdit = {
             onCategoryEdit(it.id)

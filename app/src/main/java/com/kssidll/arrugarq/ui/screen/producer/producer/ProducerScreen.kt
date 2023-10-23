@@ -13,9 +13,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
+import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.helper.*
@@ -32,6 +34,7 @@ import java.util.*
 internal fun ProducerScreen(
     onBack: () -> Unit,
     state: ProducerScreenState,
+    onEdit: () -> Unit,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
@@ -47,6 +50,20 @@ internal fun ProducerScreen(
                         text = state.producer.value?.name.orEmpty(),
                         overflow = TextOverflow.Ellipsis,
                     )
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            onEdit()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(27.dp),
+                        )
+                    }
                 },
             )
         }

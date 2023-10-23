@@ -1,43 +1,45 @@
-package com.kssidll.arrugarq.ui.screen.category.editcategory
+package com.kssidll.arrugarq.ui.screen.producer.editproducer
 
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.ui.screen.category.*
+import com.kssidll.arrugarq.ui.screen.category.editcategory.*
+import com.kssidll.arrugarq.ui.screen.producer.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
 
 @Composable
-fun EditCategoryRoute(
-    categoryId: Long,
+fun EditProducerRoute(
+    producerId: Long,
     onBack: () -> Unit,
     onBackDelete: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
-    val viewModel: EditCategoryViewModel = hiltViewModel()
+    val viewModel: EditProducerViewModel = hiltViewModel()
 
-    LaunchedEffect(categoryId) {
-        if (!viewModel.updateState(categoryId)) {
+    LaunchedEffect(producerId) {
+        if (!viewModel.updateState(producerId)) {
             onBack()
         }
     }
 
-    EditCategoryScreenImpl(
+    EditProducerScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {
-            viewModel.updateCategory(categoryId)
+            viewModel.updateProducer(producerId)
             onBack()
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteCategory(categoryId)) {
+                if (viewModel.deleteProducer(producerId)) {
                     onBackDelete()
                 }
             }
         },
-        submitButtonText = stringResource(id = R.string.item_product_category_edit),
+        submitButtonText = stringResource(id = R.string.item_product_producer_edit),
     )
 }

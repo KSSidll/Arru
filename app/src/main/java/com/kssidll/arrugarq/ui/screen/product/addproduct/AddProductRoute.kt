@@ -9,8 +9,9 @@ import kotlinx.coroutines.*
 fun AddProductRoute(
     onBack: () -> Unit,
     onCategoryAdd: () -> Unit,
-    onProducerAdd: () -> Unit,
     onCategoryEdit: (categoryId: Long) -> Unit,
+    onProducerAdd: () -> Unit,
+    onProducerEdit: (producerId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddProductViewModel = hiltViewModel()
@@ -25,6 +26,9 @@ fun AddProductRoute(
             }
         },
         onProducerAdd = onProducerAdd,
+        onProducerEdit = {
+            onProducerEdit(it.id)
+        },
         onCategoryAdd = onCategoryAdd,
         onCategoryEdit = {
             onCategoryEdit(it.id)

@@ -12,6 +12,7 @@ import com.kssidll.arrugarq.ui.screen.category.editcategory.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.item.additem.*
 import com.kssidll.arrugarq.ui.screen.producer.addproducer.*
+import com.kssidll.arrugarq.ui.screen.producer.editproducer.*
 import com.kssidll.arrugarq.ui.screen.producer.producer.*
 import com.kssidll.arrugarq.ui.screen.product.addproduct.*
 import com.kssidll.arrugarq.ui.screen.product.editproduct.*
@@ -36,6 +37,7 @@ sealed class Screen: Parcelable {
     data object AddCategory: Screen()
     data class EditCategory(val categoryId: Long): Screen()
     data object AddProducer: Screen()
+    data class EditProducer(val producerId: Long): Screen()
     data object AddShop: Screen()
     data class EditShop(val shopId: Long): Screen()
     data object CategoryRanking: Screen()
@@ -100,6 +102,12 @@ fun Navigation(
     val onBackDeleteCategory: (categoryId: Long) -> Unit = { categoryId ->
         navController.replaceAllFilter(NavAction.Pop) {
             it != Screen.EditCategory(categoryId) && it != Screen.Category(categoryId)
+        }
+    }
+
+    val onBackDeleteProducer: (producerId: Long) -> Unit = { producerId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.EditProducer(producerId) && it != Screen.Producer(producerId)
         }
     }
 
@@ -218,11 +226,14 @@ fun Navigation(
                     onCategoryAdd = {
                         navController.navigate(Screen.AddCategory)
                     },
+                    onCategoryEdit = {
+                        navController.navigate(Screen.EditCategory(it))
+                    },
                     onProducerAdd = {
                         navController.navigate(Screen.AddProducer)
                     },
-                    onCategoryEdit = {
-                        navController.navigate(Screen.EditCategory(it))
+                    onProducerEdit = {
+                        navController.navigate(Screen.EditProducer(it))
                     }
                 )
             }
@@ -293,6 +304,9 @@ fun Navigation(
                 ProducerRoute(
                     producerId = screen.producerId,
                     onBack = onBack,
+                    onEdit = {
+                        navController.navigate(Screen.EditProducer(screen.producerId))
+                    },
                     onItemClick = {
                         navController.navigate(Screen.Product(it))
                     },
@@ -379,6 +393,9 @@ fun Navigation(
                     onProducerAdd = {
                         navController.navigate(Screen.AddProducer)
                     },
+                    onProducerEdit = {
+                        navController.navigate(Screen.EditProducer(it))
+                    },
                     onCategoryAdd = {
                         navController.navigate(Screen.AddCategory)
                     },
@@ -396,6 +413,18 @@ fun Navigation(
                     },
                     onBackDelete = {
                         onBackDeleteCategory(screen.categoryId)
+                    }
+                )
+            }
+
+            is Screen.EditProducer -> {
+                EditProducerRoute(
+                    producerId = screen.producerId,
+                    onBack = {
+                        onBack()
+                    },
+                    onBackDelete = {
+                        onBackDeleteProducer(screen.producerId)
                     }
                 )
             }
