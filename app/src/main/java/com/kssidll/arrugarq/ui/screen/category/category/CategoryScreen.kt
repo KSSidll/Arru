@@ -38,6 +38,7 @@ internal fun CategoryScreen(
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
     onProducerClick: (producer: ProductProducer) -> Unit,
     onShopClick: (shop: Shop) -> Unit,
 ) {
@@ -74,6 +75,7 @@ internal fun CategoryScreen(
                 onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                 requestMoreItems = requestMoreItems,
                 onItemClick = onItemClick,
+                onItemLongClick = onItemLongClick,
                 onProducerClick = onProducerClick,
                 onShopClick = onShopClick,
             )
@@ -87,6 +89,7 @@ internal fun CategoryScreenContent(
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
     onProducerClick: (producer: ProductProducer) -> Unit,
     onShopClick: (shop: Shop) -> Unit,
 ) {
@@ -235,6 +238,7 @@ internal fun CategoryScreenContent(
                     FullItemCard(
                         fullItem = item,
                         onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
                         onCategoryClick = {},
                         onProducerClick = onProducerClick,
                         onShopClick = onShopClick,
@@ -270,6 +274,7 @@ fun CategoryScreenPreview() {
                 onSpentByTimePeriodSwitch = {},
                 requestMoreItems = {},
                 onItemClick = {},
+                onItemLongClick = {},
                 onProducerClick = {},
                 onShopClick = {},
             )

@@ -10,6 +10,7 @@ fun ShopRoute(
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onItemClick: (productId: Long) -> Unit,
+    onItemLongClick: (itemId: Long) -> Unit,
     onCategoryClick: (categoryId: Long) -> Unit,
     onProducerClick: (producerId: Long) -> Unit,
 ) {
@@ -33,6 +34,9 @@ fun ShopRoute(
         },
         onItemClick = {
             onItemClick(it.embeddedItem.item.productId)
+        },
+        onItemLongClick = {
+            onItemLongClick(it.embeddedItem.item.id)
         },
         onCategoryClick = {
             onCategoryClick(it.id)

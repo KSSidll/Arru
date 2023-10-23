@@ -38,6 +38,7 @@ internal fun ProducerScreen(
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
     onShopClick: (shop: Shop) -> Unit,
 ) {
@@ -74,6 +75,7 @@ internal fun ProducerScreen(
                 onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                 requestMoreItems = requestMoreItems,
                 onItemClick = onItemClick,
+                onItemLongClick = onItemLongClick,
                 onCategoryClick = onCategoryClick,
                 onShopClick = onShopClick,
             )
@@ -87,6 +89,7 @@ internal fun ProducerScreenContent(
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onItemClick: (item: FullItem) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
     onShopClick: (shop: Shop) -> Unit,
 ) {
@@ -235,6 +238,7 @@ internal fun ProducerScreenContent(
                     FullItemCard(
                         fullItem = item,
                         onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
                         onCategoryClick = onCategoryClick,
                         onProducerClick = {},
                         onShopClick = onShopClick,
@@ -270,6 +274,7 @@ fun ProducerScreenPreview() {
                 onSpentByTimePeriodSwitch = {},
                 requestMoreItems = {},
                 onItemClick = {},
+                onItemLongClick = {},
                 onCategoryClick = {},
                 onShopClick = {},
             )

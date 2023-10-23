@@ -10,6 +10,7 @@ fun CategoryRoute(
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onItemClick: (productId: Long) -> Unit,
+    onItemLongClick: (itemId: Long) -> Unit,
     onProducerClick: (producerId: Long) -> Unit,
     onShopClick: (shopId: Long) -> Unit,
 ) {
@@ -33,6 +34,9 @@ fun CategoryRoute(
         },
         onItemClick = {
             onItemClick(it.embeddedItem.item.productId)
+        },
+        onItemLongClick = {
+            onItemLongClick(it.embeddedItem.item.id)
         },
         onProducerClick = {
             onProducerClick(it.id)

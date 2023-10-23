@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
@@ -20,11 +21,15 @@ import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(
+    ExperimentalLayoutApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun LazyItemScope.FullItemCard(
     fullItem: FullItem,
     onItemClick: (item: FullItem) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
     itemClickable: Boolean = true,
     onCategoryClick: (category: ProductCategory) -> Unit,
     showCategory: Boolean = true,
@@ -35,9 +40,17 @@ fun LazyItemScope.FullItemCard(
 ) {
     val itemModifier =
         if (itemClickable)
-            Modifier.clickable {
-                onItemClick(fullItem)
-            }
+            Modifier.combinedClickable(
+                role = Role.Button,
+                onClick = {
+                    onItemClick(fullItem)
+                },
+                onClickLabel = stringResource(id = R.string.select),
+                onLongClick = {
+                    onItemLongClick(fullItem)
+                },
+                onLongClickLabel = stringResource(id = R.string.edit)
+            )
         else Modifier
 
     Column(
@@ -276,6 +289,7 @@ fun FullItemCardPreview() {
                     FullItemCard(
                         fullItem = generateRandomFullItem(),
                         onItemClick = {},
+                        onItemLongClick = {},
                         onCategoryClick = {},
                         onProducerClick = {},
                         onShopClick = {},

@@ -57,6 +57,7 @@ data class Item(
     )
 
     constructor(
+        id: Long = 0,
         productId: Long,
         variantId: Long?,
         shopId: Long?,
@@ -64,7 +65,7 @@ data class Item(
         actualPrice: Float,
         date: Long
     ): this(
-        0,
+        id,
         productId,
         variantId,
         shopId,

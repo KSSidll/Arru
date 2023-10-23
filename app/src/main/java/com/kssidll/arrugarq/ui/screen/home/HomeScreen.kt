@@ -36,6 +36,7 @@ fun HomeScreen(
     spentByTimePeriod: TimePeriodFlowHandler.Periods,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     onTransactionItemClick: (item: FullItem) -> Unit,
+    onTransactionItemLongClick: (item: FullItem) -> Unit,
     onTransactionCategoryClick: (category: ProductCategory) -> Unit,
     onTransactionProducerClick: (producer: ProductProducer) -> Unit,
     onTransactionShopClick: (shop: Shop) -> Unit,
@@ -91,6 +92,7 @@ fun HomeScreen(
                             requestMoreItems = requestMoreFullItems,
                             items = fullItems,
                             onItemClick = onTransactionItemClick,
+                            onItemLongClick = onTransactionItemLongClick,
                             onProducerClick = onTransactionProducerClick,
                             onCategoryClick = onTransactionCategoryClick,
                             onShopClick = onTransactionShopClick,
@@ -139,6 +141,7 @@ fun HomeScreenPreview() {
                     onSpentByTimePeriodSwitch = {},
                     onTransactionCategoryClick = {},
                     onTransactionItemClick = {},
+                    onTransactionItemLongClick = {},
                     onTransactionProducerClick = {},
                     onTransactionShopClick = {},
                 )

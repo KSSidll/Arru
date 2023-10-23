@@ -37,7 +37,7 @@ fun EditItemScreenImpl(
     onShopEdit: (shop: Shop) -> Unit,
     onProductAdd: () -> Unit,
     onProductEdit: (product: Product) -> Unit,
-    onVariantAdd: () -> Unit,
+    onVariantAdd: (product: Product) -> Unit,
     onVariantEdit: (variant: ProductVariant) -> Unit,
     onProductChange: () -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_add),
@@ -148,7 +148,11 @@ fun EditItemScreenImpl(
                     onVariantEdit(it)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                onAddButtonClick = { onVariantAdd() },
+                onAddButtonClick = {
+                    state.selectedProduct.value?.let {
+                        onVariantAdd(it)
+                    }
+                },
                 addButtonDescription = stringResource(R.string.item_product_variant_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.item_product_variant_default_value),
@@ -385,6 +389,7 @@ fun EditItemScreenImpl(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
+            enabled = !state.loadingProduct.value,
             value = state.selectedProduct.value?.name ?: String(),
             onClick = {
                 state.isProductSearchDialogExpanded.value = true
@@ -404,7 +409,7 @@ fun EditItemScreenImpl(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = state.selectedProduct.value != null,
+            enabled = state.selectedProduct.value != null && !state.loadingVariant.value,
             value = state.selectedVariant.value?.name
                 ?: stringResource(R.string.item_product_variant_default_value),
             onClick = {
@@ -412,7 +417,9 @@ fun EditItemScreenImpl(
             },
             label = stringResource(R.string.item_product_variant),
             onAddButtonClick = {
-                onVariantAdd()
+                state.selectedProduct.value?.let {
+                    onVariantAdd(it)
+                }
             },
             addButtonDescription = stringResource(R.string.item_product_variant_add_description),
             modifier = Modifier
@@ -451,6 +458,8 @@ data class EditItemScreenState(
     val productsWithAltNames: MutableState<Flow<List<ProductWithAltNames>>> = mutableStateOf(flowOf()),
     val variants: MutableState<Flow<List<ProductVariant>>> = mutableStateOf(flowOf()),
 
+    val loadingProduct: MutableState<Boolean> = mutableStateOf(false),
+    val loadingVariant: MutableState<Boolean> = mutableStateOf(false),
     val loadingShop: MutableState<Boolean> = mutableStateOf(false),
     val loadingQuantity: MutableState<Boolean> = mutableStateOf(false),
     val loadingPrice: MutableState<Boolean> = mutableStateOf(false),
@@ -506,10 +515,11 @@ fun EditItemScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditItemScreenState.extractItemOrNull(): Item? {
+fun EditItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
     if (!validate()) return null
 
     return Item(
+        id = itemId,
         productId = selectedProduct.value!!.id,
         variantId = selectedVariant.value?.id,
         shopId = selectedShop.value?.id,

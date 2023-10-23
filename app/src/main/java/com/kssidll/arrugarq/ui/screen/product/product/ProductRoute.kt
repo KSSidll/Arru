@@ -12,6 +12,7 @@ fun ProductRoute(
     onCategoryClick: (categoryId: Long) -> Unit,
     onProducerClick: (producerId: Long) -> Unit,
     onShopClick: (shopId: Long) -> Unit,
+    onItemLongClick: (itemId: Long) -> Unit,
 ) {
     val viewModel: ProductViewModel = hiltViewModel()
 
@@ -40,5 +41,8 @@ fun ProductRoute(
         onShopClick = {
             onShopClick(it.id)
         },
+        onItemLongClick = {
+            onItemLongClick(it.embeddedItem.item.id)
+        }
     )
 }

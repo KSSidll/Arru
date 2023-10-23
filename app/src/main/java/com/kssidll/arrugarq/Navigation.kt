@@ -11,6 +11,7 @@ import com.kssidll.arrugarq.ui.screen.category.categoryranking.*
 import com.kssidll.arrugarq.ui.screen.category.editcategory.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.item.additem.*
+import com.kssidll.arrugarq.ui.screen.item.edititem.*
 import com.kssidll.arrugarq.ui.screen.producer.addproducer.*
 import com.kssidll.arrugarq.ui.screen.producer.editproducer.*
 import com.kssidll.arrugarq.ui.screen.producer.producer.*
@@ -30,6 +31,7 @@ import kotlinx.parcelize.*
 sealed class Screen: Parcelable {
     data object Home: Screen()
     data object AddItem: Screen()
+    data class EditItem(val itemId: Long): Screen()
     data object AddProduct: Screen()
     data class EditProduct(val productId: Long): Screen()
     data class AddVariant(val productId: Long): Screen()
@@ -111,6 +113,12 @@ fun Navigation(
         }
     }
 
+    val onBackDeleteItem: (itemId: Long) -> Unit = { itemId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.EditItem(itemId)
+        }
+    }
+
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val easing = CubicBezierEasing(
         0.48f,
@@ -183,6 +191,9 @@ fun Navigation(
                     },
                     onTransactionItemClick = {
                         navController.navigate(Screen.Product(it))
+                    },
+                    onTransactionItemLongClick = {
+                        navController.navigate(Screen.EditItem(it))
                     },
                     onTransactionCategoryClick = {
                         navController.navigate(Screen.Category(it))
@@ -291,6 +302,9 @@ fun Navigation(
                     onItemClick = {
                         navController.navigate(Screen.Product(it))
                     },
+                    onItemLongClick = {
+                        navController.navigate(Screen.EditItem(it))
+                    },
                     onProducerClick = {
                         navController.navigate(Screen.Producer(it))
                     },
@@ -309,6 +323,9 @@ fun Navigation(
                     },
                     onItemClick = {
                         navController.navigate(Screen.Product(it))
+                    },
+                    onItemLongClick = {
+                        navController.navigate(Screen.EditItem(it))
                     },
                     onCategoryClick = {
                         navController.navigate(Screen.Category(it))
@@ -335,6 +352,9 @@ fun Navigation(
                     onShopClick = {
                         navController.navigate(Screen.Shop(it))
                     },
+                    onItemLongClick = {
+                        navController.navigate(Screen.EditItem(it))
+                    },
                 )
             }
 
@@ -347,6 +367,9 @@ fun Navigation(
                     },
                     onItemClick = {
                         navController.navigate(Screen.Product(it))
+                    },
+                    onItemLongClick = {
+                        navController.navigate(Screen.EditItem(it))
                     },
                     onCategoryClick = {
                         navController.navigate(Screen.Category(it))
@@ -425,6 +448,36 @@ fun Navigation(
                     },
                     onBackDelete = {
                         onBackDeleteProducer(screen.producerId)
+                    }
+                )
+            }
+
+            is Screen.EditItem -> {
+                EditItemRoute(
+                    itemId = screen.itemId,
+                    onBack = {
+                        onBack()
+                    },
+                    onBackDelete = {
+                        onBackDeleteItem(screen.itemId)
+                    },
+                    onShopAdd = {
+                        navController.navigate(Screen.AddShop)
+                    },
+                    onShopEdit = {
+                        navController.navigate(Screen.EditShop(it))
+                    },
+                    onProductAdd = {
+                        navController.navigate(Screen.AddProduct)
+                    },
+                    onProductEdit = {
+                        navController.navigate(Screen.EditProduct(it))
+                    },
+                    onVariantAdd = {
+                        navController.navigate(Screen.AddVariant(it))
+                    },
+                    onVariantEdit = {
+                        navController.navigate(Screen.EditVariant(it))
                     }
                 )
             }

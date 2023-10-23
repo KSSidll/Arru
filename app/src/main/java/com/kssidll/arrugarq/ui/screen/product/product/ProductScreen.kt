@@ -41,6 +41,7 @@ internal fun ProductScreen(
     onCategoryClick: (category: ProductCategory) -> Unit,
     onProducerClick: (producer: ProductProducer) -> Unit,
     onShopClick: (shop: Shop) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -77,6 +78,7 @@ internal fun ProductScreen(
                 onCategoryClick = onCategoryClick,
                 onProducerClick = onProducerClick,
                 onShopClick = onShopClick,
+                onItemLongClick = onItemLongClick,
             )
         }
     }
@@ -90,6 +92,7 @@ internal fun ProductScreenContent(
     onCategoryClick: (category: ProductCategory) -> Unit,
     onProducerClick: (producer: ProductProducer) -> Unit,
     onShopClick: (shop: Shop) -> Unit,
+    onItemLongClick: (item: FullItem) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
@@ -242,7 +245,7 @@ internal fun ProductScreenContent(
                     FullItemCard(
                         fullItem = item,
                         onItemClick = {},
-                        itemClickable = false,
+                        onItemLongClick = onItemLongClick,
                         onCategoryClick = onCategoryClick,
                         onProducerClick = onProducerClick,
                         onShopClick = onShopClick,
@@ -279,6 +282,7 @@ fun ProductScreenPreview() {
                 onCategoryClick = {},
                 onProducerClick = {},
                 onShopClick = {},
+                onItemLongClick = {},
             )
         }
     }

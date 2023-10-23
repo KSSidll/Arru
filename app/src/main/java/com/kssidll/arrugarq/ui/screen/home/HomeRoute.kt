@@ -9,6 +9,7 @@ fun HomeRoute(
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
     onTransactionItemClick: (productId: Long) -> Unit,
+    onTransactionItemLongClick: (itemId: Long) -> Unit,
     onTransactionCategoryClick: (categoryId: Long) -> Unit,
     onTransactionProducerClick: (producerId: Long) -> Unit,
     onTransactionShopClick: (shopId: Long) -> Unit,
@@ -33,6 +34,9 @@ fun HomeRoute(
         },
         onTransactionItemClick = {
             onTransactionItemClick(it.embeddedItem.item.productId)
+        },
+        onTransactionItemLongClick = {
+            onTransactionItemLongClick(it.embeddedItem.item.id)
         },
         onTransactionCategoryClick = {
             onTransactionCategoryClick(it.id)
