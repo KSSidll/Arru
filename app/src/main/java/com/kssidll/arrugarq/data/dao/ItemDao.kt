@@ -640,7 +640,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -663,7 +663,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -686,7 +686,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -709,7 +709,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -733,7 +733,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -758,7 +758,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -783,7 +783,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -808,7 +808,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -831,7 +831,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
@@ -852,7 +852,7 @@ WITH date_series AS (
     UNION ALL
     SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
-    WHERE date_series.end_date > date_series.start_date
+    WHERE date_series.end_date >= date_series.start_date
 )
 SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
 FROM date_series
