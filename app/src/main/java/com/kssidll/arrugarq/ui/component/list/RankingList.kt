@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
@@ -48,15 +49,19 @@ private fun getRowHeight(
 }
 
 /**
- * @param T: Type of item, needs to implement Rankable
- * @param items: List of items to display, the items will be sorted by their value
- * @param modifier: Modifier applied to the container
- * @param innerItemPadding: Padding applied to the item container
- * @param displayCount: How many items to display, 0 means all
- * @param animationSpec: Animation Spec for the item relative to max value animation
- * @param scaleByRank: Whether to scale the item values based on their position
- * @param onItemClick: Function to call when an item is clicked, null disables click event
+ * @param T Type of item, needs to implement Rankable
+ * @param items List of items to display, the items will be sorted by their value
+ * @param modifier Modifier applied to the container
+ * @param innerItemPadding Padding applied to the item container
+ * @param displayCount How many items to display, 0 means all
+ * @param animationSpec Animation Spec for the item relative to max value animation
+ * @param scaleByRank Whether to scale the item values based on their position
+ * @param onItemClick Function to call when an item is clicked, null disables click event if [onItemLongClick] is null as well
+ * @param onItemClickLabel Semantic / accessibility label for the onItemClick action
+ * @param onItemLongClick Function to call when an item is long clicked, null disables click event if [onItemClick] is null as well
+ * @param onItemLongClickLabel Semantic / accessibility label for the onItemLongClick action
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> RankingList(
     items: List<T>,
@@ -66,6 +71,9 @@ fun <T> RankingList(
     animationSpec: AnimationSpec<Float> = tween(1200),
     scaleByRank: Boolean = true,
     onItemClick: ((T) -> Unit)? = null,
+    onItemClickLabel: String? = null,
+    onItemLongClick: ((T) -> Unit)? = null,
+    onItemLongClickLabel: String? = null,
 ) where T: Rankable {
     val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
@@ -200,7 +208,7 @@ fun <T> RankingList(
             }
         }
 
-        if (onItemClick != null) {
+        if (onItemClick != null && onItemLongClick != null) {
             Column(
                 modifier = Modifier.matchParentSize()
             ) {
@@ -214,9 +222,17 @@ fun <T> RankingList(
                                     scaleByRank
                                 )
                             )
-                            .clickable {
-                                onItemClick(it)
-                            }
+                            .combinedClickable(
+                                role = Role.Button,
+                                onClick = {
+                                    onItemClick(it)
+                                },
+                                onClickLabel = onItemClickLabel,
+                                onLongClick = {
+                                    onItemLongClick(it)
+                                },
+                                onLongClickLabel = onItemLongClickLabel,
+                            )
                     )
                 }
             }

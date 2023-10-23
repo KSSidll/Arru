@@ -10,6 +10,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 fun ShopRankingRoute(
     onBack: () -> Unit,
     onItemClick: (shopId: Long) -> Unit,
+    onItemLongClick: (shopId: Long) -> Unit,
 ) {
     val viewModel: ShopRankingViewModel = hiltViewModel()
 
@@ -20,6 +21,11 @@ fun ShopRankingRoute(
             .collectAsState(emptyList()).value,
         onItemClick = {
             onItemClick(it.shop.id)
-        }
+        },
+        onItemClickLabel = stringResource(id = R.string.select),
+        onItemLongClick = {
+            onItemLongClick(it.shop.id)
+        },
+        onItemLongClickLabel = stringResource(id = R.string.edit),
     )
 }

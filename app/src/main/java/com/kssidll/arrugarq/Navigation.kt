@@ -280,6 +280,9 @@ fun Navigation(
                     onItemClick = {
                         navController.navigate(Screen.Category(it))
                     },
+                    onItemLongClick = {
+                        navController.navigate(Screen.EditCategory(it))
+                    },
                 )
             }
 
@@ -288,6 +291,9 @@ fun Navigation(
                     onBack = onBack,
                     onItemClick = {
                         navController.navigate(Screen.Shop(it))
+                    },
+                    onItemLongClick = {
+                        navController.navigate(Screen.EditShop(it))
                     },
                 )
             }

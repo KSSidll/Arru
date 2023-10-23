@@ -21,7 +21,10 @@ fun <T> RankingScreen(
     onBack: () -> Unit,
     title: String,
     data: List<T>,
-    onItemClick: (T) -> Unit,
+    onItemClick: ((T) -> Unit)? = null,
+    onItemClickLabel: String? = null,
+    onItemLongClick: ((T) -> Unit)? = null,
+    onItemLongClickLabel: String? = null,
 ) where T: Rankable {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -45,6 +48,9 @@ fun <T> RankingScreen(
             RankingScreenContent(
                 data = data,
                 onItemClick = onItemClick,
+                onItemClickLabel = onItemClickLabel,
+                onItemLongClick = onItemLongClick,
+                onItemLongClickLabel = onItemLongClickLabel,
             )
         }
     }
@@ -53,14 +59,20 @@ fun <T> RankingScreen(
 @Composable
 private fun <T> RankingScreenContent(
     data: List<T>,
-    onItemClick: (T) -> Unit,
+    onItemClick: ((T) -> Unit)? = null,
+    onItemClickLabel: String? = null,
+    onItemLongClick: ((T) -> Unit)? = null,
+    onItemLongClickLabel: String? = null,
 ) where T: Rankable {
     RankingList(
         innerItemPadding = PaddingValues(horizontal = 16.dp),
         items = data,
         displayCount = 0,
         scaleByRank = false,
-        onItemClick = onItemClick
+        onItemClick = onItemClick,
+        onItemClickLabel = onItemClickLabel,
+        onItemLongClick = onItemLongClick,
+        onItemLongClickLabel = onItemLongClickLabel,
     )
 }
 
@@ -85,6 +97,9 @@ fun RankingScreenPreview() {
                 title = "test",
                 data = generateRandomItemSpentByCategoryList(),
                 onItemClick = {},
+                onItemClickLabel = String(),
+                onItemLongClick = {},
+                onItemLongClickLabel = String(),
             )
         }
     }
