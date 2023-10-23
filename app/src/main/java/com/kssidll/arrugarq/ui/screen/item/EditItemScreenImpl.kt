@@ -224,6 +224,10 @@ fun EditItemScreenImpl(
                                 value.plus(0.5f)
                             )
                         }
+
+                        if (state.price.value.isBlank()) {
+                            state.price.value = "%.2f".format(0f)
+                        }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
                         contentColor = MaterialTheme.colorScheme.tertiary,
@@ -251,6 +255,10 @@ fun EditItemScreenImpl(
                                     0f
                                 }
                             )
+                        }
+
+                        if (state.price.value.isBlank()) {
+                            state.price.value = "%.2f".format(0f)
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -320,6 +328,10 @@ fun EditItemScreenImpl(
                                 value.plus(1f)
                             )
                         }
+
+                        if (state.quantity.value.isBlank()) {
+                            state.quantity.value = "%.3f".format(0f)
+                        }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
                         contentColor = MaterialTheme.colorScheme.tertiary,
@@ -347,6 +359,10 @@ fun EditItemScreenImpl(
                                     0f
                                 }
                             )
+                        }
+
+                        if (state.quantity.value.isBlank()) {
+                            state.quantity.value = "%.3f".format(0f)
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
