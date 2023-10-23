@@ -25,13 +25,14 @@ fun EditVariantScreenImpl(
     state: EditVariantScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_product_variant_add),
+        submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.item_product_variant_delete_warning_text),
@@ -71,6 +72,7 @@ data class EditVariantScreenState(
     val nameError: MutableState<Boolean> = mutableStateOf(false),
 
     val loadingName: MutableState<Boolean> = mutableStateOf(false),
+
     val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
     val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
 )

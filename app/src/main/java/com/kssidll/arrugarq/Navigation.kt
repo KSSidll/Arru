@@ -13,6 +13,7 @@ import com.kssidll.arrugarq.ui.screen.item.additem.*
 import com.kssidll.arrugarq.ui.screen.producer.addproducer.*
 import com.kssidll.arrugarq.ui.screen.producer.producer.*
 import com.kssidll.arrugarq.ui.screen.product.addproduct.*
+import com.kssidll.arrugarq.ui.screen.product.editproduct.*
 import com.kssidll.arrugarq.ui.screen.product.product.*
 import com.kssidll.arrugarq.ui.screen.shop.addshop.*
 import com.kssidll.arrugarq.ui.screen.shop.editshop.*
@@ -28,6 +29,7 @@ sealed class Screen: Parcelable {
     data object Home: Screen()
     data object AddItem: Screen()
     data object AddProduct: Screen()
+    data class EditProduct(val productId: Long): Screen()
     data class AddProductVariant(val productId: Long): Screen()
     data class EditProductVariant(val variantId: Long): Screen()
     data object AddProductCategory: Screen()
@@ -84,6 +86,12 @@ fun Navigation(
     val onBackDeleteVariant: (variantId: Long) -> Unit = { variantId ->
         navController.replaceAllFilter(NavAction.Pop) {
             it != Screen.EditProductVariant(variantId)
+        }
+    }
+
+    val onBackDeleteProduct: (productId: Long) -> Unit = { productId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.EditProduct(productId) && it != Screen.Product(productId)
         }
     }
 
@@ -177,6 +185,9 @@ fun Navigation(
                     onBack = onBack,
                     onProductAdd = {
                         navController.navigate(Screen.AddProduct)
+                    },
+                    onProductEdit = {
+                        navController.navigate(Screen.EditProduct(it))
                     },
                     onVariantAdd = { productId ->
                         navController.navigate(Screen.AddProductVariant(productId))
@@ -284,6 +295,9 @@ fun Navigation(
                 ProductRoute(
                     productId = screen.productId,
                     onBack = onBack,
+                    onEdit = {
+                        navController.navigate(Screen.EditProduct(screen.productId))
+                    },
                     onCategoryClick = {
                         navController.navigate(Screen.Category(it))
                     },
@@ -335,6 +349,24 @@ fun Navigation(
                     },
                     onBackDelete = {
                         onBackDeleteVariant(screen.variantId)
+                    }
+                )
+            }
+
+            is Screen.EditProduct -> {
+                EditProductRoute(
+                    productId = screen.productId,
+                    onBack = {
+                        onBack()
+                    },
+                    onBackDelete = {
+                        onBackDeleteProduct(screen.productId)
+                    },
+                    onProducerAdd = {
+                        navController.navigate(Screen.AddProductProducer)
+                    },
+                    onCategoryAdd = {
+                        navController.navigate(Screen.AddProductCategory)
                     }
                 )
             }

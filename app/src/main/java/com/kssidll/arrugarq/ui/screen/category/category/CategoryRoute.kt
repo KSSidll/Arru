@@ -15,7 +15,9 @@ fun CategoryRoute(
     val viewModel: CategoryViewModel = hiltViewModel()
 
     LaunchedEffect(categoryId) {
-        viewModel.performDataUpdate(categoryId)
+        if (!viewModel.performDataUpdate(categoryId)) {
+            onBack()
+        }
     }
 
     CategoryScreen(

@@ -27,20 +27,25 @@
 
     <string name="item">Item</string>
     <string name="item_add">Add Item</string>
+    <string name="item_edit">Edit Item</string>
     <string name="item_add_description">Add new Item</string>
 
     <string name="item_shop">Shop</string>
     <string name="item_shop_add">Add Shop</string>
+    <string name="item_shop_edit">Edit Shop</string>
     <string name="item_shop_add_description">Add new Shop</string>
     <string name="item_shop_delete_warning_text">This action will delete all of the transactions associated with this shop</string>
 
     <string name="item_product">Product</string>
     <string name="item_product_add">Add Product</string>
+    <string name="item_product_edit">Edit Product</string>
     <string name="item_product_add_description">Add new Product</string>
+    <string name="item_product_delete_warning_text">This action will delete all of the transactions associated with this product</string>
 
     <string name="item_product_variant">Variant</string>
     <string name="item_product_variant_full">Product Variant</string>
     <string name="item_product_variant_add">Add Variant</string>
+    <string name="item_product_variant_edit">Edit Variant</string>
     <string name="item_product_variant_add_description">Add new Product Variant</string>
     <string name="item_product_variant_default_value">Kilograms</string>
     <string name="item_product_variant_delete_warning_text">This action will delete all of the transactions associated with this product variant</string>
@@ -48,12 +53,16 @@
     <string name="item_product_producer">Producer</string>
     <string name="item_product_producer_full">Product Producer</string>
     <string name="item_product_producer_add">Add Producer</string>
+    <string name="item_product_producer_edit">Edit Producer</string>
     <string name="item_product_producer_add_description">Add new Product Producer</string>
+    <string name="item_product_producer_delete_warning_text">This action will delete all of the transactions associated with this product producer</string>
 
     <string name="item_product_category">Category</string>
     <string name="item_product_category_full">Product Category</string>
     <string name="item_product_category_add">Add Category</string>
+    <string name="item_product_category_edit">Edit Category</string>
     <string name="item_product_category_add_description">Add new Product Category</string>
+    <string name="item_product_category_delete_warning_text">This action will delete all of the transactions associated with this product category</string>
 
     <string name="day">Day</string>
     <string name="week">Week</string>

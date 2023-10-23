@@ -19,7 +19,7 @@ internal data class ProductScreenState(
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
     val productPriceByShopByTimeItems: SnapshotStateList<ProductPriceByShopByTime> = mutableStateListOf(),
     val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
+    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
@@ -46,6 +46,7 @@ class ProductViewModel @Inject constructor(
     private var newFullItemFlow: (Flow<Item>)? = null
 
     private var productPriceByShopByTimeJob: Job? = null
+    private var stateTotalSpentDataJob: Job? = null
 
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
@@ -54,20 +55,28 @@ class ProductViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
-    fun performDataUpdate(productId: Long) = viewModelScope.launch {
-        if (productId == screenState.product.value?.id) return@launch
+    /**
+     * @return true if provided [productId] was valid, false otherwise
+     */
+    suspend fun performDataUpdate(productId: Long) = viewModelScope.async {
+        val product = productRepository.get(productId) ?: return@async false
 
-        screenState.product.value = productRepository.get(productId)
+        if (productId == screenState.product.value?.id) return@async false
 
-        viewModelScope.launch {
-            screenState.totalSpentData.floatValue =
-                itemRepository.getTotalSpentByProduct(productId)
-                    .toFloat()
-                    .div(100000)
+        screenState.product.value = product
+
+        stateTotalSpentDataJob?.cancel()
+        stateTotalSpentDataJob = launch {
+            screenState.totalSpentData.value = itemRepository.getTotalSpentByProductFlow(productId)
+                .map {
+                    it.toFloat()
+                        .div(100000)
+                }
+                .cancellable()
         }
 
         productPriceByShopByTimeJob?.cancel()
-        productPriceByShopByTimeJob = viewModelScope.launch {
+        productPriceByShopByTimeJob = launch {
             val itemFlow = itemRepository.getProductsAveragePriceByShopByMonthSortedFlow(productId)
 
             itemFlow.collect {
@@ -114,7 +123,9 @@ class ProductViewModel @Inject constructor(
             }
         }
 
+        return@async true
     }
+        .await()
 
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return

@@ -163,7 +163,7 @@ internal fun ProducerScreenContent(
 
                     TotalAverageAndMedianSpendingComponent(
                         spentByTimeData = state.chartData.value.collectAsState(initial = emptyList()).value,
-                        totalSpentData = state.totalSpentData.floatValue,
+                        totalSpentData = state.totalSpentData.value.collectAsState(initial = 0F).value,
                     )
 
                     Spacer(Modifier.height(28.dp))

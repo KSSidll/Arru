@@ -22,12 +22,12 @@ class VariantRepository(private val dao: VariantDao): IVariantRepository {
         return dao.getFlow(id)
     }
 
-    override suspend fun getByProduct(productId: Long): List<ProductVariant> {
-        return dao.getByProduct(productId)
+    override suspend fun getByProductId(productId: Long): List<ProductVariant> {
+        return dao.getByProductId(productId)
     }
 
-    override fun getByProductFlow(productId: Long): Flow<List<ProductVariant>> {
-        return dao.getByProductFlow(productId)
+    override fun getByProductIdFlow(productId: Long): Flow<List<ProductVariant>> {
+        return dao.getByProductIdFlow(productId)
     }
 
     override suspend fun getByName(name: String): List<ProductVariant> {
@@ -48,6 +48,10 @@ class VariantRepository(private val dao: VariantDao): IVariantRepository {
 
     override suspend fun delete(variant: ProductVariant) {
         dao.delete(variant)
+    }
+
+    override suspend fun delete(variants: List<ProductVariant>) {
+        dao.delete(variants)
     }
 
 }

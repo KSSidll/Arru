@@ -25,13 +25,14 @@ fun EditCategoryScreenImpl(
     state: EditCategoryScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    submitButtonText: String = stringResource(id = R.string.item_product_category_add),
 ) {
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_category),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_product_category_add),
+        submitButtonText = submitButtonText,
     ) {
         StyledOutlinedTextField(
             singleLine = true,

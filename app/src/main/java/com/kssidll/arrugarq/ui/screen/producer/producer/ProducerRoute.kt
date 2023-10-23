@@ -15,7 +15,9 @@ fun ProducerRoute(
     val viewModel: ProducerViewModel = hiltViewModel()
 
     LaunchedEffect(producerId) {
-        viewModel.performDataUpdate(producerId)
+        if (!viewModel.performDataUpdate(producerId)) {
+            onBack()
+        }
     }
 
     ProducerScreen(

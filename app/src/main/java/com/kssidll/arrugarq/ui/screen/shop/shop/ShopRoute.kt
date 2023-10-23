@@ -16,7 +16,9 @@ fun ShopRoute(
     val viewModel: ShopViewModel = hiltViewModel()
 
     LaunchedEffect(shopId) {
-        viewModel.performDataUpdate(shopId)
+        if (!viewModel.performDataUpdate(shopId)) {
+            onBack()
+        }
     }
 
     ShopScreen(

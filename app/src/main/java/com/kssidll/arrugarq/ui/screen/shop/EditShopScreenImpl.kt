@@ -7,13 +7,10 @@ import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.focus.*
-import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import androidx.lifecycle.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.ui.component.field.*
@@ -28,13 +25,14 @@ fun EditShopScreenImpl(
     state: EditShopScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    submitButtonText: String = stringResource(id = R.string.item_shop_add),
 ) {
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_shop),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_shop_add),
+        submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.item_shop_delete_warning_text)

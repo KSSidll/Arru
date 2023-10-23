@@ -8,6 +8,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 fun ProductRoute(
     productId: Long,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onCategoryClick: (categoryId: Long) -> Unit,
     onProducerClick: (producerId: Long) -> Unit,
     onShopClick: (shopId: Long) -> Unit,
@@ -15,12 +16,15 @@ fun ProductRoute(
     val viewModel: ProductViewModel = hiltViewModel()
 
     LaunchedEffect(productId) {
-        viewModel.performDataUpdate(productId)
+        if (!viewModel.performDataUpdate(productId)) {
+            onBack()
+        }
     }
 
     ProductScreen(
         onBack = onBack,
         state = viewModel.screenState,
+        onEdit = onEdit,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },

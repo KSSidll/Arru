@@ -2,6 +2,8 @@ package com.kssidll.arrugarq.ui.screen.variant.editvariant
 
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.ui.screen.variant.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -17,7 +19,9 @@ fun EditVariantRoute(
     val viewModel: EditVariantViewModel = hiltViewModel()
 
     LaunchedEffect(variantId) {
-        viewModel.updateState(variantId)
+        if (!viewModel.updateState(variantId)) {
+            onBack()
+        }
     }
 
     EditVariantScreenImpl(
@@ -33,6 +37,7 @@ fun EditVariantRoute(
                     onBackDelete()
                 }
             }
-        }
+        },
+        submitButtonText = stringResource(id = R.string.item_product_variant_edit),
     )
 }

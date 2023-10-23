@@ -18,7 +18,7 @@ internal data class ProducerScreenState(
     val producer: MutableState<ProductProducer?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
     val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
+    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
@@ -44,6 +44,8 @@ class ProducerViewModel @Inject constructor(
     private var newFullItemFlowJob: Job? = null
     private var newFullItemFlow: (Flow<Item>)? = null
 
+    private var stateTotalSpentDataJob: Job? = null
+
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         screenState.spentByTimePeriod.value = newPeriod
@@ -51,16 +53,25 @@ class ProducerViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
-    fun performDataUpdate(producerId: Long) = viewModelScope.launch {
-        if (producerId == screenState.producer.value?.id) return@launch
+    /**
+     * @return true if provided [producerId] was valid, false otherwise
+     */
+    suspend fun performDataUpdate(producerId: Long) = viewModelScope.async {
+        val producer = producerRepository.get(producerId) ?: return@async false
 
-        screenState.producer.value = producerRepository.get(producerId)
+        if (producerId == screenState.producer.value?.id) return@async false
 
-        viewModelScope.launch {
-            screenState.totalSpentData.floatValue =
-                itemRepository.getTotalSpentByProducer(producerId)
-                    .toFloat()
-                    .div(100000)
+        screenState.producer.value = producer
+
+        stateTotalSpentDataJob?.cancel()
+        stateTotalSpentDataJob = launch {
+            screenState.totalSpentData.value =
+                itemRepository.getTotalSpentByProducerFlow(producerId)
+                    .map {
+                        it.toFloat()
+                            .div(100000)
+                    }
+                    .cancellable()
         }
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
@@ -88,7 +99,7 @@ class ProducerViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
 
         newFullItemFlowJob?.cancel()
-        newFullItemFlowJob = viewModelScope.launch {
+        newFullItemFlowJob = launch {
             newFullItemFlow = itemRepository.getLastFlow()
                 .cancellable()
 
@@ -101,7 +112,9 @@ class ProducerViewModel @Inject constructor(
             }
         }
 
+        return@async true
     }
+        .await()
 
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return

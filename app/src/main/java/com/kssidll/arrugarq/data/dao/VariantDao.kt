@@ -19,10 +19,10 @@ interface VariantDao {
     fun getFlow(id: Long): Flow<ProductVariant>
 
     @Query("SELECT * FROM productvariant WHERE productId == :productId")
-    suspend fun getByProduct(productId: Long): List<ProductVariant>
+    suspend fun getByProductId(productId: Long): List<ProductVariant>
 
     @Query("SELECT * FROM productvariant WHERE productId == :productId")
-    fun getByProductFlow(productId: Long): Flow<List<ProductVariant>>
+    fun getByProductIdFlow(productId: Long): Flow<List<ProductVariant>>
 
     @Query("SELECT * FROM productvariant WHERE name == :name")
     suspend fun getByName(name: String): List<ProductVariant>
@@ -38,4 +38,7 @@ interface VariantDao {
 
     @Delete
     suspend fun delete(variant: ProductVariant)
+
+    @Delete
+    suspend fun delete(variants: List<ProductVariant>)
 }

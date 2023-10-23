@@ -27,20 +27,25 @@
 
     <string name="item">Przedmiot</string>
     <string name="item_add">Dodaj Przedmiot</string>
+    <string name="item_edit">Edytuj Przedmiot</string>
     <string name="item_add_description">Dodaj nowy przedmiot</string>
 
     <string name="item_shop">Sklep</string>
     <string name="item_shop_add">Dodaj Sklep</string>
+    <string name="item_shop_edit">Edytuj Sklep</string>
     <string name="item_shop_add_description">Dodaj nowy Sklep</string>
     <string name="item_shop_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tym sklepem</string>
 
     <string name="item_product">Produkt</string>
     <string name="item_product_add">Dodaj Produkt</string>
+    <string name="item_product_edit">Edytuj Produkt</string>
     <string name="item_product_add_description">Dodaj nowy produkt</string>
+    <string name="item_product_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tym produktem</string>
 
     <string name="item_product_variant">Wariant</string>
     <string name="item_product_variant_full">Wariant Produktu</string>
     <string name="item_product_variant_add">Dodaj Wariant</string>
+    <string name="item_product_variant_edit">Edytuj Wariant</string>
     <string name="item_product_variant_add_description">Dodaj nową wariację produktu</string>
     <string name="item_product_variant_default_value">Kilogramy</string>
     <string name="item_product_variant_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tym wariantem tego produktu</string>
@@ -48,12 +53,16 @@
     <string name="item_product_producer">Producent</string>
     <string name="item_product_producer_full">Producent Produktów</string>
     <string name="item_product_producer_add">Dodaj Producenta</string>
+    <string name="item_product_producer_edit">Edytuj Producenta</string>
     <string name="item_product_producer_add_description">Dodaj nowego producenta produktów</string>
+    <string name="item_product_producer_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tym producentem produktów</string>
 
     <string name="item_product_category">Kategoria</string>
     <string name="item_product_category_full">Kategoria Produktów</string>
     <string name="item_product_category_add">Dodaj Kategorię</string>
+    <string name="item_product_category_edit">Edytuj Kategorię</string>
     <string name="item_product_category_add_description">Dodaj nową kategorię produktów</string>
+    <string name="item_product_category_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tą kategorią produktów</string>
 
     <string name="day">Dzień</string>
     <string name="week">Tydzień</string>

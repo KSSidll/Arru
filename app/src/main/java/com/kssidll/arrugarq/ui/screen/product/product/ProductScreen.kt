@@ -13,9 +13,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
+import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.helper.*
@@ -33,6 +35,7 @@ import java.util.*
 internal fun ProductScreen(
     onBack: () -> Unit,
     state: ProductScreenState,
+    onEdit: () -> Unit,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
     onCategoryClick: (category: ProductCategory) -> Unit,
@@ -48,6 +51,20 @@ internal fun ProductScreen(
                         text = state.product.value?.name.orEmpty(),
                         overflow = TextOverflow.Ellipsis,
                     )
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            onEdit()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(27.dp),
+                        )
+                    }
                 },
             )
         }
@@ -164,7 +181,7 @@ internal fun ProductScreenContent(
 
                     TotalAverageAndMedianSpendingComponent(
                         spentByTimeData = state.chartData.value.collectAsState(initial = emptyList()).value,
-                        totalSpentData = state.totalSpentData.floatValue,
+                        totalSpentData = state.totalSpentData.value.collectAsState(initial = 1F).value,
                     )
 
                     Spacer(Modifier.height(28.dp))

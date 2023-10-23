@@ -36,9 +36,11 @@ fun EditItemScreenImpl(
     onShopAdd: () -> Unit,
     onShopEdit: (shop: Shop) -> Unit,
     onProductAdd: () -> Unit,
+    onProductEdit: (product: Product) -> Unit,
     onVariantAdd: () -> Unit,
     onVariantEdit: (variant: ProductVariant) -> Unit,
     onProductChange: () -> Unit,
+    submitButtonText: String = stringResource(id = R.string.item_add),
 ) {
     val datePickerState = rememberDatePickerState()
 
@@ -47,7 +49,7 @@ fun EditItemScreenImpl(
         title = stringResource(id = R.string.item),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_add),
+        submitButtonText = submitButtonText,
     ) {
         if (state.isDatePickerDialogExpanded.value) {
             DatePickerDialog(
@@ -119,6 +121,12 @@ fun EditItemScreenImpl(
                     state.validateSelectedProduct()
                     onProductChange()
                 },
+                onItemClickLabel = stringResource(id = R.string.select),
+                onItemLongClick = {
+                    state.isProductSearchDialogExpanded.value = false
+                    onProductEdit(it.product)
+                },
+                onItemLongClickLabel = stringResource(id = R.string.edit),
                 itemText = { it.product.name },
                 onAddButtonClick = onProductAdd,
                 addButtonDescription = stringResource(R.string.item_product_add_description),
@@ -396,7 +404,7 @@ fun EditItemScreenImpl(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = state.selectedProduct.value != null && !state.loadingVariants.value,
+            enabled = state.selectedProduct.value != null,
             value = state.selectedVariant.value?.name
                 ?: stringResource(R.string.item_product_variant_default_value),
             onClick = {
@@ -447,7 +455,6 @@ data class EditItemScreenState(
     val loadingQuantity: MutableState<Boolean> = mutableStateOf(false),
     val loadingPrice: MutableState<Boolean> = mutableStateOf(false),
     val loadingDate: MutableState<Boolean> = mutableStateOf(false),
-    val loadingVariants: MutableState<Boolean> = mutableStateOf(false),
 )
 
 /**
@@ -543,6 +550,7 @@ fun EditItemScreenImplPreview() {
                 onShopAdd = {},
                 onShopEdit = {},
                 onProductAdd = {},
+                onProductEdit = {},
                 onVariantAdd = {},
                 onVariantEdit = {},
                 onProductChange = {},

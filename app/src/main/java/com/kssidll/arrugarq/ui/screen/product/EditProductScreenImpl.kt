@@ -28,13 +28,17 @@ fun EditProductScreenImpl(
     onDelete: (() -> Unit)? = null,
     onProducerAdd: () -> Unit,
     onCategoryAdd: () -> Unit,
+    submitButtonText: String = stringResource(id = R.string.item_product_add),
 ) {
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_product_add),
+        submitButtonText = submitButtonText,
+        showDeleteWarning = state.showDeleteWarning,
+        deleteWarningConfirmed = state.deleteWarningConfirmed,
+        deleteWarningMessage = stringResource(id = R.string.item_product_delete_warning_text),
     ) {
 
         if (state.isProducerSearchDialogExpanded.value) {
@@ -70,6 +74,7 @@ fun EditProductScreenImpl(
             )
         } else {
             StyledOutlinedTextField(
+                enabled = !state.loadingName.value,
                 singleLine = true,
                 value = state.name.value,
                 onValueChange = {
@@ -92,6 +97,7 @@ fun EditProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
+                enabled = !state.loadingProductProducer.value,
                 value = state.selectedProductProducer.value?.name ?: String(),
                 onClick = {
                     state.isProducerSearchDialogExpanded.value = true
@@ -111,6 +117,7 @@ fun EditProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
+                enabled = !state.loadingProductCategory.value,
                 value = state.selectedProductCategory.value?.name ?: String(),
                 onClick = {
                     state.isCategorySearchDialogExpanded.value = true
@@ -146,6 +153,13 @@ data class EditProductScreenState(
 
     val categoriesWithAltNames: MutableState<Flow<List<ProductCategoryWithAltNames>>> = mutableStateOf(flowOf()),
     val producers: MutableState<Flow<List<ProductProducer>>> = mutableStateOf(flowOf()),
+
+    val loadingProductCategory: MutableState<Boolean> = mutableStateOf(false),
+    val loadingProductProducer: MutableState<Boolean> = mutableStateOf(false),
+    val loadingName: MutableState<Boolean> = mutableStateOf(false),
+
+    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
+    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
 )
 
 /**
@@ -179,10 +193,11 @@ fun EditProductScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditProductScreenState.extractProductOrNull(): Product? {
+fun EditProductScreenState.extractProductOrNull(productId: Long = 0): Product? {
     if (!validate()) return null
 
     return Product(
+        id = productId,
         categoryId = selectedProductCategory.value!!.id,
         producerId = selectedProductProducer.value?.id,
         name = name.value.trim(),

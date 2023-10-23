@@ -11,8 +11,7 @@ import javax.inject.*
 class AddVariantViewModel @Inject constructor(
     private val variantRepository: IVariantRepository,
 ): ViewModel() {
-    internal val screenState: EditVariantScreenState =
-        EditVariantScreenState()
+    internal val screenState: EditVariantScreenState = EditVariantScreenState()
 
     /**
      * Tries to add a product variant to the repository
@@ -21,8 +20,7 @@ class AddVariantViewModel @Inject constructor(
      */
     suspend fun addVariant(productId: Long): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val variant =
-            screenState.extractVariantOrNull(productId) ?: return@async null
+        val variant = screenState.extractVariantOrNull(productId) ?: return@async null
 
         return@async variantRepository.insert(variant)
     }

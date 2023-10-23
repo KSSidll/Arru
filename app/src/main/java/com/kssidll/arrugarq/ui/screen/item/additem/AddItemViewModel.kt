@@ -44,37 +44,34 @@ class AddItemViewModel @Inject constructor(
     fun onProductChange() = viewModelScope.launch {
         screenState.loadingPrice.value = true
         screenState.loadingQuantity.value = true
-        screenState.loadingVariants.value = true
 
-        run {
-            val lastItemByProduct =
-                itemRepository.getLastByProductId(screenState.selectedProduct.value!!.id)
-                    ?: return@run
+        fillStateProductVariants()
 
-            screenState.selectedVariant.value = lastItemByProduct.variantId?.let {
-                variantsRepository.get(it)
-            }
+        val lastItemByProduct =
+            itemRepository.getLastByProductId(screenState.selectedProduct.value!!.id)
+                ?: return@launch
 
-            screenState.price.value = String.format(
-                "%.2f",
-                lastItemByProduct.price / 100f
-            )
-
-            screenState.quantity.value = String.format(
-                "%.3f",
-                lastItemByProduct.quantity / 1000f
-            )
-
-            fillStateProductVariants()
+        screenState.selectedVariant.value = lastItemByProduct.variantId?.let {
+            variantsRepository.get(it)
         }
 
-        screenState.loadingVariants.value = false
-        screenState.loadingQuantity.value = false
-        screenState.loadingPrice.value = false
+        screenState.price.value = String.format(
+            "%.2f",
+            lastItemByProduct.price / 100f
+        )
 
-        screenState.validateQuantity()
-        screenState.validatePrice()
+        screenState.quantity.value = String.format(
+            "%.3f",
+            lastItemByProduct.quantity / 1000f
+        )
     }
+        .invokeOnCompletion {
+            screenState.loadingQuantity.value = false
+            screenState.loadingPrice.value = false
+
+            screenState.validateQuantity()
+            screenState.validatePrice()
+        }
 
     /**
      * Tries to add item to the repository
@@ -122,11 +119,7 @@ class AddItemViewModel @Inject constructor(
         fillStateProductVariantsJob = viewModelScope.launch {
             with(screenState.selectedProduct) {
                 if (value != null) {
-                    screenState.loadingVariants.value = true
-
-                    screenState.variants.value = variantsRepository.getByProductFlow(value!!.id)
-
-                    screenState.loadingVariants.value = false
+                    screenState.variants.value = variantsRepository.getByProductIdFlow(value!!.id)
                 }
             }
         }

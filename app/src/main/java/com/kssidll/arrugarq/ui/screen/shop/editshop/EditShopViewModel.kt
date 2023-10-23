@@ -16,7 +16,7 @@ class EditShopViewModel @Inject constructor(
     internal val screenState: EditShopScreenState = EditShopScreenState()
 
     /**
-     * Tries to update shop with provided id with current screen state data
+     * Tries to update shop with provided [shopId] with current screen state data
      */
     fun updateShop(shopId: Long) = viewModelScope.launch {
         screenState.attemptedToSubmit.value = true
@@ -26,40 +26,45 @@ class EditShopViewModel @Inject constructor(
     }
 
     /**
-     * Tries to delete shop with provided id
+     * Tries to delete shop with provided [shopId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,
+     * state deleteWarningConfirmed flag needs to be set to start foreign constrained data deletion
      * @return True if operation started, false otherwise
      */
-    suspend fun deleteShop(shopId: Long): Boolean {
-        return viewModelScope.async {
-            // return true if no such shop exists
-            val shop = shopRepository.get(shopId) ?: return@async true
+    suspend fun deleteShop(shopId: Long) = viewModelScope.async {
+        // return true if no such shop exists
+        val shop = shopRepository.get(shopId) ?: return@async true
 
-            val items = itemRepository.getByShopId(shopId)
+        val items = itemRepository.getByShopId(shopId)
 
-            if (items.isNotEmpty() && !screenState.deleteWarningConfirmed.value) {
-                screenState.showDeleteWarning.value = true
-                return@async false
-            } else {
-                itemRepository.delete(items)
-                shopRepository.delete(shop)
-                return@async true
-            }
+        if (items.isNotEmpty() && !screenState.deleteWarningConfirmed.value) {
+            screenState.showDeleteWarning.value = true
+            return@async false
+        } else {
+            itemRepository.delete(items)
+            shopRepository.delete(shop)
+            return@async true
         }
-            .await()
     }
+        .await()
 
     /**
      * Updates data in the screen state
+     * @return true if provided [shopId] was valid, false otherwise
      */
-    fun updateState(shopId: Long) = viewModelScope.launch {
+    suspend fun updateState(shopId: Long) = viewModelScope.async {
         screenState.loadingName.value = true
 
-        run {
-            val shop = shopRepository.get(shopId) ?: return@launch
+        val shop = shopRepository.get(shopId)
 
-            screenState.name.value = shop.name
+        if (shop == null) {
+            screenState.loadingName.value = false
+            return@async false
         }
 
+        screenState.name.value = shop.name
+
         screenState.loadingName.value = false
+        return@async true
     }
+        .await()
 }

@@ -17,7 +17,7 @@ internal data class ShopScreenState(
     val shop: MutableState<Shop?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
     val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
+    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
@@ -43,6 +43,8 @@ class ShopViewModel @Inject constructor(
     private var newFullItemFlowJob: Job? = null
     private var newFullItemFlow: (Flow<Item>)? = null
 
+    private var stateTotalSpentDataJob: Job? = null
+
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         screenState.spentByTimePeriod.value = newPeriod
@@ -50,15 +52,24 @@ class ShopViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
-    fun performDataUpdate(shopId: Long) = viewModelScope.launch {
-        if (shopId == screenState.shop.value?.id) return@launch
+    /**
+     * @return true if provided [shopId] was valid, false otherwise
+     */
+    suspend fun performDataUpdate(shopId: Long) = viewModelScope.async {
+        val shop = shopRepository.get(shopId) ?: return@async false
 
-        screenState.shop.value = shopRepository.get(shopId)
+        if (shopId == screenState.shop.value?.id) return@async true
 
-        viewModelScope.launch {
-            screenState.totalSpentData.floatValue = itemRepository.getTotalSpentByShop(shopId)
-                .toFloat()
-                .div(100000)
+        screenState.shop.value = shop
+
+        stateTotalSpentDataJob?.cancel()
+        stateTotalSpentDataJob = launch {
+            screenState.totalSpentData.value = itemRepository.getTotalSpentByShopFlow(shopId)
+                .map {
+                    it.toFloat()
+                        .div(100000)
+                }
+                .cancellable()
         }
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
@@ -86,7 +97,7 @@ class ShopViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
 
         newFullItemFlowJob?.cancel()
-        newFullItemFlowJob = viewModelScope.launch {
+        newFullItemFlowJob = launch {
             newFullItemFlow = itemRepository.getLastFlow()
                 .cancellable()
 
@@ -99,7 +110,9 @@ class ShopViewModel @Inject constructor(
             }
         }
 
+        return@async true
     }
+        .await()
 
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return

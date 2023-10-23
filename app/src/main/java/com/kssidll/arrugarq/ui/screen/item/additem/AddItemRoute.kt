@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 fun AddItemRoute(
     onBack: () -> Unit,
     onProductAdd: () -> Unit,
+    onProductEdit: (productId: Long) -> Unit,
     onVariantAdd: (productId: Long) -> Unit,
     onVariantEdit: (variantId: Long) -> Unit,
     onShopAdd: () -> Unit,
@@ -27,6 +28,9 @@ fun AddItemRoute(
             }
         },
         onProductAdd = onProductAdd,
+        onProductEdit = {
+            onProductEdit(it.id)
+        },
         onShopAdd = onShopAdd,
         onShopEdit = {
             onShopEdit(it.id)

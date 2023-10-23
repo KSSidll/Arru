@@ -25,13 +25,14 @@ fun EditProducerScreenImpl(
     state: EditProducerScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    submitButtonText: String = stringResource(id = R.string.item_product_producer_add),
 ) {
     EditScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_producer),
         onDelete = onDelete,
         onSubmit = onSubmit,
-        submitButtonText = stringResource(id = R.string.item_product_producer_add),
+        submitButtonText = submitButtonText,
     ) {
         StyledOutlinedTextField(
             singleLine = true,

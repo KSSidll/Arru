@@ -18,7 +18,7 @@ internal data class CategoryScreenState(
     val category: MutableState<ProductCategory?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
     val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableFloatState = mutableFloatStateOf(0F),
+    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
 
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
@@ -44,6 +44,8 @@ class CategoryViewModel @Inject constructor(
     private var newFullItemFlowJob: Job? = null
     private var newFullItemFlow: (Flow<Item>)? = null
 
+    private var stateTotalSpentDataJob: Job? = null
+
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         screenState.spentByTimePeriod.value = newPeriod
@@ -51,16 +53,25 @@ class CategoryViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
-    fun performDataUpdate(categoryId: Long) = viewModelScope.launch {
-        if (categoryId == screenState.category.value?.id) return@launch
+    /**
+     * @return true if provided [categoryId] was valid, false otherwise
+     */
+    suspend fun performDataUpdate(categoryId: Long) = viewModelScope.async {
+        val category = categoryRepository.get(categoryId) ?: return@async false
 
-        screenState.category.value = categoryRepository.get(categoryId)
+        if (categoryId == screenState.category.value?.id) return@async false
 
-        viewModelScope.launch {
-            screenState.totalSpentData.floatValue =
-                itemRepository.getTotalSpentByCategory(categoryId)
-                    .toFloat()
-                    .div(100000)
+        screenState.category.value = category
+
+        stateTotalSpentDataJob?.cancel()
+        stateTotalSpentDataJob = launch {
+            screenState.totalSpentData.value =
+                itemRepository.getTotalSpentByCategoryFlow(categoryId)
+                    .map {
+                        it.toFloat()
+                            .div(100000)
+                    }
+                    .cancellable()
         }
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
@@ -88,7 +99,7 @@ class CategoryViewModel @Inject constructor(
         screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
 
         newFullItemFlowJob?.cancel()
-        newFullItemFlowJob = viewModelScope.launch {
+        newFullItemFlowJob = launch {
             newFullItemFlow = itemRepository.getLastFlow()
                 .cancellable()
 
@@ -101,7 +112,9 @@ class CategoryViewModel @Inject constructor(
             }
         }
 
+        return@async true
     }
+        .await()
 
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return

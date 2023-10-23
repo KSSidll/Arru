@@ -2,6 +2,8 @@ package com.kssidll.arrugarq.ui.screen.shop.editshop
 
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.ui.screen.shop.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -17,7 +19,9 @@ fun EditShopRoute(
     val viewModel: EditShopViewModel = hiltViewModel()
 
     LaunchedEffect(shopId) {
-        viewModel.updateState(shopId)
+        if (!viewModel.updateState(shopId)) {
+            onBack()
+        }
     }
 
     EditShopScreenImpl(
@@ -33,6 +37,7 @@ fun EditShopRoute(
                     onBackDelete()
                 }
             }
-        }
+        },
+        submitButtonText = stringResource(id = R.string.item_shop_edit),
     )
 }
