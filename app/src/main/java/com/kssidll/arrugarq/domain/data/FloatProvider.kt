@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.domain.data
 
 interface FloatProvider {
-    fun getValue(): Float
+    fun value(): Float
 }
 
 fun <E> List<E>.avg(): Float where E: FloatProvider {
@@ -9,7 +9,7 @@ fun <E> List<E>.avg(): Float where E: FloatProvider {
 
     var sum = 0F
     forEach {
-        sum += it.getValue()
+        sum += it.value()
     }
     return sum / size
 }

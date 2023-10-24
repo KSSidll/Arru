@@ -15,7 +15,8 @@ import me.xdrop.fuzzywuzzy.*
 data class ProductProducer(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
-): FuzzySearchable {
+): FuzzySearchable, Named {
+    @Ignore
     constructor(
         name: String,
     ): this(
@@ -23,11 +24,17 @@ data class ProductProducer(
         name
     )
 
-    override fun getFuzzyScore(query: String): Int {
+    @Ignore
+    override fun fuzzyScore(query: String): Int {
         return FuzzySearch.extractOne(
             query,
             listOf(name)
         ).score
+    }
+
+    @Ignore
+    override fun name(): String {
+        return name
     }
 
 }

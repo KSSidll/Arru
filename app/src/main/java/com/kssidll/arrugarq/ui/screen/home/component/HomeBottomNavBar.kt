@@ -13,7 +13,7 @@ import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
-fun HomeBottomNavBar(
+internal fun HomeBottomNavBar(
     currentLocation: HomeScreenLocations = HomeScreenLocations.entries.first { it.initial },
     onLocationChange: ((HomeScreenLocations) -> Unit)? = null,
     onAddItem: (() -> Unit)? = null,

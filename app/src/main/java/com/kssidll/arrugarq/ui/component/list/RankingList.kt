@@ -82,12 +82,12 @@ fun <T> RankingList(
         if (items.isNotEmpty()) {
             displayItems.clear()
 
-            var sortedItems = items.sortedByDescending { it.getSortValue() }
+            var sortedItems = items.sortedByDescending { it.sortValue() }
             if (displayCount > 0) sortedItems = sortedItems.take(displayCount)
 
             displayItems.addAll(sortedItems)
             maxItemValue = displayItems.first()
-                .getSortValue()
+                .sortValue()
         }
     }
 
@@ -123,7 +123,7 @@ fun <T> RankingList(
                     ) {
                         Text(
                             modifier = Modifier.align(Alignment.CenterStart),
-                            text = it.getDisplayName(),
+                            text = it.displayName(),
                             style = getTextStyle(
                                 index,
                                 scaleByRank
@@ -163,7 +163,7 @@ fun <T> RankingList(
                     ) {
                         Text(
                             modifier = Modifier.align(Alignment.Center),
-                            text = it.getDisplayValue(),
+                            text = it.displayValue(),
                             style = getTextStyle(
                                 index,
                                 scaleByRank
@@ -191,7 +191,7 @@ fun <T> RankingList(
                             )
                     ) {
                         RankingItemProgressBar(
-                            progressValue = it.getSortValue() / maxItemValue.toFloat(),
+                            progressValue = it.sortValue() / maxItemValue.toFloat(),
                             modifier = Modifier
                                 .align(alignment = Alignment.Center)
                                 .fillMaxWidth()

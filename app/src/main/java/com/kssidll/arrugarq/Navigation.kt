@@ -71,6 +71,73 @@ fun <T> NavController<T>.replaceAllFilter(
     )
 }
 
+fun defaultNavigateContentTransformation(
+    screenWidth: Int,
+): ContentTransform {
+    val easing = CubicBezierEasing(
+        0.48f,
+        0.19f,
+        0.05f,
+        1.03f
+    )
+
+    return slideInHorizontally(
+        animationSpec = tween(
+            500,
+            easing = easing
+        ),
+        initialOffsetX = { screenWidth }) + fadeIn(
+        tween(
+            250,
+            50
+        )
+    ) togetherWith slideOutHorizontally(
+        animationSpec = tween(
+            500,
+            easing = easing
+        ),
+        targetOffsetX = { -screenWidth }) + fadeOut(
+        tween(
+            250,
+            50
+        )
+    )
+}
+
+fun defaultPopContentTransformation(
+    screenWidth: Int,
+): ContentTransform {
+    val easing = CubicBezierEasing(
+        0.48f,
+        0.19f,
+        0.05f,
+        1.03f
+    )
+
+    return slideInHorizontally(
+        animationSpec = tween(
+            500,
+            easing = easing
+        ),
+        initialOffsetX = { -screenWidth }) + fadeIn(
+        tween(
+            250,
+            50
+        )
+    ) togetherWith slideOutHorizontally(
+        animationSpec = tween(
+            500,
+            easing = easing
+        ),
+        targetOffsetX = { screenWidth }) + fadeOut(
+        tween(
+            250,
+            50
+        )
+    )
+}
+
+
 @Composable
 fun Navigation(
     navController: NavController<Screen> = rememberNavController(startDestination = Screen.Home)
@@ -120,60 +187,14 @@ fun Navigation(
     }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    val easing = CubicBezierEasing(
-        0.48f,
-        0.19f,
-        0.05f,
-        1.03f
-    )
 
     AnimatedNavHost(
         controller = navController,
         transitionSpec = { action, _, _ ->
             if (action != NavAction.Pop) {
-                slideInHorizontally(
-                    animationSpec = tween(
-                        600,
-                        easing = easing
-                    ),
-                    initialOffsetX = { screenWidth }) + fadeIn(
-                    tween(
-                        300,
-                        100
-                    )
-                ) togetherWith slideOutHorizontally(
-                    animationSpec = tween(
-                        600,
-                        easing = easing
-                    ),
-                    targetOffsetX = { -screenWidth }) + fadeOut(
-                    tween(
-                        300,
-                        100
-                    )
-                )
+                defaultNavigateContentTransformation(screenWidth)
             } else {
-                slideInHorizontally(
-                    animationSpec = tween(
-                        600,
-                        easing = easing
-                    ),
-                    initialOffsetX = { -screenWidth }) + fadeIn(
-                    tween(
-                        300,
-                        100
-                    )
-                ) togetherWith slideOutHorizontally(
-                    animationSpec = tween(
-                        600,
-                        easing = easing
-                    ),
-                    targetOffsetX = { screenWidth }) + fadeOut(
-                    tween(
-                        300,
-                        100
-                    )
-                )
+                defaultPopContentTransformation(screenWidth)
             }
         }
     ) { screen ->
@@ -203,6 +224,30 @@ fun Navigation(
                     },
                     onTransactionShopClick = {
                         navController.navigate(Screen.Shop(it))
+                    },
+                    onSearchProductClick = {
+                        navController.navigate(Screen.Product(it))
+                    },
+                    onSearchProductLongClick = {
+                        navController.navigate(Screen.EditProduct(it))
+                    },
+                    onSearchCategoryClick = {
+                        navController.navigate(Screen.Category(it))
+                    },
+                    onSearchCategoryLongClick = {
+                        navController.navigate(Screen.EditCategory(it))
+                    },
+                    onSearchShopClick = {
+                        navController.navigate(Screen.Shop(it))
+                    },
+                    onSearchShopLongClick = {
+                        navController.navigate(Screen.EditShop(it))
+                    },
+                    onSearchProducerClick = {
+                        navController.navigate(Screen.Producer(it))
+                    },
+                    onSearchProducerLongClick = {
+                        navController.navigate(Screen.EditProducer(it))
                     },
                 )
             }

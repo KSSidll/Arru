@@ -1,0 +1,138 @@
+package com.kssidll.arrugarq.ui.screen.home.search.shared
+
+
+import android.content.res.Configuration.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.*
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.res.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.R
+import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.ui.component.field.*
+import com.kssidll.arrugarq.ui.screen.home.search.component.*
+import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
+
+@Composable
+internal fun <T> ListScreen(
+    state: ListScreenState<T>,
+    onItemSelect: (item: T) -> Unit,
+    onItemEdit: (item: T) -> Unit,
+) where T: FuzzySearchable, T: Named {
+    val items = state.items.value.collectAsState(initial = emptyList()).value
+    val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
+
+    LaunchedEffect(
+        items,
+        state.filter.value
+    ) {
+        displayItems.clear()
+        displayItems.addAll(items.fuzzySearchSort(state.filter.value))
+    }
+
+    Scaffold(
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .minimumInteractiveComponentSize()
+                    .fillMaxWidth()
+            ) {
+                SearchItemHorizontalDivider()
+
+                StyledOutlinedTextField(
+                    value = state.filter.value,
+                    onValueChange = {
+                        state.filter.value = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.search),
+                            style = Typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.tertiary.copy(optionalAlpha),
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    colors = styledTextFieldColorDefaults(
+                        disabledIndicator = Color.Transparent,
+                        unfocusedIndicator = Color.Transparent,
+                        focusedIndicator = Color.Transparent,
+                        errorIndicator = Color.Transparent,
+                    ),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            LazyColumn(
+                reverseLayout = true,
+                modifier = Modifier.weight(1f),
+            ) {
+                itemsIndexed(displayItems.toList()) { index, item ->
+                    if (index != 0 && index != displayItems.lastIndex) {
+                        SearchItemHorizontalDivider()
+                    }
+
+                    SearchItem(
+                        text = item.name(),
+                        onSelect = {
+                            onItemSelect(item)
+                        },
+                        onEdit = {
+                            onItemEdit(item)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+internal data class ListScreenState<T>(
+    val filter: MutableState<String> = mutableStateOf(String()),
+    val items: MutableState<Flow<List<T>>> = mutableStateOf(flowOf()),
+) where T: FuzzySearchable, T: Named
+
+@Preview(
+    group = "ListScreen",
+    name = "Dark",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    group = "ListScreen",
+    name = "Light",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun ListScreenPreview() {
+    ArrugarqTheme {
+        Surface {
+            ListScreen(
+                state = ListScreenState<ProductWithAltNames>(),
+                onItemSelect = {},
+                onItemEdit = {},
+            )
+        }
+    }
+}

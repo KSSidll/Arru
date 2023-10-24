@@ -29,6 +29,14 @@ internal fun HomeScreen(
     onTransactionCategoryClick: (category: ProductCategory) -> Unit,
     onTransactionProducerClick: (producer: ProductProducer) -> Unit,
     onTransactionShopClick: (shop: Shop) -> Unit,
+    onSearchProductClick: (productId: Long) -> Unit,
+    onSearchProductLongClick: (productId: Long) -> Unit,
+    onSearchShopClick: (shopId: Long) -> Unit,
+    onSearchShopLongClick: (shopId: Long) -> Unit,
+    onSearchCategoryClick: (categoryId: Long) -> Unit,
+    onSearchCategoryLongClick: (categoryId: Long) -> Unit,
+    onSearchProducerClick: (producerId: Long) -> Unit,
+    onSearchProducerLongClick: (producerId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
@@ -66,7 +74,15 @@ internal fun HomeScreen(
 
                     HomeScreenLocations.Search -> {
                         SearchRoute(
-
+                            navBackHandlerEnabled = pagerState.currentPage == location,
+                            onProductSelect = onSearchProductClick,
+                            onProductEdit = onSearchProductLongClick,
+                            onShopSelect = onSearchShopClick,
+                            onShopEdit = onSearchShopLongClick,
+                            onCategorySelect = onSearchCategoryClick,
+                            onCategoryEdit = onSearchCategoryLongClick,
+                            onProducerSelect = onSearchProducerClick,
+                            onProducerEdit = onSearchProducerLongClick,
                         )
                     }
 
@@ -117,6 +133,14 @@ fun HomeScreenPreview() {
                     onTransactionItemLongClick = {},
                     onTransactionProducerClick = {},
                     onTransactionShopClick = {},
+                    onSearchProductClick = {},
+                    onSearchProductLongClick = {},
+                    onSearchCategoryClick = {},
+                    onSearchCategoryLongClick = {},
+                    onSearchShopClick = {},
+                    onSearchShopLongClick = {},
+                    onSearchProducerClick = {},
+                    onSearchProducerLongClick = {},
                 )
             }
         }

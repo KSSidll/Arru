@@ -34,6 +34,7 @@ data class Product(
     @ColumnInfo(index = true) val producerId: Long?,
     val name: String,
 ) {
+    @Ignore
     constructor(
         categoryId: Long,
         producerId: Long?,
@@ -68,6 +69,7 @@ data class ProductAltName(
     @ColumnInfo(index = true) val productId: Long,
     val name: String,
 ) {
+    @Ignore
     constructor(
         productId: Long,
         name: String,
@@ -84,8 +86,8 @@ data class ProductWithAltNames(
         parentColumn = "id",
         entityColumn = "productId"
     ) val alternativeNames: List<ProductAltName>
-): FuzzySearchable {
-    override fun getFuzzyScore(query: String): Int {
+): FuzzySearchable, Named {
+    override fun fuzzyScore(query: String): Int {
         val productNameScore = FuzzySearch.extractOne(
             query,
             listOf(product.name)
@@ -100,6 +102,10 @@ data class ProductWithAltNames(
             productNameScore,
             bestAlternativeNamesScore
         )
+    }
+
+    override fun name(): String {
+        return product.name
     }
 
 }

@@ -20,6 +20,7 @@ data class ProductVariant(
     @ColumnInfo(index = true) val productId: Long,
     val name: String,
 ): FuzzySearchable {
+    @Ignore
     constructor(
         productId: Long,
         name: String,
@@ -29,7 +30,8 @@ data class ProductVariant(
         name
     )
 
-    override fun getFuzzyScore(query: String): Int {
+    @Ignore
+    override fun fuzzyScore(query: String): Int {
         return FuzzySearch.extractOne(
             query,
             listOf(name)

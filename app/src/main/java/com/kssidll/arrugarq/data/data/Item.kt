@@ -39,6 +39,7 @@ data class Item(
     val price: Long,
     @ColumnInfo(index = true) val date: Long,
 ) {
+    @Ignore
     constructor(
         productId: Long,
         variantId: Long?,
@@ -56,6 +57,7 @@ data class Item(
         date
     )
 
+    @Ignore
     constructor(
         id: Long = 0,
         productId: Long,
@@ -76,10 +78,12 @@ data class Item(
         date
     )
 
+    @Ignore
     fun actualQuantity(): Float {
         return quantity.div(1000F)
     }
 
+    @Ignore
     fun actualPrice(): Float {
         return price.div(100F)
     }
@@ -110,19 +114,19 @@ data class ItemSpentByTime(
     val time: String,
     val total: Long,
 ): Chartable {
-    override fun getValue(): Float {
+    override fun value(): Float {
         return total.toFloat()
             .div(100000)
     }
 
-    override fun getSortValue(): Long {
+    override fun sortValue(): Long {
         return total
     }
 
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
-            getValue()
+            value()
         )
     }
 
@@ -131,7 +135,7 @@ data class ItemSpentByTime(
     }
 
     override fun topAxisLabel(): String {
-        return getValue().formatToCurrency(dropDecimal = true)
+        return value().formatToCurrency(dropDecimal = true)
     }
 
     override fun bottomAxisLabel(): String {
@@ -147,25 +151,25 @@ data class ItemSpentByShop(
     @Embedded val shop: Shop,
     val total: Long,
 ): Rankable {
-    override fun getValue(): Float {
+    override fun value(): Float {
         return total.toFloat()
             .div(100000)
     }
 
-    override fun getSortValue(): Long {
+    override fun sortValue(): Long {
         return total
     }
 
-    override fun getDisplayName(): String {
+    override fun displayName(): String {
         return shop.name
     }
 
-    override fun getDisplayValue(): String {
-        return getValue()
+    override fun displayValue(): String {
+        return value()
             .formatToCurrency(dropDecimal = true)
     }
 
-    override fun getIdentificator(): Long {
+    override fun identificator(): Long {
         return shop.id
     }
 }
@@ -174,25 +178,25 @@ data class ItemSpentByCategory(
     @Embedded val category: ProductCategory,
     val total: Long,
 ): Rankable {
-    override fun getValue(): Float {
+    override fun value(): Float {
         return total.toFloat()
             .div(100000)
     }
 
-    override fun getSortValue(): Long {
+    override fun sortValue(): Long {
         return total
     }
 
-    override fun getDisplayName(): String {
+    override fun displayName(): String {
         return category.name
     }
 
-    override fun getDisplayValue(): String {
-        return getValue()
+    override fun displayValue(): String {
+        return value()
             .formatToCurrency(dropDecimal = true)
     }
 
-    override fun getIdentificator(): Long {
+    override fun identificator(): Long {
         return category.id
     }
 }

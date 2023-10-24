@@ -41,8 +41,8 @@ internal fun DashboardScreen(
     )
 }
 
-private val tileOuterPadding: Dp = 8.dp
-private val tileInnerPadding: Dp = 12.dp
+private val TileOuterPadding: Dp = 8.dp
+private val TileInnerPadding: Dp = 12.dp
 
 @Composable
 private fun DashboardScreenContent(
@@ -83,10 +83,10 @@ private fun DashboardScreenContent(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             ),
             modifier = Modifier
-                .padding(tileOuterPadding)
+                .padding(TileOuterPadding)
         ) {
             RankingList(
-                innerItemPadding = PaddingValues(tileInnerPadding),
+                innerItemPadding = PaddingValues(TileInnerPadding),
                 items = spentByCategoryData,
                 modifier = Modifier
                     .clickable {
@@ -100,10 +100,10 @@ private fun DashboardScreenContent(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             ),
             modifier = Modifier
-                .padding(tileOuterPadding)
+                .padding(TileOuterPadding)
         ) {
             RankingList(
-                innerItemPadding = PaddingValues(tileInnerPadding),
+                innerItemPadding = PaddingValues(TileInnerPadding),
                 items = spentByShopData,
                 modifier = Modifier
                     .clickable {

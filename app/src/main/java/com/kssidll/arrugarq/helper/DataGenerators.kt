@@ -21,6 +21,7 @@ private const val defaultStringAllowedCharacters: String = "pyfgcrlaoeuidhtnsqjk
 private const val defaultLongValueFrom: Long = 10000
 private const val defaultLongValueUntil: Long = 100000
 private const val defaultItemAmount: Int = 10
+private const val defaultProductAmount: Int = 10
 private const val defaultProducerAmount: Int = 10
 private const val defaultItemSpentByTimeAmount: Int = 10
 private const val defaultItemSpentByShopAmount: Int = 10
@@ -182,8 +183,7 @@ fun generateRandomProduct(
     productNameLengthFrom: Int = defaultStringLengthFrom,
     productNameLengthUntil: Int = defaultStringLengthUntil,
     allowedCharacters: String = defaultStringAllowedCharacters,
-
-    ): Product {
+): Product {
     return Product(
         id = productId,
         categoryId = categoryId,
@@ -194,6 +194,47 @@ fun generateRandomProduct(
             allowedCharacters = allowedCharacters,
         ),
     )
+}
+
+fun generateRandomProductWithAltNames(
+    productId: Long = defaultProductId,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+): ProductWithAltNames {
+    return ProductWithAltNames(
+        product = generateRandomProduct(
+            productId = productId,
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters,
+        ),
+        alternativeNames = listOf(),
+    )
+}
+
+fun generateRandomProductWithAltNamesList(
+    amount: Int = defaultProductAmount,
+    categoryId: Long = defaultCategoryId,
+    producerId: Long = defaultProducerId,
+    productNameLengthFrom: Int = defaultStringLengthFrom,
+    productNameLengthUntil: Int = defaultStringLengthUntil,
+    allowedCharacters: String = defaultStringAllowedCharacters,
+): List<ProductWithAltNames> {
+    return List(amount) {
+        generateRandomProductWithAltNames(
+            productId = it.toLong(),
+            categoryId = categoryId,
+            producerId = producerId,
+            productNameLengthFrom = productNameLengthFrom,
+            productNameLengthUntil = productNameLengthUntil,
+            allowedCharacters = allowedCharacters
+        )
+    }
 }
 
 fun generateRandomProductVariant(

@@ -18,6 +18,14 @@ fun HomeRoute(
     onTransactionCategoryClick: (categoryId: Long) -> Unit,
     onTransactionProducerClick: (producerId: Long) -> Unit,
     onTransactionShopClick: (shopId: Long) -> Unit,
+    onSearchProductClick: (productId: Long) -> Unit,
+    onSearchProductLongClick: (productId: Long) -> Unit,
+    onSearchShopClick: (shopId: Long) -> Unit,
+    onSearchShopLongClick: (shopId: Long) -> Unit,
+    onSearchCategoryClick: (categoryId: Long) -> Unit,
+    onSearchCategoryLongClick: (categoryId: Long) -> Unit,
+    onSearchProducerClick: (producerId: Long) -> Unit,
+    onSearchProducerLongClick: (producerId: Long) -> Unit,
 ) {
     HomeScreen(
         onAddItem = onAddItem,
@@ -38,10 +46,18 @@ fun HomeRoute(
         onTransactionShopClick = {
             onTransactionShopClick(it.id)
         },
+        onSearchProductClick = onSearchProductClick,
+        onSearchProductLongClick = onSearchProductLongClick,
+        onSearchShopClick = onSearchShopClick,
+        onSearchShopLongClick = onSearchShopLongClick,
+        onSearchCategoryClick = onSearchCategoryClick,
+        onSearchCategoryLongClick = onSearchCategoryLongClick,
+        onSearchProducerClick = onSearchProducerClick,
+        onSearchProducerLongClick = onSearchProducerLongClick,
     )
 }
 
-enum class HomeScreenLocations(
+internal enum class HomeScreenLocations(
     val initial: Boolean = false,
 ) {
     Dashboard(initial = true),
@@ -75,7 +91,7 @@ enum class HomeScreenLocations(
 
 @Composable
 @ReadOnlyComposable
-fun HomeScreenLocations.getTranslation(): String {
+internal fun HomeScreenLocations.getTranslation(): String {
     return when (this) {
         HomeScreenLocations.Dashboard -> stringResource(R.string.dashboard_nav_label)
         HomeScreenLocations.Search -> stringResource(R.string.search_nav_label)

@@ -9,5 +9,5 @@ import javax.inject.*
 class SearchViewModel @Inject constructor(
 
 ): ViewModel() {
-
+    internal val screenState: SearchScreenState = SearchScreenState()
 }

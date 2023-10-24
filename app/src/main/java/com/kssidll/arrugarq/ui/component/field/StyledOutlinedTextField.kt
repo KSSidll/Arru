@@ -155,7 +155,7 @@ fun StyledOutlinedTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
-    minLines: Int = Int.MIN_VALUE,
+    minLines: Int = 1,
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: StyledTextFieldColors = styledTextFieldColorDefaults(),
