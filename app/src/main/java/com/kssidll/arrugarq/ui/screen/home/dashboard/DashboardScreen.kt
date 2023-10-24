@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.home.dashboard
 
-import android.content.res.*
+
+import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -18,7 +19,7 @@ import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
 @Composable
-fun DashboardScreen(
+internal fun DashboardScreen(
     onCategoryCardClick: () -> Unit,
     onShopCardClick: () -> Unit,
     totalSpentData: Flow<Float>,
@@ -110,21 +111,20 @@ private fun DashboardScreenContent(
                     }
             )
         }
-
     }
 }
 
 @Preview(
-    group = "Dashboard Screen",
+    group = "DashboardScreen",
     name = "Dark",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
+    uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "Dashboard Screen",
+    group = "DashboardScreen",
     name = "Light",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
+    uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
 fun DashboardScreenPreview() {

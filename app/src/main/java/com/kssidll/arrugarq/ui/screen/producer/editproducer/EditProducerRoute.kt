@@ -4,8 +4,6 @@ package com.kssidll.arrugarq.ui.screen.producer.editproducer
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.ui.screen.category.*
-import com.kssidll.arrugarq.ui.screen.category.editcategory.*
 import com.kssidll.arrugarq.ui.screen.producer.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*

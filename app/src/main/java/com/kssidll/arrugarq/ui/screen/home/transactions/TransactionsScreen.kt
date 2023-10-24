@@ -1,6 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.home.transactions
 
-import android.content.res.*
+
+import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
-import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
 import java.sql.Date
@@ -26,7 +26,7 @@ import java.text.*
 import java.util.*
 
 @Composable
-fun TransactionsScreen(
+internal fun TransactionsScreen(
     requestMoreItems: () -> Unit,
     items: List<FullItem>,
     onItemClick: (item: FullItem) -> Unit,
@@ -190,16 +190,16 @@ private fun TransactionsScreenContent(
 }
 
 @Preview(
-    group = "Transactions Screen",
+    group = "TransactionsScreen",
     name = "Dark",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
+    uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "Transactions Screen",
+    group = "TransactionsScreen",
     name = "Light",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
+    uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
 fun TransactionsScreenPreview() {

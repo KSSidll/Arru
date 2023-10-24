@@ -4,8 +4,6 @@ package com.kssidll.arrugarq.ui.screen.item.edititem
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.ui.screen.category.*
 import com.kssidll.arrugarq.ui.screen.item.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*

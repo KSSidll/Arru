@@ -6,8 +6,8 @@
     <string name="dashboard_nav_label">Dashboard</string>
     <string name="navigate_to_dashboard_description">Navigate to the dashboard</string>
 
-    <string name="predictions_nav_label">Predictions</string>
-    <string name="navigate_to_predictions_description">Navigate to the predictions screen</string>
+    <string name="search_nav_label">Search</string>
+    <string name="navigate_to_search_description">Navigate to the search screen</string>
 
     <string name="transactions_nav_label">Transactions</string>
     <string name="navigate_to_transactions_description">Navigate to the transactions screen</string>

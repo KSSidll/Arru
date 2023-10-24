@@ -27,19 +27,10 @@ fun HomeBottomNavBar(
                         onLocationChange?.invoke(it)
                     },
                     icon = {
-                        if (it.imageVector != null) {
-                            Icon(
-                                imageVector = it.imageVector!!,
-                                contentDescription = it.description,
-                            )
-                        } else if (it.painter != null) {
-                            Icon(
-                                painter = it.painter!!,
-                                contentDescription = it.description,
-                            )
-                        } else {
-                            error("A HomeScreenLocations entry needs to have either ImageVector or Painter data set to something other than null")
-                        }
+                        Icon(
+                            imageVector = it.imageVector,
+                            contentDescription = it.description,
+                        )
                     },
                     label = {
                         Text(it.getTranslation())

@@ -1,6 +1,7 @@
-package com.kssidll.arrugarq.ui.screen.home.predictions
+package com.kssidll.arrugarq.ui.screen.home.search
 
-import android.content.res.*
+
+import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,38 +10,36 @@ import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
-fun PredictionsScreen(
+internal fun SearchScreen(
 
 ) {
-    PredictionsScreenContent(
 
-    )
 }
 
 @Composable
-private fun PredictionsScreenContent(
+private fun SearchScreenContent(
 
 ) {
 
 }
 
 @Preview(
-    group = "Predictions Screen",
+    group = "SearchScreen",
     name = "Dark",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
+    uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "Predictions Screen",
+    group = "SearchScreen",
     name = "Light",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
+    uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun PredictionsScreenPreview() {
+fun SearchScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            PredictionsScreenContent(
+            SearchScreenContent(
 
             )
         }

@@ -9,32 +9,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.*
-import com.kssidll.arrugarq.ui.screen.home.predictions.*
+import com.kssidll.arrugarq.ui.screen.home.search.*
 import com.kssidll.arrugarq.ui.screen.home.transactions.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(
+internal fun HomeScreen(
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
-    requestMoreFullItems: () -> Unit,
-    fullItems: List<FullItem>,
-    totalSpentData: Flow<Float>,
-    spentByShopData: Flow<List<ItemSpentByShop>>,
-    spentByCategoryData: Flow<List<ItemSpentByCategory>>,
-    spentByTimeData: Flow<List<ItemSpentByTime>>,
-    spentByTimePeriod: TimePeriodFlowHandler.Periods,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     onTransactionItemClick: (item: FullItem) -> Unit,
     onTransactionItemLongClick: (item: FullItem) -> Unit,
     onTransactionCategoryClick: (category: ProductCategory) -> Unit,
@@ -69,28 +58,20 @@ fun HomeScreen(
             ) { location ->
                 when (HomeScreenLocations.getByOrdinal(location)!!) {
                     HomeScreenLocations.Dashboard -> {
-                        DashboardScreen(
+                        DashboardRoute(
                             onCategoryCardClick = onDashboardCategoryCardClick,
                             onShopCardClick = onDashboardShopCardClick,
-                            totalSpentData = totalSpentData,
-                            spentByShopData = spentByShopData,
-                            spentByCategoryData = spentByCategoryData,
-                            spentByTimeData = spentByTimeData,
-                            spentByTimePeriod = spentByTimePeriod,
-                            onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                         )
                     }
 
-                    HomeScreenLocations.Predictions -> {
-                        PredictionsScreen(
+                    HomeScreenLocations.Search -> {
+                        SearchRoute(
 
                         )
                     }
 
                     HomeScreenLocations.Transactions -> {
-                        TransactionsScreen(
-                            requestMoreItems = requestMoreFullItems,
-                            items = fullItems,
+                        TransactionsRoute(
                             onItemClick = onTransactionItemClick,
                             onItemLongClick = onTransactionItemLongClick,
                             onProducerClick = onTransactionProducerClick,
@@ -131,14 +112,6 @@ fun HomeScreenPreview() {
                     onAddItem = {},
                     onDashboardCategoryCardClick = {},
                     onDashboardShopCardClick = {},
-                    requestMoreFullItems = {},
-                    fullItems = generateRandomFullItemList().toMutableStateList(),
-                    totalSpentData = flowOf(1357452F),
-                    spentByShopData = generateRandomItemSpentByShopListFlow(),
-                    spentByCategoryData = generateRandomItemSpentByCategoryListFlow(),
-                    spentByTimeData = generateRandomItemSpentByTimeListFlow(),
-                    spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
-                    onSpentByTimePeriodSwitch = {},
                     onTransactionCategoryClick = {},
                     onTransactionItemClick = {},
                     onTransactionItemLongClick = {},
