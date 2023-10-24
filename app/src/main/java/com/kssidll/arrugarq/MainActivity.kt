@@ -8,6 +8,7 @@ import androidx.activity.compose.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.*
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.kssidll.arrugarq.ui.theme.*
 import dagger.hilt.android.*
 
@@ -16,6 +17,8 @@ class MainActivity: ComponentActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
         //!! Lock orientation to portrait
