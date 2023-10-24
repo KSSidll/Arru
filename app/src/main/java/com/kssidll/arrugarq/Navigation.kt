@@ -150,6 +150,47 @@ fun Navigation(
         }
     }
 
+    val onItemEdit: (itemId: Long) -> Unit = {
+        navController.navigate(Screen.EditItem(it))
+    }
+
+    val onVariantEdit: (variantId: Long) -> Unit = {
+        navController.navigate(Screen.EditVariant(it))
+    }
+
+
+    val onProductSelect: (productId: Long) -> Unit = {
+        navController.navigate(Screen.Product(it))
+    }
+
+    val onProductEdit: (productId: Long) -> Unit = {
+        navController.navigate(Screen.EditProduct(it))
+    }
+
+    val onShopSelect: (shopId: Long) -> Unit = {
+        navController.navigate(Screen.Shop(it))
+    }
+
+    val onShopEdit: (shopId: Long) -> Unit = {
+        navController.navigate(Screen.EditShop(it))
+    }
+
+    val onCategorySelect: (categoryId: Long) -> Unit = {
+        navController.navigate(Screen.Category(it))
+    }
+
+    val onCategoryEdit: (categoryId: Long) -> Unit = {
+        navController.navigate(Screen.EditCategory(it))
+    }
+
+    val onProducerSelect: (producerId: Long) -> Unit = {
+        navController.navigate(Screen.Producer(it))
+    }
+
+    val onProducerEdit: (producerId: Long) -> Unit = {
+        navController.navigate(Screen.EditProducer(it))
+    }
+
     val onBackDeleteShop: (shopId: Long) -> Unit = { shopId ->
         navController.replaceAllFilter(NavAction.Pop) {
             it != Screen.EditShop(shopId) && it != Screen.Shop(shopId)
@@ -210,45 +251,15 @@ fun Navigation(
                     onDashboardShopCardClick = {
                         navController.navigate(Screen.ShopRanking)
                     },
-                    onTransactionItemClick = {
-                        navController.navigate(Screen.Product(it))
-                    },
-                    onTransactionItemLongClick = {
-                        navController.navigate(Screen.EditItem(it))
-                    },
-                    onTransactionCategoryClick = {
-                        navController.navigate(Screen.Category(it))
-                    },
-                    onTransactionProducerClick = {
-                        navController.navigate(Screen.Producer(it))
-                    },
-                    onTransactionShopClick = {
-                        navController.navigate(Screen.Shop(it))
-                    },
-                    onSearchProductClick = {
-                        navController.navigate(Screen.Product(it))
-                    },
-                    onSearchProductLongClick = {
-                        navController.navigate(Screen.EditProduct(it))
-                    },
-                    onSearchCategoryClick = {
-                        navController.navigate(Screen.Category(it))
-                    },
-                    onSearchCategoryLongClick = {
-                        navController.navigate(Screen.EditCategory(it))
-                    },
-                    onSearchShopClick = {
-                        navController.navigate(Screen.Shop(it))
-                    },
-                    onSearchShopLongClick = {
-                        navController.navigate(Screen.EditShop(it))
-                    },
-                    onSearchProducerClick = {
-                        navController.navigate(Screen.Producer(it))
-                    },
-                    onSearchProducerLongClick = {
-                        navController.navigate(Screen.EditProducer(it))
-                    },
+                    onItemEdit = onItemEdit,
+                    onProductSelect = onProductSelect,
+                    onProductEdit = onProductEdit,
+                    onShopSelect = onShopSelect,
+                    onShopEdit = onShopEdit,
+                    onCategorySelect = onCategorySelect,
+                    onCategoryEdit = onCategoryEdit,
+                    onProducerSelect = onProducerSelect,
+                    onProducerEdit = onProducerEdit,
                 )
             }
 
@@ -258,21 +269,15 @@ fun Navigation(
                     onProductAdd = {
                         navController.navigate(Screen.AddProduct)
                     },
-                    onProductEdit = {
-                        navController.navigate(Screen.EditProduct(it))
-                    },
                     onVariantAdd = { productId ->
                         navController.navigate(Screen.AddVariant(productId))
-                    },
-                    onVariantEdit = {
-                        navController.navigate(Screen.EditVariant(it))
                     },
                     onShopAdd = {
                         navController.navigate(Screen.AddShop)
                     },
-                    onShopEdit = {
-                        navController.navigate(Screen.EditShop(it))
-                    }
+                    onProductEdit = onProductEdit,
+                    onVariantEdit = onVariantEdit,
+                    onShopEdit = onShopEdit,
                 )
             }
 
@@ -282,15 +287,11 @@ fun Navigation(
                     onCategoryAdd = {
                         navController.navigate(Screen.AddCategory)
                     },
-                    onCategoryEdit = {
-                        navController.navigate(Screen.EditCategory(it))
-                    },
                     onProducerAdd = {
                         navController.navigate(Screen.AddProducer)
                     },
-                    onProducerEdit = {
-                        navController.navigate(Screen.EditProducer(it))
-                    }
+                    onCategoryEdit = onCategoryEdit,
+                    onProducerEdit = onProducerEdit,
                 )
             }
 
@@ -322,24 +323,16 @@ fun Navigation(
             is Screen.CategoryRanking -> {
                 CategoryRankingRoute(
                     onBack = onBack,
-                    onItemClick = {
-                        navController.navigate(Screen.Category(it))
-                    },
-                    onItemLongClick = {
-                        navController.navigate(Screen.EditCategory(it))
-                    },
+                    onCategorySelect = onCategorySelect,
+                    onCategoryEdit = onCategoryEdit,
                 )
             }
 
             is Screen.ShopRanking -> {
                 ShopRankingRoute(
                     onBack = onBack,
-                    onItemClick = {
-                        navController.navigate(Screen.Shop(it))
-                    },
-                    onItemLongClick = {
-                        navController.navigate(Screen.EditShop(it))
-                    },
+                    onShopSelect = onShopSelect,
+                    onShopEdit = onShopEdit,
                 )
             }
 
@@ -347,21 +340,13 @@ fun Navigation(
                 CategoryRoute(
                     categoryId = screen.categoryId,
                     onBack = onBack,
-                    onEdit = {
-                        navController.navigate(Screen.EditCategory(screen.categoryId))
+                    onCategoryEdit = {
+                        onCategoryEdit(screen.categoryId)
                     },
-                    onItemClick = {
-                        navController.navigate(Screen.Product(it))
-                    },
-                    onItemLongClick = {
-                        navController.navigate(Screen.EditItem(it))
-                    },
-                    onProducerClick = {
-                        navController.navigate(Screen.Producer(it))
-                    },
-                    onShopClick = {
-                        navController.navigate(Screen.Shop(it))
-                    },
+                    onProductSelect = onProductSelect,
+                    onItemEdit = onItemEdit,
+                    onProducerSelect = onProducerSelect,
+                    onShopSelect = onShopSelect,
                 )
             }
 
@@ -369,21 +354,13 @@ fun Navigation(
                 ProducerRoute(
                     producerId = screen.producerId,
                     onBack = onBack,
-                    onEdit = {
-                        navController.navigate(Screen.EditProducer(screen.producerId))
+                    onProducerEdit = {
+                        onProducerEdit(screen.producerId)
                     },
-                    onItemClick = {
-                        navController.navigate(Screen.Product(it))
-                    },
-                    onItemLongClick = {
-                        navController.navigate(Screen.EditItem(it))
-                    },
-                    onCategoryClick = {
-                        navController.navigate(Screen.Category(it))
-                    },
-                    onShopClick = {
-                        navController.navigate(Screen.Shop(it))
-                    },
+                    onProductSelect = onProductSelect,
+                    onItemEdit = onItemEdit,
+                    onCategorySelect = onCategorySelect,
+                    onShopSelect = onShopSelect,
                 )
             }
 
@@ -391,21 +368,13 @@ fun Navigation(
                 ProductRoute(
                     productId = screen.productId,
                     onBack = onBack,
-                    onEdit = {
-                        navController.navigate(Screen.EditProduct(screen.productId))
+                    onProductEdit = {
+                        onProductEdit(screen.productId)
                     },
-                    onCategoryClick = {
-                        navController.navigate(Screen.Category(it))
-                    },
-                    onProducerClick = {
-                        navController.navigate(Screen.Producer(it))
-                    },
-                    onShopClick = {
-                        navController.navigate(Screen.Shop(it))
-                    },
-                    onItemLongClick = {
-                        navController.navigate(Screen.EditItem(it))
-                    },
+                    onCategorySelect = onCategorySelect,
+                    onProducerSelect = onProducerSelect,
+                    onShopSelect = onShopSelect,
+                    onItemEdit = onItemEdit,
                 )
             }
 
@@ -413,21 +382,13 @@ fun Navigation(
                 ShopRoute(
                     shopId = screen.shopId,
                     onBack = onBack,
-                    onEdit = {
-                        navController.navigate(Screen.EditShop(screen.shopId))
+                    onShopEdit = {
+                        onShopEdit(screen.shopId)
                     },
-                    onItemClick = {
-                        navController.navigate(Screen.Product(it))
-                    },
-                    onItemLongClick = {
-                        navController.navigate(Screen.EditItem(it))
-                    },
-                    onCategoryClick = {
-                        navController.navigate(Screen.Category(it))
-                    },
-                    onProducerClick = {
-                        navController.navigate(Screen.Producer(it))
-                    },
+                    onProductSelect = onProductSelect,
+                    onItemEdit = onItemEdit,
+                    onCategorySelect = onCategorySelect,
+                    onProducerSelect = onProducerSelect,
                 )
             }
 
@@ -467,15 +428,11 @@ fun Navigation(
                     onProducerAdd = {
                         navController.navigate(Screen.AddProducer)
                     },
-                    onProducerEdit = {
-                        navController.navigate(Screen.EditProducer(it))
-                    },
                     onCategoryAdd = {
                         navController.navigate(Screen.AddCategory)
                     },
-                    onCategoryEdit = {
-                        navController.navigate(Screen.EditCategory(it))
-                    },
+                    onProducerEdit = onProducerEdit,
+                    onCategoryEdit = onCategoryEdit,
                 )
             }
 
@@ -515,21 +472,15 @@ fun Navigation(
                     onShopAdd = {
                         navController.navigate(Screen.AddShop)
                     },
-                    onShopEdit = {
-                        navController.navigate(Screen.EditShop(it))
-                    },
                     onProductAdd = {
                         navController.navigate(Screen.AddProduct)
-                    },
-                    onProductEdit = {
-                        navController.navigate(Screen.EditProduct(it))
                     },
                     onVariantAdd = {
                         navController.navigate(Screen.AddVariant(it))
                     },
-                    onVariantEdit = {
-                        navController.navigate(Screen.EditVariant(it))
-                    }
+                    onShopEdit = onShopEdit,
+                    onProductEdit = onProductEdit,
+                    onVariantEdit = onVariantEdit,
                 )
             }
         }

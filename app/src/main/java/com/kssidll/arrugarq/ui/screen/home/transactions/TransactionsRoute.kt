@@ -2,16 +2,15 @@ package com.kssidll.arrugarq.ui.screen.home.transactions
 
 
 import androidx.compose.runtime.*
-import com.kssidll.arrugarq.data.data.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 internal fun TransactionsRoute(
-    onItemClick: (item: FullItem) -> Unit,
-    onItemLongClick: (item: FullItem) -> Unit,
-    onCategoryClick: (category: ProductCategory) -> Unit,
-    onProducerClick: (producer: ProductProducer) -> Unit,
-    onShopClick: (shop: Shop) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
+    onProductSelect: (productId: Long) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
 ) {
     val viewModel: TransactionsViewModel = hiltViewModel()
 
@@ -20,10 +19,10 @@ internal fun TransactionsRoute(
             viewModel.queryMoreFullItems()
         },
         items = viewModel.fullItemsData,
-        onItemClick = onItemClick,
-        onItemLongClick = onItemLongClick,
-        onProducerClick = onProducerClick,
-        onCategoryClick = onCategoryClick,
-        onShopClick = onShopClick,
+        onItemEdit = onItemEdit,
+        onProductSelect = onProductSelect,
+        onCategorySelect = onCategorySelect,
+        onProducerSelect = onProducerSelect,
+        onShopSelect = onShopSelect,
     )
 }

@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
-import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.ui.screen.home.component.*
 import com.kssidll.arrugarq.ui.screen.home.dashboard.*
 import com.kssidll.arrugarq.ui.screen.home.search.*
@@ -24,19 +23,15 @@ internal fun HomeScreen(
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
-    onTransactionItemClick: (item: FullItem) -> Unit,
-    onTransactionItemLongClick: (item: FullItem) -> Unit,
-    onTransactionCategoryClick: (category: ProductCategory) -> Unit,
-    onTransactionProducerClick: (producer: ProductProducer) -> Unit,
-    onTransactionShopClick: (shop: Shop) -> Unit,
-    onSearchProductClick: (productId: Long) -> Unit,
-    onSearchProductLongClick: (productId: Long) -> Unit,
-    onSearchShopClick: (shopId: Long) -> Unit,
-    onSearchShopLongClick: (shopId: Long) -> Unit,
-    onSearchCategoryClick: (categoryId: Long) -> Unit,
-    onSearchCategoryLongClick: (categoryId: Long) -> Unit,
-    onSearchProducerClick: (producerId: Long) -> Unit,
-    onSearchProducerLongClick: (producerId: Long) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
+    onProductSelect: (productId: Long) -> Unit,
+    onProductEdit: (productId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
+    onShopEdit: (shopId: Long) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onCategoryEdit: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onProducerEdit: (producerId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
@@ -75,24 +70,24 @@ internal fun HomeScreen(
                     HomeScreenLocations.Search -> {
                         SearchRoute(
                             navBackHandlerEnabled = pagerState.currentPage == location,
-                            onProductSelect = onSearchProductClick,
-                            onProductEdit = onSearchProductLongClick,
-                            onShopSelect = onSearchShopClick,
-                            onShopEdit = onSearchShopLongClick,
-                            onCategorySelect = onSearchCategoryClick,
-                            onCategoryEdit = onSearchCategoryLongClick,
-                            onProducerSelect = onSearchProducerClick,
-                            onProducerEdit = onSearchProducerLongClick,
+                            onProductSelect = onProductSelect,
+                            onProductEdit = onProductEdit,
+                            onShopSelect = onShopSelect,
+                            onShopEdit = onShopEdit,
+                            onCategorySelect = onCategorySelect,
+                            onCategoryEdit = onCategoryEdit,
+                            onProducerSelect = onProducerSelect,
+                            onProducerEdit = onProducerEdit,
                         )
                     }
 
                     HomeScreenLocations.Transactions -> {
                         TransactionsRoute(
-                            onItemClick = onTransactionItemClick,
-                            onItemLongClick = onTransactionItemLongClick,
-                            onProducerClick = onTransactionProducerClick,
-                            onCategoryClick = onTransactionCategoryClick,
-                            onShopClick = onTransactionShopClick,
+                            onItemEdit = onItemEdit,
+                            onProductSelect = onProductSelect,
+                            onCategorySelect = onCategorySelect,
+                            onProducerSelect = onProducerSelect,
+                            onShopSelect = onShopSelect,
                         )
                     }
                 }
@@ -128,19 +123,15 @@ fun HomeScreenPreview() {
                     onAddItem = {},
                     onDashboardCategoryCardClick = {},
                     onDashboardShopCardClick = {},
-                    onTransactionCategoryClick = {},
-                    onTransactionItemClick = {},
-                    onTransactionItemLongClick = {},
-                    onTransactionProducerClick = {},
-                    onTransactionShopClick = {},
-                    onSearchProductClick = {},
-                    onSearchProductLongClick = {},
-                    onSearchCategoryClick = {},
-                    onSearchCategoryLongClick = {},
-                    onSearchShopClick = {},
-                    onSearchShopLongClick = {},
-                    onSearchProducerClick = {},
-                    onSearchProducerLongClick = {},
+                    onItemEdit = {},
+                    onProductSelect = {},
+                    onProductEdit = {},
+                    onCategorySelect = {},
+                    onCategoryEdit = {},
+                    onShopSelect = {},
+                    onShopEdit = {},
+                    onProducerSelect = {},
+                    onProducerEdit = {},
                 )
             }
         }

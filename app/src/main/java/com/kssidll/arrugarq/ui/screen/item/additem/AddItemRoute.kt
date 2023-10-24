@@ -9,10 +9,10 @@ import kotlinx.coroutines.*
 fun AddItemRoute(
     onBack: () -> Unit,
     onProductAdd: () -> Unit,
-    onProductEdit: (productId: Long) -> Unit,
     onVariantAdd: (productId: Long) -> Unit,
-    onVariantEdit: (variantId: Long) -> Unit,
     onShopAdd: () -> Unit,
+    onProductEdit: (productId: Long) -> Unit,
+    onVariantEdit: (variantId: Long) -> Unit,
     onShopEdit: (shopId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -28,13 +28,7 @@ fun AddItemRoute(
             }
         },
         onProductAdd = onProductAdd,
-        onProductEdit = {
-            onProductEdit(it.id)
-        },
         onShopAdd = onShopAdd,
-        onShopEdit = {
-            onShopEdit(it.id)
-        },
         onVariantAdd = {
             with(viewModel.screenState.selectedProduct) {
                 if (value != null) {
@@ -42,9 +36,9 @@ fun AddItemRoute(
                 }
             }
         },
-        onVariantEdit = {
-            onVariantEdit(it.id)
-        },
+        onProductEdit = onProductEdit,
+        onShopEdit = onShopEdit,
+        onVariantEdit = onVariantEdit,
         onProductChange = {
             viewModel.onProductChange()
         }

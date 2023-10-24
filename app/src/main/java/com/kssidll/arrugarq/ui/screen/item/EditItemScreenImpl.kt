@@ -34,11 +34,11 @@ fun EditItemScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onShopAdd: () -> Unit,
-    onShopEdit: (shop: Shop) -> Unit,
     onProductAdd: () -> Unit,
-    onProductEdit: (product: Product) -> Unit,
-    onVariantAdd: (product: Product) -> Unit,
-    onVariantEdit: (variant: ProductVariant) -> Unit,
+    onVariantAdd: (productId: Long) -> Unit,
+    onShopEdit: (shopId: Long) -> Unit,
+    onProductEdit: (productId: Long) -> Unit,
+    onVariantEdit: (variantId: Long) -> Unit,
     onProductChange: () -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_add),
 ) {
@@ -101,7 +101,7 @@ fun EditItemScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isShopSearchDialogExpanded.value = false
-                    onShopEdit(it)
+                    onShopEdit(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = onShopAdd,
@@ -124,7 +124,7 @@ fun EditItemScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isProductSearchDialogExpanded.value = false
-                    onProductEdit(it.product)
+                    onProductEdit(it.product.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 itemText = { it.product.name },
@@ -145,12 +145,12 @@ fun EditItemScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isVariantSearchDialogExpanded.value = false
-                    onVariantEdit(it)
+                    onVariantEdit(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = {
                     state.selectedProduct.value?.let {
-                        onVariantAdd(it)
+                        onVariantAdd(it.id)
                     }
                 },
                 addButtonDescription = stringResource(R.string.item_product_variant_add_description),
@@ -434,7 +434,7 @@ fun EditItemScreenImpl(
             label = stringResource(R.string.item_product_variant),
             onAddButtonClick = {
                 state.selectedProduct.value?.let {
-                    onVariantAdd(it)
+                    onVariantAdd(it.id)
                 }
             },
             addButtonDescription = stringResource(R.string.item_product_variant_add_description),

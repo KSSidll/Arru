@@ -14,8 +14,8 @@ fun EditProductRoute(
     onBack: () -> Unit,
     onBackDelete: () -> Unit,
     onProducerAdd: () -> Unit,
-    onProducerEdit: (producerId: Long) -> Unit,
     onCategoryAdd: () -> Unit,
+    onProducerEdit: (producerId: Long) -> Unit,
     onCategoryEdit: (categoryId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -43,13 +43,9 @@ fun EditProductRoute(
             }
         },
         onProducerAdd = onProducerAdd,
-        onProducerEdit = {
-            onProducerEdit(it.id)
-        },
         onCategoryAdd = onCategoryAdd,
-        onCategoryEdit = {
-            onCategoryEdit(it.id)
-        },
+        onProducerEdit = onProducerEdit,
+        onCategoryEdit = onCategoryEdit,
         submitButtonText = stringResource(id = R.string.item_product_edit),
     )
 }

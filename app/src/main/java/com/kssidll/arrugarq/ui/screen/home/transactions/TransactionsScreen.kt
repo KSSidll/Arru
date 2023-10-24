@@ -29,20 +29,20 @@ import java.util.*
 internal fun TransactionsScreen(
     requestMoreItems: () -> Unit,
     items: List<FullItem>,
-    onItemClick: (item: FullItem) -> Unit,
-    onItemLongClick: (item: FullItem) -> Unit,
-    onCategoryClick: (category: ProductCategory) -> Unit,
-    onProducerClick: (producer: ProductProducer) -> Unit,
-    onShopClick: (shop: Shop) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
+    onProductSelect: (productId: Long) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
 ) {
     TransactionsScreenContent(
         requestMoreItems = requestMoreItems,
         items = items,
-        onItemClick = onItemClick,
-        onItemLongClick = onItemLongClick,
-        onCategoryClick = onCategoryClick,
-        onProducerClick = onProducerClick,
-        onShopClick = onShopClick,
+        onProductSelect = onProductSelect,
+        onItemEdit = onItemEdit,
+        onCategorySelect = onCategorySelect,
+        onProducerSelect = onProducerSelect,
+        onShopSelect = onShopSelect,
     )
 }
 
@@ -50,11 +50,11 @@ internal fun TransactionsScreen(
 private fun TransactionsScreenContent(
     requestMoreItems: () -> Unit,
     items: List<FullItem>,
-    onItemClick: (item: FullItem) -> Unit,
-    onItemLongClick: (item: FullItem) -> Unit,
-    onCategoryClick: (category: ProductCategory) -> Unit,
-    onProducerClick: (producer: ProductProducer) -> Unit,
-    onShopClick: (shop: Shop) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
+    onProductSelect: (productId: Long) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
@@ -135,10 +135,10 @@ private fun TransactionsScreenContent(
                 }
             }
         }
-    ) {
+    ) { paddingValues ->
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(it),
+            modifier = Modifier.padding(paddingValues),
         ) {
             grouppedItems.forEachIndexed { index, group ->
                 item {
@@ -177,11 +177,21 @@ private fun TransactionsScreenContent(
                 items(group.second) { item ->
                     FullItemCard(
                         fullItem = item,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onCategoryClick = onCategoryClick,
-                        onProducerClick = onProducerClick,
-                        onShopClick = onShopClick,
+                        onItemClick = {
+                            onProductSelect(it.embeddedProduct.product.id)
+                        },
+                        onItemLongClick = {
+                            onItemEdit(it.embeddedItem.item.id)
+                        },
+                        onCategoryClick = {
+                            onCategorySelect(it.id)
+                        },
+                        onProducerClick = {
+                            onProducerSelect(it.id)
+                        },
+                        onShopClick = {
+                            onShopSelect(it.id)
+                        },
                     )
                 }
             }
@@ -211,11 +221,11 @@ fun TransactionsScreenPreview() {
                     itemDateTimeFrom = Date.valueOf("2022-06-01").time,
                     itemDateTimeUntil = Date.valueOf("2022-06-04").time,
                 ),
-                onItemClick = {},
-                onItemLongClick = {},
-                onCategoryClick = {},
-                onProducerClick = {},
-                onShopClick = {},
+                onItemEdit = {},
+                onProducerSelect = {},
+                onCategorySelect = {},
+                onProductSelect = {},
+                onShopSelect = {},
             )
         }
     }

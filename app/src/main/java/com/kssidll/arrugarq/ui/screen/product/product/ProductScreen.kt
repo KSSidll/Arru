@@ -35,13 +35,13 @@ import java.util.*
 internal fun ProductScreen(
     onBack: () -> Unit,
     state: ProductScreenState,
-    onEdit: () -> Unit,
+    onProductEdit: () -> Unit,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
-    onCategoryClick: (category: ProductCategory) -> Unit,
-    onProducerClick: (producer: ProductProducer) -> Unit,
-    onShopClick: (shop: Shop) -> Unit,
-    onItemLongClick: (item: FullItem) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -56,7 +56,7 @@ internal fun ProductScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            onEdit()
+                            onProductEdit()
                         }
                     ) {
                         Icon(
@@ -75,10 +75,10 @@ internal fun ProductScreen(
                 state = state,
                 onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                 requestMoreItems = requestMoreItems,
-                onCategoryClick = onCategoryClick,
-                onProducerClick = onProducerClick,
-                onShopClick = onShopClick,
-                onItemLongClick = onItemLongClick,
+                onCategorySelect = onCategorySelect,
+                onProducerSelect = onProducerSelect,
+                onShopSelect = onShopSelect,
+                onItemEdit = onItemEdit,
             )
         }
     }
@@ -89,10 +89,10 @@ internal fun ProductScreenContent(
     state: ProductScreenState,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     requestMoreItems: () -> Unit,
-    onCategoryClick: (category: ProductCategory) -> Unit,
-    onProducerClick: (producer: ProductProducer) -> Unit,
-    onShopClick: (shop: Shop) -> Unit,
-    onItemLongClick: (item: FullItem) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
@@ -173,10 +173,10 @@ internal fun ProductScreenContent(
                 }
             }
         }
-    ) {
+    ) { paddingValues ->
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(it),
+            modifier = Modifier.padding(paddingValues),
         ) {
             item {
                 Column {
@@ -245,10 +245,18 @@ internal fun ProductScreenContent(
                     FullItemCard(
                         fullItem = item,
                         onItemClick = {},
-                        onItemLongClick = onItemLongClick,
-                        onCategoryClick = onCategoryClick,
-                        onProducerClick = onProducerClick,
-                        onShopClick = onShopClick,
+                        onItemLongClick = {
+                            onItemEdit(it.embeddedItem.item.id)
+                        },
+                        onCategoryClick = {
+                            onCategorySelect(it.id)
+                        },
+                        onProducerClick = {
+                            onProducerSelect(it.id)
+                        },
+                        onShopClick = {
+                            onShopSelect(it.id)
+                        },
                     )
                 }
             }
@@ -279,10 +287,10 @@ fun ProductScreenPreview() {
                 ),
                 onSpentByTimePeriodSwitch = {},
                 requestMoreItems = {},
-                onCategoryClick = {},
-                onProducerClick = {},
-                onShopClick = {},
-                onItemLongClick = {},
+                onCategorySelect = {},
+                onProducerSelect = {},
+                onShopSelect = {},
+                onItemEdit = {},
             )
         }
     }

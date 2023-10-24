@@ -14,10 +14,10 @@ fun EditItemRoute(
     onBack: () -> Unit,
     onBackDelete: () -> Unit,
     onShopAdd: () -> Unit,
-    onShopEdit: (shopId: Long) -> Unit,
     onProductAdd: () -> Unit,
-    onProductEdit: (productId: Long) -> Unit,
     onVariantAdd: (productId: Long) -> Unit,
+    onShopEdit: (shopId: Long) -> Unit,
+    onProductEdit: (productId: Long) -> Unit,
     onVariantEdit: (variantId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -45,19 +45,11 @@ fun EditItemRoute(
             }
         },
         onShopAdd = onShopAdd,
-        onShopEdit = {
-            onShopEdit(it.id)
-        },
         onProductAdd = onProductAdd,
-        onProductEdit = {
-            onProductEdit(it.id)
-        },
-        onVariantAdd = {
-            onVariantAdd(it.id)
-        },
-        onVariantEdit = {
-            onVariantEdit(it.id)
-        },
+        onVariantAdd = onVariantAdd,
+        onShopEdit = onShopEdit,
+        onProductEdit = onProductEdit,
+        onVariantEdit = onVariantEdit,
         onProductChange = {
             viewModel.onProductChange()
         },

@@ -9,8 +9,8 @@ import dev.olshevski.navigation.reimagined.hilt.*
 @Composable
 fun ShopRankingRoute(
     onBack: () -> Unit,
-    onItemClick: (shopId: Long) -> Unit,
-    onItemLongClick: (shopId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
+    onShopEdit: (shopId: Long) -> Unit,
 ) {
     val viewModel: ShopRankingViewModel = hiltViewModel()
 
@@ -20,11 +20,11 @@ fun ShopRankingRoute(
         data = viewModel.getSpentByShop()
             .collectAsState(emptyList()).value,
         onItemClick = {
-            onItemClick(it.shop.id)
+            onShopSelect(it.shop.id)
         },
         onItemClickLabel = stringResource(id = R.string.select),
         onItemLongClick = {
-            onItemLongClick(it.shop.id)
+            onShopEdit(it.shop.id)
         },
         onItemLongClickLabel = stringResource(id = R.string.edit),
     )

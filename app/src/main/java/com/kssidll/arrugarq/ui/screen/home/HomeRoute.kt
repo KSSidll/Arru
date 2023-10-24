@@ -13,47 +13,29 @@ fun HomeRoute(
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
-    onTransactionItemClick: (productId: Long) -> Unit,
-    onTransactionItemLongClick: (itemId: Long) -> Unit,
-    onTransactionCategoryClick: (categoryId: Long) -> Unit,
-    onTransactionProducerClick: (producerId: Long) -> Unit,
-    onTransactionShopClick: (shopId: Long) -> Unit,
-    onSearchProductClick: (productId: Long) -> Unit,
-    onSearchProductLongClick: (productId: Long) -> Unit,
-    onSearchShopClick: (shopId: Long) -> Unit,
-    onSearchShopLongClick: (shopId: Long) -> Unit,
-    onSearchCategoryClick: (categoryId: Long) -> Unit,
-    onSearchCategoryLongClick: (categoryId: Long) -> Unit,
-    onSearchProducerClick: (producerId: Long) -> Unit,
-    onSearchProducerLongClick: (producerId: Long) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
+    onProductSelect: (productId: Long) -> Unit,
+    onProductEdit: (productId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
+    onShopEdit: (shopId: Long) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onCategoryEdit: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onProducerEdit: (producerId: Long) -> Unit,
 ) {
     HomeScreen(
         onAddItem = onAddItem,
         onDashboardCategoryCardClick = onDashboardCategoryCardClick,
         onDashboardShopCardClick = onDashboardShopCardClick,
-        onTransactionItemClick = {
-            onTransactionItemClick(it.embeddedItem.item.productId)
-        },
-        onTransactionItemLongClick = {
-            onTransactionItemLongClick(it.embeddedItem.item.id)
-        },
-        onTransactionCategoryClick = {
-            onTransactionCategoryClick(it.id)
-        },
-        onTransactionProducerClick = {
-            onTransactionProducerClick(it.id)
-        },
-        onTransactionShopClick = {
-            onTransactionShopClick(it.id)
-        },
-        onSearchProductClick = onSearchProductClick,
-        onSearchProductLongClick = onSearchProductLongClick,
-        onSearchShopClick = onSearchShopClick,
-        onSearchShopLongClick = onSearchShopLongClick,
-        onSearchCategoryClick = onSearchCategoryClick,
-        onSearchCategoryLongClick = onSearchCategoryLongClick,
-        onSearchProducerClick = onSearchProducerClick,
-        onSearchProducerLongClick = onSearchProducerLongClick,
+        onItemEdit = onItemEdit,
+        onProductSelect = onProductSelect,
+        onProductEdit = onProductEdit,
+        onShopSelect = onShopSelect,
+        onShopEdit = onShopEdit,
+        onCategorySelect = onCategorySelect,
+        onCategoryEdit = onCategoryEdit,
+        onProducerSelect = onProducerSelect,
+        onProducerEdit = onProducerEdit,
     )
 }
 

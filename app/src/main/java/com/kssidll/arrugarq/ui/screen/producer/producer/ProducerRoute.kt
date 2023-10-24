@@ -8,11 +8,11 @@ import dev.olshevski.navigation.reimagined.hilt.*
 fun ProducerRoute(
     producerId: Long,
     onBack: () -> Unit,
-    onEdit: () -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onCategoryClick: (categoryId: Long) -> Unit,
-    onShopClick: (shopId: Long) -> Unit,
+    onProducerEdit: () -> Unit,
+    onProductSelect: (productId: Long) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
 ) {
     val viewModel: ProducerViewModel = hiltViewModel()
 
@@ -25,24 +25,16 @@ fun ProducerRoute(
     ProducerScreen(
         onBack = onBack,
         state = viewModel.screenState,
-        onEdit = onEdit,
+        onProducerEdit = onProducerEdit,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },
         requestMoreItems = {
             viewModel.queryMoreFullItems()
         },
-        onItemClick = {
-            onItemClick(it.embeddedItem.item.productId)
-        },
-        onItemLongClick = {
-            onItemLongClick(it.embeddedItem.item.id)
-        },
-        onCategoryClick = {
-            onCategoryClick(it.id)
-        },
-        onShopClick = {
-            onShopClick(it.id)
-        },
+        onProductSelect = onProductSelect,
+        onItemEdit = onItemEdit,
+        onCategorySelect = onCategorySelect,
+        onShopSelect = onShopSelect,
     )
 }

@@ -8,11 +8,11 @@ import dev.olshevski.navigation.reimagined.hilt.*
 fun ProductRoute(
     productId: Long,
     onBack: () -> Unit,
-    onEdit: () -> Unit,
-    onCategoryClick: (categoryId: Long) -> Unit,
-    onProducerClick: (producerId: Long) -> Unit,
-    onShopClick: (shopId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
+    onProductEdit: () -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onProducerSelect: (producerId: Long) -> Unit,
+    onShopSelect: (shopId: Long) -> Unit,
+    onItemEdit: (itemId: Long) -> Unit,
 ) {
     val viewModel: ProductViewModel = hiltViewModel()
 
@@ -25,24 +25,16 @@ fun ProductRoute(
     ProductScreen(
         onBack = onBack,
         state = viewModel.screenState,
-        onEdit = onEdit,
+        onProductEdit = onProductEdit,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },
         requestMoreItems = {
             viewModel.queryMoreFullItems()
         },
-        onCategoryClick = {
-            onCategoryClick(it.id)
-        },
-        onProducerClick = {
-            onProducerClick(it.id)
-        },
-        onShopClick = {
-            onShopClick(it.id)
-        },
-        onItemLongClick = {
-            onItemLongClick(it.embeddedItem.item.id)
-        }
+        onCategorySelect = onCategorySelect,
+        onProducerSelect = onProducerSelect,
+        onShopSelect = onShopSelect,
+        onItemEdit = onItemEdit,
     )
 }
