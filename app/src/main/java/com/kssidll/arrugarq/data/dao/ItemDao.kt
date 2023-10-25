@@ -525,13 +525,17 @@ WITH date_series AS (
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT (date / 86400000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 86400000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -550,13 +554,17 @@ WITH date_series AS (
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT (date / 86400000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 86400000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -575,13 +583,17 @@ WITH date_series AS (
     SELECT (start_date + 86400000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT (date / 86400000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 86400000) = ((item.date) / 86400000)
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 86400000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -731,16 +743,20 @@ WITH date_series AS (
     INNER JOIN product ON product.id = item.productId
         AND producerId = :producerId
     UNION ALL
-    SELECT (start_date + 86400000) AS start_date, end_date
+    SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date >= date_series.start_date
+), items AS (
+    SELECT ((date - 345600000) / 604800000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 604800000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -756,16 +772,20 @@ WITH date_series AS (
     INNER JOIN product ON product.id = item.productId
         AND producerId = :producerId
     UNION ALL
-    SELECT (start_date + 86400000) AS start_date, end_date
+    SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date >= date_series.start_date
+), items AS (
+    SELECT ((date - 345600000) / 604800000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 604800000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -781,16 +801,20 @@ WITH date_series AS (
     INNER JOIN product ON product.id = item.productId
         AND categoryId = :categoryId
     UNION ALL
-    SELECT (start_date + 86400000) AS start_date, end_date
+    SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date >= date_series.start_date
+), items AS (
+    SELECT ((date - 345600000) / 604800000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 604800000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -806,16 +830,20 @@ WITH date_series AS (
     INNER JOIN product ON product.id = item.productId
         AND categoryId = :categoryId
     UNION ALL
-    SELECT (start_date + 86400000) AS start_date, end_date
+    SELECT (start_date + 604800000) AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date >= date_series.start_date
+), items AS (
+    SELECT ((date - 345600000) / 604800000) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON (date_series.start_date / 604800000) = ((item.date - 345600000) / 604800000)
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON (date_series.start_date / 604800000) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -968,13 +996,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 month') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -993,13 +1025,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 month') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -1018,13 +1054,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 month') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -1043,13 +1083,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 month') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -1202,13 +1246,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 year') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -1227,13 +1275,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 year') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND producerId = :producerId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE producerId = :producerId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -1252,13 +1304,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 year') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
@@ -1277,13 +1333,17 @@ WITH date_series AS (
     SELECT DATE(start_date, '+1 year') AS start_date, end_date
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
+), items AS (
+    SELECT STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
+    FROM item 
+    INNER JOIN product ON product.id = item.productId
+        AND categoryId = :categoryId
+    GROUP BY items_time
 )
-SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(SUM(item.price * item.quantity), 0) AS total
+SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
 FROM date_series
-LEFT JOIN item ON STRFTIME('%Y', date_series.start_date) = STRFTIME('%Y', DATE(item.date / 1000, 'unixepoch'))
-LEFT JOIN product ON product.id = item.productId
-WHERE categoryId = :categoryId
-    AND time IS NOT NULL
+LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = items_time
+WHERE time IS NOT NULL
 GROUP BY time
 ORDER BY time
 """
