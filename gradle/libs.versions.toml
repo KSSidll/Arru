@@ -26,9 +26,8 @@ room = "2.6.0"
 fuzzywuzzy = "1.4.0"
 vico-compose = "1.12.0"
 
-
 ## Plugins
-agp = "8.3.0-alpha11"
+agp = "8.3.0-alpha12"
 kotlin = "1.9.10"
 # hilt plugin has same version as hilt library so it is declared in the library section
 ksp = "1.9.10-1.0.13"
@@ -68,10 +67,8 @@ fuzzywuzzy = { group = "me.xdrop", name = "fuzzywuzzy", version.ref = "fuzzywuzz
 vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico-compose" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico-compose" }
 
-
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 daggerHiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 devtoolsKSP = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
