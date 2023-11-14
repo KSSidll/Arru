@@ -10,6 +10,7 @@ import com.kssidll.arrugarq.R
 
 @Composable
 fun HomeRoute(
+    navigateSettings: () -> Unit,
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
@@ -24,6 +25,7 @@ fun HomeRoute(
     onProducerEdit: (producerId: Long) -> Unit,
 ) {
     HomeScreen(
+        navigateSettings = navigateSettings,
         onAddItem = onAddItem,
         onDashboardCategoryCardClick = onDashboardCategoryCardClick,
         onDashboardShopCardClick = onDashboardShopCardClick,

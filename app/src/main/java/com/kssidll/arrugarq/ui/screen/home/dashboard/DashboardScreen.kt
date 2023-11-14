@@ -5,9 +5,12 @@ import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.data.data.*
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.*
 
 @Composable
 internal fun DashboardScreen(
+    navigateSettings: () -> Unit,
     onCategoryCardClick: () -> Unit,
     onShopCardClick: () -> Unit,
     totalSpentData: Flow<Float>,
@@ -30,6 +34,7 @@ internal fun DashboardScreen(
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     DashboardScreenContent(
+        navigateSettings = navigateSettings,
         onCategoryCardClick = onCategoryCardClick,
         onShopCardClick = onShopCardClick,
         totalSpentData = totalSpentData.collectAsState(0F).value,
@@ -44,8 +49,10 @@ internal fun DashboardScreen(
 private val TileOuterPadding: Dp = 8.dp
 private val TileInnerPadding: Dp = 12.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DashboardScreenContent(
+    navigateSettings: () -> Unit,
     onCategoryCardClick: () -> Unit,
     onShopCardClick: () -> Unit,
     totalSpentData: Float,
@@ -57,59 +64,84 @@ private fun DashboardScreenContent(
 ) {
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier.verticalScroll(state = scrollState)
-    ) {
-        Spacer(Modifier.height(40.dp))
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val nestedScrollConnection = scrollBehavior.nestedScrollConnection
 
-        TotalAverageAndMedianSpendingComponent(
-            spentByTimeData = spentByTimeData,
-            totalSpentData = totalSpentData,
-        )
-
-        Spacer(Modifier.height(28.dp))
-
-        SpendingSummaryComponent(
-            modifier = Modifier.animateContentSize(),
-            spentByTimeData = spentByTimeData,
-            spentByTimePeriod = spentByTimePeriod,
-            onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-        )
-
-        Spacer(Modifier.height(4.dp))
-
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            modifier = Modifier
-                .padding(TileOuterPadding)
-        ) {
-            RankingList(
-                innerItemPadding = PaddingValues(TileInnerPadding),
-                items = spentByCategoryData,
-                modifier = Modifier
-                    .clickable {
-                        onCategoryCardClick()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                actions = {
+                    IconButton(
+                        onClick = navigateSettings,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "navigate settings",
+                        )
                     }
+                },
+                scrollBehavior = scrollBehavior,
             )
-        }
-
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
+        },
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(TileOuterPadding)
+                .padding(paddingValues)
+                .nestedScroll(nestedScrollConnection)
+                .verticalScroll(state = scrollState)
         ) {
-            RankingList(
-                innerItemPadding = PaddingValues(TileInnerPadding),
-                items = spentByShopData,
-                modifier = Modifier
-                    .clickable {
-                        onShopCardClick()
-                    }
+            Spacer(Modifier.height(16.dp))
+
+            TotalAverageAndMedianSpendingComponent(
+                spentByTimeData = spentByTimeData,
+                totalSpentData = totalSpentData,
             )
+
+            Spacer(Modifier.height(28.dp))
+
+            SpendingSummaryComponent(
+                modifier = Modifier.animateContentSize(),
+                spentByTimeData = spentByTimeData,
+                spentByTimePeriod = spentByTimePeriod,
+                onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                modifier = Modifier
+                    .padding(TileOuterPadding)
+            ) {
+                RankingList(
+                    innerItemPadding = PaddingValues(TileInnerPadding),
+                    items = spentByCategoryData,
+                    modifier = Modifier
+                        .clickable {
+                            onCategoryCardClick()
+                        }
+                )
+            }
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                modifier = Modifier
+                    .padding(TileOuterPadding)
+            ) {
+                RankingList(
+                    innerItemPadding = PaddingValues(TileInnerPadding),
+                    items = spentByShopData,
+                    modifier = Modifier
+                        .clickable {
+                            onShopCardClick()
+                        }
+                )
+            }
         }
     }
 }
@@ -131,6 +163,7 @@ fun DashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreenContent(
+                navigateSettings = {},
                 onCategoryCardClick = {},
                 onShopCardClick = {},
                 totalSpentData = 16832.18F,

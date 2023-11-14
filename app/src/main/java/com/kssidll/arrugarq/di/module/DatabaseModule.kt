@@ -1,10 +1,12 @@
 package com.kssidll.arrugarq.di.module
 
 import android.content.*
+import androidx.datastore.preferences.core.*
 import androidx.room.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.database.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.preference.*
 import com.kssidll.arrugarq.domain.repository.*
 import dagger.*
 import dagger.hilt.*
@@ -12,17 +14,35 @@ import dagger.hilt.android.qualifiers.*
 import dagger.hilt.components.*
 import javax.inject.*
 
+const val DATABASE_NAME: String = "arrugarq_database"
+
 @Module
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
-        return Room.databaseBuilder(
+    fun provideAppDatabase(
+        @ApplicationContext appContext: Context,
+        preferences: Preferences
+    ): AppDatabase {
+        val builder = Room.databaseBuilder(
             appContext.applicationContext,
             AppDatabase::class.java,
-            "arrugarq_database"
+            when (preferences[AppPreferences.Database.key]) {
+                AppPreferences.Database.Location.EXTERNAL -> {
+                    appContext.getExternalFilesDir(null)!!.absolutePath.plus("/$DATABASE_NAME.db")
+                }
+
+                AppPreferences.Database.Location.INTERNAL -> {
+                    DATABASE_NAME
+                }
+
+                else -> error("The database location preference key isn't set to a valid value")
+            }
         )
+
+
+        return builder
             .createFromAsset("database/arrugarq.db")
             .build()
     }

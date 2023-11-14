@@ -18,6 +18,7 @@ import com.kssidll.arrugarq.ui.screen.producer.producer.*
 import com.kssidll.arrugarq.ui.screen.product.addproduct.*
 import com.kssidll.arrugarq.ui.screen.product.editproduct.*
 import com.kssidll.arrugarq.ui.screen.product.product.*
+import com.kssidll.arrugarq.ui.screen.settings.*
 import com.kssidll.arrugarq.ui.screen.shop.addshop.*
 import com.kssidll.arrugarq.ui.screen.shop.editshop.*
 import com.kssidll.arrugarq.ui.screen.shop.shop.*
@@ -48,6 +49,7 @@ sealed class Screen: Parcelable {
     data class Category(val categoryId: Long): Screen()
     data class Producer(val producerId: Long): Screen()
     data class Shop(val shopId: Long): Screen()
+    data object Settings: Screen()
 }
 
 /**
@@ -242,6 +244,9 @@ fun Navigation(
         when (screen) {
             is Screen.Home -> {
                 HomeRoute(
+                    navigateSettings = {
+                        navController.navigate(Screen.Settings)
+                    },
                     onAddItem = {
                         navController.navigate(Screen.AddItem)
                     },
@@ -481,6 +486,12 @@ fun Navigation(
                     onShopEdit = onShopEdit,
                     onProductEdit = onProductEdit,
                     onVariantEdit = onVariantEdit,
+                )
+            }
+
+            Screen.Settings -> {
+                SettingsRoute(
+                    onBack = onBack,
                 )
             }
         }

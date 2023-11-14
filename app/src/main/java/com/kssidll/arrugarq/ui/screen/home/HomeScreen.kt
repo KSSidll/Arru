@@ -17,9 +17,13 @@ import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import kotlinx.coroutines.*
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 internal fun HomeScreen(
+    navigateSettings: () -> Unit,
     onAddItem: () -> Unit,
     onDashboardCategoryCardClick: () -> Unit,
     onDashboardShopCardClick: () -> Unit,
@@ -39,6 +43,8 @@ internal fun HomeScreen(
         initialPageOffsetFraction = 0F,
         pageCount = { HomeScreenLocations.entries.size },
     )
+
+
 
     Scaffold(
         bottomBar = {
@@ -62,6 +68,7 @@ internal fun HomeScreen(
                 when (HomeScreenLocations.getByOrdinal(location)!!) {
                     HomeScreenLocations.Dashboard -> {
                         DashboardRoute(
+                            navigateSettings = navigateSettings,
                             onCategoryCardClick = onDashboardCategoryCardClick,
                             onShopCardClick = onDashboardShopCardClick,
                         )
@@ -120,6 +127,7 @@ fun HomeScreenPreview() {
         ) {
             Surface(modifier = Modifier.fillMaxSize()) {
                 HomeScreen(
+                    navigateSettings = {},
                     onAddItem = {},
                     onDashboardCategoryCardClick = {},
                     onDashboardShopCardClick = {},
