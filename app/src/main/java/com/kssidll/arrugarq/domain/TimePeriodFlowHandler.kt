@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.*
  */
 class TimePeriodFlowHandler(
     private val scope: CoroutineScope,
-    private val cancellableDayFlow: () -> Flow<List<ItemSpentByTime>>,
-    private val cancellableWeekFlow: () -> Flow<List<ItemSpentByTime>>,
-    private val cancellableMonthFlow: () -> Flow<List<ItemSpentByTime>>,
-    private val cancellableYearFlow: () -> Flow<List<ItemSpentByTime>>,
+    private val dayFlow: () -> Flow<List<ItemSpentByTime>>,
+    private val weekFlow: () -> Flow<List<ItemSpentByTime>>,
+    private val monthFlow: () -> Flow<List<ItemSpentByTime>>,
+    private val yearFlow: () -> Flow<List<ItemSpentByTime>>,
     startPeriod: TimePeriodFlowHandler.Periods = Periods.Month,
 ) {
     private var mCurrentPeriod: MutableState<Periods>
@@ -41,10 +41,17 @@ class TimePeriodFlowHandler(
 
         spentByTimeQuery = scope.launch {
             when (currentPeriod) {
-                Periods.Day -> _spentByTimeData.value = cancellableDayFlow()
-                Periods.Week -> _spentByTimeData.value = cancellableWeekFlow()
-                Periods.Month -> _spentByTimeData.value = cancellableMonthFlow()
-                Periods.Year -> _spentByTimeData.value = cancellableYearFlow()
+                Periods.Day -> _spentByTimeData.value = dayFlow().distinctUntilChanged()
+                    .cancellable()
+
+                Periods.Week -> _spentByTimeData.value = weekFlow().distinctUntilChanged()
+                    .cancellable()
+
+                Periods.Month -> _spentByTimeData.value = monthFlow().distinctUntilChanged()
+                    .cancellable()
+
+                Periods.Year -> _spentByTimeData.value = yearFlow().distinctUntilChanged()
+                    .cancellable()
             }
         }
     }

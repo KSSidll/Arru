@@ -194,10 +194,7 @@ internal fun CategoryScreenContent(
                         spentByTimePeriod = state.spentByTimePeriod.value,
                         onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
                         columnChartEntryModelProducer = state.columnChartEntryModelProducer,
-                        runInitialAnimation = !state.finishedChartAnimation
                     )
-
-                    state.finishedChartAnimation = true
 
                     Spacer(Modifier.height(12.dp))
                 }

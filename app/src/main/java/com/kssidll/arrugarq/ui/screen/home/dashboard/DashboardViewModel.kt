@@ -15,21 +15,17 @@ class DashboardViewModel @Inject constructor(
 ): ViewModel() {
     private val timePeriodFlowHandler: TimePeriodFlowHandler = TimePeriodFlowHandler(
         scope = viewModelScope,
-        cancellableDayFlow = {
+        dayFlow = {
             itemRepository.getTotalSpentByDayFlow()
-                .cancellable()
         },
-        cancellableWeekFlow = {
+        weekFlow = {
             itemRepository.getTotalSpentByWeekFlow()
-                .cancellable()
         },
-        cancellableMonthFlow = {
+        monthFlow = {
             itemRepository.getTotalSpentByMonthFlow()
-                .cancellable()
         },
-        cancellableYearFlow = {
+        yearFlow = {
             itemRepository.getTotalSpentByYearFlow()
-                .cancellable()
         },
     )
 
@@ -45,6 +41,7 @@ class DashboardViewModel @Inject constructor(
             .map {
                 it.div(100000F)
             }
+            .distinctUntilChanged()
     }
 
     fun getSpentByShop(): Flow<List<ItemSpentByShop>> {

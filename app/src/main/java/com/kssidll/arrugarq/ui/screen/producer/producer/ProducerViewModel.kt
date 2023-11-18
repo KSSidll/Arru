@@ -23,7 +23,6 @@ internal data class ProducerScreenState(
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-    var finishedChartAnimation: Boolean = false,
 )
 
 internal const val fullItemFetchCount = 8
@@ -71,26 +70,23 @@ class ProducerViewModel @Inject constructor(
                         it.toFloat()
                             .div(100000)
                     }
+                    .distinctUntilChanged()
                     .cancellable()
         }
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
-            cancellableDayFlow = {
+            dayFlow = {
                 itemRepository.getTotalSpentByProducerByDayFlow(producerId)
-                    .cancellable()
             },
-            cancellableWeekFlow = {
+            weekFlow = {
                 itemRepository.getTotalSpentByProducerByWeekFlow(producerId)
-                    .cancellable()
             },
-            cancellableMonthFlow = {
+            monthFlow = {
                 itemRepository.getTotalSpentByProducerByMonthFlow(producerId)
-                    .cancellable()
             },
-            cancellableYearFlow = {
+            yearFlow = {
                 itemRepository.getTotalSpentByProducerByYearFlow(producerId)
-                    .cancellable()
             },
         )
 

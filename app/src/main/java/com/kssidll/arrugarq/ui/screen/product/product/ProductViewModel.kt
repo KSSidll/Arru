@@ -24,7 +24,6 @@ internal data class ProductScreenState(
     val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
 
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-    var finishedChartAnimation: Boolean = false,
 )
 
 internal const val fullItemFetchCount = 8
@@ -72,6 +71,7 @@ class ProductViewModel @Inject constructor(
                     it.toFloat()
                         .div(100000)
                 }
+                .distinctUntilChanged()
                 .cancellable()
         }
 
@@ -87,21 +87,17 @@ class ProductViewModel @Inject constructor(
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
-            cancellableDayFlow = {
+            dayFlow = {
                 itemRepository.getTotalSpentByProductByDayFlow(productId)
-                    .cancellable()
             },
-            cancellableWeekFlow = {
+            weekFlow = {
                 itemRepository.getTotalSpentByProductByWeekFlow(productId)
-                    .cancellable()
             },
-            cancellableMonthFlow = {
+            monthFlow = {
                 itemRepository.getTotalSpentByProductByMonthFlow(productId)
-                    .cancellable()
             },
-            cancellableYearFlow = {
+            yearFlow = {
                 itemRepository.getTotalSpentByProductByYearFlow(productId)
-                    .cancellable()
             },
         )
 
