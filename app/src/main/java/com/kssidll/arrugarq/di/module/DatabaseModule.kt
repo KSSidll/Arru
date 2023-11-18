@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.di.module
 
 import android.content.*
 import androidx.datastore.preferences.core.*
-import androidx.room.*
+import com.kssidll.arrugarq.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.database.*
 import com.kssidll.arrugarq.data.repository.*
@@ -12,9 +12,24 @@ import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.qualifiers.*
 import dagger.hilt.components.*
+import java.io.*
 import javax.inject.*
 
+/**
+ * default database name
+ */
 const val DATABASE_NAME: String = "arrugarq_database"
+
+/**
+ * @return absolute path to external database file
+ */
+fun Context.externalDbPath(): String =
+    getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME.db")
+
+/**
+ * @return absolute path to internal database file as [File]
+ */
+fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -25,26 +40,48 @@ class DatabaseModule {
         @ApplicationContext appContext: Context,
         preferences: Preferences
     ): AppDatabase {
-        val builder = Room.databaseBuilder(
-            appContext.applicationContext,
-            AppDatabase::class.java,
-            when (preferences[AppPreferences.Database.key]) {
-                AppPreferences.Database.Location.EXTERNAL -> {
-                    appContext.getExternalFilesDir(null)!!.absolutePath.plus("/$DATABASE_NAME.db")
-                }
+        val location = preferences[AppPreferences.Database.key]
 
-                AppPreferences.Database.Location.INTERNAL -> {
-                    DATABASE_NAME
-                }
-
-                else -> error("The database location preference key isn't set to a valid value")
+        if (location != AppPreferences.Database.Location.INTERNAL) {
+            if (appContext.internalDbFile()
+                    .exists()
+                    .not()
+            ) {
+                // simple query to ensure database creation
+                AppDatabase.buildInternal(appContext)
+                    .query(
+                        "SELECT 1",
+                        null
+                    )
+                    .close()
+                Arrugarq.restart(appContext)
             }
-        )
+        }
 
+        return when (preferences[AppPreferences.Database.key]) {
+            AppPreferences.Database.Location.EXTERNAL -> {
+                if (File(appContext.externalDbPath()).exists()
+                        .not()
+                ) {
+                    AppDatabase.moveInternalToExternal(appContext)
+                }
 
-        return builder
-            .createFromAsset("database/arrugarq.db")
-            .build()
+                AppDatabase.buildExternal(appContext)
+            }
+
+            AppPreferences.Database.Location.INTERNAL -> {
+                if (appContext.internalDbFile()
+                        .exists()
+                        .not()
+                ) {
+                    AppDatabase.moveExternalToInternal(appContext)
+                }
+
+                AppDatabase.buildInternal(appContext)
+            }
+
+            else -> error("The database location preference key isn't set to a valid value")
+        }
     }
 
     @Provides

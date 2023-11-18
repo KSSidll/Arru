@@ -35,7 +35,7 @@ class MainActivity: ComponentActivity() {
         if (preferences[AppPreferences.Database.key] == null) {
             runBlocking {
                 applicationContext.dataStore.edit {
-                    it[AppPreferences.Database.key] = AppPreferences.Database.Location.INTERNAL
+                    it[AppPreferences.Database.key] = AppPreferences.Database.Location.EXTERNAL
                 }
             }
         }
