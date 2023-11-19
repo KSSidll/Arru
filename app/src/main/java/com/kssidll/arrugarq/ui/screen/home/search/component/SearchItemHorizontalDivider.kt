@@ -12,6 +12,9 @@ import com.kssidll.arrugarq.ui.theme.*
 
 private val DividerHorizontalPadding: Dp = 16.dp
 
+/**
+ * [HorizontalDivider] with [DividerHorizontalPadding] padding and tertiary color
+ */
 @Composable
 internal fun SearchItemHorizontalDivider(
 

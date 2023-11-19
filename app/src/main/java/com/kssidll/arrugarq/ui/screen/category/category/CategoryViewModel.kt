@@ -7,6 +7,8 @@ import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.ui.screen.producer.producer.*
+import com.kssidll.arrugarq.ui.screen.product.product.*
 import com.kssidll.arrugarq.ui.screen.shop.shop.fullItemFetchCount
 import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
@@ -14,6 +16,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
+/**
+ * Data representing [CategoryScreen] screen state
+ */
 internal data class CategoryScreenState(
     val category: MutableState<ProductCategory?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
@@ -25,8 +30,15 @@ internal data class CategoryScreenState(
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
 )
 
+/**
+ * Page fetch size
+ */
 internal const val fullItemFetchCount = 8
-internal const val fullItemMaxPrefetchCount = 50
+
+/**
+ * Maximum prefetched items
+ */
+internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
@@ -45,6 +57,10 @@ class CategoryViewModel @Inject constructor(
 
     private var stateTotalSpentDataJob: Job? = null
 
+    /**
+     * Switches the state period to [newPeriod]
+     * @param newPeriod Period to switch the state to
+     */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         screenState.spentByTimePeriod.value = newPeriod
@@ -112,6 +128,9 @@ class CategoryViewModel @Inject constructor(
     }
         .await()
 
+    /**
+     * Requests a query of [fullItemFetchCount] items to be appended to transactions list
+     */
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return
 

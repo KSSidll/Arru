@@ -19,6 +19,14 @@ import com.kssidll.arrugarq.ui.theme.*
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
+/**
+ * [EditScreen] implementation for [ProductProducer]
+ * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
+ * @param state [EditProducerScreenState] instance representing the screen state
+ * @param onSubmit Called to request data submission
+ * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
+ */
 @Composable
 fun EditProducerScreenImpl(
     onBack: () -> Unit,
@@ -66,6 +74,9 @@ fun EditProducerScreenImpl(
     }
 }
 
+/**
+ * Data representing [EditProducerScreenImpl] screen state
+ */
 data class EditProducerScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 

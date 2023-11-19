@@ -22,6 +22,13 @@ import com.kssidll.arrugarq.ui.screen.home.search.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
+/**
+ * Generic list screen
+ * @param T Type of item, needs to implement [FuzzySearchable] and [Named]
+ * @param state [ListScreenState] representing the screen state
+ * @param onItemSelect Callback called as request to navigate to item, Provides item as argument
+ * @param onItemEdit Callback called as request to navigate to item edition, Provides item as argument
+ */
 @Composable
 internal fun <T> ListScreen(
     state: ListScreenState<T>,
@@ -107,6 +114,9 @@ internal fun <T> ListScreen(
     }
 }
 
+/**
+ * Data representing [ListScreen] state
+ */
 internal data class ListScreenState<T>(
     val filter: MutableState<String> = mutableStateOf(String()),
     val items: MutableState<Flow<List<T>>> = mutableStateOf(flowOf()),

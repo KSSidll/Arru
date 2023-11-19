@@ -17,7 +17,7 @@ fun CategoryRankingRoute(
     RankingScreen(
         onBack = onBack,
         title = stringResource(R.string.categories),
-        data = viewModel.getSpentByCategory()
+        data = viewModel.categoryTotalSpentFlow()
             .collectAsState(emptyList()).value,
         onItemClick = {
             onCategorySelect(it.category.id)

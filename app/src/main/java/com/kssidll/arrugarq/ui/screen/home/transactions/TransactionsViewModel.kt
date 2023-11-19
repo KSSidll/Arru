@@ -6,13 +6,22 @@ import androidx.compose.runtime.snapshots.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.ui.screen.product.product.*
+import com.kssidll.arrugarq.ui.screen.shop.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
+/**
+ * Page fetch size
+ */
 internal const val fullItemFetchCount = 8
-internal const val fullItemMaxPrefetchCount = 50
+
+/**
+ * Maximum prefetched items
+ */
+internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
@@ -35,6 +44,9 @@ class TransactionsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Requests a query of [fullItemFetchCount] items to be appended to transactions list
+     */
     fun queryMoreFullItems() {
         if (fullItemsDataQuery.isCompleted) {
             fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
@@ -42,6 +54,9 @@ class TransactionsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Performs a query of [fullItemFetchCount] items, with [queryOffset] offset, and appends the result to the transactions list
+     */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
         fullItemsData.addAll(
             itemRepository.getFullItems(

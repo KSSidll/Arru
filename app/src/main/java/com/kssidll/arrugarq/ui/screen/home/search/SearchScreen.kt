@@ -22,6 +22,18 @@ import com.kssidll.arrugarq.ui.theme.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
+/**
+ * @param state [SearchScreenState] instance representing the screen state
+ * @param navBackHandlerEnabled Whether the internal nav back handler for this screen is enabled
+ * @param onProductSelect Callback called as request to navigate to product, Provides product id as parameter
+ * @param onProductEdit Callback called as request to navigate to product edition, Provides product id as parameter
+ * @param onShopSelect Callback called as request to navigate to shop, Provides shop id as parameter
+ * @param onShopEdit Callback called as request to navigate to shop edition, Provides shop id as parameter
+ * @param onCategorySelect Callback called as request to navigate to category, Provides category id as parameter
+ * @param onCategoryEdit Callback called as request to navigate to category edition, Provides category id as parameter
+ * @param onProducerSelect Callback called as request to navigate to producer, Provides producer id as parameter
+ * @param onProducerEdit Callback called as request to navigate to producer edition, Provides producer id as parameter
+ */
 @Composable
 internal fun SearchScreen(
     state: SearchScreenState,
@@ -49,6 +61,9 @@ internal fun SearchScreen(
     )
 }
 
+/**
+ * Possible internal navigation destinations for [SearchScreen]
+ */
 @Parcelize
 internal sealed class SearchDestinations: Parcelable {
     data object Start: SearchDestinations()
@@ -58,6 +73,19 @@ internal sealed class SearchDestinations: Parcelable {
     data object ProducerList: SearchDestinations()
 }
 
+/**
+ * [SearchScreen] content
+ * @param state [SearchScreenState] instance representing the screen state
+ * @param navBackHandlerEnabled Whether the internal nav back handler for this screen is enabled
+ * @param onProductSelect Callback called as request to navigate to product, Provides product id as parameter
+ * @param onProductEdit Callback called as request to navigate to product edition, Provides product id as parameter
+ * @param onShopSelect Callback called as request to navigate to shop, Provides shop id as parameter
+ * @param onShopEdit Callback called as request to navigate to shop edition, Provides shop id as parameter
+ * @param onCategorySelect Callback called as request to navigate to category, Provides category id as parameter
+ * @param onCategoryEdit Callback called as request to navigate to category edition, Provides category id as parameter
+ * @param onProducerSelect Callback called as request to navigate to producer, Provides producer id as parameter
+ * @param onProducerEdit Callback called as request to navigate to producer edition, Provides producer id as parameter
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreenContent(
@@ -195,6 +223,9 @@ private fun SearchScreenContent(
     }
 }
 
+/**
+ * Data representing [SearchScreen] state
+ */
 internal data class SearchScreenState(
     val navController: NavController<SearchDestinations> = navController(startDestination = SearchDestinations.Start)
 )

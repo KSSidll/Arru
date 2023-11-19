@@ -16,12 +16,19 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
+import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 
 private val firstTextStyle: TextStyle = Typography.titleLarge
 private val secondTextStyle: TextStyle = Typography.titleMedium
 private val otherTextStyle: TextStyle = Typography.titleSmall
 
+/**
+ * Determines which [TextStyle] to use for the item depending on [position] and [scaleByRank]
+ * @return [TextStyle] to use
+ * @param position Position of the item in the list
+ * @param scaleByRank Whether to use rank scaling, if True, items with 1st and 2nd position will have different styles than 3rd position onward
+ */
 private fun getTextStyle(
     position: Int,
     scaleByRank: Boolean
@@ -35,6 +42,12 @@ private fun getTextStyle(
     }
 }
 
+/**
+ * Determines what row height to use for the item depending on [position] and [scaleByRank]
+ * @return Row height, in [Dp], to use
+ * @param position Position of the item in the list
+ * @param scaleByRank Whether to use rank scaling, if True, items with 1st and 2nd position will have different row heights than 3rd position onward
+ */
 private fun getRowHeight(
     position: Int,
     scaleByRank: Boolean
@@ -49,17 +62,18 @@ private fun getRowHeight(
 }
 
 /**
- * @param T Type of item, needs to implement Rankable
- * @param items List of items to display, the items will be sorted by their value
+ * Generic ranking list
+ * @param T Type of item, needs to implement [Rankable]
+ * @param items List of items to display, the items will be sorted by their value, items need to implement [Rankable]
  * @param modifier Modifier applied to the container
  * @param innerItemPadding Padding applied to the item container
  * @param displayCount How many items to display, 0 means all
  * @param animationSpec Animation Spec for the item relative to max value animation
  * @param scaleByRank Whether to scale the item values based on their position
  * @param onItemClick Function to call when an item is clicked, null disables click event if [onItemLongClick] is null as well
- * @param onItemClickLabel Semantic / accessibility label for the onItemClick action
+ * @param onItemClickLabel Semantic / accessibility label for the [onItemClick] action
  * @param onItemLongClick Function to call when an item is long clicked, null disables click event if [onItemClick] is null as well
- * @param onItemLongClickLabel Semantic / accessibility label for the onItemLongClick action
+ * @param onItemLongClickLabel Semantic / accessibility label for the [onItemLongClick] action
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -190,7 +204,7 @@ fun <T> RankingList(
                                 end = endPadding + 4.dp,
                             )
                     ) {
-                        RankingItemProgressBar(
+                        ProgressBar(
                             progressValue = it.sortValue() / maxItemValue.toFloat(),
                             modifier = Modifier
                                 .align(alignment = Alignment.Center)
@@ -238,35 +252,6 @@ fun <T> RankingList(
             }
         }
 
-    }
-}
-
-@Composable
-private fun RankingItemProgressBar(
-    progressValue: Float,
-    modifier: Modifier = Modifier,
-    animationSpec: AnimationSpec<Float> = tween(1200),
-) {
-    var targetValue by remember { mutableFloatStateOf(0F) }
-
-    LaunchedEffect(progressValue) {
-        targetValue = progressValue
-    }
-
-    val animatedValue = animateFloatAsState(
-        targetValue = targetValue,
-        animationSpec = animationSpec,
-        label = "Ranking List item value relative to the highest item value animation"
-    )
-
-    Surface(
-        modifier = modifier,
-        shape = ShapeDefaults.Medium,
-    ) {
-        LinearProgressIndicator(
-            color = MaterialTheme.colorScheme.tertiary,
-            progress = animatedValue.value,
-        )
     }
 }
 

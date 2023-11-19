@@ -25,11 +25,23 @@ import com.kssidll.arrugarq.ui.component.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.component.other.*
+import com.kssidll.arrugarq.ui.screen.shop.shop.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
 import java.text.*
 import java.util.*
 
+/**
+ * @param onBack Called to request a back navigation
+ * @param state [ShopScreenState] instance representing the screen state
+ * @param onProductEdit Called to request navigation to product edition
+ * @param onSpentByTimePeriodSwitch Called to request state period switch, with requested period as argument
+ * @param requestMoreItems Called to request more transaction items to be added to the state
+ * @param onCategorySelect Called to request navigation to category edition, with requested category id as argument
+ * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
+ * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
+ * @param onItemEdit Called to request navigation to item edition, with requested item id as argument
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductScreen(
@@ -84,6 +96,16 @@ internal fun ProductScreen(
     }
 }
 
+/**
+ * [ProductScreen] content
+ * @param state [ShopScreenState] instance representing the screen state
+ * @param onSpentByTimePeriodSwitch Called to request state period switch, with requested period as argument
+ * @param requestMoreItems Called to request more transaction items to be added to the state
+ * @param onCategorySelect Called to request navigation to category edition, with requested category id as argument
+ * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
+ * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
+ * @param onItemEdit Called to request navigation to item edition, with requested item id as argument
+ */
 @Composable
 internal fun ProductScreenContent(
     state: ProductScreenState,

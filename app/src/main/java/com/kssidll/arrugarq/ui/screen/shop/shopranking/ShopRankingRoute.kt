@@ -17,7 +17,7 @@ fun ShopRankingRoute(
     RankingScreen(
         onBack = onBack,
         title = stringResource(R.string.shops),
-        data = viewModel.getSpentByShop()
+        data = viewModel.shopTotalSpentFlow()
             .collectAsState(emptyList()).value,
         onItemClick = {
             onShopSelect(it.shop.id)

@@ -25,6 +25,14 @@ import java.sql.Date
 import java.text.*
 import java.util.*
 
+/**
+ * @param requestMoreItems Callback called as request to append more items to [items]
+ * @param items List of items to display in the transactions list
+ * @param onProductSelect Callback called as request to navigate to product, Provides product id as parameter
+ * @param onCategorySelect Callback called as request to navigate to categary, Provides category id as parameter
+ * @param onProducerSelect Callback called as request to navigate to producer, Provides producer id as parameter
+ * @param onShopSelect Callback called as request to navigate to shop, Provides shop id as parameter
+ */
 @Composable
 internal fun TransactionsScreen(
     requestMoreItems: () -> Unit,
@@ -46,6 +54,15 @@ internal fun TransactionsScreen(
     )
 }
 
+/**
+ * [TransactionsScreen] content
+ * @param requestMoreItems Callback called as request to append more items to [items]
+ * @param items List of items to display in the transactions list
+ * @param onProductSelect Callback called as request to navigate to product, Provides product id as parameter
+ * @param onCategorySelect Callback called as request to navigate to categary, Provides category id as parameter
+ * @param onProducerSelect Callback called as request to navigate to producer, Provides producer id as parameter
+ * @param onShopSelect Callback called as request to navigate to shop, Provides shop id as parameter
+ */
 @Composable
 private fun TransactionsScreenContent(
     requestMoreItems: () -> Unit,

@@ -17,10 +17,22 @@ import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
 import kotlinx.coroutines.*
 
-@OptIn(
-    ExperimentalFoundationApi::class,
-    ExperimentalMaterial3Api::class
-)
+/**
+ * @param navigateSettings Callback called as request to navigate to settings
+ * @param onAddItem Callback called as request to navigate to item adding
+ * @param onDashboardCategoryCardClick Callback called when category card is clicked
+ * @param onDashboardShopCardClick Callback called when shop card is clicked
+ * @param onItemEdit Callback called as request to navigate to item edition, provides item id as parameter
+ * @param onProductSelect Callback called as request to navigate to product, provides product id as parameter
+ * @param onProductEdit Callback called as request to navigate to product edition, provides product id as parameter
+ * @param onShopSelect Callback called as request to navigate to shop, provides shop id as parameter
+ * @param onShopEdit Callback called as request to navigate to shop edition, provides shop id as parameter
+ * @param onCategorySelect Callback called as request to navigate to category, provides category id as parameter
+ * @param onCategoryEdit Callback called as request to navigate to category edition, provides category id as parameter
+ * @param onProducerSelect Callback called as request to navigate to producer, provides producer id as parameter
+ * @param onProducerEdit Callback called as request to navigate to producer edition, provides producer id as parameter
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HomeScreen(
     navigateSettings: () -> Unit,
@@ -43,8 +55,6 @@ internal fun HomeScreen(
         initialPageOffsetFraction = 0F,
         pageCount = { HomeScreenLocations.entries.size },
     )
-
-
 
     Scaffold(
         bottomBar = {

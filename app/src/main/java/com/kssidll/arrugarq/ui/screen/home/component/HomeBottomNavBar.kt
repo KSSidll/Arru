@@ -12,6 +12,12 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
 
+/**
+ * Bottom navigation bar for [HomeScreen] screen
+ * @param currentLocation Current [HomeScreen] location
+ * @param onLocationChange Callback called as request to change [HomeScreen] location, Provides new location as parameter
+ * @param onAddItem Callback called as request to navigate to item adding
+ */
 @Composable
 internal fun HomeBottomNavBar(
     currentLocation: HomeScreenLocations = HomeScreenLocations.entries.first { it.initial },

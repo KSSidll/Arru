@@ -23,6 +23,9 @@ class AddItemViewModel @Inject constructor(
         fillStateProductsWithAltNames()
     }
 
+    /**
+     * Fetches start data to state
+     */
     private fun computeStartState() = viewModelScope.launch {
         screenState.loadingShop.value = true
         screenState.loadingDate.value = true
@@ -41,6 +44,9 @@ class AddItemViewModel @Inject constructor(
         screenState.loadingShop.value = false
     }
 
+    /**
+     * Fetches data related to a product to state, should be called after a state representation of product changes
+     */
     fun onProductChange() = viewModelScope.launch {
         screenState.loadingPrice.value = true
         screenState.loadingQuantity.value = true
@@ -49,11 +55,20 @@ class AddItemViewModel @Inject constructor(
 
         val lastItemByProduct =
             itemRepository.getLastByProductId(screenState.selectedProduct.value!!.id)
-                ?: return@launch
 
-        screenState.selectedVariant.value = lastItemByProduct.variantId?.let {
+        if (lastItemByProduct == null) {
+            screenState.price.value = String()
+            screenState.quantity.value = String()
+            screenState.selectedVariant.value = null
+
+            return@launch
+        }
+
+        val variant = lastItemByProduct.variantId?.let {
             variantsRepository.get(it)
         }
+
+        screenState.selectedVariant.value = variant
 
         screenState.price.value = String.format(
             "%.2f",

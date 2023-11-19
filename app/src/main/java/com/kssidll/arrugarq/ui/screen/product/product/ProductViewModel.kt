@@ -14,6 +14,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
+/**
+ * Data representing [ProductScreen] screen state
+ */
 internal data class ProductScreenState(
     val product: MutableState<Product?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
@@ -26,8 +29,15 @@ internal data class ProductScreenState(
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
 )
 
+/**
+ * Page fetch size
+ */
 internal const val fullItemFetchCount = 8
-internal const val fullItemMaxPrefetchCount = 50
+
+/**
+ * Maximum prefetched items
+ */
+internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
@@ -47,6 +57,10 @@ class ProductViewModel @Inject constructor(
     private var productPriceByShopByTimeJob: Job? = null
     private var stateTotalSpentDataJob: Job? = null
 
+    /**
+     * Switches the state period to [newPeriod]
+     * @param newPeriod Period to switch the state to
+     */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         screenState.spentByTimePeriod.value = newPeriod
@@ -55,7 +69,7 @@ class ProductViewModel @Inject constructor(
     }
 
     /**
-     * @return true if provided [productId] was valid, false otherwise
+     * @return True if provided [productId] was valid, false otherwise
      */
     suspend fun performDataUpdate(productId: Long) = viewModelScope.async {
         val product = productRepository.get(productId) ?: return@async false
@@ -123,6 +137,9 @@ class ProductViewModel @Inject constructor(
     }
         .await()
 
+    /**
+     * Requests a query of [fullItemFetchCount] items to be appended to transactions list
+     */
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return
 

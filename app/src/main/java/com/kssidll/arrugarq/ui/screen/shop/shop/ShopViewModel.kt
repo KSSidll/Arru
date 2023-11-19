@@ -13,6 +13,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
+/**
+ * Data representing [ShopScreen] screen state
+ */
 internal data class ShopScreenState(
     val shop: MutableState<Shop?> = mutableStateOf(null),
     val items: SnapshotStateList<FullItem> = mutableStateListOf(),
@@ -24,8 +27,15 @@ internal data class ShopScreenState(
     val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
 )
 
+/**
+ * Page fetch size
+ */
 internal const val fullItemFetchCount = 8
-internal const val fullItemMaxPrefetchCount = 50
+
+/**
+ * Maximum prefetched items
+ */
+internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class ShopViewModel @Inject constructor(
@@ -44,6 +54,10 @@ class ShopViewModel @Inject constructor(
 
     private var stateTotalSpentDataJob: Job? = null
 
+    /**
+     * Switches the state period to [newPeriod]
+     * @param newPeriod Period to switch the state to
+     */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
         screenState.spentByTimePeriod.value = newPeriod
@@ -52,7 +66,7 @@ class ShopViewModel @Inject constructor(
     }
 
     /**
-     * @return true if provided [shopId] was valid, false otherwise
+     * @return True if provided [shopId] was valid, false otherwise
      */
     suspend fun performDataUpdate(shopId: Long) = viewModelScope.async {
         val shop = shopRepository.get(shopId) ?: return@async false
@@ -110,6 +124,9 @@ class ShopViewModel @Inject constructor(
     }
         .await()
 
+    /**
+     * Requests a query of [fullItemFetchCount] items to be appended to transactions list
+     */
     fun queryMoreFullItems() {
         if (fullItemsDataQuery == null) return
 
@@ -121,6 +138,7 @@ class ShopViewModel @Inject constructor(
 
     /**
      * Requires shop value of shopScreenState to be a non null.
+     *
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {

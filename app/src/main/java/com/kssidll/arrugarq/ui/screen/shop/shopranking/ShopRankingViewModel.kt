@@ -11,7 +11,11 @@ import javax.inject.*
 class ShopRankingViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
 ): ViewModel() {
-    fun getSpentByShop(): Flow<List<ItemSpentByShop>> {
+
+    /**
+     * @return List of data points representing shop spending in time as flow
+     */
+    fun shopTotalSpentFlow(): Flow<List<ItemSpentByShop>> {
         return itemRepository.getShopTotalSpentFlow()
     }
 }

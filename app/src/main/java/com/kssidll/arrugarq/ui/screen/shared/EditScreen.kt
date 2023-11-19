@@ -20,8 +20,8 @@ import com.kssidll.arrugarq.ui.theme.*
 /**
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param title Text displayed on the top app bar
- * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component
  * @param onSubmit Called to request data submission
+ * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button
  * @param showDeleteWarning Mutable flag that exposes whether a delete warning dialog is shown, optional as it is handled internally by the component, but exposed for state dependent actions
  * @param deleteWarningConfirmed Mutable flag that exposes whether user confirmed the action of deletion in the warning dialog, exposed for state dependant actions
@@ -33,8 +33,8 @@ import com.kssidll.arrugarq.ui.theme.*
 fun EditScreen(
     onBack: () -> Unit,
     title: String,
-    onDelete: (() -> Unit)? = null,
     onSubmit: () -> Unit,
+    onDelete: (() -> Unit)? = null,
     submitButtonText: String,
     showDeleteWarning: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningConfirmed: MutableState<Boolean> = remember { mutableStateOf(false) },

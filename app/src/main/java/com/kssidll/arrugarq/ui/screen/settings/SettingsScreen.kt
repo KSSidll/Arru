@@ -11,6 +11,10 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 
+/**
+ * @param state [SettingsScreenState] instance representing the screen state
+ * @param onBack Called to request a back navigation
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
@@ -35,6 +39,9 @@ internal fun SettingsScreen(
 
 }
 
+/**
+ * Data representing [SettingsScreen] screen state
+ */
 data class SettingsScreenState(
     val placeholder: MutableState<Boolean> = mutableStateOf(false),
 )

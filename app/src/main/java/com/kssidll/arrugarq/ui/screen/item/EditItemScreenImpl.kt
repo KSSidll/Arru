@@ -26,6 +26,21 @@ import java.util.*
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
+/**
+ * [EditScreen] implementation for [Item]
+ * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
+ * @param state [EditItemScreenState] instance representing the screen state
+ * @param onSubmit Called to request data submission
+ * @param onDelete Called to request a delete operation
+ * @param onShopAdd Called to request navigation to producer adding
+ * @param onProductAdd Called to request navigation to product adding
+ * @param onVariantAdd Called to request navigation to variant adding
+ * @param onShopEdit Called to request navigation to producer edition
+ * @param onProductEdit Called to request navigation to product edition
+ * @param onVariantEdit Called to request navigation to variant edition
+ * @param onProductChange Callback called when the product representation in state is changed
+ * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditItemScreenImpl(
@@ -446,6 +461,9 @@ fun EditItemScreenImpl(
     }
 }
 
+/**
+ * Data representing [EditItemScreenImpl] screen state
+ */
 data class EditItemScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 

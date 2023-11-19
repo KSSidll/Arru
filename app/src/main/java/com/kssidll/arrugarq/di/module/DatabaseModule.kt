@@ -40,7 +40,7 @@ class DatabaseModule {
         @ApplicationContext appContext: Context,
         preferences: Preferences
     ): AppDatabase {
-        val location = preferences[AppPreferences.Database.key]
+        val location = preferences[AppPreferences.Database.Location.key]
 
         if (location != AppPreferences.Database.Location.INTERNAL) {
             if (appContext.internalDbFile()
@@ -58,7 +58,7 @@ class DatabaseModule {
             }
         }
 
-        return when (preferences[AppPreferences.Database.key]) {
+        return when (preferences[AppPreferences.Database.Location.key]) {
             AppPreferences.Database.Location.EXTERNAL -> {
                 if (File(appContext.externalDbPath()).exists()
                         .not()

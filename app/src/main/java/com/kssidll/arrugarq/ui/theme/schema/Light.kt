@@ -4,6 +4,9 @@ import androidx.compose.material3.*
 import androidx.compose.ui.graphics.*
 import com.kssidll.arrugarq.ui.theme.*
 
+/**
+ * Default application light color scheme
+ */
 val LightColorScheme = lightColorScheme(
     primary = Color.hsl(
         hue = 226f,

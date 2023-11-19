@@ -104,6 +104,9 @@ class EditItemViewModel @Inject constructor(
     }
         .await()
 
+    /**
+     * Fetches data related to a product to state, should be called after a state representation of product changes
+     */
     fun onProductChange() = viewModelScope.launch {
         screenState.loadingPrice.value = true
         screenState.loadingQuantity.value = true
@@ -112,7 +115,14 @@ class EditItemViewModel @Inject constructor(
 
         val lastItemByProduct =
             itemRepository.getLastByProductId(screenState.selectedProduct.value!!.id)
-                ?: return@launch
+
+        if (lastItemByProduct == null) {
+            screenState.price.value = String()
+            screenState.quantity.value = String()
+            screenState.selectedVariant.value = null
+
+            return@launch
+        }
 
         screenState.selectedVariant.value = lastItemByProduct.variantId?.let {
             variantsRepository.get(it)

@@ -21,6 +21,17 @@ import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
+/**
+ * @param navigateSettings Callback called as request to navigate to settings
+ * @param onCategoryCardClick Callback to call wen [ProductCategory] card is clicked
+ * @param onShopCardClick Callback to call when [Shop] card is clicked
+ * @param totalSpentData Number representing total [Item] spending as flow
+ * @param spentByShopData List of items representing [Shop] spending in time as flow
+ * @param spentByCategoryData List of items representing [ProductCategory] spending in time as flow
+ * @param spentByTimeData List of items representing [Item] spending in time as flow
+ * @param spentByTimePeriod Current [totalSpentData] time period
+ * @param onSpentByTimePeriodSwitch Callback called as a request to switch the [totalSpentData] time period, Provides new time period as parameter
+ */
 @Composable
 internal fun DashboardScreen(
     navigateSettings: () -> Unit,
@@ -31,7 +42,7 @@ internal fun DashboardScreen(
     spentByCategoryData: Flow<List<ItemSpentByCategory>>,
     spentByTimeData: Flow<List<ItemSpentByTime>>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
+    onSpentByTimePeriodSwitch: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     DashboardScreenContent(
         navigateSettings = navigateSettings,

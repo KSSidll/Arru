@@ -12,6 +12,12 @@ import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.ui.screen.home.search.component.*
 import com.kssidll.arrugarq.ui.theme.*
 
+/**
+ * @param onProductClick Callback called when product item is clicked
+ * @param onCategoryClick Callback called when category item is clicked
+ * @param onShopClick Callback called when shop item is clicked
+ * @param onProducerClick Callback called when producer item is clicked
+ */
 @Composable
 internal fun StartScreen(
     onProductClick: () -> Unit,
@@ -27,6 +33,13 @@ internal fun StartScreen(
     )
 }
 
+/**
+ * [StartScreen] content
+ * @param onProductClick Callback called when product item is clicked
+ * @param onCategoryClick Callback called when category item is clicked
+ * @param onShopClick Callback called when shop item is clicked
+ * @param onProducerClick Callback called when producer item is clicked
+ */
 @Composable
 private fun StartScreenContent(
     onProductClick: () -> Unit,

@@ -20,6 +20,18 @@ import androidx.compose.material3.Surface as Surface1
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
+/**
+ * [EditScreen] implementation for [Product]
+ * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
+ * @param state [EditProductScreenState] instance representing the screen state
+ * @param onSubmit Called to request data submission
+ * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onProducerAdd Called to request navigation to producer adding
+ * @param onCategoryAdd Called to request navigation to category adding
+ * @param onProducerEdit Called to request navigation to producer edition
+ * @param onCategoryEdit Called to request navigation to category edition
+ * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
+ */
 @Composable
 fun EditProductScreenImpl(
     onBack: () -> Unit,
@@ -151,6 +163,9 @@ fun EditProductScreenImpl(
     }
 }
 
+/**
+ * Data representing [EditProductScreenImpl] screen state
+ */
 data class EditProductScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
