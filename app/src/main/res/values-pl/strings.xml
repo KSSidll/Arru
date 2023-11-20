@@ -66,7 +66,7 @@
 
     <string name="day">Dzień</string>
     <string name="week">Tydzień</string>
-    <string name="month">Miesiąć</string>
+    <string name="month">Miesiąc</string>
     <string name="year">Rok</string>
 
     <string name="categories">Kategorie</string>
@@ -77,4 +77,5 @@
     <string name="destructive_action_confirmation_text">Wiem co robie</string>
     <string name="destructive_action_cancel">Anuluj</string>
     <string name="destructive_action_confirm">Potwierdź</string>
+    <string name="system">System</string>
 </resources>

@@ -12,6 +12,9 @@ fun SettingsRoute(
 
     SettingsScreen(
         state = viewModel.screenState,
+        setLocale = {
+            viewModel.setLocale(it)
+        },
         onBack = onBack,
     )
 }

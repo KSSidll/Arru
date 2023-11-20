@@ -77,4 +77,5 @@
     <string name="destructive_action_confirmation_text">I know what I am doing</string>
     <string name="destructive_action_cancel">Cancel</string>
     <string name="destructive_action_confirm">Confirm</string>
+    <string name="system">System</string>
 </resources>

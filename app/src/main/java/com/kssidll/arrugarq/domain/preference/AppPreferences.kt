@@ -19,22 +19,22 @@ data object AppPreferences {
          */
         data object Location {
             /**
-             * key for database location preference key-value pair
+             * Key for database location preference key-value pair
              */
             val key: Preferences.Key<String> = stringPreferencesKey("databaselocation")
 
             /**
-             * value for internal location
+             * Value for internal location
              */
             const val INTERNAL: String = "internal"
 
             /**
-             * value for external location
+             * Value for external location
              */
             const val EXTERNAL: String = "external"
 
             /**
-             * value for default location
+             * Value for default location
              */
             const val DEFAULT: String = EXTERNAL
         }
@@ -42,10 +42,10 @@ data object AppPreferences {
 }
 
 /**
- * sets preferences that aren't set to their default value
+ * Sets preferences that aren't set to their default value
  *
- * should be called before any preference is read
- * @param context app context
+ * Should be called before any preference is read
+ * @param context App context
  */
 suspend fun Preferences.setNullToDefault(context: Context) {
     if (this[AppPreferences.Database.Location.key] == null) {

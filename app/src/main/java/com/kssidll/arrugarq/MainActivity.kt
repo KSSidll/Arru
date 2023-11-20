@@ -3,8 +3,8 @@ package com.kssidll.arrugarq
 import android.annotation.*
 import android.content.pm.*
 import android.os.*
-import androidx.activity.*
 import androidx.activity.compose.*
+import androidx.appcompat.app.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.*
@@ -17,7 +17,7 @@ import kotlinx.coroutines.*
 import javax.inject.*
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity() {
+class MainActivity: AppCompatActivity() {
     @Inject
     lateinit var preferences: Preferences
 
