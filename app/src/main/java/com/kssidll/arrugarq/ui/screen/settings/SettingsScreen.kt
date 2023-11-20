@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
-import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
@@ -59,7 +58,8 @@ internal fun SettingsScreen(
 
                     TextField(
                         readOnly = true,
-                        value = currentLocale?.displayLanguage?.replaceFirstChar { it.titlecase(currentLocale) } ?: "System",
+                        value = currentLocale?.displayLanguage?.replaceFirstChar { it.titlecase(currentLocale) }
+                            ?: "System",
                         onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
@@ -93,7 +93,8 @@ internal fun SettingsScreen(
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        text = locale.displayLanguage.replaceFirstChar { it.titlecase(locale) },
+                                        text = locale.getDisplayName(locale)
+                                            .replaceFirstChar { it.titlecase(locale) },
                                         style = Typography.bodyLarge,
                                     )
                                 },
