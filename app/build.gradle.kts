@@ -36,13 +36,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
 
-        resourceConfigurations.addAll(
-            listOf(
-                "en",
-                "pl",
-            )
-        )
+    androidResources {
+        generateLocaleConfig = true
     }
 
     buildTypes {
