@@ -21,9 +21,9 @@ import androidx.compose.material3.Surface as Surface1
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [EditScreen] implementation for [Product]
+ * [ModifyScreen] implementation for [Product]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [EditProductScreenState] instance representing the screen state
+ * @param state [ModifyProductScreenState] instance representing the screen state
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param onProducerAdd Called to request navigation to producer adding
@@ -33,9 +33,9 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
  */
 @Composable
-fun EditProductScreenImpl(
+fun ModifyProductScreenImpl(
     onBack: () -> Unit,
-    state: EditProductScreenState,
+    state: ModifyProductScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onProducerAdd: () -> Unit,
@@ -44,7 +44,7 @@ fun EditProductScreenImpl(
     onCategoryEdit: (categoryId: Long) -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
 ) {
-    EditScreen(
+    ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
         onDelete = onDelete,
@@ -164,9 +164,9 @@ fun EditProductScreenImpl(
 }
 
 /**
- * Data representing [EditProductScreenImpl] screen state
+ * Data representing [ModifyProductScreenImpl] screen state
  */
-data class EditProductScreenState(
+data class ModifyProductScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
     val selectedProductCategory: MutableState<ProductCategory?> = mutableStateOf(null),
@@ -195,7 +195,7 @@ data class EditProductScreenState(
  * Validates selectedProductCategory field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditProductScreenState.validateSelectedProductCategory(): Boolean {
+fun ModifyProductScreenState.validateSelectedProductCategory(): Boolean {
     return !(selectedProductCategory.value == null).also { selectedProductCategoryError.value = it }
 }
 
@@ -203,7 +203,7 @@ fun EditProductScreenState.validateSelectedProductCategory(): Boolean {
  * Validates name field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditProductScreenState.validateName(): Boolean {
+fun ModifyProductScreenState.validateName(): Boolean {
     return !(name.value.isBlank()).also { nameError.value = it }
 }
 
@@ -211,7 +211,7 @@ fun EditProductScreenState.validateName(): Boolean {
  * Validates state fields and updates state flags
  * @return true if all fields are of correct value, false otherwise
  */
-fun EditProductScreenState.validate(): Boolean {
+fun ModifyProductScreenState.validate(): Boolean {
     val category = validateSelectedProductCategory()
     val name = validateName()
 
@@ -222,7 +222,7 @@ fun EditProductScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditProductScreenState.extractProductOrNull(productId: Long = 0): Product? {
+fun ModifyProductScreenState.extractProductOrNull(productId: Long = 0): Product? {
     if (!validate()) return null
 
     return Product(
@@ -234,24 +234,24 @@ fun EditProductScreenState.extractProductOrNull(productId: Long = 0): Product? {
 }
 
 @Preview(
-    group = "EditProductScreen",
+    group = "ModifyProductScreen",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditProductScreen",
+    group = "ModifyProductScreen",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditProductScreenImplPreview() {
+fun ModifyProductScreenImplPreview() {
     ArrugarqTheme {
         Surface1(modifier = Modifier.fillMaxSize()) {
-            EditProductScreenImpl(
+            ModifyProductScreenImpl(
                 onBack = {},
-                state = EditProductScreenState(),
+                state = ModifyProductScreenState(),
                 onSubmit = {},
                 onProducerAdd = {},
                 onProducerEdit = {},

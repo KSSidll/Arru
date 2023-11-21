@@ -11,7 +11,7 @@ import javax.inject.*
 class AddCategoryViewModel @Inject constructor(
     private val categoryRepository: ICategoryRepository,
 ): ViewModel() {
-    internal val screenState: EditCategoryScreenState = EditCategoryScreenState()
+    internal val screenState: ModifyCategoryScreenState = ModifyCategoryScreenState()
 
     /**
      * Tries to add a product category to the repository

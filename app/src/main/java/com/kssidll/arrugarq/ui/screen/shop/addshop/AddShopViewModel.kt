@@ -11,7 +11,7 @@ import javax.inject.*
 class AddShopViewModel @Inject constructor(
     private val shopRepository: IShopRepository,
 ): ViewModel() {
-    internal val screenState: EditShopScreenState = EditShopScreenState()
+    internal val screenState: ModifyShopScreenState = ModifyShopScreenState()
 
     /**
      * Tries to add a shop to the repository

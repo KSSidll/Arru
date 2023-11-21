@@ -12,7 +12,7 @@ fun AddShopRoute(
     val scope = rememberCoroutineScope()
     val viewModel: AddShopViewModel = hiltViewModel()
 
-    EditShopScreenImpl(
+    ModifyShopScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

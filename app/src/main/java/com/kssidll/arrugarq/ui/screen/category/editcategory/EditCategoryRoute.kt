@@ -24,7 +24,7 @@ fun EditCategoryRoute(
         }
     }
 
-    EditCategoryScreenImpl(
+    ModifyCategoryScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

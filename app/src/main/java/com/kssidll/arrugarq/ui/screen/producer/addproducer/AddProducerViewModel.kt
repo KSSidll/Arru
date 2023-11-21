@@ -11,7 +11,7 @@ import javax.inject.*
 class AddProducerViewModel @Inject constructor(
     private val producerRepository: IProducerRepository,
 ): ViewModel() {
-    internal val screenState: EditProducerScreenState = EditProducerScreenState()
+    internal val screenState: ModifyProducerScreenState = ModifyProducerScreenState()
 
     /**
      * Tries to add a product variant to the repository

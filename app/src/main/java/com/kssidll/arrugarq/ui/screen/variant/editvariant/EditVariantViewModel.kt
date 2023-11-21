@@ -13,7 +13,7 @@ class EditVariantViewModel @Inject constructor(
     private val variantRepository: IVariantRepository,
     private val itemRepository: IItemRepository,
 ): ViewModel() {
-    internal val screenState: EditVariantScreenState = EditVariantScreenState()
+    internal val screenState: ModifyVariantScreenState = ModifyVariantScreenState()
 
     /**
      * Tries to update variant with provided [variantId] with current screen state data

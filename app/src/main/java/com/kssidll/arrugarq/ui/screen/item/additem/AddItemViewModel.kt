@@ -15,7 +15,7 @@ class AddItemViewModel @Inject constructor(
     private val variantsRepository: IVariantRepository,
     private val shopRepository: IShopRepository,
 ): ViewModel() {
-    internal val screenState: EditItemScreenState = EditItemScreenState()
+    internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
 
     init {
         computeStartState()

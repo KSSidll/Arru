@@ -16,7 +16,7 @@ class EditProductViewModel @Inject constructor(
     private val variantRepository: IVariantRepository,
     private val itemRepository: IItemRepository,
 ): ViewModel() {
-    internal val screenState: EditProductScreenState = EditProductScreenState()
+    internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 
     init {
         fillStateCategoriesWithAltNames()

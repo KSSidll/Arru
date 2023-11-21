@@ -13,7 +13,7 @@ fun AddVariantRoute(
     val scope = rememberCoroutineScope()
     val viewModel: AddVariantViewModel = hiltViewModel()
 
-    EditVariantScreenImpl(
+    ModifyVariantScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

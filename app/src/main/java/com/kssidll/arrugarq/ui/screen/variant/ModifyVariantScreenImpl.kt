@@ -20,22 +20,22 @@ import com.kssidll.arrugarq.ui.theme.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [EditScreen] implementation for [ProductVariant]
+ * [ModifyScreen] implementation for [ProductVariant]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [EditVariantScreenState] instance representing the screen state
+ * @param state [ModifyVariantScreenState] instance representing the screen state
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to variant add string resource
  */
 @Composable
-fun EditVariantScreenImpl(
+fun ModifyVariantScreenImpl(
     onBack: () -> Unit,
-    state: EditVariantScreenState,
+    state: ModifyVariantScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
-    EditScreen(
+    ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
         onDelete = onDelete,
@@ -74,9 +74,9 @@ fun EditVariantScreenImpl(
 }
 
 /**
- * Data representing [EditVariantScreenImpl] screen state
+ * Data representing [ModifyVariantScreenImpl] screen state
  */
-data class EditVariantScreenState(
+data class ModifyVariantScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
     val name: MutableState<String> = mutableStateOf(String()),
@@ -92,7 +92,7 @@ data class EditVariantScreenState(
  * Validates name field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditVariantScreenState.validateName(): Boolean {
+fun ModifyVariantScreenState.validateName(): Boolean {
     return !(name.value.isBlank()).also { nameError.value = it }
 }
 
@@ -100,7 +100,7 @@ fun EditVariantScreenState.validateName(): Boolean {
  * Validates state fields and updates state flags
  * @return true if all fields are of correct value, false otherwise
  */
-fun EditVariantScreenState.validate(): Boolean {
+fun ModifyVariantScreenState.validate(): Boolean {
     return validateName()
 }
 
@@ -110,7 +110,7 @@ fun EditVariantScreenState.validate(): Boolean {
  * @param variantId Optional Id of the variant
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditVariantScreenState.extractVariantOrNull(
+fun ModifyVariantScreenState.extractVariantOrNull(
     productId: Long,
     variantId: Long = 0
 ): ProductVariant? {
@@ -124,24 +124,24 @@ fun EditVariantScreenState.extractVariantOrNull(
 }
 
 @Preview(
-    group = "EditVariantScreenImpl",
+    group = "ModifyVariantScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditVariantScreenImpl",
+    group = "ModifyVariantScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditVariantScreenImplPreview() {
+fun ModifyVariantScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditVariantScreenImpl(
+            ModifyVariantScreenImpl(
                 onBack = {},
-                state = EditVariantScreenState(),
+                state = ModifyVariantScreenState(),
                 onSubmit = {},
             )
         }

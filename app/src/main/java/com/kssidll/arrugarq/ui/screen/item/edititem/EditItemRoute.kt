@@ -30,7 +30,7 @@ fun EditItemRoute(
         }
     }
 
-    EditItemScreenImpl(
+    ModifyItemScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

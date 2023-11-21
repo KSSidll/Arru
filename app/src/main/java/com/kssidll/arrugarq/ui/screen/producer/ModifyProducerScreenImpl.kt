@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.category
+package com.kssidll.arrugarq.ui.screen.producer
 
 
 import android.content.res.Configuration.*
@@ -20,30 +20,30 @@ import com.kssidll.arrugarq.ui.theme.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [EditScreen] implementation for [ProductCategory]
+ * [ModifyScreen] implementation for [ProductProducer]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [EditCategoryScreenState] instance representing the screen state
+ * @param state [ModifyProducerScreenState] instance representing the screen state
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
  */
 @Composable
-fun EditCategoryScreenImpl(
+fun ModifyProducerScreenImpl(
     onBack: () -> Unit,
-    state: EditCategoryScreenState,
+    state: ModifyProducerScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
-    submitButtonText: String = stringResource(id = R.string.item_product_category_add),
+    submitButtonText: String = stringResource(id = R.string.item_product_producer_add),
 ) {
-    EditScreen(
+    ModifyScreen(
         onBack = onBack,
-        title = stringResource(id = R.string.item_product_category),
+        title = stringResource(id = R.string.item_product_producer),
         onDelete = onDelete,
         onSubmit = onSubmit,
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
-        deleteWarningMessage = stringResource(id = R.string.item_product_category_delete_warning_text),
+        deleteWarningMessage = stringResource(id = R.string.item_product_producer_delete_warning_text),
     ) {
         StyledOutlinedTextField(
             enabled = !state.loadingName.value,
@@ -63,7 +63,7 @@ fun EditCategoryScreenImpl(
             ),
             label = {
                 Text(
-                    text = stringResource(R.string.item_product_category),
+                    text = stringResource(R.string.item_product_producer),
                 )
             },
             isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
@@ -75,9 +75,9 @@ fun EditCategoryScreenImpl(
 }
 
 /**
- * Data representing [EditCategoryScreenImpl] screen state
+ * Data representing [ModifyProducerScreenImpl] screen state
  */
-data class EditCategoryScreenState(
+data class ModifyProducerScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
     val name: MutableState<String> = mutableStateOf(String()),
@@ -93,7 +93,7 @@ data class EditCategoryScreenState(
  * Validates name field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditCategoryScreenState.validateName(): Boolean {
+fun ModifyProducerScreenState.validateName(): Boolean {
     return !(name.value.isBlank()).also { nameError.value = it }
 }
 
@@ -101,7 +101,7 @@ fun EditCategoryScreenState.validateName(): Boolean {
  * Validates state fields and updates state flags
  * @return true if all fields are of correct value, false otherwise
  */
-fun EditCategoryScreenState.validate(): Boolean {
+fun ModifyProducerScreenState.validate(): Boolean {
     return validateName()
 }
 
@@ -109,34 +109,34 @@ fun EditCategoryScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditCategoryScreenState.extractCategoryOrNull(categoryId: Long = 0): ProductCategory? {
+fun ModifyProducerScreenState.extractProducerOrNull(producerId: Long = 0): ProductProducer? {
     if (!validate()) return null
 
-    return ProductCategory(
-        id = categoryId,
+    return ProductProducer(
+        id = producerId,
         name = name.value.trim(),
     )
 }
 
 @Preview(
-    group = "EditCategoryScreenImpl",
+    group = "ModifyProducerScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditCategoryScreenImpl",
+    group = "ModifyProducerScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditCategoryScreenImplPreview() {
+fun ModifyProducerScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditCategoryScreenImpl(
+            ModifyProducerScreenImpl(
                 onBack = {},
-                state = EditCategoryScreenState(),
+                state = ModifyProducerScreenState(),
                 onSubmit = {},
             )
         }

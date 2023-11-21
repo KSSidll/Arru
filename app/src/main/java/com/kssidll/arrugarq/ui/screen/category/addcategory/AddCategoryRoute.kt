@@ -12,7 +12,7 @@ fun AddCategoryRoute(
     val scope = rememberCoroutineScope()
     val viewModel: AddCategoryViewModel = hiltViewModel()
 
-    EditCategoryScreenImpl(
+    ModifyCategoryScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

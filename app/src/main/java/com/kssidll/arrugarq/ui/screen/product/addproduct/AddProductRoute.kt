@@ -16,7 +16,7 @@ fun AddProductRoute(
     val scope = rememberCoroutineScope()
     val viewModel: AddProductViewModel = hiltViewModel()
 
-    EditProductScreenImpl(
+    ModifyProductScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

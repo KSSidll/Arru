@@ -24,7 +24,7 @@ fun EditProducerRoute(
         }
     }
 
-    EditProducerScreenImpl(
+    ModifyProducerScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

@@ -15,7 +15,7 @@ class EditProducerViewModel @Inject constructor(
     private val variantRepository: IVariantRepository,
     private val itemRepository: IItemRepository,
 ): ViewModel() {
-    internal val screenState: EditProducerScreenState = EditProducerScreenState()
+    internal val screenState: ModifyProducerScreenState = ModifyProducerScreenState()
 
     /**
      * Tries to update product with provided [producerId] with current screen state data

@@ -27,9 +27,9 @@ import java.util.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [EditScreen] implementation for [Item]
+ * [ModifyScreen] implementation for [Item]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [EditItemScreenState] instance representing the screen state
+ * @param state [ModifyItemScreenState] instance representing the screen state
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation
  * @param onShopAdd Called to request navigation to producer adding
@@ -43,9 +43,9 @@ private val ItemHorizontalPadding: Dp = 20.dp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditItemScreenImpl(
+fun ModifyItemScreenImpl(
     onBack: () -> Unit,
-    state: EditItemScreenState,
+    state: ModifyItemScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onShopAdd: () -> Unit,
@@ -59,7 +59,7 @@ fun EditItemScreenImpl(
 ) {
     val datePickerState = rememberDatePickerState()
 
-    EditScreen(
+    ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item),
         onDelete = onDelete,
@@ -462,9 +462,9 @@ fun EditItemScreenImpl(
 }
 
 /**
- * Data representing [EditItemScreenImpl] screen state
+ * Data representing [ModifyItemScreenImpl] screen state
  */
-data class EditItemScreenState(
+data class ModifyItemScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
     val selectedProduct: MutableState<Product?> = mutableStateOf(null),
@@ -504,7 +504,7 @@ data class EditItemScreenState(
  * Validates selectedProduct field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditItemScreenState.validateSelectedProduct(): Boolean {
+fun ModifyItemScreenState.validateSelectedProduct(): Boolean {
     return !(selectedProduct.value == null).also { selectedProductError.value = it }
 }
 
@@ -512,7 +512,7 @@ fun EditItemScreenState.validateSelectedProduct(): Boolean {
  * Validates quantity field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditItemScreenState.validateQuantity(): Boolean {
+fun ModifyItemScreenState.validateQuantity(): Boolean {
     return !(quantity.value.toFloatOrNull() == null).also { quantityError.value = it }
 }
 
@@ -520,7 +520,7 @@ fun EditItemScreenState.validateQuantity(): Boolean {
  * Validates price field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditItemScreenState.validatePrice(): Boolean {
+fun ModifyItemScreenState.validatePrice(): Boolean {
     return !(price.value.toFloatOrNull() == null).also { priceError.value = it }
 }
 
@@ -528,7 +528,7 @@ fun EditItemScreenState.validatePrice(): Boolean {
  * Validates date field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditItemScreenState.validateDate(): Boolean {
+fun ModifyItemScreenState.validateDate(): Boolean {
     return !(date.value == null).also { dateError.value = it }
 }
 
@@ -536,7 +536,7 @@ fun EditItemScreenState.validateDate(): Boolean {
  * Validates state fields and updates state flags
  * @return true if all fields are of correct value, false otherwise
  */
-fun EditItemScreenState.validate(): Boolean {
+fun ModifyItemScreenState.validate(): Boolean {
     val product = validateSelectedProduct()
     val quantity = validateQuantity()
     val price = validatePrice()
@@ -549,7 +549,7 @@ fun EditItemScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
+fun ModifyItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
     if (!validate()) return null
 
     return Item(
@@ -572,24 +572,24 @@ fun EditItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
 }
 
 @Preview(
-    group = "EditItemScreenImpl",
+    group = "ModifyItemScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditItemScreenImpl",
+    group = "ModifyItemScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditItemScreenImplPreview() {
+fun ModifyItemScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditItemScreenImpl(
+            ModifyItemScreenImpl(
                 onBack = {},
-                state = EditItemScreenState(),
+                state = ModifyItemScreenState(),
                 onSubmit = {},
                 onShopAdd = {},
                 onShopEdit = {},

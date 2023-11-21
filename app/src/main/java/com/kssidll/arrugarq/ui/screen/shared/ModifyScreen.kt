@@ -30,7 +30,7 @@ import com.kssidll.arrugarq.ui.theme.*
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreen(
+fun ModifyScreen(
     onBack: () -> Unit,
     title: String,
     onSubmit: () -> Unit,
@@ -279,7 +279,7 @@ private fun EditScreenContent(
 fun EditScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditScreen(
+            ModifyScreen(
                 onBack = {},
                 title = "test",
                 onSubmit = {},
@@ -292,22 +292,22 @@ fun EditScreenPreview() {
 }
 
 @Preview(
-    group = "EditScreen",
+    group = "ModifyScreen",
     name = "Dark No Delete",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditScreen",
+    group = "ModifyScreen",
     name = "Light No Delete",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditScreenNoDeletePreview() {
+fun ModifyScreenNoDeletePreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditScreen(
+            ModifyScreen(
                 onBack = {},
                 title = "test",
                 onSubmit = {},

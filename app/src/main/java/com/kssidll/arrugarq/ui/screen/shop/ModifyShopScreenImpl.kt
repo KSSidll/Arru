@@ -20,22 +20,22 @@ import com.kssidll.arrugarq.ui.theme.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [EditScreen] implementation for [Shop]
+ * [ModifyScreen] implementation for [Shop]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [EditShopScreenState] instance representing the screen state
+ * @param state [ModifyShopScreenState] instance representing the screen state
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to shop add string resource
  */
 @Composable
-fun EditShopScreenImpl(
+fun ModifyShopScreenImpl(
     onBack: () -> Unit,
-    state: EditShopScreenState,
+    state: ModifyShopScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_shop_add),
 ) {
-    EditScreen(
+    ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_shop),
         onDelete = onDelete,
@@ -76,9 +76,9 @@ fun EditShopScreenImpl(
 }
 
 /**
- * Data representing [EditShopScreenImpl] screen state
+ * Data representing [ModifyShopScreenImpl] screen state
  */
-data class EditShopScreenState(
+data class ModifyShopScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
     val name: MutableState<String> = mutableStateOf(String()),
@@ -94,7 +94,7 @@ data class EditShopScreenState(
  * Validates name field and updates its error flag
  * @return true if field is of correct value, false otherwise
  */
-fun EditShopScreenState.validateName(): Boolean {
+fun ModifyShopScreenState.validateName(): Boolean {
     return !(name.value.isBlank()).also { nameError.value = it }
 }
 
@@ -102,7 +102,7 @@ fun EditShopScreenState.validateName(): Boolean {
  * Validates state fields and updates state flags
  * @return true if all fields are of correct value, false otherwise
  */
-fun EditShopScreenState.validate(): Boolean {
+fun ModifyShopScreenState.validate(): Boolean {
     return validateName()
 }
 
@@ -110,7 +110,7 @@ fun EditShopScreenState.validate(): Boolean {
  * performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
-fun EditShopScreenState.extractShopOrNull(shopId: Long = 0): Shop? {
+fun ModifyShopScreenState.extractShopOrNull(shopId: Long = 0): Shop? {
     if (!validate()) return null
 
     return Shop(
@@ -120,24 +120,24 @@ fun EditShopScreenState.extractShopOrNull(shopId: Long = 0): Shop? {
 }
 
 @Preview(
-    group = "EditShopScreenImpl",
+    group = "ModifyShopScreenImpl",
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES
 )
 @Preview(
-    group = "EditShopScreenImpl",
+    group = "ModifyShopScreenImpl",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun EditShopScreenImplPreview() {
+fun ModifyShopScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            EditShopScreenImpl(
+            ModifyShopScreenImpl(
                 onBack = {},
-                state = EditShopScreenState(),
+                state = ModifyShopScreenState(),
                 onSubmit = {},
             )
         }

@@ -15,7 +15,7 @@ class EditCategoryViewModel @Inject constructor(
     private val productRepository: IProductRepository,
     private val variantRepository: IVariantRepository,
 ): ViewModel() {
-    internal val screenState: EditCategoryScreenState = EditCategoryScreenState()
+    internal val screenState: ModifyCategoryScreenState = ModifyCategoryScreenState()
 
     /**
      * Tries to update product with provided [categoryId] with current screen state data

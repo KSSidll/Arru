@@ -24,7 +24,7 @@ fun EditVariantRoute(
         }
     }
 
-    EditVariantScreenImpl(
+    ModifyVariantScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

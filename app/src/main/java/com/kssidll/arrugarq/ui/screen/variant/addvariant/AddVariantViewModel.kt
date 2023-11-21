@@ -11,7 +11,7 @@ import javax.inject.*
 class AddVariantViewModel @Inject constructor(
     private val variantRepository: IVariantRepository,
 ): ViewModel() {
-    internal val screenState: EditVariantScreenState = EditVariantScreenState()
+    internal val screenState: ModifyVariantScreenState = ModifyVariantScreenState()
 
     /**
      * Tries to add a product variant to the repository

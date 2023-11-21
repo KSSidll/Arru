@@ -24,7 +24,7 @@ fun EditShopRoute(
         }
     }
 
-    EditShopScreenImpl(
+    ModifyShopScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
         onSubmit = {

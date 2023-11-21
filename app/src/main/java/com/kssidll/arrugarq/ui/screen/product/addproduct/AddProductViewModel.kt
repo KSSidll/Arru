@@ -13,7 +13,7 @@ class AddProductViewModel @Inject constructor(
     private val categoryRepository: ICategoryRepository,
     private val producerRepository: IProducerRepository,
 ): ViewModel() {
-    internal val screenState: EditProductScreenState = EditProductScreenState()
+    internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 
     init {
         fillStateCategoriesWithAltNames()

@@ -13,7 +13,7 @@ class EditShopViewModel @Inject constructor(
     private val shopRepository: IShopRepository,
     private val itemRepository: IItemRepository,
 ): ViewModel() {
-    internal val screenState: EditShopScreenState = EditShopScreenState()
+    internal val screenState: ModifyShopScreenState = ModifyShopScreenState()
 
     /**
      * Tries to update shop with provided [shopId] with current screen state data
