@@ -9,9 +9,8 @@ import javax.inject.*
 
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
-    private val categoryRepository: ICategoryRepository,
-): ViewModel() {
-    internal val screenState: ModifyCategoryScreenState = ModifyCategoryScreenState()
+    override val categoryRepository: ICategoryRepository,
+): ModifyCategoryViewModel() {
 
     /**
      * Tries to add a product category to the repository

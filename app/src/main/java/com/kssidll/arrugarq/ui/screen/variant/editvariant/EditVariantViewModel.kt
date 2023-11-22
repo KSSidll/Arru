@@ -10,10 +10,9 @@ import javax.inject.*
 
 @HiltViewModel
 class EditVariantViewModel @Inject constructor(
-    private val variantRepository: IVariantRepository,
+    override val variantRepository: IVariantRepository,
     private val itemRepository: IItemRepository,
-): ViewModel() {
-    internal val screenState: ModifyVariantScreenState = ModifyVariantScreenState()
+): ModifyVariantViewModel() {
 
     /**
      * Tries to update variant with provided [variantId] with current screen state data
@@ -48,27 +47,6 @@ class EditVariantViewModel @Inject constructor(
             variantRepository.delete(variant)
             return@async true
         }
-    }
-        .await()
-
-    /**
-     * Updates data in the screen state
-     * @return true if provided [variantId] was valid, false otherwise
-     */
-    suspend fun updateState(variantId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
-
-        val variant = variantRepository.get(variantId)
-
-        if (variant == null) {
-            screenState.loadingName.value = false
-            return@async false
-        }
-
-        screenState.name.value = variant.name
-
-        screenState.loadingName.value = false
-        return@async true
     }
         .await()
 }

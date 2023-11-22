@@ -9,9 +9,8 @@ import javax.inject.*
 
 @HiltViewModel
 class AddVariantViewModel @Inject constructor(
-    private val variantRepository: IVariantRepository,
-): ViewModel() {
-    internal val screenState: ModifyVariantScreenState = ModifyVariantScreenState()
+    override val variantRepository: IVariantRepository,
+): ModifyVariantViewModel() {
 
     /**
      * Tries to add a product variant to the repository

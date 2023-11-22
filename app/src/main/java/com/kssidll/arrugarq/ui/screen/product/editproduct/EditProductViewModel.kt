@@ -10,17 +10,15 @@ import javax.inject.*
 
 @HiltViewModel
 class EditProductViewModel @Inject constructor(
-    private val productRepository: IProductRepository,
-    private val producerRepository: IProducerRepository,
-    private val categoryRepository: ICategoryRepository,
+    override val productRepository: IProductRepository,
+    override val producerRepository: IProducerRepository,
+    override val categoryRepository: ICategoryRepository,
     private val variantRepository: IVariantRepository,
     private val itemRepository: IItemRepository,
-): ViewModel() {
-    internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
+): ModifyProductViewModel() {
 
     init {
-        fillStateCategoriesWithAltNames()
-        fillStateProducers()
+        initialize()
     }
 
     /**
@@ -56,73 +54,4 @@ class EditProductViewModel @Inject constructor(
         }
     }
         .await()
-
-    /**
-     * Updates data in the screen state
-     * @return true if provided [productId] was valid, false otherwise
-     */
-    suspend fun updateState(productId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
-        screenState.loadingProductProducer.value = true
-        screenState.loadingProductCategory.value = true
-
-        val dispose = {
-            screenState.loadingName.value = false
-            screenState.loadingProductProducer.value = false
-            screenState.loadingProductCategory.value = false
-        }
-
-        val product = productRepository.get(productId)
-        if (product == null) {
-            dispose()
-            return@async false
-        }
-
-        val producer =
-            if (product.producerId != null) {
-                producerRepository.get(product.producerId)
-            } else {
-                null
-            }
-
-        val category = categoryRepository.get(product.categoryId)
-        if (category == null) {
-            dispose()
-            return@async false
-        }
-
-
-        screenState.name.value = product.name
-        screenState.selectedProductProducer.value = producer
-        screenState.selectedProductCategory.value = category
-
-        dispose()
-        return@async true
-    }
-        .await()
-
-    private var fillStateCategoriesWithAltNamesJob: Job? = null
-
-    /**
-     * Clears and then fetches new data to screen state
-     */
-    private fun fillStateCategoriesWithAltNames() {
-        fillStateCategoriesWithAltNamesJob?.cancel()
-        fillStateCategoriesWithAltNamesJob = viewModelScope.launch {
-            screenState.categoriesWithAltNames.value =
-                categoryRepository.getAllWithAltNamesFlow()
-        }
-    }
-
-    private var fillStateProducers: Job? = null
-
-    /**
-     * Clears and then fetches new data to screen state
-     */
-    private fun fillStateProducers() {
-        fillStateProducers?.cancel()
-        fillStateProducers = viewModelScope.launch {
-            screenState.producers.value = producerRepository.getAllFlow()
-        }
-    }
 }

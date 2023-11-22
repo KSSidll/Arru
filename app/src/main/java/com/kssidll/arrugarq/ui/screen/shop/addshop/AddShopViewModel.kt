@@ -9,9 +9,8 @@ import javax.inject.*
 
 @HiltViewModel
 class AddShopViewModel @Inject constructor(
-    private val shopRepository: IShopRepository,
-): ViewModel() {
-    internal val screenState: ModifyShopScreenState = ModifyShopScreenState()
+    override val shopRepository: IShopRepository,
+): ModifyShopViewModel() {
 
     /**
      * Tries to add a shop to the repository

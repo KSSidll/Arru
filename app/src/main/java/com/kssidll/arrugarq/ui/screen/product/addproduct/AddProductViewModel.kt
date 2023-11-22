@@ -9,15 +9,13 @@ import javax.inject.*
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
-    private val productRepository: IProductRepository,
-    private val categoryRepository: ICategoryRepository,
-    private val producerRepository: IProducerRepository,
-): ViewModel() {
-    internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
+    override val productRepository: IProductRepository,
+    override val categoryRepository: ICategoryRepository,
+    override val producerRepository: IProducerRepository,
+): ModifyProductViewModel() {
 
     init {
-        fillStateCategoriesWithAltNames()
-        fillStateProducers()
+        initialize()
     }
 
     /**
@@ -31,29 +29,4 @@ class AddProductViewModel @Inject constructor(
         return@async productRepository.insert(product)
     }
         .await()
-
-    private var fillStateCategoriesWithAltNamesJob: Job? = null
-
-    /**
-     * Clears and then fetches new data to screen state
-     */
-    private fun fillStateCategoriesWithAltNames() {
-        fillStateCategoriesWithAltNamesJob?.cancel()
-        fillStateCategoriesWithAltNamesJob = viewModelScope.launch {
-            screenState.categoriesWithAltNames.value =
-                categoryRepository.getAllWithAltNamesFlow()
-        }
-    }
-
-    private var fillStateProducers: Job? = null
-
-    /**
-     * Clears and then fetches new data to screen state
-     */
-    private fun fillStateProducers() {
-        fillStateProducers?.cancel()
-        fillStateProducers = viewModelScope.launch {
-            screenState.producers.value = producerRepository.getAllFlow()
-        }
-    }
 }

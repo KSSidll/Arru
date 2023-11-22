@@ -10,10 +10,9 @@ import javax.inject.*
 
 @HiltViewModel
 class EditShopViewModel @Inject constructor(
-    private val shopRepository: IShopRepository,
+    override val shopRepository: IShopRepository,
     private val itemRepository: IItemRepository,
-): ViewModel() {
-    internal val screenState: ModifyShopScreenState = ModifyShopScreenState()
+): ModifyShopViewModel() {
 
     /**
      * Tries to update shop with provided [shopId] with current screen state data
@@ -44,27 +43,6 @@ class EditShopViewModel @Inject constructor(
             shopRepository.delete(shop)
             return@async true
         }
-    }
-        .await()
-
-    /**
-     * Updates data in the screen state
-     * @return true if provided [shopId] was valid, false otherwise
-     */
-    suspend fun updateState(shopId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
-
-        val shop = shopRepository.get(shopId)
-
-        if (shop == null) {
-            screenState.loadingName.value = false
-            return@async false
-        }
-
-        screenState.name.value = shop.name
-
-        screenState.loadingName.value = false
-        return@async true
     }
         .await()
 }

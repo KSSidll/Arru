@@ -10,12 +10,11 @@ import javax.inject.*
 
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
-    private val categoryRepository: ICategoryRepository,
+    override val categoryRepository: ICategoryRepository,
     private val itemRepository: IItemRepository,
     private val productRepository: IProductRepository,
     private val variantRepository: IVariantRepository,
-): ViewModel() {
-    internal val screenState: ModifyCategoryScreenState = ModifyCategoryScreenState()
+): ModifyCategoryViewModel() {
 
     /**
      * Tries to update product with provided [categoryId] with current screen state data
@@ -60,26 +59,6 @@ class EditCategoryViewModel @Inject constructor(
             categoryRepository.delete(category)
             return@async true
         }
-    }
-        .await()
-
-    /**
-     * Updates data in the screen state
-     * @return true if provided [categoryId] was valid, false otherwise
-     */
-    suspend fun updateState(categoryId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
-
-        val category = categoryRepository.get(categoryId)
-        if (category == null) {
-            screenState.loadingName.value = false
-            return@async false
-        }
-
-        screenState.name.value = category.name
-
-        screenState.loadingName.value = false
-        return@async true
     }
         .await()
 }

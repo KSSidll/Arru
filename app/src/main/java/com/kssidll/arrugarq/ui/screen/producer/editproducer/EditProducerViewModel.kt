@@ -10,12 +10,11 @@ import javax.inject.*
 
 @HiltViewModel
 class EditProducerViewModel @Inject constructor(
-    private val producerRepository: IProducerRepository,
+    override val producerRepository: IProducerRepository,
     private val productRepository: IProductRepository,
     private val variantRepository: IVariantRepository,
     private val itemRepository: IItemRepository,
-): ViewModel() {
-    internal val screenState: ModifyProducerScreenState = ModifyProducerScreenState()
+): ModifyProducerViewModel() {
 
     /**
      * Tries to update product with provided [producerId] with current screen state data
@@ -60,26 +59,6 @@ class EditProducerViewModel @Inject constructor(
             producerRepository.delete(producer)
             return@async true
         }
-    }
-        .await()
-
-    /**
-     * Updates data in the screen state
-     * @return true if provided [producerId] was valid, false otherwise
-     */
-    suspend fun updateState(producerId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
-
-        val producer = producerRepository.get(producerId)
-        if (producer == null) {
-            screenState.loadingName.value = false
-            return@async false
-        }
-
-        screenState.name.value = producer.name
-
-        screenState.loadingName.value = false
-        return@async true
     }
         .await()
 }
