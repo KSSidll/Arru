@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.shared.*
@@ -210,7 +211,11 @@ fun ModifyItemScreenImpl(
                 onValueChange = {
                     if (it.isBlank()) {
                         state.price.value = String()
-                    } else if (it.matches(Regex("""\d+?\.?\d{0,2}"""))) {
+                    } else if (RegexHelper.isFloat(
+                            it,
+                            2
+                        )
+                    ) {
                         state.price.value = it
                     }
 
@@ -233,7 +238,8 @@ fun ModifyItemScreenImpl(
                     enabled = priceEnabled,
                     onClick = {
                         if (state.validatePrice()) {
-                            val value = state.price.value.toFloat()
+                            val value = StringHelper.toFloatOrNull(state.price.value)
+                                ?: error("Price validation failed, got null instead of float")
 
                             state.price.value = "%.2f".format(
                                 value.plus(0.5f)
@@ -261,7 +267,8 @@ fun ModifyItemScreenImpl(
                     enabled = priceEnabled,
                     onClick = {
                         if (state.validatePrice()) {
-                            val value = state.price.value.toFloat()
+                            val value = StringHelper.toFloatOrNull(state.price.value)
+                                ?: error("Price validation failed, got null instead of float")
 
                             state.price.value = "%.2f".format(
                                 if (value > 0.5f) {
@@ -311,7 +318,11 @@ fun ModifyItemScreenImpl(
                 onValueChange = {
                     if (it.isBlank()) {
                         state.quantity.value = String()
-                    } else if (it.matches(Regex("""\d+?\.?\d{0,3}"""))) {
+                    } else if (RegexHelper.isFloat(
+                            it,
+                            3
+                        )
+                    ) {
                         state.quantity.value = it
                     }
 
@@ -337,7 +348,8 @@ fun ModifyItemScreenImpl(
                     enabled = quantityEnabled,
                     onClick = {
                         if (state.validateQuantity()) {
-                            val value = state.quantity.value.toFloat()
+                            val value = StringHelper.toFloatOrNull(state.quantity.value)
+                                ?: error("Quantity validation failed, got null instead of float")
 
                             state.quantity.value = "%.3f".format(
                                 value.plus(1f)
@@ -365,7 +377,8 @@ fun ModifyItemScreenImpl(
                     enabled = quantityEnabled,
                     onClick = {
                         if (state.validateQuantity()) {
-                            val value = state.quantity.value.toFloat()
+                            val value = StringHelper.toFloatOrNull(state.quantity.value)
+                                ?: error("Quantity validation failed, got null instead of float")
 
                             state.quantity.value = "%.3f".format(
                                 if (value > 1f) {
@@ -513,7 +526,7 @@ fun ModifyItemScreenState.validateSelectedProduct(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 fun ModifyItemScreenState.validateQuantity(): Boolean {
-    return !(quantity.value.toFloatOrNull() == null).also { quantityError.value = it }
+    return !(StringHelper.toFloatOrNull(quantity.value) == null).also { quantityError.value = it }
 }
 
 /**
@@ -521,7 +534,7 @@ fun ModifyItemScreenState.validateQuantity(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 fun ModifyItemScreenState.validatePrice(): Boolean {
-    return !(price.value.toFloatOrNull() == null).also { priceError.value = it }
+    return !(StringHelper.toFloatOrNull(price.value) == null).also { priceError.value = it }
 }
 
 /**
@@ -546,7 +559,7 @@ fun ModifyItemScreenState.validate(): Boolean {
 }
 
 /**
- * performs data validation and tries to extract embedded data
+ * Performs data validation and tries to extract embedded data
  * @return Null if validation sets error flags, extracted data otherwise
  */
 fun ModifyItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
@@ -554,20 +567,12 @@ fun ModifyItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
 
     return Item(
         id = itemId,
-        productId = selectedProduct.value!!.id,
+        productId = selectedProduct.value?.id ?: return null,
         variantId = selectedVariant.value?.id,
         shopId = selectedShop.value?.id,
-        actualQuantity = quantity.value.replace(
-            ',',
-            '.'
-        )
-            .toFloat(),
-        actualPrice = price.value.replace(
-            ',',
-            '.'
-        )
-            .toFloat(),
-        date = date.value!!,
+        actualQuantity = StringHelper.toFloatOrNull(quantity.value) ?: return null,
+        actualPrice = StringHelper.toFloatOrNull(price.value) ?: return null,
+        date = date.value ?: return null,
     )
 }
 
