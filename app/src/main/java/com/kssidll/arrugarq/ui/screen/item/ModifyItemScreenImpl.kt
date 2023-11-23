@@ -21,7 +21,6 @@ import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.shared.*
 import com.kssidll.arrugarq.ui.theme.*
-import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
@@ -31,6 +30,9 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * [ModifyScreen] implementation for [Item]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyItemScreenState] instance representing the screen state
+ * @param shops Shops that can be set for the item
+ * @param products Products that can be set for the item
+ * @param variants Variants that can be set for current product
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation
  * @param onShopAdd Called to request navigation to producer adding
@@ -47,6 +49,9 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
+    shops: List<Shop>,
+    products: List<ProductWithAltNames>,
+    variants: List<ProductVariant>,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onShopAdd: () -> Unit,
@@ -108,7 +113,7 @@ fun ModifyItemScreenImpl(
                 onDismissRequest = {
                     state.isShopSearchDialogExpanded.value = false
                 },
-                items = state.shops.value.collectAsState(initial = emptyList()).value,
+                items = shops,
                 itemText = { it.name },
                 onItemClick = {
                     state.isShopSearchDialogExpanded.value = false
@@ -130,7 +135,7 @@ fun ModifyItemScreenImpl(
                 onDismissRequest = {
                     state.isProductSearchDialogExpanded.value = false
                 },
-                items = state.productsWithAltNames.value.collectAsState(initial = emptyList()).value,
+                items = products,
                 onItemClick = {
                     state.selectedProduct.value = it?.product
                     state.isProductSearchDialogExpanded.value = false
@@ -152,7 +157,7 @@ fun ModifyItemScreenImpl(
                 onDismissRequest = {
                     state.isVariantSearchDialogExpanded.value = false
                 },
-                items = state.variants.value.collectAsState(initial = emptyList()).value,
+                items = variants,
                 itemText = { it.name },
                 onItemClick = {
                     state.isVariantSearchDialogExpanded.value = false
@@ -501,10 +506,6 @@ data class ModifyItemScreenState(
     var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 
-    val shops: MutableState<Flow<List<Shop>>> = mutableStateOf(flowOf()),
-    val productsWithAltNames: MutableState<Flow<List<ProductWithAltNames>>> = mutableStateOf(flowOf()),
-    val variants: MutableState<Flow<List<ProductVariant>>> = mutableStateOf(flowOf()),
-
     val loadingProduct: MutableState<Boolean> = mutableStateOf(false),
     val loadingVariant: MutableState<Boolean> = mutableStateOf(false),
     val loadingShop: MutableState<Boolean> = mutableStateOf(false),
@@ -595,6 +596,9 @@ fun ModifyItemScreenImplPreview() {
             ModifyItemScreenImpl(
                 onBack = {},
                 state = ModifyItemScreenState(),
+                shops = emptyList(),
+                products = emptyList(),
+                variants = emptyList(),
                 onSubmit = {},
                 onShopAdd = {},
                 onShopEdit = {},

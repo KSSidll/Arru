@@ -33,6 +33,11 @@ fun EditItemRoute(
     ModifyItemScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
+        shops = viewModel.allShops()
+            .collectAsState(initial = emptyList()).value,
+        products = viewModel.allProducts()
+            .collectAsState(initial = emptyList()).value,
+        variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             viewModel.updateItem(itemId)
             onBack()

@@ -16,7 +16,7 @@ class AddItemViewModel @Inject constructor(
 ): ModifyItemViewModel() {
 
     init {
-        initialize()
+        computeStartState()
     }
 
     /**

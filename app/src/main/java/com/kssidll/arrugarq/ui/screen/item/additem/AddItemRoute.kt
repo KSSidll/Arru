@@ -21,6 +21,11 @@ fun AddItemRoute(
     ModifyItemScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
+        shops = viewModel.allShops()
+            .collectAsState(initial = emptyList()).value,
+        products = viewModel.allProducts()
+            .collectAsState(initial = emptyList()).value,
+        variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
                 val result = viewModel.addItem()
