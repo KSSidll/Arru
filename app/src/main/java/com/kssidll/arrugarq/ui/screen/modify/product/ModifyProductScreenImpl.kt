@@ -15,7 +15,6 @@ import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import com.kssidll.arrugarq.ui.theme.*
-import kotlinx.coroutines.flow.*
 import androidx.compose.material3.Surface as Surface1
 
 private val ItemHorizontalPadding: Dp = 20.dp
@@ -24,6 +23,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * [ModifyScreen] implementation for [Product]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyProductScreenState] instance representing the screen state
+ * @param categories Categories that can be set for the product
+ * @param producers Producers that can be set for current product
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param onProducerAdd Called to request navigation to producer adding
@@ -36,6 +37,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyProductScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductScreenState,
+    categories: List<ProductCategoryWithAltNames>,
+    producers: List<ProductProducer>,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onProducerAdd: () -> Unit,
@@ -60,7 +63,7 @@ fun ModifyProductScreenImpl(
                 onDismissRequest = {
                     state.isProducerSearchDialogExpanded.value = false
                 },
-                items = state.producers.value.collectAsState(initial = emptyList()).value,
+                items = producers,
                 itemText = { it.name },
                 onItemClick = {
                     state.selectedProductProducer.value = it
@@ -82,7 +85,7 @@ fun ModifyProductScreenImpl(
                 onDismissRequest = {
                     state.isCategorySearchDialogExpanded.value = false
                 },
-                items = state.categoriesWithAltNames.value.collectAsState(initial = emptyList()).value,
+                items = categories,
                 onItemClick = {
                     state.selectedProductCategory.value = it?.category
                     state.validateSelectedProductCategory()
@@ -180,9 +183,6 @@ data class ModifyProductScreenState(
     val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 
-    val categoriesWithAltNames: MutableState<Flow<List<ProductCategoryWithAltNames>>> = mutableStateOf(flowOf()),
-    val producers: MutableState<Flow<List<ProductProducer>>> = mutableStateOf(flowOf()),
-
     val loadingProductCategory: MutableState<Boolean> = mutableStateOf(false),
     val loadingProductProducer: MutableState<Boolean> = mutableStateOf(false),
     val loadingName: MutableState<Boolean> = mutableStateOf(false),
@@ -252,6 +252,8 @@ fun ModifyProductScreenImplPreview() {
             ModifyProductScreenImpl(
                 onBack = {},
                 state = ModifyProductScreenState(),
+                categories = emptyList(),
+                producers = emptyList(),
                 onSubmit = {},
                 onProducerAdd = {},
                 onProducerEdit = {},

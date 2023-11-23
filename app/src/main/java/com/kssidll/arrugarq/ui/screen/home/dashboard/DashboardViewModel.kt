@@ -53,7 +53,8 @@ class DashboardViewModel @Inject constructor(
     fun getTotalSpent(): Flow<Float> {
         return itemRepository.getTotalSpentFlow()
             .map {
-                it.div(100000F)
+                it.toFloat()
+                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
             }
             .distinctUntilChanged()
     }
@@ -63,6 +64,7 @@ class DashboardViewModel @Inject constructor(
      */
     fun getSpentByShop(): Flow<List<ItemSpentByShop>> {
         return itemRepository.getShopTotalSpentFlow()
+            .distinctUntilChanged()
     }
 
     /**
@@ -70,5 +72,6 @@ class DashboardViewModel @Inject constructor(
      */
     fun getSpentByCategory(): Flow<List<ItemSpentByCategory>> {
         return itemRepository.getCategoryTotalSpentFlow()
+            .distinctUntilChanged()
     }
 }

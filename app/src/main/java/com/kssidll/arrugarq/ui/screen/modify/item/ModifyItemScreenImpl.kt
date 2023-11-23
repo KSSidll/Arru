@@ -32,7 +32,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param state [ModifyItemScreenState] instance representing the screen state
  * @param shops Shops that can be set for the item
  * @param products Products that can be set for the item
- * @param variants Variants that can be set for current product
+ * @param variants Variants that can be set for current item
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation
  * @param onShopAdd Called to request navigation to producer adding

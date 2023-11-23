@@ -14,10 +14,6 @@ class AddProductViewModel @Inject constructor(
     override val producerRepository: IProducerRepository,
 ): ModifyProductViewModel() {
 
-    init {
-        initialize()
-    }
-
     /**
      * Tries to add a product to the repository
      * @return Id of newly inserted row, null if operation failed

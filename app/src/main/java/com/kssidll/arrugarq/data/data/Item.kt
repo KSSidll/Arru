@@ -160,7 +160,7 @@ data class ItemSpentByShop(
 ): Rankable {
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.PRICE_DIVISOR)
+            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -187,7 +187,7 @@ data class ItemSpentByCategory(
 ): Rankable {
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.PRICE_DIVISOR)
+            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {

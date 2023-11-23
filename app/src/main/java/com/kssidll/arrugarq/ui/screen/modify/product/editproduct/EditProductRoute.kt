@@ -31,6 +31,10 @@ fun EditProductRoute(
     ModifyProductScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
+        categories = viewModel.allCategories()
+            .collectAsState(initial = emptyList()).value,
+        producers = viewModel.allProducers()
+            .collectAsState(initial = emptyList()).value,
         onSubmit = {
             viewModel.updateProduct(productId)
             onBack()

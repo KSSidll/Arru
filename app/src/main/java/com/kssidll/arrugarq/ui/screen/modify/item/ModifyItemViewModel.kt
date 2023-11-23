@@ -76,12 +76,12 @@ abstract class ModifyItemViewModel: ViewModel() {
 
         screenState.price.value = String.format(
             "%.2f",
-            lastItemByProduct.price / 100f
+            lastItemByProduct.price.toFloat() / Item.PRICE_DIVISOR
         )
 
         screenState.quantity.value = String.format(
             "%.3f",
-            lastItemByProduct.quantity / 1000f
+            lastItemByProduct.quantity.toFloat() / Item.QUANTITY_DIVISOR
         )
     }
         .invokeOnCompletion {
@@ -110,14 +110,14 @@ abstract class ModifyItemViewModel: ViewModel() {
     private val mProductVariants: MutableState<Flow<List<ProductVariant>>> =
         mutableStateOf(flowOf())
     val productVariants: Flow<List<ProductVariant>> by mProductVariants
-    private var fillStateProductVariantsJob: Job? = null
+    private var mUpdateProductVariantsJob: Job? = null
 
     /**
      * Updates [productVariants] to represent available variants for currently set product
      */
     private fun updateProductVariants() {
-        fillStateProductVariantsJob?.cancel()
-        fillStateProductVariantsJob = viewModelScope.launch {
+        mUpdateProductVariantsJob?.cancel()
+        mUpdateProductVariantsJob = viewModelScope.launch {
             with(screenState.selectedProduct) {
                 if (value != null) {
                     mProductVariants.value = variantsRepository.getByProductIdFlow(value!!.id)

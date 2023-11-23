@@ -17,10 +17,6 @@ class EditProductViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
 ): ModifyProductViewModel() {
 
-    init {
-        initialize()
-    }
-
     /**
      * Tries to update product with provided [productId] with current screen state data
      */

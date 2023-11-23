@@ -19,6 +19,10 @@ fun AddProductRoute(
     ModifyProductScreenImpl(
         onBack = onBack,
         state = viewModel.screenState,
+        categories = viewModel.allCategories()
+            .collectAsState(initial = emptyList()).value,
+        producers = viewModel.allProducers()
+            .collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
                 val result = viewModel.addProduct()
