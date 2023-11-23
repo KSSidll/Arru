@@ -34,17 +34,17 @@ import java.util.*
  * @param onBack Called to request a back navigation
  * @param category Category for which the data is displayed
  * @param transactionItems List of transaction items of [category]
- * @param requestMoreTransactionItems Called to request more transaction items to be added to the state
+ * @param requestMoreTransactionItems Called to request more transaction items to be added to [transactionItems]
  * @param spentByTimeData Data list representing [category] spending for current [spentByTimePeriod]
  * @param totalSpentData Value representing total [category] spending
  * @param spentByTimePeriod Time period to get the [spentByTimeData] by
  * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
  * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
- * @param onProductSelect Called to request navigation to product, with requested product id as argument
- * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
- * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
- * @param onCategoryEdit Called to request navigation to category edition
- * @param onItemEdit Called to request navigation to item edition, with requested item id as argument
+ * @param onProductSelect Called to request navigation to product. Provides requested product id as argument
+ * @param onProducerSelect Called to request navigation to producer. Provides requested producer id as argument
+ * @param onShopSelect Called to request navigation to shop. Provides requested shop id as argument
+ * @param onItemEdit Called to request navigation to item edition. Provides requested item id as argument
+ * @param onCategoryEdit Called to request navigation to [category] edition
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,8 +61,8 @@ internal fun CategoryScreen(
     onProductSelect: (productId: Long) -> Unit,
     onProducerSelect: (producerId: Long) -> Unit,
     onShopSelect: (shopId: Long) -> Unit,
-    onCategoryEdit: () -> Unit,
     onItemEdit: (itemId: Long) -> Unit,
+    onCategoryEdit: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -111,10 +111,10 @@ internal fun CategoryScreen(
 
 /**
  * [CategoryScreen] content
- * @param transactionItems List of transaction items of [category]
+ * @param transactionItems List of transaction items of category
  * @param requestMoreTransactionItems Called to request more transaction items to be added to the state
- * @param spentByTimeData Data list representing [category] spending for current [spentByTimePeriod]
- * @param totalSpentData Value representing total [category] spending
+ * @param spentByTimeData Data list representing category spending for current [spentByTimePeriod]
+ * @param totalSpentData Value representing total category spending
  * @param spentByTimePeriod Time period to get the [spentByTimeData] by
  * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
  * @param chartEntryModelProducer Model producer for [spentByTimeData] chart

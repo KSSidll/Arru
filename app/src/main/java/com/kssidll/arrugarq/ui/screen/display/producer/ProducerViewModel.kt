@@ -15,20 +15,6 @@ import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 /**
- * Data representing [ProducerScreen] screen state
- */
-internal data class ProducerScreenState(
-    val producer: MutableState<ProductProducer?> = mutableStateOf(null),
-    val items: SnapshotStateList<FullItem> = mutableStateListOf(),
-    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
-
-    val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
-
-    val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-)
-
-/**
  * Page fetch size
  */
 internal const val fullItemFetchCount = 8
@@ -43,27 +29,42 @@ class ProducerViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
     private val producerRepository: IProducerRepository,
 ): ViewModel() {
-    internal val screenState: ProducerScreenState = ProducerScreenState()
+    private val mProducer: MutableState<ProductProducer?> = mutableStateOf(null)
+    val producer: ProductProducer? by mProducer
 
-    private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
+    val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private var fullItemsDataQuery: Job? = null
-    private var fullItemOffset: Int = 0
+    private val mTransactionItems: SnapshotStateList<FullItem> = mutableStateListOf()
+    val transactionItems get() = mTransactionItems.toList()
 
-    private var newFullItemFlowJob: Job? = null
-    private var newFullItemFlow: (Flow<Item>)? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
+    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    private var stateTotalSpentDataJob: Job? = null
+    private var mFullItemsDataQuery: Job? = null
+    private var mFullItemOffset: Int = 0
+
+    private var mNewFullItemFlowJob: Job? = null
+    private var mNewFullItemFlow: (Flow<Item>)? = null
+
+    fun producerTotalSpent(): Flow<Float>? {
+        if (producer == null) return null
+
+        return itemRepository.getTotalSpentByProducerFlow(producer!!.id)
+            .map {
+                it.toFloat()
+                    .div(100000)
+            }
+            .distinctUntilChanged()
+            .cancellable()
+    }
 
     /**
      * Switches the state period to [newPeriod]
      * @param newPeriod Period to switch the state to
      */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        timePeriodFlowHandler?.switchPeriod(newPeriod)
-        screenState.spentByTimePeriod.value = newPeriod
-
-        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
+        mTimePeriodFlowHandler?.switchPeriod(newPeriod)
     }
 
     /**
@@ -72,23 +73,14 @@ class ProducerViewModel @Inject constructor(
     suspend fun performDataUpdate(producerId: Long) = viewModelScope.async {
         val producer = producerRepository.get(producerId) ?: return@async false
 
-        if (producerId == screenState.producer.value?.id) return@async true
+        // We ignore the possiblity of changing category while one is already loaded
+        // as not doing that would increase complexity too much
+        // and if it happens somehow, it would be considered a bug
+        if (mProducer.value != null || producerId == mProducer.value?.id) return@async true
 
-        screenState.producer.value = producer
+        mProducer.value = producer
 
-        stateTotalSpentDataJob?.cancel()
-        stateTotalSpentDataJob = launch {
-            screenState.totalSpentData.value =
-                itemRepository.getTotalSpentByProducerFlow(producerId)
-                    .map {
-                        it.toFloat()
-                            .div(100000)
-                    }
-                    .distinctUntilChanged()
-                    .cancellable()
-        }
-
-        timePeriodFlowHandler = TimePeriodFlowHandler(
+        mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
                 itemRepository.getTotalSpentByProducerByDayFlow(producerId)
@@ -104,21 +96,17 @@ class ProducerViewModel @Inject constructor(
             },
         )
 
-        screenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
-
-        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
-
-        newFullItemFlowJob?.cancel()
-        newFullItemFlowJob = launch {
-            newFullItemFlow = itemRepository.getLastFlow()
+        mNewFullItemFlowJob?.cancel()
+        mNewFullItemFlowJob = launch {
+            mNewFullItemFlow = itemRepository.getLastFlow()
                 .cancellable()
 
-            newFullItemFlow?.collect {
-                fullItemOffset = 0
-                screenState.items.clear()
-                fullItemsDataQuery?.cancel()
-                fullItemsDataQuery = performFullItemsQuery()
-                fullItemOffset += fullItemFetchCount
+            mNewFullItemFlow?.collect {
+                mFullItemOffset = 0
+                mTransactionItems.clear()
+                mFullItemsDataQuery?.cancel()
+                mFullItemsDataQuery = performFullItemsQuery()
+                mFullItemOffset += fullItemFetchCount
             }
         }
 
@@ -130,11 +118,11 @@ class ProducerViewModel @Inject constructor(
      * Requests a query of [fullItemFetchCount] items to be appended to transactions list
      */
     fun queryMoreFullItems() {
-        if (fullItemsDataQuery == null) return
+        if (producer == null || mFullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted && screenState.producer.value != null) {
-            fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
-            fullItemOffset += fullItemFetchCount
+        if (mFullItemsDataQuery!!.isCompleted) {
+            mFullItemsDataQuery = performFullItemsQuery(mFullItemOffset)
+            mFullItemOffset += fullItemFetchCount
         }
     }
 
@@ -143,11 +131,11 @@ class ProducerViewModel @Inject constructor(
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        screenState.items.addAll(
+        mTransactionItems.addAll(
             itemRepository.getFullItemsByProducer(
                 offset = queryOffset,
                 count = fullItemFetchCount,
-                producerId = screenState.producer.value!!.id,
+                producerId = producer!!.id,
             )
         )
     }

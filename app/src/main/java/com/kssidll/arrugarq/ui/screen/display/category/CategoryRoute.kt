@@ -38,10 +38,10 @@ fun CategoryRoute(
             viewModel.switchPeriod(it)
         },
         chartEntryModelProducer = viewModel.chartEntryModelProducer,
-        onCategoryEdit = onCategoryEdit,
         onProductSelect = onProductSelect,
-        onItemEdit = onItemEdit,
         onProducerSelect = onProducerSelect,
         onShopSelect = onShopSelect,
+        onItemEdit = onItemEdit,
+        onCategoryEdit = onCategoryEdit,
     )
 }

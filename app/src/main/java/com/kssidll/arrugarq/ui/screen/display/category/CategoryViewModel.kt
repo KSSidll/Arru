@@ -37,15 +37,15 @@ class CategoryViewModel @Inject constructor(
     private val mTransactionItems: SnapshotStateList<FullItem> = mutableStateListOf()
     val transactionItems get() = mTransactionItems.toList()
 
-    private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
-    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = timePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = timePeriodFlowHandler?.spentByTimeData
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
+    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    private var fullItemsDataQuery: Job? = null
-    private var fullItemOffset: Int = 0
+    private var mFullItemsDataQuery: Job? = null
+    private var mFullItemOffset: Int = 0
 
-    private var newFullItemFlowJob: Job? = null
-    private var newFullItemFlow: (Flow<Item>)? = null
+    private var mNewFullItemFlowJob: Job? = null
+    private var mNewFullItemFlow: (Flow<Item>)? = null
 
     fun categoryTotalSpent(): Flow<Float>? {
         if (category == null) return null
@@ -64,7 +64,7 @@ class CategoryViewModel @Inject constructor(
      * @param newPeriod Period to switch the state to
      */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        timePeriodFlowHandler?.switchPeriod(newPeriod)
+        mTimePeriodFlowHandler?.switchPeriod(newPeriod)
     }
 
     /**
@@ -80,7 +80,7 @@ class CategoryViewModel @Inject constructor(
 
         mCategory.value = category
 
-        timePeriodFlowHandler = TimePeriodFlowHandler(
+        mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
                 itemRepository.getTotalSpentByCategoryByDayFlow(categoryId)
@@ -96,17 +96,17 @@ class CategoryViewModel @Inject constructor(
             },
         )
 
-        newFullItemFlowJob?.cancel()
-        newFullItemFlowJob = launch {
-            newFullItemFlow = itemRepository.getLastFlow()
+        mNewFullItemFlowJob?.cancel()
+        mNewFullItemFlowJob = launch {
+            mNewFullItemFlow = itemRepository.getLastFlow()
                 .cancellable()
 
-            newFullItemFlow?.collect {
-                fullItemOffset = 0
+            mNewFullItemFlow?.collect {
+                mFullItemOffset = 0
                 mTransactionItems.clear()
-                fullItemsDataQuery?.cancel()
-                fullItemsDataQuery = performFullItemsQuery()
-                fullItemOffset += fullItemFetchCount
+                mFullItemsDataQuery?.cancel()
+                mFullItemsDataQuery = performFullItemsQuery()
+                mFullItemOffset += fullItemFetchCount
             }
         }
 
@@ -118,11 +118,11 @@ class CategoryViewModel @Inject constructor(
      * Requests a query of [fullItemFetchCount] items to be appended to transactions list
      */
     fun queryMoreFullItems() {
-        if (category == null || fullItemsDataQuery == null) return
+        if (category == null || mFullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted) {
-            fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
-            fullItemOffset += fullItemFetchCount
+        if (mFullItemsDataQuery!!.isCompleted) {
+            mFullItemsDataQuery = performFullItemsQuery(mFullItemOffset)
+            mFullItemOffset += fullItemFetchCount
         }
     }
 

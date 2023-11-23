@@ -24,17 +24,24 @@ fun ProducerRoute(
 
     ProducerScreen(
         onBack = onBack,
-        state = viewModel.screenState,
-        onProducerEdit = onProducerEdit,
+        producer = viewModel.producer,
+        transactionItems = viewModel.transactionItems,
+        requestMoreTransactionItems = {
+            viewModel.queryMoreFullItems()
+        },
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList())?.value
+            ?: emptyList(),
+        totalSpentData = viewModel.producerTotalSpent()
+            ?.collectAsState(initial = 0F)?.value ?: 0F,
+        spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },
-        requestMoreItems = {
-            viewModel.queryMoreFullItems()
-        },
+        chartEntryModelProducer = viewModel.chartEntryModelProducer,
         onProductSelect = onProductSelect,
-        onItemEdit = onItemEdit,
         onCategorySelect = onCategorySelect,
         onShopSelect = onShopSelect,
+        onItemEdit = onItemEdit,
+        onProducerEdit = onProducerEdit,
     )
 }
