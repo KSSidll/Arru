@@ -127,6 +127,7 @@ class ProducerViewModel @Inject constructor(
 
     /**
      * Requires producer to be a non null value
+     *
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {

@@ -14,20 +14,6 @@ import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 /**
- * Data representing [ShopScreen] screen state
- */
-internal data class ShopScreenState(
-    val shop: MutableState<Shop?> = mutableStateOf(null),
-    val items: SnapshotStateList<FullItem> = mutableStateListOf(),
-    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
-
-    val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
-
-    val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-)
-
-/**
  * Page fetch size
  */
 internal const val fullItemFetchCount = 8
@@ -42,27 +28,41 @@ class ShopViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
     private val shopRepository: IShopRepository,
 ): ViewModel() {
-    internal val screenState: ShopScreenState = ShopScreenState()
+    private val mShop: MutableState<Shop?> = mutableStateOf(null)
+    val shop: Shop? by mShop
 
-    private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
+    val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private var fullItemsDataQuery: Job? = null
-    private var fullItemOffset: Int = 0
+    private val mTransactionItems: SnapshotStateList<FullItem> = mutableStateListOf()
+    val transactionItems get() = mTransactionItems.toList()
 
-    private var newFullItemFlowJob: Job? = null
-    private var newFullItemFlow: (Flow<Item>)? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
+    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    private var stateTotalSpentDataJob: Job? = null
+    private var mFullItemsDataQuery: Job? = null
+    private var mFullItemOffset: Int = 0
+
+    private var mNewFullItemFlowJob: Job? = null
+    private var mNewFullItemFlow: (Flow<Item>)? = null
+
+    fun shopTotalSpent(): Flow<Float>? {
+        if (shop == null) return null
+
+        return itemRepository.getTotalSpentByShopFlow(shop!!.id)
+            .map {
+                it.toFloat()
+                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
+            }
+            .distinctUntilChanged()
+    }
 
     /**
      * Switches the state period to [newPeriod]
      * @param newPeriod Period to switch the state to
      */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        timePeriodFlowHandler?.switchPeriod(newPeriod)
-        screenState.spentByTimePeriod.value = newPeriod
-
-        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
+        mTimePeriodFlowHandler?.switchPeriod(newPeriod)
     }
 
     /**
@@ -71,22 +71,14 @@ class ShopViewModel @Inject constructor(
     suspend fun performDataUpdate(shopId: Long) = viewModelScope.async {
         val shop = shopRepository.get(shopId) ?: return@async false
 
-        if (shopId == screenState.shop.value?.id) return@async true
+        // We ignore the possiblity of changing category while one is already loaded
+        // as not doing that would increase complexity too much
+        // and if it happens somehow, it would be considered a bug
+        if (mShop.value != null || shopId == mShop.value?.id) return@async true
 
-        screenState.shop.value = shop
+        mShop.value = shop
 
-        stateTotalSpentDataJob?.cancel()
-        stateTotalSpentDataJob = launch {
-            screenState.totalSpentData.value = itemRepository.getTotalSpentByShopFlow(shopId)
-                .map {
-                    it.toFloat()
-                        .div(100000)
-                }
-                .distinctUntilChanged()
-                .cancellable()
-        }
-
-        timePeriodFlowHandler = TimePeriodFlowHandler(
+        mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
                 itemRepository.getTotalSpentByShopByDayFlow(shopId)
@@ -102,21 +94,17 @@ class ShopViewModel @Inject constructor(
             },
         )
 
-        screenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
-
-        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
-
-        newFullItemFlowJob?.cancel()
-        newFullItemFlowJob = launch {
-            newFullItemFlow = itemRepository.getLastFlow()
+        mNewFullItemFlowJob?.cancel()
+        mNewFullItemFlowJob = launch {
+            mNewFullItemFlow = itemRepository.getLastFlow()
                 .cancellable()
 
-            newFullItemFlow?.collect {
-                fullItemOffset = 0
-                screenState.items.clear()
-                fullItemsDataQuery?.cancel()
-                fullItemsDataQuery = performFullItemsQuery()
-                fullItemOffset += fullItemFetchCount
+            mNewFullItemFlow?.collect {
+                mFullItemOffset = 0
+                mTransactionItems.clear()
+                mFullItemsDataQuery?.cancel()
+                mFullItemsDataQuery = performFullItemsQuery()
+                mFullItemOffset += fullItemFetchCount
             }
         }
 
@@ -128,25 +116,25 @@ class ShopViewModel @Inject constructor(
      * Requests a query of [fullItemFetchCount] items to be appended to transactions list
      */
     fun queryMoreFullItems() {
-        if (fullItemsDataQuery == null) return
+        if (mFullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted && screenState.shop.value != null) {
-            fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
-            fullItemOffset += fullItemFetchCount
+        if (mFullItemsDataQuery!!.isCompleted) {
+            mFullItemsDataQuery = performFullItemsQuery(mFullItemOffset)
+            mFullItemOffset += fullItemFetchCount
         }
     }
 
     /**
-     * Requires shop value of shopScreenState to be a non null.
+     * Requires shop to be a non null value
      *
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        screenState.items.addAll(
+        mTransactionItems.addAll(
             itemRepository.getFullItemsByShop(
                 offset = queryOffset,
                 count = fullItemFetchCount,
-                shopId = screenState.shop.value!!.id
+                shopId = shop!!.id,
             )
         )
     }
