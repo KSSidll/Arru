@@ -1,0 +1,31 @@
+package com.kssidll.arrugarq.ui.screen.ranking.categoryranking
+
+import androidx.compose.runtime.*
+import androidx.compose.ui.res.*
+import com.kssidll.arrugarq.R
+import com.kssidll.arrugarq.ui.screen.ranking.*
+import dev.olshevski.navigation.reimagined.hilt.*
+
+@Composable
+fun CategoryRankingRoute(
+    onBack: () -> Unit,
+    onCategorySelect: (categoryId: Long) -> Unit,
+    onCategoryEdit: (categoryId: Long) -> Unit,
+) {
+    val viewModel: CategoryRankingViewModel = hiltViewModel()
+
+    RankingScreen(
+        onBack = onBack,
+        title = stringResource(R.string.categories),
+        data = viewModel.categoryTotalSpentFlow()
+            .collectAsState(emptyList()).value,
+        onItemClick = {
+            onCategorySelect(it.category.id)
+        },
+        onItemClickLabel = stringResource(id = R.string.select),
+        onItemLongClick = {
+            onCategoryEdit(it.category.id)
+        },
+        onItemLongClickLabel = stringResource(id = R.string.edit),
+    )
+}

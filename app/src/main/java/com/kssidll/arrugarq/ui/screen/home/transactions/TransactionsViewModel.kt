@@ -6,8 +6,6 @@ import androidx.compose.runtime.snapshots.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.repository.*
-import com.kssidll.arrugarq.ui.screen.product.product.*
-import com.kssidll.arrugarq.ui.screen.shop.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
