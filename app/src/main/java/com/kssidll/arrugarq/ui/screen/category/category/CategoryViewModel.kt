@@ -17,20 +17,6 @@ import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 /**
- * Data representing [CategoryScreen] screen state
- */
-internal data class CategoryScreenState(
-    val category: MutableState<ProductCategory?> = mutableStateOf(null),
-    val items: SnapshotStateList<FullItem> = mutableStateListOf(),
-    val chartData: MutableState<Flow<List<ItemSpentByTime>>> = mutableStateOf(flowOf()),
-    val totalSpentData: MutableState<Flow<Float>> = mutableStateOf(flowOf()),
-
-    val spentByTimePeriod: MutableState<TimePeriodFlowHandler.Periods?> = mutableStateOf(null),
-
-    val columnChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-)
-
-/**
  * Page fetch size
  */
 internal const val fullItemFetchCount = 8
@@ -45,9 +31,17 @@ class CategoryViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
     private val categoryRepository: ICategoryRepository,
 ): ViewModel() {
-    internal val screenState: CategoryScreenState = CategoryScreenState()
+    private val mCategory: MutableState<ProductCategory?> = mutableStateOf(null)
+    val category: ProductCategory? by mCategory
+
+    val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
+
+    private val mTransactionItems: SnapshotStateList<FullItem> = mutableStateListOf()
+    val transactionItems get() = mTransactionItems.toList()
 
     private var timePeriodFlowHandler: TimePeriodFlowHandler? = null
+    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = timePeriodFlowHandler?.currentPeriod
+    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = timePeriodFlowHandler?.spentByTimeData
 
     private var fullItemsDataQuery: Job? = null
     private var fullItemOffset: Int = 0
@@ -55,7 +49,17 @@ class CategoryViewModel @Inject constructor(
     private var newFullItemFlowJob: Job? = null
     private var newFullItemFlow: (Flow<Item>)? = null
 
-    private var stateTotalSpentDataJob: Job? = null
+    fun categoryTotalSpent(): Flow<Float>? {
+        if (category == null) return null
+
+        return itemRepository.getTotalSpentByCategoryFlow(category!!.id)
+            .map {
+                it.toFloat()
+                    .div(100000)
+            }
+            .distinctUntilChanged()
+            .cancellable()
+    }
 
     /**
      * Switches the state period to [newPeriod]
@@ -63,9 +67,6 @@ class CategoryViewModel @Inject constructor(
      */
     fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
         timePeriodFlowHandler?.switchPeriod(newPeriod)
-        screenState.spentByTimePeriod.value = newPeriod
-
-        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
     }
 
     /**
@@ -74,21 +75,12 @@ class CategoryViewModel @Inject constructor(
     suspend fun performDataUpdate(categoryId: Long) = viewModelScope.async {
         val category = categoryRepository.get(categoryId) ?: return@async false
 
-        if (categoryId == screenState.category.value?.id) return@async true
+        // We ignore the possiblity of changing category while one is already loaded
+        // as not doing that would increase complexity too much
+        // and if it happens somehow, it would be considered a bug
+        if (mCategory.value != null || categoryId == mCategory.value?.id) return@async true
 
-        screenState.category.value = category
-
-        stateTotalSpentDataJob?.cancel()
-        stateTotalSpentDataJob = launch {
-            screenState.totalSpentData.value =
-                itemRepository.getTotalSpentByCategoryFlow(categoryId)
-                    .map {
-                        it.toFloat()
-                            .div(100000)
-                    }
-                    .distinctUntilChanged()
-                    .cancellable()
-        }
+        mCategory.value = category
 
         timePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
@@ -106,10 +98,6 @@ class CategoryViewModel @Inject constructor(
             },
         )
 
-        screenState.spentByTimePeriod.value = timePeriodFlowHandler?.currentPeriod
-
-        screenState.chartData.value = timePeriodFlowHandler!!.spentByTimeData
-
         newFullItemFlowJob?.cancel()
         newFullItemFlowJob = launch {
             newFullItemFlow = itemRepository.getLastFlow()
@@ -117,7 +105,7 @@ class CategoryViewModel @Inject constructor(
 
             newFullItemFlow?.collect {
                 fullItemOffset = 0
-                screenState.items.clear()
+                mTransactionItems.clear()
                 fullItemsDataQuery?.cancel()
                 fullItemsDataQuery = performFullItemsQuery()
                 fullItemOffset += fullItemFetchCount
@@ -132,9 +120,9 @@ class CategoryViewModel @Inject constructor(
      * Requests a query of [fullItemFetchCount] items to be appended to transactions list
      */
     fun queryMoreFullItems() {
-        if (fullItemsDataQuery == null) return
+        if (category == null || fullItemsDataQuery == null) return
 
-        if (fullItemsDataQuery!!.isCompleted && screenState.category.value != null) {
+        if (fullItemsDataQuery!!.isCompleted) {
             fullItemsDataQuery = performFullItemsQuery(fullItemOffset)
             fullItemOffset += fullItemFetchCount
         }
@@ -145,11 +133,13 @@ class CategoryViewModel @Inject constructor(
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        screenState.items.addAll(
+        if (category == null) return@launch
+
+        mTransactionItems.addAll(
             itemRepository.getFullItemsByCategory(
                 offset = queryOffset,
                 count = fullItemFetchCount,
-                categoryId = screenState.category.value!!.id,
+                categoryId = category!!.id,
             )
         )
     }
