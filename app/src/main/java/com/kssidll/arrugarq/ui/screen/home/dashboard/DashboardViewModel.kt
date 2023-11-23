@@ -13,7 +13,7 @@ import javax.inject.*
 class DashboardViewModel @Inject constructor(
     private val itemRepository: IItemRepository,
 ): ViewModel() {
-    private val timePeriodFlowHandler: TimePeriodFlowHandler = TimePeriodFlowHandler(
+    private val mTimePeriodFlowHandler: TimePeriodFlowHandler = TimePeriodFlowHandler(
         scope = viewModelScope,
         dayFlow = {
             itemRepository.getTotalSpentByDayFlow()
@@ -32,19 +32,19 @@ class DashboardViewModel @Inject constructor(
     /**
      * List of items representing [Item] spending in time as flow
      */
-    val spentByTimeData get() = timePeriodFlowHandler.spentByTimeData
+    val spentByTimeData get() = mTimePeriodFlowHandler.spentByTimeData
 
     /**
      * Currently set spending period
      */
-    val spentByTimePeriod get() = timePeriodFlowHandler.currentPeriod
+    val spentByTimePeriod get() = mTimePeriodFlowHandler.currentPeriod
 
     /**
      * Switches the spending period to [newPeriod]
      * @param newPeriod Period to switch the state to
      */
     fun switchToSpentByTimePeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        timePeriodFlowHandler.switchPeriod(newPeriod)
+        mTimePeriodFlowHandler.switchPeriod(newPeriod)
     }
 
     /**

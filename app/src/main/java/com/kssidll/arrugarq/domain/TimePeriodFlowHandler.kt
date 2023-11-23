@@ -21,10 +21,10 @@ class TimePeriodFlowHandler(
     private var mCurrentPeriod: MutableState<Periods>
     val currentPeriod get() = mCurrentPeriod.value
 
-    private var spentByTimeQuery: Job? = null
-    private var _spentByTimeData: MutableState<Flow<List<ItemSpentByTime>>> =
+    private var mSpentByTimeQuery: Job? = null
+    private var mSpentByTimeData: MutableState<Flow<List<ItemSpentByTime>>> =
         mutableStateOf(flowOf())
-    val spentByTimeData by _spentByTimeData
+    val spentByTimeData by mSpentByTimeData
 
     init {
         mCurrentPeriod = mutableStateOf(startPeriod)
@@ -37,20 +37,20 @@ class TimePeriodFlowHandler(
     }
 
     private fun handlePeriodSwitch() {
-        spentByTimeQuery?.cancel()
+        mSpentByTimeQuery?.cancel()
 
-        spentByTimeQuery = scope.launch {
+        mSpentByTimeQuery = scope.launch {
             when (currentPeriod) {
-                Periods.Day -> _spentByTimeData.value = dayFlow().distinctUntilChanged()
+                Periods.Day -> mSpentByTimeData.value = dayFlow().distinctUntilChanged()
                     .cancellable()
 
-                Periods.Week -> _spentByTimeData.value = weekFlow().distinctUntilChanged()
+                Periods.Week -> mSpentByTimeData.value = weekFlow().distinctUntilChanged()
                     .cancellable()
 
-                Periods.Month -> _spentByTimeData.value = monthFlow().distinctUntilChanged()
+                Periods.Month -> mSpentByTimeData.value = monthFlow().distinctUntilChanged()
                     .cancellable()
 
-                Periods.Year -> _spentByTimeData.value = yearFlow().distinctUntilChanged()
+                Periods.Year -> mSpentByTimeData.value = yearFlow().distinctUntilChanged()
                     .cancellable()
             }
         }
