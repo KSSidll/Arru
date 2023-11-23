@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
@@ -73,7 +75,7 @@ fun TotalAverageAndMedianSpendingComponent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Average",
+                    text = stringResource(id = R.string.average),
                     style = Typography.headlineSmall,
                 )
 
@@ -87,7 +89,7 @@ fun TotalAverageAndMedianSpendingComponent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Median",
+                    text = stringResource(id = R.string.median),
                     style = Typography.headlineSmall,
                 )
 

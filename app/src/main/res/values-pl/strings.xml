@@ -78,4 +78,6 @@
     <string name="destructive_action_cancel">Anuluj</string>
     <string name="destructive_action_confirm">Potwierdź</string>
     <string name="system">System</string>
+    <string name="average">Średnia</string>
+    <string name="median">Mediana</string>
 </resources>

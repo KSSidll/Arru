@@ -78,4 +78,6 @@
     <string name="destructive_action_cancel">Cancel</string>
     <string name="destructive_action_confirm">Confirm</string>
     <string name="system">System</string>
+    <string name="average">Average</string>
+    <string name="median">Median</string>
 </resources>
