@@ -74,7 +74,7 @@ class ProductViewModel @Inject constructor(
     suspend fun performDataUpdate(productId: Long) = viewModelScope.async {
         val product = productRepository.get(productId) ?: return@async false
 
-        if (productId == screenState.product.value?.id) return@async false
+        if (productId == screenState.product.value?.id) return@async true
 
         screenState.product.value = product
 

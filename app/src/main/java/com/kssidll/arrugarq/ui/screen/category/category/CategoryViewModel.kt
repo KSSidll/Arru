@@ -74,7 +74,7 @@ class CategoryViewModel @Inject constructor(
     suspend fun performDataUpdate(categoryId: Long) = viewModelScope.async {
         val category = categoryRepository.get(categoryId) ?: return@async false
 
-        if (categoryId == screenState.category.value?.id) return@async false
+        if (categoryId == screenState.category.value?.id) return@async true
 
         screenState.category.value = category
 

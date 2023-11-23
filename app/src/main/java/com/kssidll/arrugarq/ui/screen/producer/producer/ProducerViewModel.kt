@@ -73,7 +73,7 @@ class ProducerViewModel @Inject constructor(
     suspend fun performDataUpdate(producerId: Long) = viewModelScope.async {
         val producer = producerRepository.get(producerId) ?: return@async false
 
-        if (producerId == screenState.producer.value?.id) return@async false
+        if (producerId == screenState.producer.value?.id) return@async true
 
         screenState.producer.value = producer
 
