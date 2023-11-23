@@ -71,21 +71,28 @@ data class Item(
         productId,
         variantId,
         shopId,
-        actualQuantity.times(1000)
+        actualQuantity.times(QUANTITY_DIVISOR)
             .toLong(),
-        actualPrice.times(100)
+        actualPrice.times(PRICE_DIVISOR)
             .toLong(),
         date
     )
 
     @Ignore
     fun actualQuantity(): Float {
-        return quantity.div(1000F)
+        return quantity.toFloat()
+            .div(QUANTITY_DIVISOR)
     }
 
     @Ignore
     fun actualPrice(): Float {
-        return price.div(100F)
+        return price.toFloat()
+            .div(PRICE_DIVISOR)
+    }
+
+    companion object {
+        const val PRICE_DIVISOR: Long = 100
+        const val QUANTITY_DIVISOR: Long = 1000
     }
 }
 
@@ -116,7 +123,7 @@ data class ItemSpentByTime(
 ): Chartable {
     override fun value(): Float {
         return total.toFloat()
-            .div(100000)
+            .div(Item.PRICE_DIVISOR * Item.PRICE_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -153,7 +160,7 @@ data class ItemSpentByShop(
 ): Rankable {
     override fun value(): Float {
         return total.toFloat()
-            .div(100000)
+            .div(Item.PRICE_DIVISOR * Item.PRICE_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -180,7 +187,7 @@ data class ItemSpentByCategory(
 ): Rankable {
     override fun value(): Float {
         return total.toFloat()
-            .div(100000)
+            .div(Item.PRICE_DIVISOR * Item.PRICE_DIVISOR)
     }
 
     override fun sortValue(): Long {

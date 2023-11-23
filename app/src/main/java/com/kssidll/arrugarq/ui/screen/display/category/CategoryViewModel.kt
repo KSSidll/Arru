@@ -53,10 +53,9 @@ class CategoryViewModel @Inject constructor(
         return itemRepository.getTotalSpentByCategoryFlow(category!!.id)
             .map {
                 it.toFloat()
-                    .div(100000)
+                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
             }
             .distinctUntilChanged()
-            .cancellable()
     }
 
     /**
@@ -127,12 +126,10 @@ class CategoryViewModel @Inject constructor(
     }
 
     /**
-     * Requires category value of categoryScreenState to be a non null.
+     * Requires category to be a non null value
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        if (category == null) return@launch
-
         mTransactionItems.addAll(
             itemRepository.getFullItemsByCategory(
                 offset = queryOffset,

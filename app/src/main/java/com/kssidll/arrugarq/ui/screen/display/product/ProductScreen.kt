@@ -26,33 +26,46 @@ import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
+import com.patrykandpatrick.vico.core.entry.*
 import kotlinx.coroutines.*
 import java.text.*
 import java.util.*
 
 /**
  * @param onBack Called to request a back navigation
- * @param state [ProductScreenState] instance representing the screen state
- * @param onProductEdit Called to request navigation to product edition
- * @param onSpentByTimePeriodSwitch Called to request state period switch, with requested period as argument
- * @param requestMoreItems Called to request more transaction items to be added to the state
+ * @param product Product for which the data is displayed
+ * @param transactionItems List of transaction items of [product]
+ * @param requestMoreTransactionItems Called to request more transaction items to be added to [transactionItems]
+ * @param spentByTimeData Data list representing [product] spending for current [spentByTimePeriod]
+ * @param productPriceByShopByTimeData Data list representing [product] price per shop in time
+ * @param totalSpentData Value representing total [product] spending
+ * @param spentByTimePeriod Time period to get the [spentByTimeData] by
+ * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
+ * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
  * @param onCategorySelect Called to request navigation to category edition, with requested category id as argument
  * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
  * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
  * @param onItemEdit Called to request navigation to item edition, with requested item id as argument
+ * @param onProductEdit Called to request navigation to product edition
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductScreen(
     onBack: () -> Unit,
-    state: ProductScreenState,
-    onProductEdit: () -> Unit,
+    product: Product?,
+    transactionItems: List<FullItem>,
+    requestMoreTransactionItems: () -> Unit,
+    spentByTimeData: List<ItemSpentByTime>,
+    productPriceByShopByTimeData: List<ProductPriceByShopByTime>,
+    totalSpentData: Float,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    requestMoreItems: () -> Unit,
+    chartEntryModelProducer: ChartEntryModelProducer,
     onCategorySelect: (categoryId: Long) -> Unit,
     onProducerSelect: (producerId: Long) -> Unit,
     onShopSelect: (shopId: Long) -> Unit,
     onItemEdit: (itemId: Long) -> Unit,
+    onProductEdit: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -60,7 +73,7 @@ internal fun ProductScreen(
                 onBack = onBack,
                 title = {
                     Text(
-                        text = state.product.value?.name.orEmpty(),
+                        text = product?.name.orEmpty(),
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
@@ -83,9 +96,14 @@ internal fun ProductScreen(
     ) {
         Box(Modifier.padding(it)) {
             ProductScreenContent(
-                state = state,
+                transactionItems = transactionItems,
+                requestMoreTransactionItems = requestMoreTransactionItems,
+                spentByTimeData = spentByTimeData,
+                productPriceByShopByTimeData = productPriceByShopByTimeData,
+                totalSpentData = totalSpentData,
+                spentByTimePeriod = spentByTimePeriod,
                 onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                requestMoreItems = requestMoreItems,
+                chartEntryModelProducer = chartEntryModelProducer,
                 onCategorySelect = onCategorySelect,
                 onProducerSelect = onProducerSelect,
                 onShopSelect = onShopSelect,
@@ -97,9 +115,14 @@ internal fun ProductScreen(
 
 /**
  * [ProductScreen] content
- * @param state [ProductScreenState] instance representing the screen state
- * @param onSpentByTimePeriodSwitch Called to request state period switch, with requested period as argument
- * @param requestMoreItems Called to request more transaction items to be added to the state
+ * @param transactionItems List of transaction items of product
+ * @param requestMoreTransactionItems Called to request more transaction items to be added to [transactionItems]
+ * @param spentByTimeData Data list representing product spending for current [spentByTimePeriod]
+ * @param productPriceByShopByTimeData Data list representing product price per shop in time
+ * @param totalSpentData Value representing total product spending
+ * @param spentByTimePeriod Time period to get the [spentByTimeData] by
+ * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
+ * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
  * @param onCategorySelect Called to request navigation to category edition, with requested category id as argument
  * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
  * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
@@ -107,9 +130,14 @@ internal fun ProductScreen(
  */
 @Composable
 internal fun ProductScreenContent(
-    state: ProductScreenState,
+    transactionItems: List<FullItem>,
+    requestMoreTransactionItems: () -> Unit,
+    spentByTimeData: List<ItemSpentByTime>,
+    productPriceByShopByTimeData: List<ProductPriceByShopByTime>,
+    totalSpentData: Float,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    requestMoreItems: () -> Unit,
+    chartEntryModelProducer: ChartEntryModelProducer,
     onCategorySelect: (categoryId: Long) -> Unit,
     onProducerSelect: (producerId: Long) -> Unit,
     onShopSelect: (shopId: Long) -> Unit,
@@ -143,18 +171,18 @@ internal fun ProductScreenContent(
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         }
 
-        if (firstVisibleItemIndex + fullItemMaxPrefetchCount > state.items.size) {
-            requestMoreItems()
+        if (firstVisibleItemIndex + fullItemMaxPrefetchCount > transactionItems.size) {
+            requestMoreTransactionItems()
         }
     }
 
-    LaunchedEffect(state.items.size) {
-        if (state.items.isEmpty()) {
+    LaunchedEffect(transactionItems.size) {
+        if (transactionItems.isEmpty()) {
             listState.scrollToItem(0)
         }
         grouppedItems.clear()
         grouppedItems.addAll(
-            state.items.groupBy { it.embeddedItem.item.date / 86400000 }
+            transactionItems.groupBy { it.embeddedItem.item.date / 86400000 }
                 .toList()
                 .sortedByDescending { it.first })
     }
@@ -204,24 +232,24 @@ internal fun ProductScreenContent(
                     Spacer(Modifier.height(40.dp))
 
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = state.chartData.value.collectAsState(initial = emptyList()).value,
-                        totalSpentData = state.totalSpentData.value.collectAsState(initial = 1F).value,
+                        spentByTimeData = spentByTimeData,
+                        totalSpentData = totalSpentData,
                     )
 
                     Spacer(Modifier.height(28.dp))
 
                     SpendingSummaryComponent(
                         modifier = Modifier.animateContentSize(),
-                        spentByTimeData = state.chartData.value.collectAsState(initial = emptyList()).value,
-                        spentByTimePeriod = state.spentByTimePeriod.value,
+                        spentByTimeData = spentByTimeData,
+                        spentByTimePeriod = spentByTimePeriod,
                         onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                        columnChartEntryModelProducer = state.columnChartEntryModelProducer,
+                        columnChartEntryModelProducer = chartEntryModelProducer,
                     )
 
                     Spacer(Modifier.height(12.dp))
 
                     ShopPriceCompareChart(
-                        items = state.productPriceByShopByTimeItems.toList(),
+                        items = productPriceByShopByTimeData,
                     )
 
                     Spacer(Modifier.height(12.dp))
@@ -299,12 +327,14 @@ fun ProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ProductScreenContent(
-                state = ProductScreenState(
-                    items = generateRandomFullItemList().toMutableStateList(),
-                    chartData = remember { mutableStateOf(generateRandomItemSpentByTimeListFlow()) }
-                ),
+                transactionItems = generateRandomFullItemList(),
+                requestMoreTransactionItems = {},
+                spentByTimeData = generateRandomItemSpentByTimeList(),
+                productPriceByShopByTimeData = generateRandomProductPriceByShopByTimeList(),
+                totalSpentData = generateRandomFloatValue(),
+                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
-                requestMoreItems = {},
+                chartEntryModelProducer = ChartEntryModelProducer(),
                 onCategorySelect = {},
                 onProducerSelect = {},
                 onShopSelect = {},

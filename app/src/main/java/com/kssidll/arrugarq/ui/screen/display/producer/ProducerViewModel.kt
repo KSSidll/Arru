@@ -53,10 +53,9 @@ class ProducerViewModel @Inject constructor(
         return itemRepository.getTotalSpentByProducerFlow(producer!!.id)
             .map {
                 it.toFloat()
-                    .div(100000)
+                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
             }
             .distinctUntilChanged()
-            .cancellable()
     }
 
     /**
@@ -127,7 +126,7 @@ class ProducerViewModel @Inject constructor(
     }
 
     /**
-     * Requires producer value of producerScreenState to be a non null.
+     * Requires producer to be a non null value
      * Doesn't check it itself as it doesn't update the offset
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {

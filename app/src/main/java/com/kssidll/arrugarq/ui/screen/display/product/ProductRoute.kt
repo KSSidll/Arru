@@ -24,17 +24,26 @@ fun ProductRoute(
 
     ProductScreen(
         onBack = onBack,
-        state = viewModel.screenState,
-        onProductEdit = onProductEdit,
+        product = viewModel.product,
+        transactionItems = viewModel.transactionItems,
+        requestMoreTransactionItems = {
+            viewModel.queryMoreFullItems()
+        },
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList())?.value
+            ?: emptyList(),
+        productPriceByShopByTimeData = viewModel.productPriceByShop()
+            ?.collectAsState(initial = emptyList())?.value ?: emptyList(),
+        totalSpentData = viewModel.productTotalSpent()
+            ?.collectAsState(initial = 0F)?.value ?: 0F,
+        spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
         },
-        requestMoreItems = {
-            viewModel.queryMoreFullItems()
-        },
+        chartEntryModelProducer = viewModel.chartEntryModelProducer,
         onCategorySelect = onCategorySelect,
         onProducerSelect = onProducerSelect,
         onShopSelect = onShopSelect,
         onItemEdit = onItemEdit,
+        onProductEdit = onProductEdit,
     )
 }
