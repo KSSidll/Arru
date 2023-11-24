@@ -11,8 +11,8 @@ import kotlinx.coroutines.*
 @Composable
 fun EditVariantRoute(
     variantId: Long,
-    onBack: () -> Unit,
-    onBackDelete: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -20,21 +20,21 @@ fun EditVariantRoute(
 
     LaunchedEffect(variantId) {
         if (!viewModel.updateState(variantId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ModifyVariantScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             viewModel.updateVariant(variantId)
-            onBack()
+            navigateBack()
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteVariant(variantId)) {
-                    onBackDelete()
+                    navigateBackDelete()
                 }
             }
         },

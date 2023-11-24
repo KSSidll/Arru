@@ -5,13 +5,16 @@
     <string name="dashboard_nav_label">Pulpit</string>
     <string name="navigate_to_dashboard_description">Przejdź do pulpitu / głównego ekranu</string>
 
-    <string name="search_nav_label">Szukaj</string>
-    <string name="navigate_to_search_description">Przejdź do ekranu wyszukiwania</string>
+    <string name="analysis_nav_label">Analiza</string>
+    <string name="navigate_to_analysis_description">Przejdź do ekranu analizy</string>
 
     <string name="transactions_nav_label">Transakcje</string>
     <string name="navigate_to_transactions_description">Przejdź do listy transakcji</string>
 
     <string name="search">Szukaj</string>
+    <string name="navigate_to_search_description">Przejdź do ekranu wyszukiwania</string>
+
+    <string name="navigate_to_settings_description">Przejdź do ustawień</string>
 
     <string name="no_value">Brak</string>
 

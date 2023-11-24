@@ -8,18 +8,18 @@ import kotlinx.coroutines.*
 @Composable
 fun AddVariantRoute(
     productId: Long,
-    onBack: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddVariantViewModel = hiltViewModel()
 
     ModifyVariantScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
                 val result = viewModel.addVariant(productId)
-                if (result != null) onBack()
+                if (result != null) navigateBack()
             }
         }
     )

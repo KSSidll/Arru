@@ -24,6 +24,7 @@ import com.kssidll.arrugarq.ui.screen.modify.variant.addvariant.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.editvariant.*
 import com.kssidll.arrugarq.ui.screen.ranking.categoryranking.*
 import com.kssidll.arrugarq.ui.screen.ranking.shopranking.*
+import com.kssidll.arrugarq.ui.screen.search.*
 import com.kssidll.arrugarq.ui.screen.settings.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
@@ -31,25 +32,31 @@ import kotlinx.parcelize.*
 @Parcelize
 sealed class Screen: Parcelable {
     data object Home: Screen()
-    data object AddItem: Screen()
-    data class EditItem(val itemId: Long): Screen()
-    data object AddProduct: Screen()
-    data class EditProduct(val productId: Long): Screen()
-    data class AddVariant(val productId: Long): Screen()
-    data class EditVariant(val variantId: Long): Screen()
-    data object AddCategory: Screen()
-    data class EditCategory(val categoryId: Long): Screen()
-    data object AddProducer: Screen()
-    data class EditProducer(val producerId: Long): Screen()
-    data object AddShop: Screen()
-    data class EditShop(val shopId: Long): Screen()
-    data object CategoryRanking: Screen()
-    data object ShopRanking: Screen()
+
+    data object Settings: Screen()
+    data object Search: Screen()
+
     data class Product(val productId: Long): Screen()
     data class Category(val categoryId: Long): Screen()
     data class Producer(val producerId: Long): Screen()
     data class Shop(val shopId: Long): Screen()
-    data object Settings: Screen()
+
+    data object ItemAdd: Screen()
+    data object ProductAdd: Screen()
+    data class VariantAdd(val productId: Long): Screen()
+    data object CategoryAdd: Screen()
+    data object ProducerAdd: Screen()
+    data object ShopAdd: Screen()
+
+    data class ItemEdit(val itemId: Long): Screen()
+    data class ProductEdit(val productId: Long): Screen()
+    data class VariantEdit(val variantId: Long): Screen()
+    data class CategoryEdit(val categoryId: Long): Screen()
+    data class ProducerEdit(val producerId: Long): Screen()
+    data class ShopEdit(val shopId: Long): Screen()
+
+    data object CategoryRanking: Screen()
+    data object ShopRanking: Screen()
 }
 
 /**
@@ -146,88 +153,137 @@ fun Navigation(
 ) {
     NavBackHandler(controller = navController)
 
-    val onBack: () -> Unit = {
+    val navigateBack: () -> Unit = {
         navController.apply {
             if (backstack.entries.size > 1) pop()
         }
     }
 
-    val onItemEdit: (itemId: Long) -> Unit = {
-        navController.navigate(Screen.EditItem(it))
+    val navigateBackDeleteShop: (shopId: Long) -> Unit = { shopId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.ShopEdit(shopId) && it != Screen.Shop(shopId)
+        }
     }
 
-    val onVariantEdit: (variantId: Long) -> Unit = {
-        navController.navigate(Screen.EditVariant(it))
+    val navigateBackDeleteVariant: (variantId: Long) -> Unit = { variantId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.VariantEdit(variantId)
+        }
+    }
+
+    val navigateBackDeleteProduct: (productId: Long) -> Unit = { productId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.ProductEdit(productId) && it != Screen.Product(productId)
+        }
+    }
+
+    val navigateBackDeleteCategory: (categoryId: Long) -> Unit = { categoryId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.CategoryEdit(categoryId) && it != Screen.Category(categoryId)
+        }
+    }
+
+    val navigateBackDeleteProducer: (producerId: Long) -> Unit = { producerId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.ProducerEdit(producerId) && it != Screen.Producer(producerId)
+        }
+    }
+
+    val navigateBackDeleteItem: (itemId: Long) -> Unit = { itemId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.ItemEdit(itemId)
+        }
     }
 
 
-    val onProductSelect: (productId: Long) -> Unit = {
+    val navigateHome: () -> Unit = {
+        navController.navigate(Screen.Home)
+    }
+
+    val navigateSettings: () -> Unit = {
+        navController.navigate(Screen.Settings)
+    }
+
+    val navigateSearch: () -> Unit = {
+        navController.navigate(Screen.Search)
+    }
+
+
+    val navigateProduct: (productId: Long) -> Unit = {
         navController.navigate(Screen.Product(it))
     }
 
-    val onProductEdit: (productId: Long) -> Unit = {
-        navController.navigate(Screen.EditProduct(it))
-    }
-
-    val onShopSelect: (shopId: Long) -> Unit = {
-        navController.navigate(Screen.Shop(it))
-    }
-
-    val onShopEdit: (shopId: Long) -> Unit = {
-        navController.navigate(Screen.EditShop(it))
-    }
-
-    val onCategorySelect: (categoryId: Long) -> Unit = {
+    val navigateCategory: (categoryId: Long) -> Unit = {
         navController.navigate(Screen.Category(it))
     }
 
-    val onCategoryEdit: (categoryId: Long) -> Unit = {
-        navController.navigate(Screen.EditCategory(it))
-    }
-
-    val onProducerSelect: (producerId: Long) -> Unit = {
+    val navigateProducer: (producerId: Long) -> Unit = {
         navController.navigate(Screen.Producer(it))
     }
 
-    val onProducerEdit: (producerId: Long) -> Unit = {
-        navController.navigate(Screen.EditProducer(it))
+    val navigateShop: (shopId: Long) -> Unit = {
+        navController.navigate(Screen.Shop(it))
     }
 
-    val onBackDeleteShop: (shopId: Long) -> Unit = { shopId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditShop(shopId) && it != Screen.Shop(shopId)
-        }
+
+    val navigateItemAdd: () -> Unit = {
+        navController.navigate(Screen.ItemAdd)
     }
 
-    val onBackDeleteVariant: (variantId: Long) -> Unit = { variantId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditVariant(variantId)
-        }
+    val navigateProductAdd: () -> Unit = {
+        navController.navigate(Screen.ProductAdd)
     }
 
-    val onBackDeleteProduct: (productId: Long) -> Unit = { productId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditProduct(productId) && it != Screen.Product(productId)
-        }
+    val navigateVariantAdd: (productId: Long) -> Unit = {
+        navController.navigate(Screen.VariantAdd(it))
     }
 
-    val onBackDeleteCategory: (categoryId: Long) -> Unit = { categoryId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditCategory(categoryId) && it != Screen.Category(categoryId)
-        }
+    val navigateCategoryAdd: () -> Unit = {
+        navController.navigate(Screen.CategoryAdd)
     }
 
-    val onBackDeleteProducer: (producerId: Long) -> Unit = { producerId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditProducer(producerId) && it != Screen.Producer(producerId)
-        }
+    val navigateProducerAdd: () -> Unit = {
+        navController.navigate(Screen.ProducerAdd)
     }
 
-    val onBackDeleteItem: (itemId: Long) -> Unit = { itemId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditItem(itemId)
-        }
+    val navigateShopAdd: () -> Unit = {
+        navController.navigate(Screen.ShopAdd)
     }
+
+
+    val navigateItemEdit: (itemId: Long) -> Unit = {
+        navController.navigate(Screen.ItemEdit(it))
+    }
+
+    val navigateProductEdit: (productId: Long) -> Unit = {
+        navController.navigate(Screen.ProductEdit(it))
+    }
+
+    val navigateVariantEdit: (variantId: Long) -> Unit = {
+        navController.navigate(Screen.VariantEdit(it))
+    }
+
+    val navigateCategoryEdit: (categoryId: Long) -> Unit = {
+        navController.navigate(Screen.CategoryEdit(it))
+    }
+
+    val navigateProducerEdit: (producerId: Long) -> Unit = {
+        navController.navigate(Screen.ProducerEdit(it))
+    }
+
+    val navigateShopEdit: (shopId: Long) -> Unit = {
+        navController.navigate(Screen.ShopEdit(it))
+    }
+
+
+    val navigateCategoryRanking: () -> Unit = {
+        navController.navigate(Screen.CategoryRanking)
+    }
+
+    val navigateShopRanking: () -> Unit = {
+        navController.navigate(Screen.ShopRanking)
+    }
+
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
 
@@ -244,254 +300,229 @@ fun Navigation(
         when (screen) {
             is Screen.Home -> {
                 HomeRoute(
-                    navigateSettings = {
-                        navController.navigate(Screen.Settings)
-                    },
-                    onAddItem = {
-                        navController.navigate(Screen.AddItem)
-                    },
-                    onDashboardCategoryCardClick = {
-                        navController.navigate(Screen.CategoryRanking)
-                    },
-                    onDashboardShopCardClick = {
-                        navController.navigate(Screen.ShopRanking)
-                    },
-                    onItemEdit = onItemEdit,
-                    onProductSelect = onProductSelect,
-                    onProductEdit = onProductEdit,
-                    onShopSelect = onShopSelect,
-                    onShopEdit = onShopEdit,
-                    onCategorySelect = onCategorySelect,
-                    onCategoryEdit = onCategoryEdit,
-                    onProducerSelect = onProducerSelect,
-                    onProducerEdit = onProducerEdit,
+                    navigateSettings = navigateSettings,
+                    navigateSearch = navigateSearch,
+                    navigateProduct = navigateProduct,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
+                    navigateItemAdd = navigateItemAdd,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateCategoryRanking = navigateCategoryRanking,
+                    navigateShopRanking = navigateShopRanking,
                 )
             }
 
-            is Screen.AddItem -> {
+            is Screen.ItemAdd -> {
                 AddItemRoute(
-                    onBack = onBack,
-                    onProductAdd = {
-                        navController.navigate(Screen.AddProduct)
-                    },
-                    onVariantAdd = { productId ->
-                        navController.navigate(Screen.AddVariant(productId))
-                    },
-                    onShopAdd = {
-                        navController.navigate(Screen.AddShop)
-                    },
-                    onProductEdit = onProductEdit,
-                    onVariantEdit = onVariantEdit,
-                    onShopEdit = onShopEdit,
+                    navigateBack = navigateBack,
+                    navigateProductAdd = navigateProductAdd,
+                    navigateVariantAdd = navigateVariantAdd,
+                    navigateShopAdd = navigateShopAdd,
+                    navigateProductEdit = navigateProductEdit,
+                    navigateVariantEdit = navigateVariantEdit,
+                    navigateShopEdit = navigateShopEdit,
                 )
             }
 
-            is Screen.AddProduct -> {
+            is Screen.ProductAdd -> {
                 AddProductRoute(
-                    onBack = onBack,
-                    onCategoryAdd = {
-                        navController.navigate(Screen.AddCategory)
-                    },
-                    onProducerAdd = {
-                        navController.navigate(Screen.AddProducer)
-                    },
-                    onCategoryEdit = onCategoryEdit,
-                    onProducerEdit = onProducerEdit,
+                    navigateBack = navigateBack,
+                    navigateCategoryAdd = navigateCategoryAdd,
+                    navigateProducerAdd = navigateProducerAdd,
+                    navigateCategoryEdit = navigateCategoryEdit,
+                    navigateProducerEdit = navigateProducerEdit,
                 )
             }
 
-            is Screen.AddVariant -> {
+            is Screen.VariantAdd -> {
                 AddVariantRoute(
                     productId = screen.productId,
-                    onBack = onBack,
+                    navigateBack = navigateBack,
                 )
             }
 
-            is Screen.AddCategory -> {
+            is Screen.CategoryAdd -> {
                 AddCategoryRoute(
-                    onBack = onBack,
+                    navigateBack = navigateBack,
                 )
             }
 
-            is Screen.AddProducer -> {
+            is Screen.ProducerAdd -> {
                 AddProducerRoute(
-                    onBack = onBack,
+                    navigateBack = navigateBack,
                 )
             }
 
-            is Screen.AddShop -> {
+            is Screen.ShopAdd -> {
                 AddShopRoute(
-                    onBack = onBack,
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.CategoryRanking -> {
                 CategoryRankingRoute(
-                    onBack = onBack,
-                    onCategorySelect = onCategorySelect,
-                    onCategoryEdit = onCategoryEdit,
+                    navigateBack = navigateBack,
+                    navigateCategory = navigateCategory,
+                    navigateCategoryEdit = navigateCategoryEdit,
                 )
             }
 
             is Screen.ShopRanking -> {
                 ShopRankingRoute(
-                    onBack = onBack,
-                    onShopSelect = onShopSelect,
-                    onShopEdit = onShopEdit,
+                    navigateBack = navigateBack,
+                    navigateShop = navigateShop,
+                    navigateShopEdit = navigateShopEdit,
                 )
             }
 
             is Screen.Category -> {
                 CategoryRoute(
                     categoryId = screen.categoryId,
-                    onBack = onBack,
-                    onCategoryEdit = {
-                        onCategoryEdit(screen.categoryId)
+                    navigateBack = navigateBack,
+                    navigateProduct = navigateProduct,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateCategoryEdit = {
+                        navigateCategoryEdit(screen.categoryId)
                     },
-                    onProductSelect = onProductSelect,
-                    onItemEdit = onItemEdit,
-                    onProducerSelect = onProducerSelect,
-                    onShopSelect = onShopSelect,
                 )
             }
 
             is Screen.Producer -> {
                 ProducerRoute(
                     producerId = screen.producerId,
-                    onBack = onBack,
-                    onProducerEdit = {
-                        onProducerEdit(screen.producerId)
+                    navigateBack = navigateBack,
+                    navigateProduct = navigateProduct,
+                    navigateCategory = navigateCategory,
+                    navigateShop = navigateShop,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateProducerEdit = {
+                        navigateProducerEdit(screen.producerId)
                     },
-                    onProductSelect = onProductSelect,
-                    onItemEdit = onItemEdit,
-                    onCategorySelect = onCategorySelect,
-                    onShopSelect = onShopSelect,
                 )
             }
 
             is Screen.Product -> {
                 ProductRoute(
                     productId = screen.productId,
-                    onBack = onBack,
-                    onProductEdit = {
-                        onProductEdit(screen.productId)
+                    navigateBack = navigateBack,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateProductEdit = {
+                        navigateProductEdit(screen.productId)
                     },
-                    onCategorySelect = onCategorySelect,
-                    onProducerSelect = onProducerSelect,
-                    onShopSelect = onShopSelect,
-                    onItemEdit = onItemEdit,
                 )
             }
 
             is Screen.Shop -> {
                 ShopRoute(
                     shopId = screen.shopId,
-                    onBack = onBack,
-                    onShopEdit = {
-                        onShopEdit(screen.shopId)
+                    navigateBack = navigateBack,
+                    navigateProduct = navigateProduct,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateShopEdit = {
+                        navigateShopEdit(screen.shopId)
                     },
-                    onProductSelect = onProductSelect,
-                    onItemEdit = onItemEdit,
-                    onCategorySelect = onCategorySelect,
-                    onProducerSelect = onProducerSelect,
                 )
             }
 
-            is Screen.EditShop -> {
+            is Screen.ShopEdit -> {
                 EditShopRoute(
                     shopId = screen.shopId,
-                    onBack = {
-                        onBack()
+                    navigateBack = {
+                        navigateBack()
                     },
-                    onBackDelete = {
-                        onBackDeleteShop(screen.shopId)
+                    navigateBackDelete = {
+                        navigateBackDeleteShop(screen.shopId)
                     }
                 )
             }
 
-            is Screen.EditVariant -> {
+            is Screen.VariantEdit -> {
                 EditVariantRoute(
                     variantId = screen.variantId,
-                    onBack = {
-                        onBack()
+                    navigateBack = {
+                        navigateBack()
                     },
-                    onBackDelete = {
-                        onBackDeleteVariant(screen.variantId)
+                    navigateBackDelete = {
+                        navigateBackDeleteVariant(screen.variantId)
                     }
                 )
             }
 
-            is Screen.EditProduct -> {
+            is Screen.ProductEdit -> {
                 EditProductRoute(
                     productId = screen.productId,
-                    onBack = {
-                        onBack()
+                    navigateBack = navigateBack,
+                    navigateBackDelete = {
+                        navigateBackDeleteProduct(screen.productId)
                     },
-                    onBackDelete = {
-                        onBackDeleteProduct(screen.productId)
-                    },
-                    onProducerAdd = {
-                        navController.navigate(Screen.AddProducer)
-                    },
-                    onCategoryAdd = {
-                        navController.navigate(Screen.AddCategory)
-                    },
-                    onProducerEdit = onProducerEdit,
-                    onCategoryEdit = onCategoryEdit,
+                    navigateCategoryAdd = navigateCategoryAdd,
+                    navigateProducerAdd = navigateProducerAdd,
+                    navigateCategoryEdit = navigateCategoryEdit,
+                    navigateProducerEdit = navigateProducerEdit,
                 )
             }
 
-            is Screen.EditCategory -> {
+            is Screen.CategoryEdit -> {
                 EditCategoryRoute(
                     categoryId = screen.categoryId,
-                    onBack = {
-                        onBack()
-                    },
-                    onBackDelete = {
-                        onBackDeleteCategory(screen.categoryId)
+                    navigateBack = navigateBack,
+                    navigateBackDelete = {
+                        navigateBackDeleteCategory(screen.categoryId)
                     }
                 )
             }
 
-            is Screen.EditProducer -> {
+            is Screen.ProducerEdit -> {
                 EditProducerRoute(
                     producerId = screen.producerId,
-                    onBack = {
-                        onBack()
-                    },
-                    onBackDelete = {
-                        onBackDeleteProducer(screen.producerId)
+                    navigateBack = navigateBack,
+                    navigateBackDelete = {
+                        navigateBackDeleteProducer(screen.producerId)
                     }
                 )
             }
 
-            is Screen.EditItem -> {
+            is Screen.ItemEdit -> {
                 EditItemRoute(
                     itemId = screen.itemId,
-                    onBack = {
-                        onBack()
+                    navigateBack = navigateBack,
+                    navigateBackDelete = {
+                        navigateBackDeleteItem(screen.itemId)
                     },
-                    onBackDelete = {
-                        onBackDeleteItem(screen.itemId)
-                    },
-                    onShopAdd = {
-                        navController.navigate(Screen.AddShop)
-                    },
-                    onProductAdd = {
-                        navController.navigate(Screen.AddProduct)
-                    },
-                    onVariantAdd = {
-                        navController.navigate(Screen.AddVariant(it))
-                    },
-                    onShopEdit = onShopEdit,
-                    onProductEdit = onProductEdit,
-                    onVariantEdit = onVariantEdit,
+                    navigateProductAdd = navigateProductAdd,
+                    navigateVariantAdd = navigateVariantAdd,
+                    navigateShopAdd = navigateShopAdd,
+                    navigateProductEdit = navigateProductEdit,
+                    navigateVariantEdit = navigateVariantEdit,
+                    navigateShopEdit = navigateShopEdit,
                 )
             }
 
             Screen.Settings -> {
                 SettingsRoute(
-                    onBack = onBack,
+                    navigateBack = navigateBack,
+                )
+            }
+
+            Screen.Search -> {
+                SearchRoute(
+                    navigateBack = navigateBack,
+                    navigateProduct = navigateProduct,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
+                    navigateProductEdit = navigateProductEdit,
+                    navigateCategoryEdit = navigateCategoryEdit,
+                    navigateProducerEdit = navigateProducerEdit,
+                    navigateShopEdit = navigateShopEdit,
                 )
             }
         }

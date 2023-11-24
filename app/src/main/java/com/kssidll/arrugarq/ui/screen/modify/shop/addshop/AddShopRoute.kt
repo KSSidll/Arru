@@ -7,18 +7,18 @@ import kotlinx.coroutines.*
 
 @Composable
 fun AddShopRoute(
-    onBack: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddShopViewModel = hiltViewModel()
 
     ModifyShopScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
                 val result = viewModel.addShop()
-                if (result != null) onBack()
+                if (result != null) navigateBack()
             }
         },
     )

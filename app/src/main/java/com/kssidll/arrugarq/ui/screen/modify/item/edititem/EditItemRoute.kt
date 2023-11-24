@@ -11,14 +11,14 @@ import kotlinx.coroutines.*
 @Composable
 fun EditItemRoute(
     itemId: Long,
-    onBack: () -> Unit,
-    onBackDelete: () -> Unit,
-    onShopAdd: () -> Unit,
-    onProductAdd: () -> Unit,
-    onVariantAdd: (productId: Long) -> Unit,
-    onShopEdit: (shopId: Long) -> Unit,
-    onProductEdit: (productId: Long) -> Unit,
-    onVariantEdit: (variantId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
+    navigateProductAdd: () -> Unit,
+    navigateVariantAdd: (productId: Long) -> Unit,
+    navigateShopAdd: () -> Unit,
+    navigateProductEdit: (productId: Long) -> Unit,
+    navigateVariantEdit: (variantId: Long) -> Unit,
+    navigateShopEdit: (shopId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -26,12 +26,12 @@ fun EditItemRoute(
 
     LaunchedEffect(itemId) {
         if (!viewModel.updateState(itemId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ModifyItemScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops()
             .collectAsState(initial = emptyList()).value,
@@ -40,24 +40,24 @@ fun EditItemRoute(
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             viewModel.updateItem(itemId)
-            onBack()
+            navigateBack()
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteItem(itemId)) {
-                    onBackDelete()
+                    navigateBackDelete()
                 }
             }
         },
-        onShopAdd = onShopAdd,
-        onProductAdd = onProductAdd,
-        onVariantAdd = onVariantAdd,
-        onShopEdit = onShopEdit,
-        onProductEdit = onProductEdit,
-        onVariantEdit = onVariantEdit,
         onProductChange = {
             viewModel.onProductChange()
         },
         submitButtonText = stringResource(id = R.string.item_edit),
+        onProductAddButtonClick = navigateProductAdd,
+        onVariantAddButtonClick = navigateVariantAdd,
+        onShopAddButtonClick = navigateShopAdd,
+        onItemLongClick = navigateProductEdit,
+        onItemVariantLongClick = navigateVariantEdit,
+        onItemShopLongClick = navigateShopEdit,
     )
 }

@@ -7,18 +7,18 @@ import kotlinx.coroutines.*
 
 @Composable
 fun AddCategoryRoute(
-    onBack: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddCategoryViewModel = hiltViewModel()
 
     ModifyCategoryScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
                 val result = viewModel.addCategory()
-                if (result != null) onBack()
+                if (result != null) navigateBack()
             }
         },
     )

@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.search.start
+package com.kssidll.arrugarq.ui.screen.search.start
 
 
 import androidx.compose.runtime.*

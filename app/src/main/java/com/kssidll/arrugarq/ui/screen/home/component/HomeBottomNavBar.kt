@@ -16,17 +16,17 @@ import com.kssidll.arrugarq.ui.theme.*
  * Bottom navigation bar for [HomeScreen] screen
  * @param currentLocation Current [HomeScreen] location
  * @param onLocationChange Callback called as request to change [HomeScreen] location, Provides new location as parameter
- * @param onAddItem Callback called as request to navigate to item adding
+ * @param onActionButtonClick Callback called when the FAB is clicked
  */
 @Composable
 internal fun HomeBottomNavBar(
-    currentLocation: HomeScreenLocations = HomeScreenLocations.entries.first { it.initial },
-    onLocationChange: ((HomeScreenLocations) -> Unit)? = null,
-    onAddItem: (() -> Unit)? = null,
+    currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
+    onLocationChange: ((HomeRouteLocations) -> Unit)? = null,
+    onActionButtonClick: (() -> Unit)? = null,
 ) {
     BottomAppBar(
         actions = {
-            HomeScreenLocations.entries.forEach {
+            HomeRouteLocations.entries.forEach {
                 NavigationBarItem(
                     selected = currentLocation == it,
                     onClick = {
@@ -54,7 +54,7 @@ internal fun HomeBottomNavBar(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onAddItem?.invoke()
+                    onActionButtonClick?.invoke()
                 },
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
             ) {
@@ -87,7 +87,7 @@ fun HomeBottomNavBarPreview() {
     ArrugarqTheme {
         Surface {
             HomeBottomNavBar(
-                currentLocation = HomeScreenLocations.Dashboard,
+                currentLocation = HomeRouteLocations.Dashboard,
             )
         }
     }

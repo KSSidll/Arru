@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.search.start
+package com.kssidll.arrugarq.ui.screen.search.start
 
 
 import android.content.res.Configuration.*
@@ -9,7 +9,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.ui.screen.home.search.component.*
+import com.kssidll.arrugarq.ui.screen.search.component.*
 import com.kssidll.arrugarq.ui.theme.*
 
 /**
@@ -54,27 +54,27 @@ private fun StartScreenContent(
 
         SearchItem(
             text = stringResource(id = R.string.item_product_producer),
-            onSelect = onProducerClick,
+            onItemClick = onProducerClick,
         )
         SearchItemHorizontalDivider()
 
         SearchItem(
             text = stringResource(id = R.string.item_shop),
-            onSelect = onShopClick,
+            onItemClick = onShopClick,
         )
 
         SearchItemHorizontalDivider()
 
         SearchItem(
             text = stringResource(id = R.string.item_product_category),
-            onSelect = onCategoryClick,
+            onItemClick = onCategoryClick,
         )
 
         SearchItemHorizontalDivider()
 
         SearchItem(
             text = stringResource(id = R.string.item_product),
-            onSelect = onProductClick,
+            onItemClick = onProductClick,
         )
     }
 }

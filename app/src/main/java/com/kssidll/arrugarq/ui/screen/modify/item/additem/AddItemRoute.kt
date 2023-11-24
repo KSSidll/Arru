@@ -7,19 +7,19 @@ import kotlinx.coroutines.*
 
 @Composable
 fun AddItemRoute(
-    onBack: () -> Unit,
-    onProductAdd: () -> Unit,
-    onVariantAdd: (productId: Long) -> Unit,
-    onShopAdd: () -> Unit,
-    onProductEdit: (productId: Long) -> Unit,
-    onVariantEdit: (variantId: Long) -> Unit,
-    onShopEdit: (shopId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateProductAdd: () -> Unit,
+    navigateVariantAdd: (productId: Long) -> Unit,
+    navigateShopAdd: () -> Unit,
+    navigateProductEdit: (productId: Long) -> Unit,
+    navigateVariantEdit: (variantId: Long) -> Unit,
+    navigateShopEdit: (shopId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddItemViewModel = hiltViewModel()
 
     ModifyItemScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops()
             .collectAsState(initial = emptyList()).value,
@@ -29,23 +29,23 @@ fun AddItemRoute(
         onSubmit = {
             scope.launch {
                 val result = viewModel.addItem()
-                if (result != null) onBack()
+                if (result != null) navigateBack()
             }
         },
-        onProductAdd = onProductAdd,
-        onShopAdd = onShopAdd,
-        onVariantAdd = {
+        onProductChange = {
+            viewModel.onProductChange()
+        },
+        onProductAddButtonClick = navigateProductAdd,
+        onVariantAddButtonClick = {
             with(viewModel.screenState.selectedProduct) {
                 if (value != null) {
-                    onVariantAdd(value!!.id)
+                    navigateVariantAdd(value!!.id)
                 }
             }
         },
-        onProductEdit = onProductEdit,
-        onShopEdit = onShopEdit,
-        onVariantEdit = onVariantEdit,
-        onProductChange = {
-            viewModel.onProductChange()
-        }
+        onShopAddButtonClick = navigateShopAdd,
+        onItemLongClick = navigateProductEdit,
+        onItemVariantLongClick = navigateVariantEdit,
+        onItemShopLongClick = navigateShopEdit,
     )
 }

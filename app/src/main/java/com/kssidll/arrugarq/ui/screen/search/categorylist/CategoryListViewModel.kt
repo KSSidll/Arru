@@ -1,10 +1,10 @@
-package com.kssidll.arrugarq.ui.screen.home.search.categorylist
+package com.kssidll.arrugarq.ui.screen.search.categorylist
 
 
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.repository.*
-import com.kssidll.arrugarq.ui.screen.home.search.shared.*
+import com.kssidll.arrugarq.ui.screen.search.shared.*
 import dagger.hilt.android.lifecycle.*
 import javax.inject.*
 

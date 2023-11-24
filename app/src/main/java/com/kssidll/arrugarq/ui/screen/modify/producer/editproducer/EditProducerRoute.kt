@@ -11,8 +11,8 @@ import kotlinx.coroutines.*
 @Composable
 fun EditProducerRoute(
     producerId: Long,
-    onBack: () -> Unit,
-    onBackDelete: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -20,21 +20,21 @@ fun EditProducerRoute(
 
     LaunchedEffect(producerId) {
         if (!viewModel.updateState(producerId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ModifyProducerScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             viewModel.updateProducer(producerId)
-            onBack()
+            navigateBack()
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteProducer(producerId)) {
-                    onBackDelete()
+                    navigateBackDelete()
                 }
             }
         },

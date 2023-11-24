@@ -42,11 +42,11 @@ import java.util.*
  * @param spentByTimePeriod Time period to get the [spentByTimeData] by
  * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
  * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
- * @param onCategorySelect Called to request navigation to category edition, with requested category id as argument
- * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
- * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
- * @param onItemEdit Called to request navigation to item edition, with requested item id as argument
- * @param onProductEdit Called to request navigation to product edition
+ * @param onItemCategoryClick Callback called when the item category label is clicked. Provides category id as parameter
+ * @param onItemProducerClick Callback called when the item producer label is clicked. Provides producer id as parameter
+ * @param onItemShopClick Callback called when the item shop label is clicked. Provides shop id as parameter
+ * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as parameter
+ * @param onEditAction Callback called when the 'edit' action is triggered
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,87 +61,11 @@ internal fun ProductScreen(
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     chartEntryModelProducer: ChartEntryModelProducer,
-    onCategorySelect: (categoryId: Long) -> Unit,
-    onProducerSelect: (producerId: Long) -> Unit,
-    onShopSelect: (shopId: Long) -> Unit,
-    onItemEdit: (itemId: Long) -> Unit,
-    onProductEdit: () -> Unit,
-) {
-    Scaffold(
-        topBar = {
-            SecondaryAppBar(
-                onBack = onBack,
-                title = {
-                    Text(
-                        text = product?.name.orEmpty(),
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            onProductEdit()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Edit,
-                            contentDescription = stringResource(R.string.edit),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(27.dp),
-                        )
-                    }
-                },
-            )
-        }
-    ) {
-        Box(Modifier.padding(it)) {
-            ProductScreenContent(
-                transactionItems = transactionItems,
-                requestMoreTransactionItems = requestMoreTransactionItems,
-                spentByTimeData = spentByTimeData,
-                productPriceByShopByTimeData = productPriceByShopByTimeData,
-                totalSpentData = totalSpentData,
-                spentByTimePeriod = spentByTimePeriod,
-                onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                chartEntryModelProducer = chartEntryModelProducer,
-                onCategorySelect = onCategorySelect,
-                onProducerSelect = onProducerSelect,
-                onShopSelect = onShopSelect,
-                onItemEdit = onItemEdit,
-            )
-        }
-    }
-}
-
-/**
- * [ProductScreen] content
- * @param transactionItems List of transaction items of product
- * @param requestMoreTransactionItems Called to request more transaction items to be added to [transactionItems]
- * @param spentByTimeData Data list representing product spending for current [spentByTimePeriod]
- * @param productPriceByShopByTimeData Data list representing product price per shop in time
- * @param totalSpentData Value representing total product spending
- * @param spentByTimePeriod Time period to get the [spentByTimeData] by
- * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
- * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
- * @param onCategorySelect Called to request navigation to category edition, with requested category id as argument
- * @param onProducerSelect Called to request navigation to producer, with requested producer id as argument
- * @param onShopSelect Called to request navigation to shop, with requested shop id as argument
- * @param onItemEdit Called to request navigation to item edition, with requested item id as argument
- */
-@Composable
-internal fun ProductScreenContent(
-    transactionItems: List<FullItem>,
-    requestMoreTransactionItems: () -> Unit,
-    spentByTimeData: List<ItemSpentByTime>,
-    productPriceByShopByTimeData: List<ProductPriceByShopByTime>,
-    totalSpentData: Float,
-    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    chartEntryModelProducer: ChartEntryModelProducer,
-    onCategorySelect: (categoryId: Long) -> Unit,
-    onProducerSelect: (producerId: Long) -> Unit,
-    onShopSelect: (shopId: Long) -> Unit,
-    onItemEdit: (itemId: Long) -> Unit,
+    onItemCategoryClick: (categoryId: Long) -> Unit,
+    onItemProducerClick: (producerId: Long) -> Unit,
+    onItemShopClick: (shopId: Long) -> Unit,
+    onItemLongClick: (itemId: Long) -> Unit,
+    onEditAction: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
@@ -188,6 +112,31 @@ internal fun ProductScreenContent(
     }
 
     Scaffold(
+        topBar = {
+            SecondaryAppBar(
+                onBack = onBack,
+                title = {
+                    Text(
+                        text = product?.name.orEmpty(),
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            onEditAction()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(27.dp),
+                        )
+                    }
+                },
+            )
+        },
         floatingActionButton = {
             AnimatedVisibility(
                 visible = returnActionButtonVisible,
@@ -242,7 +191,7 @@ internal fun ProductScreenContent(
                         modifier = Modifier.animateContentSize(),
                         spentByTimeData = spentByTimeData,
                         spentByTimePeriod = spentByTimePeriod,
-                        onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+                        onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
                         columnChartEntryModelProducer = chartEntryModelProducer,
                     )
 
@@ -292,16 +241,16 @@ internal fun ProductScreenContent(
                         fullItem = item,
                         onItemClick = {},
                         onItemLongClick = {
-                            onItemEdit(it.embeddedItem.item.id)
+                            onItemLongClick(it.embeddedItem.item.id)
                         },
                         onCategoryClick = {
-                            onCategorySelect(it.id)
+                            onItemCategoryClick(it.id)
                         },
                         onProducerClick = {
-                            onProducerSelect(it.id)
+                            onItemProducerClick(it.id)
                         },
                         onShopClick = {
-                            onShopSelect(it.id)
+                            onItemShopClick(it.id)
                         },
                     )
                 }
@@ -326,7 +275,9 @@ internal fun ProductScreenContent(
 fun ProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            ProductScreenContent(
+            ProductScreen(
+                onBack = {},
+                product = null,
                 transactionItems = generateRandomFullItemList(),
                 requestMoreTransactionItems = {},
                 spentByTimeData = generateRandomItemSpentByTimeList(),
@@ -335,10 +286,11 @@ fun ProductScreenPreview() {
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
                 chartEntryModelProducer = ChartEntryModelProducer(),
-                onCategorySelect = {},
-                onProducerSelect = {},
-                onShopSelect = {},
-                onItemEdit = {},
+                onItemCategoryClick = {},
+                onItemProducerClick = {},
+                onItemShopClick = {},
+                onItemLongClick = {},
+                onEditAction = {},
             )
         }
     }

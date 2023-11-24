@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.search.component
+package com.kssidll.arrugarq.ui.screen.search.component
 
 
 import android.content.res.Configuration.*

@@ -22,7 +22,7 @@ import com.patrykandpatrick.vico.core.entry.*
 fun SpendingSummaryComponent(
     spentByTimeData: List<Chartable>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
+    onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
     modifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
@@ -35,7 +35,7 @@ fun SpendingSummaryComponent(
     Column(modifier = modifier) {
         PeriodButtons(
             spentByTimePeriod = spentByTimePeriod,
-            onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+            onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -58,7 +58,7 @@ fun SpendingSummaryComponent(
 @Composable
 private fun PeriodButtons(
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
+    onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(
         modifier = Modifier
@@ -89,11 +89,9 @@ private fun PeriodButtons(
                 label = {
                     Text(it.getTranslation())
                 },
-                icon = {
-
-                },
+                icon = {},
                 onClick = {
-                    onSpentByTimePeriodSwitch(it)
+                    onSpentByTimePeriodUpdate(it)
                 },
                 colors = SegmentedButtonDefaults.colors(
                     activeContainerColor = MaterialTheme.colorScheme.tertiary,
@@ -106,7 +104,6 @@ private fun PeriodButtons(
             )
         }
     }
-
 }
 
 @Preview(
@@ -128,7 +125,7 @@ fun SpendingSummaryComponentPreview() {
             SpendingSummaryComponent(
                 spentByTimeData = generateRandomItemSpentByTimeList(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
-                onSpentByTimePeriodSwitch = {},
+                onSpentByTimePeriodUpdate = {},
             )
         }
     }

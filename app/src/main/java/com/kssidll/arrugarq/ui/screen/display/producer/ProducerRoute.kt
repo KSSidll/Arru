@@ -7,23 +7,23 @@ import dev.olshevski.navigation.reimagined.hilt.*
 @Composable
 fun ProducerRoute(
     producerId: Long,
-    onBack: () -> Unit,
-    onProducerEdit: () -> Unit,
-    onProductSelect: (productId: Long) -> Unit,
-    onItemEdit: (itemId: Long) -> Unit,
-    onCategorySelect: (categoryId: Long) -> Unit,
-    onShopSelect: (shopId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateProduct: (productId: Long) -> Unit,
+    navigateCategory: (categoryId: Long) -> Unit,
+    navigateShop: (shopId: Long) -> Unit,
+    navigateItemEdit: (itemId: Long) -> Unit,
+    navigateProducerEdit: () -> Unit,
 ) {
     val viewModel: ProducerViewModel = hiltViewModel()
 
     LaunchedEffect(producerId) {
         if (!viewModel.performDataUpdate(producerId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ProducerScreen(
-        onBack = onBack,
+        onBack = navigateBack,
         producer = viewModel.producer,
         transactionItems = viewModel.transactionItems,
         requestMoreTransactionItems = {
@@ -38,10 +38,10 @@ fun ProducerRoute(
             viewModel.switchPeriod(it)
         },
         chartEntryModelProducer = viewModel.chartEntryModelProducer,
-        onProductSelect = onProductSelect,
-        onCategorySelect = onCategorySelect,
-        onShopSelect = onShopSelect,
-        onItemEdit = onItemEdit,
-        onProducerEdit = onProducerEdit,
+        onItemClick = navigateProduct,
+        onItemCategoryClick = navigateCategory,
+        onItemShopClick = navigateShop,
+        onItemLongClick = navigateItemEdit,
+        onEditAction = navigateProducerEdit,
     )
 }

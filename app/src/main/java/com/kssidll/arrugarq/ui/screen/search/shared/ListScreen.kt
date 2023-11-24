@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.search.shared
+package com.kssidll.arrugarq.ui.screen.search.shared
 
 
 import android.content.res.Configuration.*
@@ -18,7 +18,7 @@ import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.field.*
-import com.kssidll.arrugarq.ui.screen.home.search.component.*
+import com.kssidll.arrugarq.ui.screen.search.component.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
@@ -26,14 +26,14 @@ import kotlinx.coroutines.flow.*
  * Generic list screen
  * @param T Type of item, needs to implement [FuzzySearchable] and [Named]
  * @param state [ListScreenState] representing the screen state
- * @param onItemSelect Callback called as request to navigate to item, Provides item as argument
- * @param onItemEdit Callback called as request to navigate to item edition, Provides item as argument
+ * @param onItemClick Callback called when the item is clicked. Provides [T] as parameter
+ * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides [T] as parameter
  */
 @Composable
 internal fun <T> ListScreen(
     state: ListScreenState<T>,
-    onItemSelect: (item: T) -> Unit,
-    onItemEdit: (item: T) -> Unit,
+    onItemClick: (item: T) -> Unit,
+    onItemLongClick: (item: T) -> Unit,
 ) where T: FuzzySearchable, T: Named {
     val items = state.items.value.collectAsState(initial = emptyList()).value
     val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
@@ -95,17 +95,17 @@ internal fun <T> ListScreen(
                 modifier = Modifier.weight(1f),
             ) {
                 itemsIndexed(displayItems.toList()) { index, item ->
-                    if (index != 0 && index != displayItems.lastIndex) {
+                    if (index != 0) {
                         SearchItemHorizontalDivider()
                     }
 
                     SearchItem(
                         text = item.name(),
-                        onSelect = {
-                            onItemSelect(item)
+                        onItemClick = {
+                            onItemClick(item)
                         },
-                        onEdit = {
-                            onItemEdit(item)
+                        onItemLongClick = {
+                            onItemLongClick(item)
                         }
                     )
                 }
@@ -140,8 +140,8 @@ private fun ListScreenPreview() {
         Surface {
             ListScreen(
                 state = ListScreenState<ProductWithAltNames>(),
-                onItemSelect = {},
-                onItemEdit = {},
+                onItemClick = {},
+                onItemLongClick = {},
             )
         }
     }

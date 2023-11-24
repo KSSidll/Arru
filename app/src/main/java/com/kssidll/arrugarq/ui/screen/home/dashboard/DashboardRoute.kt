@@ -7,21 +7,24 @@ import dev.olshevski.navigation.reimagined.hilt.*
 @Composable
 internal fun DashboardRoute(
     navigateSettings: () -> Unit,
-    onCategoryCardClick: () -> Unit,
-    onShopCardClick: () -> Unit,
+    navigateCategoryRanking: () -> Unit,
+    navigateShopRanking: () -> Unit,
 ) {
     val viewModel: DashboardViewModel = hiltViewModel()
 
     DashboardScreen(
-        navigateSettings = navigateSettings,
-        onCategoryCardClick = onCategoryCardClick,
-        onShopCardClick = onShopCardClick,
-        totalSpentData = viewModel.getTotalSpent(),
-        spentByShopData = viewModel.getSpentByShop(),
-        spentByCategoryData = viewModel.getSpentByCategory(),
-        spentByTimeData = viewModel.spentByTimeData,
+        onSettingsAction = navigateSettings,
+        onCategoryRankingCardClick = navigateCategoryRanking,
+        onShopRankingCardClick = navigateShopRanking,
+        totalSpentData = viewModel.getTotalSpent()
+            .collectAsState(initial = 0F).value,
+        spentByShopData = viewModel.getSpentByShop()
+            .collectAsState(initial = emptyList()).value,
+        spentByCategoryData = viewModel.getSpentByCategory()
+            .collectAsState(initial = emptyList()).value,
+        spentByTimeData = viewModel.spentByTimeData.collectAsState(initial = emptyList()).value,
         spentByTimePeriod = viewModel.spentByTimePeriod,
-        onSpentByTimePeriodSwitch = {
+        onSpentByTimePeriodUpdate = {
             viewModel.switchToSpentByTimePeriod(it)
         },
     )

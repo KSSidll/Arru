@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.search
+package com.kssidll.arrugarq.ui.screen.search
 
 
 import androidx.lifecycle.*

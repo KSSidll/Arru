@@ -1,4 +1,4 @@
-package com.kssidll.arrugarq.ui.screen.home.search.component
+package com.kssidll.arrugarq.ui.screen.search.component
 
 
 import android.content.res.Configuration.*
@@ -20,27 +20,27 @@ private val DefaultItemHeight: Dp = 80.dp
 @Composable
 internal fun SearchItem(
     text: String,
-    onSelect: () -> Unit,
-    onEdit: (() -> Unit)? = null,
+    onItemClick: () -> Unit,
+    onItemLongClick: (() -> Unit)? = null,
     itemHeight: Dp = DefaultItemHeight,
 ) {
     val containerModifier =
-        if (onEdit == null)
+        if (onItemLongClick == null)
             Modifier.clickable(
                 role = Role.Button,
                 onClickLabel = stringResource(id = R.string.select)
             ) {
-                onSelect()
+                onItemClick()
             }
         else Modifier
             .combinedClickable(
                 role = Role.Button,
                 onClick = {
-                    onSelect()
+                    onItemClick()
                 },
                 onClickLabel = stringResource(id = R.string.select),
                 onLongClick = {
-                    onEdit()
+                    onItemLongClick()
                 },
                 onLongClickLabel = stringResource(id = R.string.edit)
             )
@@ -76,8 +76,8 @@ fun SearchItemPreview() {
         Surface {
             SearchItem(
                 text = "test",
-                onSelect = {},
-                onEdit = {},
+                onItemClick = {},
+                onItemLongClick = {},
             )
         }
     }

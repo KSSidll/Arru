@@ -6,11 +6,12 @@ import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 internal fun TransactionsRoute(
-    onItemEdit: (itemId: Long) -> Unit,
-    onProductSelect: (productId: Long) -> Unit,
-    onCategorySelect: (categoryId: Long) -> Unit,
-    onProducerSelect: (producerId: Long) -> Unit,
-    onShopSelect: (shopId: Long) -> Unit,
+    navigateSearch: () -> Unit,
+    navigateProduct: (productId: Long) -> Unit,
+    navigateCategory: (categoryId: Long) -> Unit,
+    navigateProducer: (producerId: Long) -> Unit,
+    navigateShop: (shopId: Long) -> Unit,
+    navigateItemEdit: (itemId: Long) -> Unit,
 ) {
     val viewModel: TransactionsViewModel = hiltViewModel()
 
@@ -19,10 +20,11 @@ internal fun TransactionsRoute(
             viewModel.queryMoreFullItems()
         },
         items = viewModel.fullItemsData,
-        onItemEdit = onItemEdit,
-        onProductSelect = onProductSelect,
-        onCategorySelect = onCategorySelect,
-        onProducerSelect = onProducerSelect,
-        onShopSelect = onShopSelect,
+        onSearchAction = navigateSearch,
+        onItemClick = navigateProduct,
+        onItemLongClick = navigateItemEdit,
+        onItemCategoryClick = navigateCategory,
+        onItemProducerClick = navigateProducer,
+        onItemShopClick = navigateShop,
     )
 }

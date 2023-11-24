@@ -11,8 +11,8 @@ import kotlinx.coroutines.*
 @Composable
 fun EditShopRoute(
     shopId: Long,
-    onBack: () -> Unit,
-    onBackDelete: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -20,21 +20,21 @@ fun EditShopRoute(
 
     LaunchedEffect(shopId) {
         if (!viewModel.updateState(shopId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ModifyShopScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             viewModel.updateShop(shopId)
-            onBack()
+            navigateBack()
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteShop(shopId)) {
-                    onBackDelete()
+                    navigateBackDelete()
                 }
             }
         },

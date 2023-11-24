@@ -7,23 +7,23 @@ import dev.olshevski.navigation.reimagined.hilt.*
 @Composable
 fun CategoryRoute(
     categoryId: Long,
-    onBack: () -> Unit,
-    onCategoryEdit: () -> Unit,
-    onProductSelect: (productId: Long) -> Unit,
-    onItemEdit: (itemId: Long) -> Unit,
-    onProducerSelect: (producerId: Long) -> Unit,
-    onShopSelect: (shopId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateCategoryEdit: () -> Unit,
+    navigateProduct: (productId: Long) -> Unit,
+    navigateItemEdit: (itemId: Long) -> Unit,
+    navigateProducer: (producerId: Long) -> Unit,
+    navigateShop: (shopId: Long) -> Unit,
 ) {
     val viewModel: CategoryViewModel = hiltViewModel()
 
     LaunchedEffect(categoryId) {
         if (!viewModel.performDataUpdate(categoryId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     CategoryScreen(
-        onBack = onBack,
+        onBack = navigateBack,
         category = viewModel.category,
         transactionItems = viewModel.transactionItems,
         requestMoreTransactionItems = {
@@ -38,10 +38,10 @@ fun CategoryRoute(
             viewModel.switchPeriod(it)
         },
         chartEntryModelProducer = viewModel.chartEntryModelProducer,
-        onProductSelect = onProductSelect,
-        onProducerSelect = onProducerSelect,
-        onShopSelect = onShopSelect,
-        onItemEdit = onItemEdit,
-        onCategoryEdit = onCategoryEdit,
+        onItemClick = navigateProduct,
+        onItemProducerClick = navigateProducer,
+        onItemShopClick = navigateShop,
+        onItemLongClick = navigateItemEdit,
+        onEditAction = navigateCategoryEdit,
     )
 }

@@ -11,12 +11,12 @@ import kotlinx.coroutines.*
 @Composable
 fun EditProductRoute(
     productId: Long,
-    onBack: () -> Unit,
-    onBackDelete: () -> Unit,
-    onProducerAdd: () -> Unit,
-    onCategoryAdd: () -> Unit,
-    onProducerEdit: (producerId: Long) -> Unit,
-    onCategoryEdit: (categoryId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
+    navigateCategoryAdd: () -> Unit,
+    navigateProducerAdd: () -> Unit,
+    navigateCategoryEdit: (categoryId: Long) -> Unit,
+    navigateProducerEdit: (producerId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -24,12 +24,12 @@ fun EditProductRoute(
 
     LaunchedEffect(productId) {
         if (!viewModel.updateState(productId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ModifyProductScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         categories = viewModel.allCategories()
             .collectAsState(initial = emptyList()).value,
@@ -37,19 +37,19 @@ fun EditProductRoute(
             .collectAsState(initial = emptyList()).value,
         onSubmit = {
             viewModel.updateProduct(productId)
-            onBack()
+            navigateBack()
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteProduct(productId)) {
-                    onBackDelete()
+                    navigateBackDelete()
                 }
             }
         },
-        onProducerAdd = onProducerAdd,
-        onCategoryAdd = onCategoryAdd,
-        onProducerEdit = onProducerEdit,
-        onCategoryEdit = onCategoryEdit,
         submitButtonText = stringResource(id = R.string.item_product_edit),
+        onCategoryAddButtonClick = navigateCategoryAdd,
+        onProducerAddButtonClick = navigateProducerAdd,
+        onItemCategoryLongClick = navigateCategoryEdit,
+        onItemProducerLongClick = navigateProducerEdit,
     )
 }

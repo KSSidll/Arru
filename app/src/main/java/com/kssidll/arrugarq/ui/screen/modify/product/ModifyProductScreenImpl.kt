@@ -25,13 +25,13 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param state [ModifyProductScreenState] instance representing the screen state
  * @param categories Categories that can be set for the product
  * @param producers Producers that can be set for current product
- * @param onSubmit Called to request data submission
- * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
- * @param onProducerAdd Called to request navigation to producer adding
- * @param onCategoryAdd Called to request navigation to category adding
- * @param onProducerEdit Called to request navigation to producer edition
- * @param onCategoryEdit Called to request navigation to category edition
+ * @param onSubmit Callback called when the submit action is triggered
+ * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
+ * @param onProducerAddButtonClick Callback called when the producer add button is clicked
+ * @param onCategoryAddButtonClick Callback called when the category add button is clicked
+ * @param onItemProducerLongClick Callback called when the item producer label is long clicked/pressed. Provides producer id as parameter
+ * @param onItemCategoryLongClick Callback called when the item category label is long clicked/pressed. Provides category id as parameter
  */
 @Composable
 fun ModifyProductScreenImpl(
@@ -41,23 +41,22 @@ fun ModifyProductScreenImpl(
     producers: List<ProductProducer>,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
-    onProducerAdd: () -> Unit,
-    onCategoryAdd: () -> Unit,
-    onProducerEdit: (producerId: Long) -> Unit,
-    onCategoryEdit: (categoryId: Long) -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
+    onProducerAddButtonClick: () -> Unit,
+    onCategoryAddButtonClick: () -> Unit,
+    onItemProducerLongClick: (producerId: Long) -> Unit,
+    onItemCategoryLongClick: (categoryId: Long) -> Unit,
 ) {
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
-        onDelete = onDelete,
         onSubmit = onSubmit,
+        onDelete = onDelete,
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.item_product_delete_warning_text),
     ) {
-
         if (state.isProducerSearchDialogExpanded.value) {
             FuzzySearchableListDialog(
                 onDismissRequest = {
@@ -72,10 +71,10 @@ fun ModifyProductScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isProducerSearchDialogExpanded.value = false
-                    onProducerEdit(it.id)
+                    onItemProducerLongClick(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                onAddButtonClick = onProducerAdd,
+                onAddButtonClick = onProducerAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
@@ -94,11 +93,11 @@ fun ModifyProductScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isCategorySearchDialogExpanded.value = false
-                    onCategoryEdit(it.category.id)
+                    onItemCategoryLongClick(it.category.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 itemText = { it.category.name },
-                onAddButtonClick = onCategoryAdd,
+                onAddButtonClick = onCategoryAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
             )
         } else {
@@ -133,7 +132,7 @@ fun ModifyProductScreenImpl(
                 },
                 label = stringResource(R.string.item_product_producer),
                 onAddButtonClick = {
-                    onProducerAdd()
+                    onProducerAddButtonClick()
                 },
                 addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                 optional = true,
@@ -153,7 +152,7 @@ fun ModifyProductScreenImpl(
                 },
                 label = stringResource(R.string.item_product_category),
                 onAddButtonClick = {
-                    onCategoryAdd()
+                    onCategoryAddButtonClick()
                 },
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
                 error = if (state.attemptedToSubmit.value) state.selectedProductCategoryError.value else false,
@@ -255,10 +254,10 @@ fun ModifyProductScreenImplPreview() {
                 categories = emptyList(),
                 producers = emptyList(),
                 onSubmit = {},
-                onProducerAdd = {},
-                onProducerEdit = {},
-                onCategoryAdd = {},
-                onCategoryEdit = {},
+                onProducerAddButtonClick = {},
+                onItemProducerLongClick = {},
+                onCategoryAddButtonClick = {},
+                onItemCategoryLongClick = {},
             )
         }
     }

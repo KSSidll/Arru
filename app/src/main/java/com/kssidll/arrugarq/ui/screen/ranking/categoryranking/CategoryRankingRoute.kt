@@ -8,23 +8,23 @@ import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 fun CategoryRankingRoute(
-    onBack: () -> Unit,
-    onCategorySelect: (categoryId: Long) -> Unit,
-    onCategoryEdit: (categoryId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateCategory: (categoryId: Long) -> Unit,
+    navigateCategoryEdit: (categoryId: Long) -> Unit,
 ) {
     val viewModel: CategoryRankingViewModel = hiltViewModel()
 
     RankingScreen(
-        onBack = onBack,
+        onBack = navigateBack,
         title = stringResource(R.string.categories),
         data = viewModel.categoryTotalSpentFlow()
             .collectAsState(emptyList()).value,
         onItemClick = {
-            onCategorySelect(it.category.id)
+            navigateCategory(it.category.id)
         },
         onItemClickLabel = stringResource(id = R.string.select),
         onItemLongClick = {
-            onCategoryEdit(it.category.id)
+            navigateCategoryEdit(it.category.id)
         },
         onItemLongClickLabel = stringResource(id = R.string.edit),
     )

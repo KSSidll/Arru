@@ -7,17 +7,17 @@ import kotlinx.coroutines.*
 
 @Composable
 fun AddProductRoute(
-    onBack: () -> Unit,
-    onCategoryAdd: () -> Unit,
-    onProducerAdd: () -> Unit,
-    onCategoryEdit: (categoryId: Long) -> Unit,
-    onProducerEdit: (producerId: Long) -> Unit,
+    navigateBack: () -> Unit,
+    navigateCategoryAdd: () -> Unit,
+    navigateProducerAdd: () -> Unit,
+    navigateCategoryEdit: (categoryId: Long) -> Unit,
+    navigateProducerEdit: (producerId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddProductViewModel = hiltViewModel()
 
     ModifyProductScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         categories = viewModel.allCategories()
             .collectAsState(initial = emptyList()).value,
@@ -26,12 +26,12 @@ fun AddProductRoute(
         onSubmit = {
             scope.launch {
                 val result = viewModel.addProduct()
-                if (result != null) onBack()
+                if (result != null) navigateBack()
             }
         },
-        onProducerAdd = onProducerAdd,
-        onCategoryAdd = onCategoryAdd,
-        onCategoryEdit = onCategoryEdit,
-        onProducerEdit = onProducerEdit,
+        onCategoryAddButtonClick = navigateCategoryAdd,
+        onProducerAddButtonClick = navigateProducerAdd,
+        onItemCategoryLongClick = navigateCategoryEdit,
+        onItemProducerLongClick = navigateProducerEdit,
     )
 }

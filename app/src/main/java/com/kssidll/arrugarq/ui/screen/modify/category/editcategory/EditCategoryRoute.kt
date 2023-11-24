@@ -11,8 +11,8 @@ import kotlinx.coroutines.*
 @Composable
 fun EditCategoryRoute(
     categoryId: Long,
-    onBack: () -> Unit,
-    onBackDelete: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -20,21 +20,21 @@ fun EditCategoryRoute(
 
     LaunchedEffect(categoryId) {
         if (!viewModel.updateState(categoryId)) {
-            onBack()
+            navigateBack()
         }
     }
 
     ModifyCategoryScreenImpl(
-        onBack = onBack,
+        onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
             viewModel.updateCategory(categoryId)
-            onBack()
+            navigateBack()
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteCategory(categoryId)) {
-                    onBackDelete()
+                    navigateBackDelete()
                 }
             }
         },

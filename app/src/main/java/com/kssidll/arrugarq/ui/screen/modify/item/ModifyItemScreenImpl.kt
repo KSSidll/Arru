@@ -33,16 +33,16 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param shops Shops that can be set for the item
  * @param products Products that can be set for the item
  * @param variants Variants that can be set for current item
- * @param onSubmit Called to request data submission
- * @param onDelete Called to request a delete operation
- * @param onShopAdd Called to request navigation to producer adding
- * @param onProductAdd Called to request navigation to product adding
- * @param onVariantAdd Called to request navigation to variant adding
- * @param onShopEdit Called to request navigation to producer edition
- * @param onProductEdit Called to request navigation to product edition
- * @param onVariantEdit Called to request navigation to variant edition
+ * @param onSubmit Callback called when the submit action is triggered
+ * @param onDelete Callback called when the delete action is triggered
  * @param onProductChange Callback called when the product representation in state is changed
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
+ * @param onProductAddButtonClick Callback called when the product add button is clicked
+ * @param onVariantAddButtonClick Callback called when the variant add button is clicked. Provides product id as parameter
+ * @param onShopAddButtonClick Callback called when the shop add button is clicked
+ * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides product id as parameter
+ * @param onItemVariantLongClick Callback called when the item variant label is long clicked/pressed. Provides variant id as parameter
+ * @param onItemShopLongClick Callback called when the item shop label is long clicked/pressed. Provides shop id as parameter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,22 +54,22 @@ fun ModifyItemScreenImpl(
     variants: List<ProductVariant>,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
-    onShopAdd: () -> Unit,
-    onProductAdd: () -> Unit,
-    onVariantAdd: (productId: Long) -> Unit,
-    onShopEdit: (shopId: Long) -> Unit,
-    onProductEdit: (productId: Long) -> Unit,
-    onVariantEdit: (variantId: Long) -> Unit,
     onProductChange: () -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_add),
+    onProductAddButtonClick: () -> Unit,
+    onVariantAddButtonClick: (productId: Long) -> Unit,
+    onShopAddButtonClick: () -> Unit,
+    onItemLongClick: (productId: Long) -> Unit,
+    onItemVariantLongClick: (variantId: Long) -> Unit,
+    onItemShopLongClick: (shopId: Long) -> Unit,
 ) {
     val datePickerState = rememberDatePickerState()
 
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item),
-        onDelete = onDelete,
         onSubmit = onSubmit,
+        onDelete = onDelete,
         submitButtonText = submitButtonText,
     ) {
         if (state.isDatePickerDialogExpanded.value) {
@@ -122,10 +122,10 @@ fun ModifyItemScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isShopSearchDialogExpanded.value = false
-                    onShopEdit(it.id)
+                    onItemShopLongClick(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                onAddButtonClick = onShopAdd,
+                onAddButtonClick = onShopAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_shop_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
@@ -145,11 +145,11 @@ fun ModifyItemScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isProductSearchDialogExpanded.value = false
-                    onProductEdit(it.product.id)
+                    onItemLongClick(it.product.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 itemText = { it.product.name },
-                onAddButtonClick = onProductAdd,
+                onAddButtonClick = onProductAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_add_description),
             )
         } else if (state.isVariantSearchDialogExpanded.value) {
@@ -166,12 +166,12 @@ fun ModifyItemScreenImpl(
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isVariantSearchDialogExpanded.value = false
-                    onVariantEdit(it.id)
+                    onItemVariantLongClick(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = {
                     state.selectedProduct.value?.let {
-                        onVariantAdd(it.id)
+                        onVariantAddButtonClick(it.id)
                     }
                 },
                 addButtonDescription = stringResource(R.string.item_product_variant_add_description),
@@ -426,7 +426,7 @@ fun ModifyItemScreenImpl(
             },
             label = stringResource(R.string.item_shop),
             onAddButtonClick = {
-                onShopAdd()
+                onShopAddButtonClick()
             },
             addButtonDescription = stringResource(R.string.item_shop_add_description),
             modifier = Modifier
@@ -446,7 +446,7 @@ fun ModifyItemScreenImpl(
             label = stringResource(R.string.item_product),
             error = if (state.attemptedToSubmit.value) state.selectedProductError.value else false,
             onAddButtonClick = {
-                onProductAdd()
+                onProductAddButtonClick()
             },
             addButtonDescription = stringResource(R.string.item_product_add_description),
             modifier = Modifier
@@ -467,7 +467,7 @@ fun ModifyItemScreenImpl(
             label = stringResource(R.string.item_product_variant),
             onAddButtonClick = {
                 state.selectedProduct.value?.let {
-                    onVariantAdd(it.id)
+                    onVariantAddButtonClick(it.id)
                 }
             },
             addButtonDescription = stringResource(R.string.item_product_variant_add_description),
@@ -600,12 +600,12 @@ fun ModifyItemScreenImplPreview() {
                 products = emptyList(),
                 variants = emptyList(),
                 onSubmit = {},
-                onShopAdd = {},
-                onShopEdit = {},
-                onProductAdd = {},
-                onProductEdit = {},
-                onVariantAdd = {},
-                onVariantEdit = {},
+                onShopAddButtonClick = {},
+                onItemShopLongClick = {},
+                onProductAddButtonClick = {},
+                onItemLongClick = {},
+                onVariantAddButtonClick = {},
+                onItemVariantLongClick = {},
                 onProductChange = {},
             )
         }

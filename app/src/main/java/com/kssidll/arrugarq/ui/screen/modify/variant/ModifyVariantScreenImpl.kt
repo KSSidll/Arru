@@ -23,8 +23,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * [ModifyScreen] implementation for [ProductVariant]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyVariantScreenState] instance representing the screen state
- * @param onSubmit Called to request data submission
- * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onSubmit Callback called when the submit action is triggered
+ * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to variant add string resource
  */
 @Composable
@@ -38,8 +38,8 @@ fun ModifyVariantScreenImpl(
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
-        onDelete = onDelete,
         onSubmit = onSubmit,
+        onDelete = onDelete,
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
