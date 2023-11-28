@@ -64,7 +64,7 @@ abstract class ModifyItemViewModel: ViewModel() {
             return@launch
         }
 
-        val shop = shopRepository.get(lastItemByProduct.shopId!!)
+        val shop = lastItemByProduct.shopId?.let { shopRepository.get(it) }
 
         screenState.selectedShop.value = shop
 

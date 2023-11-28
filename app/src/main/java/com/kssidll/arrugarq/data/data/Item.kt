@@ -63,8 +63,8 @@ data class Item(
         productId: Long,
         variantId: Long?,
         shopId: Long?,
-        actualQuantity: Float,
-        actualPrice: Float,
+        actualQuantity: Double,
+        actualPrice: Double,
         date: Long
     ): this(
         id,
@@ -79,14 +79,14 @@ data class Item(
     )
 
     @Ignore
-    fun actualQuantity(): Float {
-        return quantity.toFloat()
+    fun actualQuantity(): Double {
+        return quantity.toDouble()
             .div(QUANTITY_DIVISOR)
     }
 
     @Ignore
-    fun actualPrice(): Float {
-        return price.toFloat()
+    fun actualPrice(): Double {
+        return price.toDouble()
             .div(PRICE_DIVISOR)
     }
 
@@ -121,8 +121,8 @@ data class ItemSpentByTime(
     val time: String,
     val total: Long,
 ): Chartable {
-    override fun value(): Float {
-        return total.toFloat()
+    override fun value(): Double {
+        return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 
@@ -133,7 +133,7 @@ data class ItemSpentByTime(
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
-            value()
+            value().toFloat()
         )
     }
 
@@ -158,8 +158,8 @@ data class ItemSpentByShop(
     @Embedded val shop: Shop,
     val total: Long,
 ): Rankable {
-    override fun value(): Float {
-        return total.toFloat()
+    override fun value(): Double {
+        return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 
@@ -172,8 +172,7 @@ data class ItemSpentByShop(
     }
 
     override fun displayValue(): String {
-        return value()
-            .formatToCurrency(dropDecimal = true)
+        return value().formatToCurrency(dropDecimal = true)
     }
 
     override fun identificator(): Long {
@@ -185,8 +184,8 @@ data class ItemSpentByCategory(
     @Embedded val category: ProductCategory,
     val total: Long,
 ): Rankable {
-    override fun value(): Float {
-        return total.toFloat()
+    override fun value(): Double {
+        return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 

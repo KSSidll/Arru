@@ -2,13 +2,13 @@ package com.kssidll.arrugarq.helper
 
 class StringHelper {
     companion object {
-        fun toFloatOrNull(value: String): Float? {
+        fun toDoubleOrNull(value: String): Double? {
             return if (RegexHelper.isFloat(value)) {
                 value.replace(
                     Regex("\\D"),
                     "."
                 )
-                    .toFloatOrNull()
+                    .toDoubleOrNull()
             } else null
         }
     }

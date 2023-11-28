@@ -51,8 +51,8 @@ fun TotalAverageAndMedianSpendingComponent(
                 .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            var averageTargetValue by remember { mutableFloatStateOf(spentByTimeData.avg()) }
-            var medianTargetValue by remember { mutableFloatStateOf(spentByTimeData.median()) }
+            var averageTargetValue by remember { mutableDoubleStateOf(spentByTimeData.avg()) }
+            var medianTargetValue by remember { mutableDoubleStateOf(spentByTimeData.median()) }
 
             LaunchedEffect(spentByTimeData) {
                 averageTargetValue = spentByTimeData.avg()
@@ -60,13 +60,13 @@ fun TotalAverageAndMedianSpendingComponent(
             }
 
             val animatedAverageValue = animateFloatAsState(
-                targetValue = averageTargetValue,
+                targetValue = averageTargetValue.toFloat(),
                 animationSpec = animationSpec,
                 label = "average spent value animation"
             )
 
             val animatedMedianValue = animateFloatAsState(
-                targetValue = medianTargetValue,
+                targetValue = medianTargetValue.toFloat(),
                 animationSpec = animationSpec,
                 label = "median spent value animation"
             )

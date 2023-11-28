@@ -243,7 +243,7 @@ fun ModifyItemScreenImpl(
                     enabled = priceEnabled,
                     onClick = {
                         if (state.validatePrice()) {
-                            val value = StringHelper.toFloatOrNull(state.price.value)
+                            val value = StringHelper.toDoubleOrNull(state.price.value)
                                 ?: error("Price validation failed, got null instead of float")
 
                             state.price.value = "%.2f".format(
@@ -272,7 +272,7 @@ fun ModifyItemScreenImpl(
                     enabled = priceEnabled,
                     onClick = {
                         if (state.validatePrice()) {
-                            val value = StringHelper.toFloatOrNull(state.price.value)
+                            val value = StringHelper.toDoubleOrNull(state.price.value)
                                 ?: error("Price validation failed, got null instead of float")
 
                             state.price.value = "%.2f".format(
@@ -353,7 +353,7 @@ fun ModifyItemScreenImpl(
                     enabled = quantityEnabled,
                     onClick = {
                         if (state.validateQuantity()) {
-                            val value = StringHelper.toFloatOrNull(state.quantity.value)
+                            val value = StringHelper.toDoubleOrNull(state.quantity.value)
                                 ?: error("Quantity validation failed, got null instead of float")
 
                             state.quantity.value = "%.3f".format(
@@ -382,7 +382,7 @@ fun ModifyItemScreenImpl(
                     enabled = quantityEnabled,
                     onClick = {
                         if (state.validateQuantity()) {
-                            val value = StringHelper.toFloatOrNull(state.quantity.value)
+                            val value = StringHelper.toDoubleOrNull(state.quantity.value)
                                 ?: error("Quantity validation failed, got null instead of float")
 
                             state.quantity.value = "%.3f".format(
@@ -527,7 +527,7 @@ fun ModifyItemScreenState.validateSelectedProduct(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 fun ModifyItemScreenState.validateQuantity(): Boolean {
-    return !(StringHelper.toFloatOrNull(quantity.value) == null).also { quantityError.value = it }
+    return !(StringHelper.toDoubleOrNull(quantity.value) == null).also { quantityError.value = it }
 }
 
 /**
@@ -535,7 +535,7 @@ fun ModifyItemScreenState.validateQuantity(): Boolean {
  * @return true if field is of correct value, false otherwise
  */
 fun ModifyItemScreenState.validatePrice(): Boolean {
-    return !(StringHelper.toFloatOrNull(price.value) == null).also { priceError.value = it }
+    return !(StringHelper.toDoubleOrNull(price.value) == null).also { priceError.value = it }
 }
 
 /**
@@ -571,8 +571,8 @@ fun ModifyItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
         productId = selectedProduct.value?.id ?: return null,
         variantId = selectedVariant.value?.id,
         shopId = selectedShop.value?.id,
-        actualQuantity = StringHelper.toFloatOrNull(quantity.value) ?: return null,
-        actualPrice = StringHelper.toFloatOrNull(price.value) ?: return null,
+        actualQuantity = StringHelper.toDoubleOrNull(quantity.value) ?: return null,
+        actualPrice = StringHelper.toDoubleOrNull(price.value) ?: return null,
         date = date.value ?: return null,
     )
 }
