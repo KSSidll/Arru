@@ -93,7 +93,7 @@ fun ShopPriceCompareChart(
         )
     }
 
-    if (chartEntryModelProducer.getModel()?.entries?.maxOfOrNull { it.size }.orZero > chartMinimumEntrySize) {
+    if (chartEntryModelProducer.getModel().entries.maxOfOrNull { it.size }.orZero > chartMinimumEntrySize) {
         Chart(
             chart = lineChart(
                 lines = chartColorsMap.map {

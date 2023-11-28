@@ -4,18 +4,13 @@ package com.kssidll.arrugarq.ui.screen.settings
 import androidx.annotation.*
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.os.*
-import androidx.datastore.core.*
-import androidx.datastore.preferences.core.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.domain.*
 import dagger.hilt.android.lifecycle.*
 import javax.inject.*
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-): ViewModel() {
-    val screenState: SettingsScreenState = SettingsScreenState()
+class SettingsViewModel @Inject constructor(): ViewModel() {
 
     /**
      * Sets application locale to [locale]

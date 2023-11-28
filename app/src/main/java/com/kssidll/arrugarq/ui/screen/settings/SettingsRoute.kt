@@ -11,7 +11,6 @@ fun SettingsRoute(
     val viewModel: SettingsViewModel = hiltViewModel()
 
     SettingsScreen(
-        state = viewModel.screenState,
         setLocale = {
             viewModel.setLocale(it)
         },

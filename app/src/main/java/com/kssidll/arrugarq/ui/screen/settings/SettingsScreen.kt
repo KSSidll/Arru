@@ -2,10 +2,7 @@ package com.kssidll.arrugarq.ui.screen.settings
 
 
 import android.content.res.Configuration.*
-import androidx.appcompat.app.AppCompatDelegate.*
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -15,18 +12,16 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.ui.component.other.*
+import com.kssidll.arrugarq.ui.screen.settings.component.*
 import com.kssidll.arrugarq.ui.theme.*
-import java.util.*
 
 /**
- * @param state [SettingsScreenState] instance representing the screen state
  * @param setLocale Callback called as request to change current Locale. Provides requested locale as parameter
  * @param onBack Called to request a back navigation
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
-    state: SettingsScreenState,
     setLocale: (locale: AppLocale?) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -47,102 +42,14 @@ internal fun SettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Box(modifier = Modifier.fillMaxWidth()) {
-                var dropdownExpanded by remember { mutableStateOf(false) }
-
-                ExposedDropdownMenuBox(
-                    expanded = dropdownExpanded,
-                    onExpandedChange = {
-                        dropdownExpanded = !dropdownExpanded
-                    },
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                ) {
-                    // no support for multiple languages so we just check for first value
-                    val currentLocale = getApplicationLocales()[0]
-
-                    TextField(
-                        readOnly = true,
-                        value = currentLocale?.displayLanguage?.replaceFirstChar { it.titlecase(currentLocale) }
-                            ?: "System",
-                        textStyle = Typography.bodyMedium,
-                        onValueChange = {},
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(id = R.string.language),
-                                style = Typography.titleLarge
-                            )
-                        },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors(
-                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                            focusedContainerColor = MaterialTheme.colorScheme.background,
-                            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                            focusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        ),
-                        modifier = Modifier.menuAnchor()
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = dropdownExpanded,
-                        onDismissRequest = {
-                            dropdownExpanded = false
-                        },
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceContainer,
-                                shape = RoundedCornerShape(
-                                    bottomStart = 8.dp,
-                                    bottomEnd = 8.dp
-                                ),
-                            )
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(id = R.string.system),
-                                    style = Typography.bodyLarge,
-                                )
-                            },
-                            onClick = {
-                                setLocale(null)
-                                dropdownExpanded = false
-                            },
-                        )
-
-                        AppLocale.entries.forEach { appLocale ->
-                            val locale = Locale(appLocale.code)
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = locale.getDisplayName(locale)
-                                            .replaceFirstChar { it.titlecase(locale) },
-                                        style = Typography.bodyLarge,
-                                    )
-                                },
-                                onClick = {
-                                    setLocale(appLocale)
-                                    dropdownExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                LanguageExposedDropdown(
+                    setLocale = setLocale,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
-
-            //            HorizontalDivider()
         }
     }
 }
-
-/**
- * Data representing [SettingsScreen] screen state
- */
-data class SettingsScreenState(
-    val placeholder: MutableState<Boolean> = mutableStateOf(false),
-)
 
 @Preview(
     group = "SettingsScreen",
@@ -161,7 +68,6 @@ private fun SettingsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SettingsScreen(
-                state = SettingsScreenState(),
                 setLocale = {},
                 onBack = {},
             )
