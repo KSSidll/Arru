@@ -39,7 +39,7 @@ fun ProgressBar(
     ) {
         LinearProgressIndicator(
             color = MaterialTheme.colorScheme.tertiary,
-            progress = animatedValue.value,
+            progress = { animatedValue.value },
         )
     }
 }

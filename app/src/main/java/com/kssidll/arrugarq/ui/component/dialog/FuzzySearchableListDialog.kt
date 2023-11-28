@@ -14,6 +14,7 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.field.*
@@ -65,7 +66,7 @@ fun <T> FuzzySearchableListDialog(
         displayedItems = items.fuzzySearchSort(query)
     }
 
-    AlertDialog(onDismissRequest = onDismissRequest) {
+    Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             modifier = Modifier
                 .requiredWidth(360.dp)

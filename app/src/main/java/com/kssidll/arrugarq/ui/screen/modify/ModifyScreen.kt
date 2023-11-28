@@ -43,7 +43,7 @@ fun ModifyScreen(
 ) {
     Box {
         if (showDeleteWarning.value) {
-            AlertDialog(
+            BasicAlertDialog(
                 onDismissRequest = {},
                 modifier = Modifier
                     .width(360.dp)

@@ -1,7 +1,7 @@
 [versions]
 ## Libraries
 # AndroidX
-activity-compose = "1.8.0"
+activity-compose = "1.8.1"
 core-splashscreen = "1.0.1"
 appcompat = "1.7.0-alpha03"
 datastore-preferences = "1.1.0-alpha06"
@@ -12,9 +12,9 @@ accompanist-systemuicontroller = "0.32.0"
 reimagined = "1.5.0"
 
 # Compose
-compose-ui = "1.6.0-alpha07"
-material3 = "1.2.0-alpha09"
-material = "1.6.0-alpha07"
+compose-ui = "1.6.0-beta01"
+material3 = "1.2.0-alpha11"
+material = "1.6.0-beta01"
 
 # DI
 hilt = "2.48"
@@ -27,10 +27,10 @@ fuzzywuzzy = "1.4.0"
 vico-compose = "1.12.0"
 
 ## Plugins
-agp = "8.3.0-alpha14"
-kotlin = "1.9.10"
+agp = "8.3.0-alpha15"
+kotlin = "1.9.20"
 # hilt plugin has same version as hilt library so it is declared in the library section
-ksp = "1.9.10-1.0.13"
+ksp = "1.9.20-1.0.14"
 
 [libraries]
 # AndroidX
