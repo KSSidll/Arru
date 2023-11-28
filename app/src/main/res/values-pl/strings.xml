@@ -83,4 +83,6 @@
     <string name="system">System</string>
     <string name="average">Średnia</string>
     <string name="median">Mediana</string>
+    <string name="settings">Ustawienia</string>
+    <string name="language">Język</string>
 </resources>

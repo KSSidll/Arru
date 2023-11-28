@@ -83,4 +83,6 @@
     <string name="system">System</string>
     <string name="average">Average</string>
     <string name="median">Median</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
 </resources>

@@ -3,7 +3,9 @@ package com.kssidll.arrugarq.ui.screen.settings
 
 import android.content.res.Configuration.*
 import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -18,6 +20,7 @@ import java.util.*
 
 /**
  * @param state [SettingsScreenState] instance representing the screen state
+ * @param setLocale Callback called as request to change current Locale. Provides requested locale as parameter
  * @param onBack Called to request a back navigation
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +35,10 @@ internal fun SettingsScreen(
             SecondaryAppBar(
                 onBack = onBack,
                 title = {
-
+                    Text(
+                        text = stringResource(id = R.string.settings),
+                        style = Typography.titleLarge,
+                    )
                 },
             )
         }
@@ -40,11 +46,7 @@ internal fun SettingsScreen(
         Column(modifier = Modifier.padding(paddingValues)) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
+            Box(modifier = Modifier.fillMaxWidth()) {
                 var dropdownExpanded by remember { mutableStateOf(false) }
 
                 ExposedDropdownMenuBox(
@@ -52,6 +54,8 @@ internal fun SettingsScreen(
                     onExpandedChange = {
                         dropdownExpanded = !dropdownExpanded
                     },
+                    modifier = Modifier
+                        .align(Alignment.Center)
                 ) {
                     // no support for multiple languages so we just check for first value
                     val currentLocale = getApplicationLocales()[0]
@@ -60,11 +64,23 @@ internal fun SettingsScreen(
                         readOnly = true,
                         value = currentLocale?.displayLanguage?.replaceFirstChar { it.titlecase(currentLocale) }
                             ?: "System",
+                        textStyle = Typography.bodyMedium,
                         onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
                         },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        label = {
+                            Text(
+                                text = stringResource(id = R.string.language),
+                                style = Typography.titleLarge
+                            )
+                        },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(
+                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.background,
+                        ),
                         modifier = Modifier.menuAnchor()
                     )
 
@@ -72,7 +88,15 @@ internal fun SettingsScreen(
                         expanded = dropdownExpanded,
                         onDismissRequest = {
                             dropdownExpanded = false
-                        }
+                        },
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceContainer,
+                                shape = RoundedCornerShape(
+                                    bottomStart = 8.dp,
+                                    bottomEnd = 8.dp
+                                ),
+                            )
                     ) {
                         DropdownMenuItem(
                             text = {
@@ -84,7 +108,7 @@ internal fun SettingsScreen(
                             onClick = {
                                 setLocale(null)
                                 dropdownExpanded = false
-                            }
+                            },
                         )
 
                         AppLocale.entries.forEach { appLocale ->
@@ -104,10 +128,11 @@ internal fun SettingsScreen(
                                 }
                             )
                         }
-
                     }
                 }
             }
+
+            //            HorizontalDivider()
         }
     }
 }
