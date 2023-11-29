@@ -63,8 +63,8 @@ private fun getRowHeight(
 
 /**
  * Generic ranking list
- * @param T Type of item, needs to implement [Rankable]
- * @param items List of items to display, the items will be sorted by their value, items need to implement [Rankable]
+ * @param T Type of item, needs to implement [RankSource]
+ * @param items List of items to display, the items will be sorted by their value, items need to implement [RankSource]
  * @param modifier Modifier applied to the container
  * @param innerItemPadding Padding applied to the item container
  * @param displayCount How many items to display, 0 means all
@@ -88,7 +88,7 @@ fun <T> RankingList(
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
     onItemLongClickLabel: String? = null,
-) where T: Rankable {
+) where T: RankSource {
     val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
 

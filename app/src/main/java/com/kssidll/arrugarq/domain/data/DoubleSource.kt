@@ -1,10 +1,10 @@
 package com.kssidll.arrugarq.domain.data
 
-interface DoubleProvider {
+interface DoubleSource {
     fun value(): Double
 }
 
-fun <E> List<E>.avg(): Double where E: DoubleProvider {
+fun <E> List<E>.avg(): Double where E: DoubleSource {
     if (isEmpty()) return 0.0
 
     var sum = 0.0

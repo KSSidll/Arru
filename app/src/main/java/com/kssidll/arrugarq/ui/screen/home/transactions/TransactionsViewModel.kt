@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -23,7 +23,7 @@ internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
-    private val itemRepository: IItemRepository,
+    private val itemRepository: ItemRepositorySource,
 ): ViewModel() {
     private var fullItemsDataQuery: Job = Job()
     var fullItemsData: SnapshotStateList<FullItem> = mutableStateListOf()

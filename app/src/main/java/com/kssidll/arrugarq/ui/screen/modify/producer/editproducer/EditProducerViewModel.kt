@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.producer.editproducer
 
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.producer.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -10,10 +10,10 @@ import javax.inject.*
 
 @HiltViewModel
 class EditProducerViewModel @Inject constructor(
-    override val producerRepository: IProducerRepository,
-    private val productRepository: IProductRepository,
-    private val variantRepository: IVariantRepository,
-    private val itemRepository: IItemRepository,
+    override val producerRepository: ProducerRepositorySource,
+    private val productRepository: ProductRepositorySource,
+    private val variantRepository: VariantRepositorySource,
+    private val itemRepository: ItemRepositorySource,
 ): ModifyProducerViewModel() {
 
     /**

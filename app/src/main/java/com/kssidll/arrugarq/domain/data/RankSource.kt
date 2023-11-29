@@ -1,6 +1,6 @@
 package com.kssidll.arrugarq.domain.data
 
-interface Rankable: Sortable, DoubleProvider, Identifiable {
+interface RankSource: SortSource, DoubleSource, IdentitySource {
     fun displayName(): String
     fun displayValue(): String
 }

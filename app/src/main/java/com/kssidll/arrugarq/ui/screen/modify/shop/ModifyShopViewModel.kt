@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import kotlinx.coroutines.*
 
 /**
@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
  * @property updateState Updates the screen state representation property values to represent the Shop matching provided id, only changes representation data and loading state
  */
 abstract class ModifyShopViewModel: ViewModel() {
-    protected abstract val shopRepository: IShopRepository
+    protected abstract val shopRepository: ShopRepositorySource
 
     internal val screenState: ModifyShopScreenState = ModifyShopScreenState()
 

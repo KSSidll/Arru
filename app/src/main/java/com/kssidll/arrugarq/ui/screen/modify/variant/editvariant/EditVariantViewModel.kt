@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.variant.editvariant
 
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -10,8 +10,8 @@ import javax.inject.*
 
 @HiltViewModel
 class EditVariantViewModel @Inject constructor(
-    override val variantRepository: IVariantRepository,
-    private val itemRepository: IItemRepository,
+    override val variantRepository: VariantRepositorySource,
+    private val itemRepository: ItemRepositorySource,
 ): ModifyVariantViewModel() {
 
     /**

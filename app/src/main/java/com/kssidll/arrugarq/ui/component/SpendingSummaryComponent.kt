@@ -20,7 +20,7 @@ import com.patrykandpatrick.vico.core.entry.*
 
 @Composable
 fun SpendingSummaryComponent(
-    spentByTimeData: List<Chartable>,
+    spentByTimeData: List<ChartSource>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
     modifier: Modifier = Modifier,

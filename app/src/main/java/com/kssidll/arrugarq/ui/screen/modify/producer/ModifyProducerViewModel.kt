@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.producer
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import kotlinx.coroutines.*
 
 /**
@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
  * @property updateState Updates the screen state representation property values to represent the Producer matching provided id, only changes representation data and loading state
  */
 abstract class ModifyProducerViewModel: ViewModel() {
-    protected abstract val producerRepository: IProducerRepository
+    protected abstract val producerRepository: ProducerRepositorySource
 
     internal val screenState: ModifyProducerScreenState = ModifyProducerScreenState()
 

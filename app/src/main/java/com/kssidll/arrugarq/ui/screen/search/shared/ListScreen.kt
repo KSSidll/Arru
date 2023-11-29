@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.*
 
 /**
  * Generic list screen
- * @param T Type of item, needs to implement [FuzzySearchable] and [Named]
+ * @param T Type of item, needs to implement [FuzzySearchSource] and [NameSource]
  * @param state [ListScreenState] representing the screen state
  * @param onItemClick Callback called when the item is clicked. Provides [T] as parameter
  * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides [T] as parameter
@@ -34,7 +34,7 @@ internal fun <T> ListScreen(
     state: ListScreenState<T>,
     onItemClick: (item: T) -> Unit,
     onItemLongClick: (item: T) -> Unit,
-) where T: FuzzySearchable, T: Named {
+) where T: FuzzySearchSource, T: NameSource {
     val items = state.items.value.collectAsState(initial = emptyList()).value
     val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
 
@@ -120,7 +120,7 @@ internal fun <T> ListScreen(
 internal data class ListScreenState<T>(
     val filter: MutableState<String> = mutableStateOf(String()),
     val items: MutableState<Flow<List<T>>> = mutableStateOf(flowOf()),
-) where T: FuzzySearchable, T: Named
+) where T: FuzzySearchSource, T: NameSource
 
 @Preview(
     group = "ListScreen",

@@ -5,8 +5,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.*
-import com.kssidll.arrugarq.domain.repository.*
 import com.kssidll.arrugarq.ui.screen.display.shop.fullItemFetchCount
 import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
@@ -26,8 +26,8 @@ internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class ProducerViewModel @Inject constructor(
-    private val itemRepository: IItemRepository,
-    private val producerRepository: IProducerRepository,
+    private val itemRepository: ItemRepositorySource,
+    private val producerRepository: ProducerRepositorySource,
 ): ViewModel() {
     private val mProducer: MutableState<ProductProducer?> = mutableStateOf(null)
     val producer: ProductProducer? by mProducer

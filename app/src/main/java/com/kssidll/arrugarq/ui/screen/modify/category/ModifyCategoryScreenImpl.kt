@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -46,11 +47,11 @@ fun ModifyCategoryScreenImpl(
         deleteWarningMessage = stringResource(id = R.string.item_product_category_delete_warning_text),
     ) {
         StyledOutlinedTextField(
-            enabled = !state.loadingName.value,
+            enabled = state.name.value.isEnabled(),
             singleLine = true,
-            value = state.name.value,
+            value = state.name.value.data ?: String(),
             onValueChange = {
-                state.name.value = it
+                state.name.value = Field.Loaded(it)
                 state.validateName()
             },
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -66,7 +67,26 @@ fun ModifyCategoryScreenImpl(
                     text = stringResource(R.string.item_product_category),
                 )
             },
-            isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
+            supportingText = {
+                if (state.attemptedToSubmit.value && state.name.value.error != null) {
+                    when (state.name.value.error!!) {
+                        FieldError.NoValueError -> {
+                            Text(
+                                text = stringResource(id = R.string.no_value_error_text),
+                                style = Typography.bodySmall,
+                            )
+                        }
+
+                        FieldError.DuplicateValueError -> {
+                            Text(
+                                text = stringResource(id = R.string.duplicate_value_error),
+                                style = Typography.bodySmall,
+                            )
+                        }
+                    }
+                }
+            },
+            isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding)
@@ -80,10 +100,7 @@ fun ModifyCategoryScreenImpl(
 data class ModifyCategoryScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
 
-    val name: MutableState<String> = mutableStateOf(String()),
-    val nameError: MutableState<Boolean> = mutableStateOf(false),
-
-    val loadingName: MutableState<Boolean> = mutableStateOf(false),
+    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String())),
 
     val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
     val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
@@ -94,7 +111,13 @@ data class ModifyCategoryScreenState(
  * @return true if field is of correct value, false otherwise
  */
 fun ModifyCategoryScreenState.validateName(): Boolean {
-    return !(name.value.isBlank()).also { nameError.value = it }
+    if (name.value.data?.isBlank() == true) {
+        name.apply {
+            value = value.toError(FieldError.NoValueError)
+        }
+    }
+
+    return name.value.isNotError()
 }
 
 /**
@@ -114,7 +137,7 @@ fun ModifyCategoryScreenState.extractCategoryOrNull(categoryId: Long = 0): Produ
 
     return ProductCategory(
         id = categoryId,
-        name = name.value.trim(),
+        name = name.value.data?.trim() ?: return null,
     )
 }
 

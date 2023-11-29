@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.product.editproduct
 
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -10,11 +10,11 @@ import javax.inject.*
 
 @HiltViewModel
 class EditProductViewModel @Inject constructor(
-    override val productRepository: IProductRepository,
-    override val producerRepository: IProducerRepository,
-    override val categoryRepository: ICategoryRepository,
-    private val variantRepository: IVariantRepository,
-    private val itemRepository: IItemRepository,
+    override val productRepository: ProductRepositorySource,
+    override val producerRepository: ProducerRepositorySource,
+    override val categoryRepository: CategoryRepositorySource,
+    private val variantRepository: VariantRepositorySource,
+    private val itemRepository: ItemRepositorySource,
 ): ModifyProductViewModel() {
 
     /**

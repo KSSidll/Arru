@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.addvariant
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -9,7 +9,7 @@ import javax.inject.*
 
 @HiltViewModel
 class AddVariantViewModel @Inject constructor(
-    override val variantRepository: IVariantRepository,
+    override val variantRepository: VariantRepositorySource,
 ): ModifyVariantViewModel() {
 
     /**

@@ -1,7 +1,8 @@
 package com.kssidll.arrugarq.ui.screen.modify.category
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import kotlinx.coroutines.*
 
 /**
@@ -10,7 +11,7 @@ import kotlinx.coroutines.*
  * @property updateState Updates the screen state representation property values to represent the Category matching provided id, only changes representation data and loading state
  */
 abstract class ModifyCategoryViewModel: ViewModel() {
-    protected abstract val categoryRepository: ICategoryRepository
+    protected abstract val categoryRepository: CategoryRepositorySource
 
     internal val screenState: ModifyCategoryScreenState = ModifyCategoryScreenState()
 
@@ -20,18 +21,22 @@ abstract class ModifyCategoryViewModel: ViewModel() {
      * @return true if provided [categoryId] was valid, false otherwise
      */
     suspend fun updateState(categoryId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
+        screenState.name.value = screenState.name.value.toLoading()
 
         val category = categoryRepository.get(categoryId)
-        if (category == null) {
-            screenState.loadingName.value = false
+
+        if (category != null) {
+            screenState.name.apply {
+                value = Field.Loaded(category.name)
+            }
+            return@async true
+        } else {
+            screenState.name.apply {
+                value = value.toLoadedOrError()
+            }
             return@async false
         }
 
-        screenState.name.value = category.name
-
-        screenState.loadingName.value = false
-        return@async true
     }
         .await()
 }

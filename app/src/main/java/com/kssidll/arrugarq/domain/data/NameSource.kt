@@ -1,5 +1,5 @@
 package com.kssidll.arrugarq.domain.data
 
-interface Named {
+interface NameSource {
     fun name(): String
 }

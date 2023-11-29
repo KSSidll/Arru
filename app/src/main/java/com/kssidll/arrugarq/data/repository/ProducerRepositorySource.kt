@@ -1,9 +1,9 @@
-package com.kssidll.arrugarq.domain.repository
+package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
-interface IProducerRepository {
+interface ProducerRepositorySource {
     suspend fun getAll(): List<ProductProducer>
     fun getAllFlow(): Flow<List<ProductProducer>>
     suspend fun get(id: Long): ProductProducer?

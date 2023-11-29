@@ -22,7 +22,7 @@ import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.theme.*
 
 /**
- * @param T: Type of the item, needs to implement FuzzySearchable
+ * @param T: Type of the item, needs to implement FuzzySearchSource
  * @param onDismissRequest: Function called when the user tries to dismiss the Dialog by clicking outside. This is also called when the Add/'+' button is clicked
  * @param items: Items to be displayed in the list
  * @param itemText: Transfarmation used to determine what to display on the item card
@@ -50,7 +50,7 @@ fun <T> FuzzySearchableListDialog(
     showDefaultValueItem: Boolean = false,
     defaultItemText: String = String(),
     shape: Shape = ShapeDefaults.ExtraLarge,
-) where T: FuzzySearchable {
+) where T: FuzzySearchSource {
     var query: String by remember {
         mutableStateOf(String())
     }

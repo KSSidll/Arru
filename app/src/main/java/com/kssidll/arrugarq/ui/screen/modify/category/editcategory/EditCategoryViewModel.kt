@@ -1,8 +1,10 @@
 package com.kssidll.arrugarq.ui.screen.modify.category.editcategory
 
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -10,21 +12,34 @@ import javax.inject.*
 
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
-    override val categoryRepository: ICategoryRepository,
-    private val itemRepository: IItemRepository,
-    private val productRepository: IProductRepository,
-    private val variantRepository: IVariantRepository,
+    override val categoryRepository: CategoryRepositorySource,
+    private val itemRepository: ItemRepositorySource,
+    private val productRepository: ProductRepositorySource,
+    private val variantRepository: VariantRepositorySource,
 ): ModifyCategoryViewModel() {
 
     /**
      * Tries to update product with provided [categoryId] with current screen state data
+     * @return Whether the update was successful
      */
-    fun updateCategory(categoryId: Long) = viewModelScope.launch {
+    suspend fun updateCategory(categoryId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val category = screenState.extractCategoryOrNull(categoryId) ?: return@launch
+        screenState.validate()
 
-        categoryRepository.update(category)
+        val category = screenState.extractCategoryOrNull(categoryId) ?: return@async false
+
+        try {
+            categoryRepository.update(category)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.let {
+                it.value = it.value.toError(FieldError.DuplicateValueError)
+            }
+            return@async false
+        }
+
+        return@async true
     }
+        .await()
 
     /**
      * Tries to delete category with provided [categoryId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,

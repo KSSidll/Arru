@@ -86,7 +86,7 @@ data class ProductWithAltNames(
         parentColumn = "id",
         entityColumn = "productId"
     ) val alternativeNames: List<ProductAltName>
-): FuzzySearchable, Named {
+): FuzzySearchSource, NameSource {
     override fun fuzzyScore(query: String): Int {
         val productNameScore = FuzzySearch.extractOne(
             query,

@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop.addshop
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -9,7 +9,7 @@ import javax.inject.*
 
 @HiltViewModel
 class AddShopViewModel @Inject constructor(
-    override val shopRepository: IShopRepository,
+    override val shopRepository: ShopRepositorySource,
 ): ModifyShopViewModel() {
 
     /**

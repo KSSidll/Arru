@@ -5,8 +5,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.*
-import com.kssidll.arrugarq.domain.repository.*
 import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -25,8 +25,8 @@ internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
 
 @HiltViewModel
 class ShopViewModel @Inject constructor(
-    private val itemRepository: IItemRepository,
-    private val shopRepository: IShopRepository,
+    private val itemRepository: ItemRepositorySource,
+    private val shopRepository: ShopRepositorySource,
 ): ViewModel() {
     private val mShop: MutableState<Shop?> = mutableStateOf(null)
     val shop: Shop? by mShop

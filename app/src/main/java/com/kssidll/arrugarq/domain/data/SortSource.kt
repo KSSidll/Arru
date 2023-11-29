@@ -1,10 +1,10 @@
 package com.kssidll.arrugarq.domain.data
 
-interface Sortable {
+interface SortSource {
     fun sortValue(): Long
 }
 
-fun <E> List<E>.median(): Double where E: Sortable, E: DoubleProvider {
+fun <E> List<E>.median(): Double where E: SortSource, E: DoubleSource {
     if (isEmpty()) return 0.0
 
     val sorted = this.sortedBy { it.sortValue() }

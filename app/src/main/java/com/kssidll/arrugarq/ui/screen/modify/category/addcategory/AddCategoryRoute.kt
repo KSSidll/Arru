@@ -17,8 +17,9 @@ fun AddCategoryRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                val result = viewModel.addCategory()
-                if (result != null) navigateBack()
+                if (viewModel.addCategory() != null) {
+                    navigateBack()
+                }
             }
         },
     )

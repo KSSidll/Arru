@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.domain.data
 
 import com.patrykandpatrick.vico.core.entry.*
 
-interface Chartable: DoubleProvider, Sortable {
+interface ChartSource: DoubleSource, SortSource {
     fun chartEntry(x: Int): ChartEntry
     fun startAxisLabel(): String?
     fun topAxisLabel(): String?

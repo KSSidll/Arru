@@ -120,7 +120,7 @@ data class FullItem(
 data class ItemSpentByTime(
     val time: String,
     val total: Long,
-): Chartable {
+): ChartSource {
     override fun value(): Double {
         return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
@@ -157,7 +157,7 @@ data class ItemSpentByTime(
 data class ItemSpentByShop(
     @Embedded val shop: Shop,
     val total: Long,
-): Rankable {
+): RankSource {
     override fun value(): Double {
         return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
@@ -183,7 +183,7 @@ data class ItemSpentByShop(
 data class ItemSpentByCategory(
     @Embedded val category: ProductCategory,
     val total: Long,
-): Rankable {
+): RankSource {
     override fun value(): Double {
         return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)

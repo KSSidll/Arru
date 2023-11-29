@@ -2,10 +2,9 @@ package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.repository.*
 import kotlinx.coroutines.flow.*
 
-class CategoryRepository(private val dao: CategoryDao): ICategoryRepository {
+class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource {
     override suspend fun getAll(): List<ProductCategory> {
         return dao.getAll()
     }

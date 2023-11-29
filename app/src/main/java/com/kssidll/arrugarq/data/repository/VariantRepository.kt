@@ -2,10 +2,9 @@ package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.repository.*
 import kotlinx.coroutines.flow.*
 
-class VariantRepository(private val dao: VariantDao): IVariantRepository {
+class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     override suspend fun getAll(): List<ProductVariant> {
         return dao.getAll()
     }

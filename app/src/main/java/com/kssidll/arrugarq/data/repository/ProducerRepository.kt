@@ -2,10 +2,9 @@ package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.repository.*
 import kotlinx.coroutines.flow.*
 
-class ProducerRepository(private val dao: ProducerDao): IProducerRepository {
+class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
     override suspend fun getAll(): List<ProductProducer> {
         return dao.getAll()
     }

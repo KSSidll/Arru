@@ -17,10 +17,10 @@ import com.kssidll.arrugarq.ui.theme.*
 
 /**
  * Generic ranking screen
- * @param T Type of item, needs to implement [Rankable]
+ * @param T Type of item, needs to implement [RankSource]
  * @param onBack Called to request a back navigation
  * @param title Text displayed on the top app bar
- * @param data List of items to display, items need to implement [Rankable]
+ * @param data List of items to display, items need to implement [RankSource]
  * @param onItemClick Function to call when an item is clicked, null disables click event if [onItemLongClick] is null as well
  * @param onItemClickLabel Semantic / accessibility label for the [onItemClick] action
  * @param onItemLongClick Function to call when an item is long clicked, null disables click event if [onItemClick] is null as well
@@ -36,7 +36,7 @@ fun <T> RankingScreen(
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
     onItemLongClickLabel: String? = null,
-) where T: Rankable {
+) where T: RankSource {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -69,8 +69,8 @@ fun <T> RankingScreen(
 
 /**
  * Generic ranking screen content
- * @param T Type of item, needs to implement [Rankable]
- * @param data List of items to display, items need to implement [Rankable]
+ * @param T Type of item, needs to implement [RankSource]
+ * @param data List of items to display, items need to implement [RankSource]
  * @param onItemClick Function to call when an item is clicked, null disables click event if [onItemLongClick] is null as well
  * @param onItemClickLabel Semantic / accessibility label for the [onItemClick] action
  * @param onItemLongClick Function to call when an item is long clicked, null disables click event if [onItemClick] is null as well
@@ -83,7 +83,7 @@ private fun <T> RankingScreenContent(
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
     onItemLongClickLabel: String? = null,
-) where T: Rankable {
+) where T: RankSource {
     RankingList(
         innerItemPadding = PaddingValues(horizontal = 16.dp),
         items = data,

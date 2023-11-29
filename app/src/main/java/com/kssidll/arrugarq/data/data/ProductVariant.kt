@@ -19,7 +19,7 @@ data class ProductVariant(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val productId: Long,
     val name: String,
-): FuzzySearchable {
+): FuzzySearchSource {
     @Ignore
     constructor(
         productId: Long,

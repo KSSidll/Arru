@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.shop.editshop
 
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -10,8 +10,8 @@ import javax.inject.*
 
 @HiltViewModel
 class EditShopViewModel @Inject constructor(
-    override val shopRepository: IShopRepository,
-    private val itemRepository: IItemRepository,
+    override val shopRepository: ShopRepositorySource,
+    private val itemRepository: ItemRepositorySource,
 ): ModifyShopViewModel() {
 
     /**

@@ -25,7 +25,7 @@ import kotlinx.coroutines.*
 
 @Composable
 fun OneDimensionalColumnChart(
-    data: List<Chartable>,
+    data: List<ChartSource>,
     modifier: Modifier = Modifier,
     chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
     fadingEdges: FadingEdges? = null,

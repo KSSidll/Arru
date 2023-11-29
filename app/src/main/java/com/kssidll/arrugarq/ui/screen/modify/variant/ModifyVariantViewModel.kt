@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import kotlinx.coroutines.*
 
 /**
@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
  * @property updateState Updates the screen state representation property values to represent the Variant matching provided id, only changes representation data and loading state
  */
 abstract class ModifyVariantViewModel: ViewModel() {
-    protected abstract val variantRepository: IVariantRepository
+    protected abstract val variantRepository: VariantRepositorySource
 
     internal val screenState: ModifyVariantScreenState = ModifyVariantScreenState()
 

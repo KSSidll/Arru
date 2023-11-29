@@ -3,7 +3,7 @@ package com.kssidll.arrugarq.ui.screen.modify.item
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.*
  * @property onProductChange Updates the screen state representation property values related to product to represent the product that is currently selected, should be called after the selected product changes
  */
 abstract class ModifyItemViewModel: ViewModel() {
-    protected abstract val itemRepository: IItemRepository
-    protected abstract val productRepository: IProductRepository
-    protected abstract val variantsRepository: IVariantRepository
-    protected abstract val shopRepository: IShopRepository
+    protected abstract val itemRepository: ItemRepositorySource
+    protected abstract val productRepository: ProductRepositorySource
+    protected abstract val variantsRepository: VariantRepositorySource
+    protected abstract val shopRepository: ShopRepositorySource
 
     internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
 

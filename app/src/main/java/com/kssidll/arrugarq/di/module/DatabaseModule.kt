@@ -7,7 +7,6 @@ import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.database.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.preference.*
-import com.kssidll.arrugarq.domain.repository.*
 import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.qualifiers.*
@@ -90,7 +89,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideItemRepository(itemDao: ItemDao): IItemRepository {
+    fun provideItemRepository(itemDao: ItemDao): ItemRepositorySource {
         return ItemRepository(itemDao)
     }
 
@@ -100,7 +99,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProductRepository(productDao: ProductDao): IProductRepository {
+    fun provideProductRepository(productDao: ProductDao): ProductRepositorySource {
         return ProductRepository(productDao)
     }
 
@@ -110,7 +109,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideVariantRepository(productVariantDao: VariantDao): IVariantRepository {
+    fun provideVariantRepository(productVariantDao: VariantDao): VariantRepositorySource {
         return VariantRepository(productVariantDao)
     }
 
@@ -121,7 +120,7 @@ class DatabaseModule {
 
 
     @Provides
-    fun provideCategoryRepository(productCategoryDao: CategoryDao): ICategoryRepository {
+    fun provideCategoryRepository(productCategoryDao: CategoryDao): CategoryRepositorySource {
         return CategoryRepository(productCategoryDao)
     }
 
@@ -131,7 +130,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideShopRepository(shopDao: ShopDao): IShopRepository {
+    fun provideShopRepository(shopDao: ShopDao): ShopRepositorySource {
         return ShopRepository(shopDao)
     }
 
@@ -141,7 +140,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProducerRepository(productProducerDao: ProducerDao): IProducerRepository {
+    fun provideProducerRepository(productProducerDao: ProducerDao): ProducerRepositorySource {
         return ProducerRepository(productProducerDao)
     }
 }

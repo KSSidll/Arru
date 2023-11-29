@@ -15,7 +15,7 @@ import me.xdrop.fuzzywuzzy.*
 data class Shop(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
-): FuzzySearchable, Named {
+): FuzzySearchSource, NameSource {
     @Ignore
     constructor(
         name: String

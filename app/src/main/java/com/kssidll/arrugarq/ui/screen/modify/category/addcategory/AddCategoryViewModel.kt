@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.category.addcategory
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -9,7 +11,7 @@ import javax.inject.*
 
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
-    override val categoryRepository: ICategoryRepository,
+    override val categoryRepository: CategoryRepositorySource,
 ): ModifyCategoryViewModel() {
 
     /**
@@ -18,9 +20,18 @@ class AddCategoryViewModel @Inject constructor(
      */
     suspend fun addCategory(): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
+        screenState.validate()
+
         val category = screenState.extractCategoryOrNull() ?: return@async null
 
-        return@async categoryRepository.insert(category)
+        try {
+            return@async categoryRepository.insert(category)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply {
+                value = value.toError(FieldError.DuplicateValueError)
+            }
+            return@async null
+        }
     }
         .await()
 }

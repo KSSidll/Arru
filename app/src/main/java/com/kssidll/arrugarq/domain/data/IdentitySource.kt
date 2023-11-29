@@ -1,5 +1,5 @@
 package com.kssidll.arrugarq.domain.data
 
-interface Identifiable {
+interface IdentitySource {
     fun identificator(): Long
 }

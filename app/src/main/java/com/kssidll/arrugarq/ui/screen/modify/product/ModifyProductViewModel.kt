@@ -2,7 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.product
 
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.*
  * @property updateState Updates the screen state representation property values to represent the Product matching provided id, only changes representation data and loading state
  */
 abstract class ModifyProductViewModel: ViewModel() {
-    protected abstract val productRepository: IProductRepository
-    protected abstract val producerRepository: IProducerRepository
-    protected abstract val categoryRepository: ICategoryRepository
+    protected abstract val productRepository: ProductRepositorySource
+    protected abstract val producerRepository: ProducerRepositorySource
+    protected abstract val categoryRepository: CategoryRepositorySource
 
     internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 

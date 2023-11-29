@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.item.additem
 
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.domain.repository.*
+import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.ui.screen.modify.item.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -9,10 +9,10 @@ import javax.inject.*
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
-    override val itemRepository: IItemRepository,
-    override val productRepository: IProductRepository,
-    override val variantsRepository: IVariantRepository,
-    override val shopRepository: IShopRepository,
+    override val itemRepository: ItemRepositorySource,
+    override val productRepository: ProductRepositorySource,
+    override val variantsRepository: VariantRepositorySource,
+    override val shopRepository: ShopRepositorySource,
 ): ModifyItemViewModel() {
 
     init {
