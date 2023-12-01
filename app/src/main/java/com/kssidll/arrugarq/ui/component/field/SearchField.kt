@@ -15,17 +15,20 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
 fun SearchField(
     modifier: Modifier = Modifier,
+    height: Dp = 60.dp,
     enabled: Boolean = true,
     optional: Boolean = false,
     value: String = String(),
     onClick: (() -> Unit)? = null,
     readOnly: Boolean = true,
     label: String = String(),
+    supportingText: @Composable (() -> Unit)? = null,
     error: Boolean = false,
     showAddButton: Boolean = true,
     onAddButtonClick: (() -> Unit)? = null,
@@ -56,8 +59,11 @@ fun SearchField(
         }
     }
 
+    val errorBonusHeight: Dp = if (error) 28.dp else 0.dp
+
     StyledOutlinedTextField(
         modifier = modifier
+            .height(height + errorBonusHeight)
             .onFocusEvent {
                 if (it.isFocused) {
                     onClick?.invoke()
@@ -81,11 +87,13 @@ fun SearchField(
                 fontSize = 16.sp,
             )
         },
+        supportingText = supportingText,
         isError = error,
         trailingIcon = {
             if (showAddButton) {
                 Box(
                     modifier = Modifier
+                        .height(height)
                         .aspectRatio(1F)
                         .clickable {
                             onAddButtonClick?.invoke()
@@ -217,14 +225,14 @@ fun DisabledSearchFieldPreview() {
 @Composable
 fun ErrorSearchFieldPreview() {
     ArrugarqTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-        ) {
+        Surface(modifier = Modifier.fillMaxWidth()) {
             SearchField(
                 value = "Test",
                 error = true,
+                supportingText = {
+                    FieldError.NoValueError.errorText()
+                },
+                label = "test",
             )
         }
     }

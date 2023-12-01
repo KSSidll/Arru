@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.category.addcategory
 
 import android.database.sqlite.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
@@ -22,7 +23,7 @@ class AddCategoryViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
         screenState.validate()
 
-        val category = screenState.extractCategoryOrNull() ?: return@async null
+        val category: ProductCategory = screenState.extractDataOrNull() ?: return@async null
 
         try {
             return@async categoryRepository.insert(category)

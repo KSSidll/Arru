@@ -85,6 +85,7 @@
     <string name="median">Mediana</string>
     <string name="settings">Ustawienia</string>
     <string name="language">Język</string>
-    <string name="duplicate_value_error">Wartość już istnieje</string>
+    <string name="duplicate_value_error_text">Wartość już istnieje</string>
     <string name="no_value_error_text">Wartość wymagana</string>
+    <string name="invalid_value_error_text">Wartość nie jest poprawna</string>
 </resources>

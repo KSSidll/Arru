@@ -18,6 +18,29 @@ import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 
 /**
+ * @param T Type of data which the inheriting screen state represents
+ */
+abstract class ModifyScreenState<T>(
+    val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
+    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
+    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
+) {
+
+    /**
+     * Validates state fields and updates field states
+     * @return true if all fields are of correct value, false otherwise
+     */
+    abstract fun validate(): Boolean
+
+    /**
+     * performs data validation and tries to extract embedded data
+     * @return Null if validation fails, extracted data otherwise
+     * @param id id to set the embedded data to if appropriate
+     */
+    abstract fun extractDataOrNull(id: Long = 0): T?
+}
+
+/**
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param title Text displayed on the top app bar
  * @param onSubmit Called to request data submission
@@ -216,7 +239,6 @@ private fun EditScreenContent(
                     )
                     .verticalScroll(rememberScrollState())
             ) {
-
                 content()
 
                 Spacer(modifier = Modifier.height(SubmitButtonMaxTopPadding - SubmitButtonMinTopPadding))

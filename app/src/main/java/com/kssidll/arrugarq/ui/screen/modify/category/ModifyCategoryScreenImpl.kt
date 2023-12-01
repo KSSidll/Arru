@@ -68,22 +68,8 @@ fun ModifyCategoryScreenImpl(
                 )
             },
             supportingText = {
-                if (state.attemptedToSubmit.value && state.name.value.error != null) {
-                    when (state.name.value.error!!) {
-                        FieldError.NoValueError -> {
-                            Text(
-                                text = stringResource(id = R.string.no_value_error_text),
-                                style = Typography.bodySmall,
-                            )
-                        }
-
-                        FieldError.DuplicateValueError -> {
-                            Text(
-                                text = stringResource(id = R.string.duplicate_value_error),
-                                style = Typography.bodySmall,
-                            )
-                        }
-                    }
+                if (state.attemptedToSubmit.value) {
+                    state.name.value.error?.errorText()
                 }
             },
             isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
@@ -92,53 +78,6 @@ fun ModifyCategoryScreenImpl(
                 .padding(horizontal = ItemHorizontalPadding)
         )
     }
-}
-
-/**
- * Data representing [ModifyCategoryScreenImpl] screen state
- */
-data class ModifyCategoryScreenState(
-    val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
-
-    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String())),
-
-    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
-    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
-)
-
-/**
- * Validates name field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyCategoryScreenState.validateName(): Boolean {
-    if (name.value.data?.isBlank() == true) {
-        name.apply {
-            value = value.toError(FieldError.NoValueError)
-        }
-    }
-
-    return name.value.isNotError()
-}
-
-/**
- * Validates state fields and updates state flags
- * @return true if all fields are of correct value, false otherwise
- */
-fun ModifyCategoryScreenState.validate(): Boolean {
-    return validateName()
-}
-
-/**
- * performs data validation and tries to extract embedded data
- * @return Null if validation sets error flags, extracted data otherwise
- */
-fun ModifyCategoryScreenState.extractCategoryOrNull(categoryId: Long = 0): ProductCategory? {
-    if (!validate()) return null
-
-    return ProductCategory(
-        id = categoryId,
-        name = name.value.data?.trim() ?: return null,
-    )
 }
 
 @Preview(

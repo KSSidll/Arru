@@ -22,13 +22,19 @@ class EditItemViewModel @Inject constructor(
 
     /**
      * Tries to update item with provided [itemId] with current screen state data
+     * @return Whether the update was successful
      */
-    fun updateItem(itemId: Long) = viewModelScope.launch {
+    suspend fun updateItem(itemId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val item = screenState.extractItemOrNull(itemId) ?: return@launch
+        screenState.validate()
+
+        val item = screenState.extractDataOrNull(itemId) ?: return@async false
 
         itemRepository.update(item)
+
+        return@async true
     }
+        .await()
 
     /**
      * Tries to delete item with provided [itemId]

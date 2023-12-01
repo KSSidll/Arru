@@ -85,6 +85,7 @@
     <string name="median">Median</string>
     <string name="settings">Settings</string>
     <string name="language">Language</string>
-    <string name="duplicate_value_error">Value already exists</string>
+    <string name="duplicate_value_error_text">Value already exists</string>
     <string name="no_value_error_text">Value required</string>
+    <string name="invalid_value_error_text">This value is invalid</string>
 </resources>

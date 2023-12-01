@@ -137,7 +137,6 @@ fun ModifyProductScreenImpl(
                 addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                 optional = true,
                 modifier = Modifier
-                    .height(60.dp)
                     .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding)
             )
@@ -157,7 +156,6 @@ fun ModifyProductScreenImpl(
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
                 error = if (state.attemptedToSubmit.value) state.selectedProductCategoryError.value else false,
                 modifier = Modifier
-                    .height(60.dp)
                     .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding)
             )

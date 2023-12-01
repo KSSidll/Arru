@@ -3,6 +3,7 @@ package com.kssidll.arrugarq.ui.screen.modify.category.editcategory
 
 import android.database.sqlite.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
@@ -26,7 +27,8 @@ class EditCategoryViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
         screenState.validate()
 
-        val category = screenState.extractCategoryOrNull(categoryId) ?: return@async false
+        val category: ProductCategory =
+            screenState.extractDataOrNull(categoryId) ?: return@async false
 
         try {
             categoryRepository.update(category)

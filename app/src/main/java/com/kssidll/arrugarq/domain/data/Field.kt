@@ -1,5 +1,11 @@
 package com.kssidll.arrugarq.domain.data
 
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.res.*
+import com.kssidll.arrugarq.R
+import com.kssidll.arrugarq.ui.theme.*
+
 /**
  * Generic abstraction for data and its status
  */
@@ -10,7 +16,7 @@ sealed class Field<T>(
     /**
      * Field status signifying that it's loaded correctly and can display and use [data]
      */
-    class Loaded<T>(data: T): Field<T>(data)
+    class Loaded<T>(data: T? = null): Field<T>(data)
 
     /**
      * Field status signifying a loading process taking place, the field shouldn't be user changeable in this status
@@ -52,6 +58,14 @@ sealed class Field<T>(
 
     /**
      * Tries to change this field status to [Loaded]
+     * @return This field as [Loaded] status
+     */
+    fun toLoaded(): Field<T> {
+        return Loaded(data)
+    }
+
+    /**
+     * Tries to change this field status to [Loaded]
      * @return This field as [Loaded] status or as [FieldError.NoValueError] [Error] if the data is null
      */
     fun toLoadedOrError(): Field<T> {
@@ -83,13 +97,44 @@ sealed class Field<T>(
  * Possible [Field] errors
  */
 sealed class FieldError {
+    @Composable
+    fun errorText(): Unit {
+        Text(
+            text = NoValueError.errorString(),
+            style = Typography.bodySmall,
+        )
+    }
+
+    @Composable
+    abstract fun errorString(): String
+
     /**
      * Error signifying lack of value in the field
      */
-    data object NoValueError: FieldError()
+    data object NoValueError: FieldError() {
+        @Composable
+        override fun errorString(): String {
+            return stringResource(id = R.string.no_value_error_text)
+        }
+    }
 
     /**
      * Error signifying correct, but duplicate value that can't be used
      */
-    data object DuplicateValueError: FieldError()
+    data object DuplicateValueError: FieldError() {
+        @Composable
+        override fun errorString(): String {
+            return stringResource(id = R.string.duplicate_value_error_text)
+        }
+    }
+
+    /**
+     * Error signifying incorrect value
+     */
+    data object InvalidValueError: FieldError() {
+        @Composable
+        override fun errorString(): String {
+            return stringResource(id = R.string.invalid_value_error_text)
+        }
+    }
 }

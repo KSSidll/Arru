@@ -28,8 +28,9 @@ fun AddItemRoute(
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                val result = viewModel.addItem()
-                if (result != null) navigateBack()
+                if (viewModel.addItem() != null) {
+                    navigateBack()
+                }
             }
         },
         onProductChange = {
@@ -37,9 +38,9 @@ fun AddItemRoute(
         },
         onProductAddButtonClick = navigateProductAdd,
         onVariantAddButtonClick = {
-            with(viewModel.screenState.selectedProduct) {
-                if (value != null) {
-                    navigateVariantAdd(value!!.id)
+            with(viewModel.screenState.selectedProduct.value) {
+                if (data != null) {
+                    navigateVariantAdd(data.id)
                 }
             }
         },

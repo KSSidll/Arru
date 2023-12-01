@@ -4,6 +4,9 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.helper.*
+import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -26,72 +29,67 @@ abstract class ModifyItemViewModel: ViewModel() {
      * Fetches start data to state
      */
     protected fun computeStartState() = viewModelScope.launch {
-        screenState.loadingShop.value = true
-        screenState.loadingDate.value = true
+        screenState.selectedShop.apply { value = value.toLoading() }
+        screenState.date.apply { value = value.toLoading() }
 
         val lastItem: Item? = itemRepository.getLast()
 
-        if (screenState.selectedShop.value == null) {
-            screenState.selectedShop.value = lastItem?.shopId?.let { shopRepository.get(it) }
+        screenState.selectedShop.apply {
+            value = value.data?.let { value.toLoaded() }
+                ?: Field.Loaded(lastItem?.shopId?.let { shopRepository.get(it) })
         }
 
-        if (screenState.date.value == null) {
-            screenState.date.value = lastItem?.date
+        screenState.date.apply {
+            value = value.data?.let { value.toLoaded() } ?: Field.Loaded(lastItem?.date)
         }
-
-        screenState.loadingDate.value = false
-        screenState.loadingShop.value = false
     }
 
     /**
      * Updates the screen state representation property values related to product to represent the product that is currently selected, should be called after the selected product changes
      */
     fun onProductChange() = viewModelScope.launch {
-        screenState.loadingPrice.value = true
-        screenState.loadingQuantity.value = true
-        screenState.loadingShop.value = true
+        screenState.selectedShop.apply { value = value.toLoading() }
+        screenState.selectedVariant.apply { value = value.toLoading() }
+        screenState.price.apply { value = value.toLoading() }
+        screenState.quantity.apply { value = value.toLoading() }
 
         updateProductVariants()
 
-        val lastItemByProduct =
-            itemRepository.getLastByProductId(screenState.selectedProduct.value!!.id)
-
-        if (lastItemByProduct == null) {
-            screenState.price.value = String()
-            screenState.quantity.value = String()
-            screenState.selectedVariant.value = null
-
-            return@launch
+        val lastItemByProduct: Item? = screenState.selectedProduct.value.data?.let {
+            itemRepository.getLastByProductId(it.id)
         }
 
-        val shop = lastItemByProduct.shopId?.let { shopRepository.get(it) }
-
-        screenState.selectedShop.value = shop
-
-        val variant = lastItemByProduct.variantId?.let {
-            variantsRepository.get(it)
+        screenState.selectedShop.apply {
+            val shop: Shop? = lastItemByProduct?.shopId?.let { shopRepository.get(it) }
+            value = Field.Loaded(shop)
         }
 
-        screenState.selectedVariant.value = variant
+        screenState.selectedVariant.apply {
+            val variant: ProductVariant? =
+                lastItemByProduct?.variantId?.let { variantsRepository.get(it) }
+            value = Field.Loaded(variant)
+        }
 
-        screenState.price.value = String.format(
-            "%.2f",
-            lastItemByProduct.price.toFloat() / Item.PRICE_DIVISOR
-        )
+        screenState.price.apply {
+            val price: String = lastItemByProduct?.let {
+                String.format(
+                    "%.2f",
+                    lastItemByProduct.price.toFloat() / Item.PRICE_DIVISOR
+                )
+            } ?: String()
+            value = Field.Loaded(price)
+        }
 
-        screenState.quantity.value = String.format(
-            "%.3f",
-            lastItemByProduct.quantity.toFloat() / Item.QUANTITY_DIVISOR
-        )
+        screenState.quantity.apply {
+            val quantity: String = lastItemByProduct?.let {
+                String.format(
+                    "%.3f",
+                    lastItemByProduct.quantity.toFloat() / Item.QUANTITY_DIVISOR
+                )
+            } ?: String()
+            value = Field.Loaded(quantity)
+        }
     }
-        .invokeOnCompletion {
-            screenState.loadingQuantity.value = false
-            screenState.loadingPrice.value = false
-            screenState.loadingShop.value = false
-
-            screenState.validateQuantity()
-            screenState.validatePrice()
-        }
 
     /**
      * @return List of all shops
@@ -118,11 +116,9 @@ abstract class ModifyItemViewModel: ViewModel() {
     private fun updateProductVariants() {
         mUpdateProductVariantsJob?.cancel()
         mUpdateProductVariantsJob = viewModelScope.launch {
-            with(screenState.selectedProduct) {
-                if (value != null) {
-                    mProductVariants.value = variantsRepository.getByProductIdFlow(value!!.id)
-                }
-            }
+            mProductVariants.value =
+                screenState.selectedProduct.value.data?.let { variantsRepository.getByProductIdFlow(it.id) }
+                    ?: emptyFlow()
         }
     }
 
@@ -131,57 +127,154 @@ abstract class ModifyItemViewModel: ViewModel() {
      * @return true if provided [itemId] was valid, false otherwise
      */
     suspend fun updateState(itemId: Long) = viewModelScope.async {
-        screenState.loadingProduct.value = true
-        screenState.loadingVariant.value = true
-        screenState.loadingShop.value = true
-        screenState.loadingQuantity.value = true
-        screenState.loadingPrice.value = true
-        screenState.loadingDate.value = true
+        screenState.selectedProduct.apply { value = value.toLoading() }
+        screenState.selectedVariant.apply { value = value.toLoading() }
+        screenState.selectedShop.apply { value = value.toLoading() }
+        screenState.quantity.apply { value = value.toLoading() }
+        screenState.price.apply { value = value.toLoading() }
+        screenState.date.apply { value = value.toLoading() }
 
-        val dispose = {
-            screenState.loadingProduct.value = false
-            screenState.loadingVariant.value = false
-            screenState.loadingShop.value = false
-            screenState.loadingQuantity.value = false
-            screenState.loadingPrice.value = false
-            screenState.loadingDate.value = false
+        val item: Item? = itemRepository.get(itemId)
+        val product: Product? = item?.let { productRepository.get(item.productId) }
+        val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }
+        val shop: Shop? = item?.shopId?.let { shopRepository.get(it) }
+
+        screenState.selectedProduct.apply {
+            value = item?.let { Field.Loaded(product) } ?: value.toLoadedOrError()
+        }
+        screenState.selectedVariant.apply {
+            value = item?.let { Field.Loaded(variant) } ?: value.toLoaded()
+        }
+        screenState.selectedShop.apply {
+            value = item?.let { Field.Loaded(shop) } ?: value.toLoaded()
+        }
+        screenState.quantity.apply {
+            value = item?.let {
+                Field.Loaded(
+                    it.actualQuantity()
+                        .toString()
+                )
+            } ?: value.toLoadedOrError()
+        }
+        screenState.price.apply {
+            value = item?.let {
+                Field.Loaded(
+                    it.actualPrice()
+                        .toString()
+                )
+            } ?: value.toLoadedOrError()
+        }
+        screenState.date.apply {
+            value = item?.let { Field.Loaded(it.date) } ?: value.toLoadedOrError()
         }
 
-        val item = itemRepository.get(itemId)
-        if (item == null) {
-            dispose()
-            return@async false
-        }
-
-        val product = productRepository.get(item.productId)
-        if (product == null) {
-            dispose()
-            return@async false
-        }
-
-        val variant =
-            if (item.variantId != null)
-                variantsRepository.get(item.variantId)
-            else null
-
-        val shop =
-            if (item.shopId != null)
-                shopRepository.get(item.shopId)
-            else null
-
-        screenState.selectedProduct.value = product
-        screenState.selectedVariant.value = variant
-        screenState.selectedShop.value = shop
-        screenState.quantity.value = item.actualQuantity()
-            .toString()
-        screenState.price.value = item.actualPrice()
-            .toString()
-        screenState.date.value = item.date
+        if (item == null) return@async false
 
         onProductChange()
-
-        dispose()
         return@async true
     }
         .await()
+}
+
+/**
+ * Data representing [ModifyItemScreenImpl] screen state
+ */
+data class ModifyItemScreenState(
+    val selectedProduct: MutableState<Field<Product>> = mutableStateOf(Field.Loaded()),
+    val selectedVariant: MutableState<Field<ProductVariant?>> = mutableStateOf(Field.Loaded()),
+    val selectedShop: MutableState<Field<Shop?>> = mutableStateOf(Field.Loaded()),
+    val quantity: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
+    val price: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
+    val date: MutableState<Field<Long>> = mutableStateOf(Field.Loaded()),
+
+    var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+): ModifyScreenState<Item>() {
+
+    /**
+     * Validates selectedProduct field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validateSelectedProduct(): Boolean {
+        selectedProduct.apply {
+            if (value.data == null) {
+                value = value.toError(FieldError.NoValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    /**
+     * Validates quantity field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validateQuantity(): Boolean {
+        quantity.apply {
+            if (value.data.isNullOrBlank()) {
+                value = value.toError(FieldError.NoValueError)
+            } else if (StringHelper.toDoubleOrNull(value.data!!) == null) {
+                value = value.toError(FieldError.InvalidValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    /**
+     * Validates price field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validatePrice(): Boolean {
+        price.apply {
+            if (value.data.isNullOrBlank()) {
+                value = value.toError(FieldError.NoValueError)
+            } else if (StringHelper.toDoubleOrNull(value.data!!) == null) {
+                value = value.toError(FieldError.InvalidValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    /**
+     * Validates date field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validateDate(): Boolean {
+        date.apply {
+            if (value.data == null) {
+                value = value.toError(FieldError.NoValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    override fun validate(): Boolean {
+        val product = validateSelectedProduct()
+        val quantity = validateQuantity()
+        val price = validatePrice()
+        val date = validateDate()
+
+        return product && quantity && price && date
+    }
+
+    override fun extractDataOrNull(id: Long): Item? {
+        if (!validate()) return null
+
+        return Item(
+            id = id,
+            productId = selectedProduct.value.data?.id ?: return null,
+            variantId = selectedVariant.value.data?.id,
+            shopId = selectedShop.value.data?.id,
+            actualQuantity = quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
+                ?: return null,
+            actualPrice = price.value.data?.let { StringHelper.toDoubleOrNull(it) } ?: return null,
+            date = date.value.data ?: return null,
+        )
+    }
+
 }

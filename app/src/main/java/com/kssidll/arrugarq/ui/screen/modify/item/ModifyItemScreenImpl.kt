@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
@@ -81,7 +82,7 @@ fun ModifyItemScreenImpl(
                     Button(
                         onClick = {
                             state.isDatePickerDialogExpanded.value = false
-                            state.date.value = datePickerState.selectedDateMillis
+                            state.date.value = Field.Loaded(datePickerState.selectedDateMillis)
                             state.validateDate()
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -117,7 +118,7 @@ fun ModifyItemScreenImpl(
                 itemText = { it.name },
                 onItemClick = {
                     state.isShopSearchDialogExpanded.value = false
-                    state.selectedShop.value = it
+                    state.selectedShop.value = Field.Loaded(it)
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
@@ -137,7 +138,7 @@ fun ModifyItemScreenImpl(
                 },
                 items = products,
                 onItemClick = {
-                    state.selectedProduct.value = it?.product
+                    state.selectedProduct.value = Field.Loaded(it?.product)
                     state.isProductSearchDialogExpanded.value = false
                     state.validateSelectedProduct()
                     onProductChange()
@@ -161,7 +162,7 @@ fun ModifyItemScreenImpl(
                 itemText = { it.name },
                 onItemClick = {
                     state.isVariantSearchDialogExpanded.value = false
-                    state.selectedVariant.value = it
+                    state.selectedVariant.value = Field.Loaded(it)
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
@@ -170,7 +171,7 @@ fun ModifyItemScreenImpl(
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = {
-                    state.selectedProduct.value?.let {
+                    state.selectedProduct.value.data?.let {
                         onVariantAddButtonClick(it.id)
                     }
                 },
@@ -180,9 +181,10 @@ fun ModifyItemScreenImpl(
             )
         }
 
-        val date = state.date.value
+        val date = state.date.value.data
         SearchField(
-            enabled = !state.loadingDate.value,
+            height = 76.dp,
+            enabled = state.date.value.isEnabled(),
             value = if (date != null) SimpleDateFormat(
                 "MMM d, yyyy",
                 Locale.getDefault()
@@ -192,7 +194,12 @@ fun ModifyItemScreenImpl(
             onClick = {
                 state.isDatePickerDialogExpanded.value = true
             },
-            error = if (state.attemptedToSubmit.value) state.dateError.value else false,
+            supportingText = {
+                if (state.attemptedToSubmit.value) {
+                    state.date.value.error?.errorText()
+                }
+            },
+            error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding.times(2))
@@ -204,24 +211,24 @@ fun ModifyItemScreenImpl(
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding.times(2))
         ) {
-            val priceEnabled = state.selectedProduct.value != null && !state.loadingPrice.value
-
             StyledOutlinedTextField(
                 singleLine = true,
-                enabled = priceEnabled,
-                value = state.price.value,
+                enabled = state.price.value.isEnabled(),
+                value = state.price.value.data ?: String(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
                 ),
-                onValueChange = {
-                    if (it.isBlank()) {
-                        state.price.value = String()
-                    } else if (RegexHelper.isFloat(
-                            it,
-                            2
-                        )
-                    ) {
-                        state.price.value = it
+                onValueChange = { newValue ->
+                    state.price.apply {
+                        if (newValue.isBlank()) {
+                            value = Field.Loaded(String())
+                        } else if (RegexHelper.isFloat(
+                                newValue,
+                                2
+                            )
+                        ) {
+                            value = Field.Loaded(newValue)
+                        }
                     }
 
                     state.validatePrice()
@@ -232,7 +239,12 @@ fun ModifyItemScreenImpl(
                         fontSize = 16.sp,
                     )
                 },
-                isError = if (state.attemptedToSubmit.value) state.priceError.value else false,
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.price.value.error?.errorText()
+                    }
+                },
+                isError = if (state.attemptedToSubmit.value) state.price.value.isError() else false,
                 modifier = Modifier.weight(1f)
             )
 
@@ -240,19 +252,18 @@ fun ModifyItemScreenImpl(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 IconButton(
-                    enabled = priceEnabled,
+                    enabled = state.price.value.isEnabled(),
                     onClick = {
                         if (state.validatePrice()) {
-                            val value = StringHelper.toDoubleOrNull(state.price.value)
-                                ?: error("Price validation failed, got null instead of float")
+                            val value =
+                                state.price.value.data?.let { StringHelper.toDoubleOrNull(it) }
+                                    ?: error("Price validation failed, got null instead of float")
 
-                            state.price.value = "%.2f".format(
-                                value.plus(0.5f)
-                            )
+                            state.price.value = Field.Loaded("%.2f".format(value.plus(0.5f)))
                         }
 
-                        if (state.price.value.isBlank()) {
-                            state.price.value = "%.2f".format(0f)
+                        if (state.price.value.data.isNullOrBlank()) {
+                            state.price.value = Field.Loaded("%.2f".format(0f))
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -269,23 +280,24 @@ fun ModifyItemScreenImpl(
                 }
 
                 IconButton(
-                    enabled = priceEnabled,
+                    enabled = state.price.value.isEnabled(),
                     onClick = {
                         if (state.validatePrice()) {
-                            val value = StringHelper.toDoubleOrNull(state.price.value)
-                                ?: error("Price validation failed, got null instead of float")
+                            val value =
+                                state.price.value.data?.let { StringHelper.toDoubleOrNull(it) }
+                                    ?: error("Price validation failed, got null instead of float")
 
-                            state.price.value = "%.2f".format(
-                                if (value > 0.5f) {
-                                    value.minus(0.5f)
-                                } else {
-                                    0f
-                                }
+                            state.price.value = Field.Loaded(
+                                "%.2f".format(
+                                    if (value > 0.5f) value.minus(0.5f) else {
+                                        0f
+                                    }
+                                )
                             )
                         }
 
-                        if (state.price.value.isBlank()) {
-                            state.price.value = "%.2f".format(0f)
+                        if (state.price.value.data.isNullOrBlank()) {
+                            state.price.value = Field.Loaded("%.2f".format(0f))
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -310,39 +322,43 @@ fun ModifyItemScreenImpl(
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding.times(2))
         ) {
-            val quantityEnabled =
-                state.selectedProduct.value != null && !state.loadingQuantity.value
-
             StyledOutlinedTextField(
                 singleLine = true,
-                enabled = quantityEnabled,
-                value = state.quantity.value,
+                enabled = state.quantity.value.isEnabled(),
+                value = state.quantity.value.data ?: String(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
                 ),
-                onValueChange = {
-                    if (it.isBlank()) {
-                        state.quantity.value = String()
-                    } else if (RegexHelper.isFloat(
-                            it,
-                            3
-                        )
-                    ) {
-                        state.quantity.value = it
+                onValueChange = { newValue ->
+                    state.quantity.apply {
+                        if (newValue.isBlank()) {
+                            value = Field.Loaded(String())
+                        } else if (RegexHelper.isFloat(
+                                newValue,
+                                3
+                            )
+                        ) {
+                            value = Field.Loaded(newValue)
+                        }
                     }
 
                     state.validateQuantity()
                 },
                 label = {
                     Text(
-                        text = if (state.selectedVariant.value == null)
+                        text = if (state.selectedVariant.value.data == null)
                             stringResource(R.string.item_product_variant_default_value)
                         else
                             stringResource(R.string.item_quantity),
                         fontSize = 16.sp,
                     )
                 },
-                isError = if (state.attemptedToSubmit.value) state.quantityError.value else false,
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.quantity.value.error?.errorText()
+                    }
+                },
+                isError = if (state.attemptedToSubmit.value) state.quantity.value.isError() else false,
                 modifier = Modifier.weight(1f)
             )
 
@@ -350,19 +366,18 @@ fun ModifyItemScreenImpl(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 IconButton(
-                    enabled = quantityEnabled,
+                    enabled = state.quantity.value.isEnabled(),
                     onClick = {
                         if (state.validateQuantity()) {
-                            val value = StringHelper.toDoubleOrNull(state.quantity.value)
-                                ?: error("Quantity validation failed, got null instead of float")
+                            val value =
+                                state.quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
+                                    ?: error("Quantity validation failed, got null instead of float")
 
-                            state.quantity.value = "%.3f".format(
-                                value.plus(1f)
-                            )
+                            state.quantity.value = Field.Loaded("%.3f".format(value.plus(1f)))
                         }
 
-                        if (state.quantity.value.isBlank()) {
-                            state.quantity.value = "%.3f".format(0f)
+                        if (state.quantity.value.data.isNullOrBlank()) {
+                            state.quantity.value = Field.Loaded("%.3f".format(0f))
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -379,23 +394,24 @@ fun ModifyItemScreenImpl(
                 }
 
                 IconButton(
-                    enabled = quantityEnabled,
+                    enabled = state.quantity.value.isEnabled(),
                     onClick = {
                         if (state.validateQuantity()) {
-                            val value = StringHelper.toDoubleOrNull(state.quantity.value)
-                                ?: error("Quantity validation failed, got null instead of float")
+                            val value =
+                                state.quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
+                                    ?: error("Quantity validation failed, got null instead of float")
 
-                            state.quantity.value = "%.3f".format(
-                                if (value > 1f) {
-                                    value.minus(1f)
-                                } else {
-                                    0f
-                                }
+                            state.quantity.value = Field.Loaded(
+                                "%.3f".format(
+                                    if (value > 1f) value.minus(1f) else {
+                                        0f
+                                    }
+                                )
                             )
                         }
 
-                        if (state.quantity.value.isBlank()) {
-                            state.quantity.value = "%.3f".format(0f)
+                        if (state.quantity.value.data.isNullOrBlank()) {
+                            state.quantity.value = Field.Loaded("%.3f".format(0f))
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -418,9 +434,9 @@ fun ModifyItemScreenImpl(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = !state.loadingShop.value,
+            enabled = state.selectedShop.value.isEnabled(),
             optional = true,
-            value = state.selectedShop.value?.name ?: String(),
+            value = state.selectedShop.value.data?.name ?: String(),
             onClick = {
                 state.isShopSearchDialogExpanded.value = true
             },
@@ -430,7 +446,6 @@ fun ModifyItemScreenImpl(
             },
             addButtonDescription = stringResource(R.string.item_shop_add_description),
             modifier = Modifier
-                .height(60.dp)
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding)
         )
@@ -438,143 +453,49 @@ fun ModifyItemScreenImpl(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = !state.loadingProduct.value,
-            value = state.selectedProduct.value?.name ?: String(),
+            height = 75.dp,
+            enabled = state.selectedProduct.value.isEnabled(),
+            value = state.selectedProduct.value.data?.name ?: String(),
             onClick = {
                 state.isProductSearchDialogExpanded.value = true
             },
             label = stringResource(R.string.item_product),
-            error = if (state.attemptedToSubmit.value) state.selectedProductError.value else false,
+            supportingText = {
+                if (state.attemptedToSubmit.value) {
+                    state.selectedProduct.value.error?.errorText()
+                }
+            },
+            error = if (state.attemptedToSubmit.value) state.selectedProduct.value.isError() else false,
             onAddButtonClick = {
                 onProductAddButtonClick()
             },
             addButtonDescription = stringResource(R.string.item_product_add_description),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
                 .padding(horizontal = ItemHorizontalPadding)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = state.selectedProduct.value != null && !state.loadingVariant.value,
-            value = state.selectedVariant.value?.name
+            enabled = state.selectedProduct.value.data != null && state.selectedVariant.value.isEnabled(),
+            value = state.selectedVariant.value.data?.name
                 ?: stringResource(R.string.item_product_variant_default_value),
             onClick = {
                 state.isVariantSearchDialogExpanded.value = true
             },
             label = stringResource(R.string.item_product_variant),
             onAddButtonClick = {
-                state.selectedProduct.value?.let {
+                state.selectedProduct.value.data?.let {
                     onVariantAddButtonClick(it.id)
                 }
             },
             addButtonDescription = stringResource(R.string.item_product_variant_add_description),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
                 .padding(horizontal = ItemHorizontalPadding)
         )
     }
-}
-
-/**
- * Data representing [ModifyItemScreenImpl] screen state
- */
-data class ModifyItemScreenState(
-    val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
-
-    val selectedProduct: MutableState<Product?> = mutableStateOf(null),
-    val selectedProductError: MutableState<Boolean> = mutableStateOf(false),
-
-    val selectedVariant: MutableState<ProductVariant?> = mutableStateOf(null),
-
-    val selectedShop: MutableState<Shop?> = mutableStateOf(null),
-
-    val quantity: MutableState<String> = mutableStateOf(String()),
-    val quantityError: MutableState<Boolean> = mutableStateOf(false),
-
-    val price: MutableState<String> = mutableStateOf(String()),
-    val priceError: MutableState<Boolean> = mutableStateOf(false),
-
-    val date: MutableState<Long?> = mutableStateOf(null),
-    val dateError: MutableState<Boolean> = mutableStateOf(false),
-
-    var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-
-    val loadingProduct: MutableState<Boolean> = mutableStateOf(false),
-    val loadingVariant: MutableState<Boolean> = mutableStateOf(false),
-    val loadingShop: MutableState<Boolean> = mutableStateOf(false),
-    val loadingQuantity: MutableState<Boolean> = mutableStateOf(false),
-    val loadingPrice: MutableState<Boolean> = mutableStateOf(false),
-    val loadingDate: MutableState<Boolean> = mutableStateOf(false),
-)
-
-/**
- * Validates selectedProduct field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyItemScreenState.validateSelectedProduct(): Boolean {
-    return !(selectedProduct.value == null).also { selectedProductError.value = it }
-}
-
-/**
- * Validates quantity field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyItemScreenState.validateQuantity(): Boolean {
-    return !(StringHelper.toDoubleOrNull(quantity.value) == null).also { quantityError.value = it }
-}
-
-/**
- * Validates price field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyItemScreenState.validatePrice(): Boolean {
-    return !(StringHelper.toDoubleOrNull(price.value) == null).also { priceError.value = it }
-}
-
-/**
- * Validates date field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyItemScreenState.validateDate(): Boolean {
-    return !(date.value == null).also { dateError.value = it }
-}
-
-/**
- * Validates state fields and updates state flags
- * @return true if all fields are of correct value, false otherwise
- */
-fun ModifyItemScreenState.validate(): Boolean {
-    val product = validateSelectedProduct()
-    val quantity = validateQuantity()
-    val price = validatePrice()
-    val date = validateDate()
-
-    return product && quantity && price && date
-}
-
-/**
- * Performs data validation and tries to extract embedded data
- * @return Null if validation sets error flags, extracted data otherwise
- */
-fun ModifyItemScreenState.extractItemOrNull(itemId: Long = 0): Item? {
-    if (!validate()) return null
-
-    return Item(
-        id = itemId,
-        productId = selectedProduct.value?.id ?: return null,
-        variantId = selectedVariant.value?.id,
-        shopId = selectedShop.value?.id,
-        actualQuantity = StringHelper.toDoubleOrNull(quantity.value) ?: return null,
-        actualPrice = StringHelper.toDoubleOrNull(price.value) ?: return null,
-        date = date.value ?: return null,
-    )
 }
 
 @Preview(
