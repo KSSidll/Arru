@@ -20,6 +20,8 @@ class AddProducerViewModel @Inject constructor(
      */
     suspend fun addProducer(): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
+        screenState.validate()
+
         val producer = screenState.extractDataOrNull() ?: return@async null
 
         try {

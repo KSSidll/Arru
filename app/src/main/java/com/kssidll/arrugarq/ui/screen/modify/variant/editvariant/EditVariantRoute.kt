@@ -28,8 +28,11 @@ fun EditVariantRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
-            viewModel.updateVariant(variantId)
-            navigateBack()
+            scope.launch {
+                if (viewModel.updateVariant(variantId)) {
+                    navigateBack()
+                }
+            }
         },
         onDelete = {
             scope.launch {

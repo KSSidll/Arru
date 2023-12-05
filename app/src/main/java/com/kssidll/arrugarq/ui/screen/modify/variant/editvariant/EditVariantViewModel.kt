@@ -1,8 +1,10 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.editvariant
 
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -16,17 +18,27 @@ class EditVariantViewModel @Inject constructor(
 
     /**
      * Tries to update variant with provided [variantId] with current screen state data
+     * @return Whether the update was successful
      */
-    fun updateVariant(variantId: Long) = viewModelScope.launch {
+    suspend fun updateVariant(variantId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val oldVariant = variantRepository.get(variantId) ?: return@launch
-        val variant = screenState.extractVariantOrNull(
-            productId = oldVariant.productId,
-            variantId = variantId,
-        ) ?: return@launch
+        screenState.validate()
 
-        variantRepository.update(variant)
+        val oldVariant = variantRepository.get(variantId) ?: return@async false
+        screenState.productId = oldVariant.productId
+
+        val variant = screenState.extractDataOrNull(variantId) ?: return@async false
+
+        try {
+            variantRepository.update(variant)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async false
+        }
+
+        return@async true
     }
+        .await()
 
     /**
      * Tries to delete variant with provided [variantId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,

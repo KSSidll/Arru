@@ -20,6 +20,8 @@ class AddShopViewModel @Inject constructor(
      */
     suspend fun addShop(): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
+        screenState.validate()
+
         val shop = screenState.extractDataOrNull() ?: return@async null
 
         try {

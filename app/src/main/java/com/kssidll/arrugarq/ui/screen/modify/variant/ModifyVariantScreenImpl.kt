@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -46,10 +47,11 @@ fun ModifyVariantScreenImpl(
         deleteWarningMessage = stringResource(id = R.string.item_product_variant_delete_warning_text),
     ) {
         StyledOutlinedTextField(
+            enabled = state.name.value.isEnabled(),
             singleLine = true,
-            value = state.name.value,
+            value = state.name.value.data ?: String(),
             onValueChange = {
-                state.name.value = it
+                state.name.value = Field.Loaded(it)
                 state.validateName()
             },
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -65,62 +67,17 @@ fun ModifyVariantScreenImpl(
                     text = stringResource(R.string.item_product_variant),
                 )
             },
-            isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
+            supportingText = {
+                if (state.attemptedToSubmit.value) {
+                    state.name.value.error?.errorText()
+                }
+            },
+            isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding)
         )
     }
-}
-
-/**
- * Data representing [ModifyVariantScreenImpl] screen state
- */
-data class ModifyVariantScreenState(
-    val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
-
-    val name: MutableState<String> = mutableStateOf(String()),
-    val nameError: MutableState<Boolean> = mutableStateOf(false),
-
-    val loadingName: MutableState<Boolean> = mutableStateOf(false),
-
-    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
-    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
-)
-
-/**
- * Validates name field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyVariantScreenState.validateName(): Boolean {
-    return !(name.value.isBlank()).also { nameError.value = it }
-}
-
-/**
- * Validates state fields and updates state flags
- * @return true if all fields are of correct value, false otherwise
- */
-fun ModifyVariantScreenState.validate(): Boolean {
-    return validateName()
-}
-
-/**
- * performs data validation and tries to extract embedded data
- * @param productId Id of the product that the variant is being created for
- * @param variantId Optional Id of the variant
- * @return Null if validation sets error flags, extracted data otherwise
- */
-fun ModifyVariantScreenState.extractVariantOrNull(
-    productId: Long,
-    variantId: Long = 0
-): ProductVariant? {
-    if (!validate()) return null
-
-    return ProductVariant(
-        id = variantId,
-        productId = productId,
-        name = name.value.trim(),
-    )
 }
 
 @Preview(

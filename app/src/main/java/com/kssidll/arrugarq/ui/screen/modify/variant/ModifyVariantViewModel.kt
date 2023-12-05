@@ -1,7 +1,11 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant
 
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
 
 /**
@@ -19,19 +23,53 @@ abstract class ModifyVariantViewModel: ViewModel() {
      * @return true if provided [variantId] was valid, false otherwise
      */
     suspend fun updateState(variantId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
+        screenState.name.apply { value = value.toLoading() }
 
         val variant = variantRepository.get(variantId)
 
-        if (variant == null) {
-            screenState.loadingName.value = false
-            return@async false
+        screenState.name.apply {
+            value = variant?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        screenState.name.value = variant.name
-
-        screenState.loadingName.value = false
-        return@async true
+        return@async variant != null
     }
         .await()
+}
+
+/**
+ * Data representing [ModifyVariantScreenImpl] screen state
+ */
+data class ModifyVariantScreenState(
+    var productId: Long = -1, // not sure how to handle this any other way
+    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
+): ModifyScreenState<ProductVariant>() {
+    /**
+     * Validates name field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validateName(): Boolean {
+        name.apply {
+            if (value.data.isNullOrBlank()) {
+                value = value.toError(FieldError.NoValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    override fun validate(): Boolean {
+        return validateName()
+    }
+
+    override fun extractDataOrNull(id: Long): ProductVariant? {
+        if (!validate()) return null
+        if (productId < 1) error("ProductVariant Extraction from ModifyVariatScreenState Failed, productId was not set before trying to extract data")
+
+        return ProductVariant(
+            id = id,
+            productId = productId,
+            name = name.value.data?.trim() ?: return null,
+        )
+    }
+
 }

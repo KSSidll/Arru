@@ -25,6 +25,8 @@ class AddItemViewModel @Inject constructor(
      */
     suspend fun addItem(): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
+        screenState.validate()
+
         val item = screenState.extractDataOrNull() ?: return@async null
 
         return@async itemRepository.insert(item)

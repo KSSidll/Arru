@@ -25,6 +25,8 @@ class EditProductViewModel @Inject constructor(
      */
     suspend fun updateProduct(productId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
+        screenState.validate()
+
         val product = screenState.extractDataOrNull(productId) ?: return@async false
 
         try {

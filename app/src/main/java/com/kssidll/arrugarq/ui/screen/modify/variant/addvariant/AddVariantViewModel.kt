@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.addvariant
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -19,9 +21,17 @@ class AddVariantViewModel @Inject constructor(
      */
     suspend fun addVariant(productId: Long): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val variant = screenState.extractVariantOrNull(productId) ?: return@async null
+        screenState.validate()
 
-        return@async variantRepository.insert(variant)
+        screenState.productId = productId
+        val variant = screenState.extractDataOrNull(productId) ?: return@async null
+
+        try {
+            return@async variantRepository.insert(variant)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async null
+        }
     }
         .await()
 }
