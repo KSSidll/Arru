@@ -18,13 +18,19 @@ class EditProducerViewModel @Inject constructor(
 
     /**
      * Tries to update product with provided [producerId] with current screen state data
+     * @return Whether the update was successful
      */
-    fun updateProducer(producerId: Long) = viewModelScope.launch {
+    suspend fun updateProducer(producerId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val producer = screenState.extractProducerOrNull(producerId) ?: return@launch
+        screenState.validate()
+
+        val producer = screenState.extractDataOrNull(producerId) ?: return@async false
 
         producerRepository.update(producer)
+
+        return@async true
     }
+        .await()
 
     /**
      * Tries to delete producer with provided [producerId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,

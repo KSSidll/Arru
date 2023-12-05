@@ -28,8 +28,11 @@ fun EditProducerRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
-            viewModel.updateProducer(producerId)
-            navigateBack()
+            scope.launch {
+                if (viewModel.updateProducer(producerId)) {
+                    navigateBack()
+                }
+            }
         },
         onDelete = {
             scope.launch {
