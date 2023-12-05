@@ -46,7 +46,7 @@ abstract class ModifyProductViewModel: ViewModel() {
             value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        return@async true
+        return@async product != null
     }
         .await()
 

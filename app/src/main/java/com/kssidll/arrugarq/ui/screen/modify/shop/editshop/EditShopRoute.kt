@@ -28,8 +28,11 @@ fun EditShopRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         onSubmit = {
-            viewModel.updateShop(shopId)
-            navigateBack()
+            scope.launch {
+                if (viewModel.updateShop(shopId)) {
+                    navigateBack()
+                }
+            }
         },
         onDelete = {
             scope.launch {

@@ -24,7 +24,7 @@ abstract class ModifyCategoryViewModel: ViewModel() {
     suspend fun updateState(categoryId: Long) = viewModelScope.async {
         screenState.name.value = screenState.name.value.toLoading()
 
-        val category = categoryRepository.get(categoryId)
+        val category: ProductCategory? = categoryRepository.get(categoryId)
 
         screenState.name.apply {
             value = category?.let { Field.Loaded(it.name) } ?: value.toLoadedOrError()

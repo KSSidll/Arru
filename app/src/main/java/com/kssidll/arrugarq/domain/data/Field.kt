@@ -100,7 +100,7 @@ sealed class FieldError {
     @Composable
     fun errorText(): Unit {
         Text(
-            text = NoValueError.errorString(),
+            text = errorString(),
             style = Typography.bodySmall,
         )
     }

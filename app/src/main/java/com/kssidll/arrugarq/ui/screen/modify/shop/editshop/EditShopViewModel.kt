@@ -1,8 +1,10 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop.editshop
 
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -16,13 +18,22 @@ class EditShopViewModel @Inject constructor(
 
     /**
      * Tries to update shop with provided [shopId] with current screen state data
+     * @return Whether the update was successful
      */
-    fun updateShop(shopId: Long) = viewModelScope.launch {
+    suspend fun updateShop(shopId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val shop = screenState.extractShopOrNull(shopId) ?: return@launch
+        val shop = screenState.extractDataOrNull(shopId) ?: return@async false
 
-        shopRepository.update(shop)
+        try {
+            shopRepository.update(shop)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async false
+        }
+
+        return@async true
     }
+        .await()
 
     /**
      * Tries to delete shop with provided [shopId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,

@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop.addshop
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -18,9 +20,14 @@ class AddShopViewModel @Inject constructor(
      */
     suspend fun addShop(): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val shop = screenState.extractShopOrNull() ?: return@async null
+        val shop = screenState.extractDataOrNull() ?: return@async null
 
-        return@async shopRepository.insert(shop)
+        try {
+            return@async shopRepository.insert(shop)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async null
+        }
     }
         .await()
 }

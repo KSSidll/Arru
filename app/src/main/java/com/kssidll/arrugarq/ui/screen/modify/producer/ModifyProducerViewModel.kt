@@ -31,7 +31,7 @@ abstract class ModifyProducerViewModel: ViewModel() {
             value = producer?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        return@async true
+        return@async producer != null
     }
         .await()
 }
