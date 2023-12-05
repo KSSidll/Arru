@@ -1,8 +1,10 @@
 package com.kssidll.arrugarq.ui.screen.modify.product.editproduct
 
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -19,13 +21,22 @@ class EditProductViewModel @Inject constructor(
 
     /**
      * Tries to update product with provided [productId] with current screen state data
+     * @return Whether the update was successful
      */
-    fun updateProduct(productId: Long) = viewModelScope.launch {
+    suspend fun updateProduct(productId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val product = screenState.extractProductOrNull(productId) ?: return@launch
+        val product = screenState.extractDataOrNull(productId) ?: return@async false
 
-        productRepository.update(product)
+        try {
+            productRepository.update(product)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async false
+        }
+
+        return@async true
     }
+        .await()
 
     /**
      * Tries to delete product with provided [productId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,

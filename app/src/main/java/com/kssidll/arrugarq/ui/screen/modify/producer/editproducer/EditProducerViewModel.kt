@@ -1,8 +1,10 @@
 package com.kssidll.arrugarq.ui.screen.modify.producer.editproducer
 
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.producer.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -26,7 +28,12 @@ class EditProducerViewModel @Inject constructor(
 
         val producer = screenState.extractDataOrNull(producerId) ?: return@async false
 
-        producerRepository.update(producer)
+        try {
+            producerRepository.update(producer)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async false
+        }
 
         return@async true
     }

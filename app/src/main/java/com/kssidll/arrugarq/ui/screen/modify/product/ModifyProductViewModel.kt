@@ -1,8 +1,11 @@
 package com.kssidll.arrugarq.ui.screen.modify.product
 
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -23,41 +26,26 @@ abstract class ModifyProductViewModel: ViewModel() {
      * @return true if provided [productId] was valid, false otherwise
      */
     suspend fun updateState(productId: Long) = viewModelScope.async {
-        screenState.loadingName.value = true
-        screenState.loadingProductProducer.value = true
-        screenState.loadingProductCategory.value = true
+        screenState.name.apply { value = value.toLoading() }
+        screenState.selectedProductProducer.apply { value = value.toLoading() }
+        screenState.selectedProductCategory.apply { value = value.toLoading() }
 
-        val dispose = {
-            screenState.loadingName.value = false
-            screenState.loadingProductProducer.value = false
-            screenState.loadingProductCategory.value = false
+        val product: Product? = productRepository.get(productId)
+        val producer: ProductProducer? = product?.producerId?.let { producerRepository.get(it) }
+        val category = product?.categoryId?.let { categoryRepository.get(it) }
+
+        screenState.name.apply {
+            value = product?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        val product = productRepository.get(productId)
-        if (product == null) {
-            dispose()
-            return@async false
+        screenState.selectedProductProducer.apply {
+            value = producer?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        val producer =
-            if (product.producerId != null) {
-                producerRepository.get(product.producerId)
-            } else {
-                null
-            }
-
-        val category = categoryRepository.get(product.categoryId)
-        if (category == null) {
-            dispose()
-            return@async false
+        screenState.selectedProductCategory.apply {
+            value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-
-        screenState.name.value = product.name
-        screenState.selectedProductProducer.value = producer
-        screenState.selectedProductCategory.value = category
-
-        dispose()
         return@async true
     }
         .await()
@@ -75,4 +63,64 @@ abstract class ModifyProductViewModel: ViewModel() {
     fun allProducers(): Flow<List<ProductProducer>> {
         return producerRepository.getAllFlow()
     }
+}
+
+/**
+ * Data representing [ModifyProductScreenImpl] screen state
+ */
+data class ModifyProductScreenState(
+    val selectedProductCategory: MutableState<Field<ProductCategory>> = mutableStateOf(Field.Loaded()),
+    val selectedProductProducer: MutableState<Field<ProductProducer?>> = mutableStateOf(Field.Loaded()),
+    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
+
+    val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+    val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
+): ModifyScreenState<Product>() {
+
+    /**
+     * Validates selectedProductCategory field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validateSelectedProductCategory(): Boolean {
+        selectedProductCategory.apply {
+            if (value.data == null) {
+                value = value.toError(FieldError.NoValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    /**
+     * Validates name field and updates its error flag
+     * @return true if field is of correct value, false otherwise
+     */
+    fun validateName(): Boolean {
+        name.apply {
+            if (value.data.isNullOrBlank()) {
+                value = value.toError(FieldError.NoValueError)
+            }
+
+            return value.isNotError()
+        }
+    }
+
+    override fun validate(): Boolean {
+        val category = validateSelectedProductCategory()
+        val name = validateName()
+
+        return category && name
+    }
+
+    override fun extractDataOrNull(id: Long): Product? {
+        if (!validate()) return null
+
+        return Product(
+            id = id,
+            categoryId = selectedProductCategory.value.data?.id ?: return null,
+            producerId = selectedProductProducer.value.data?.id,
+            name = name.value.data?.trim() ?: return null,
+        )
+    }
+
 }

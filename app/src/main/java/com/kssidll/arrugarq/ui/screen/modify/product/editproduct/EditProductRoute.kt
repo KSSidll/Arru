@@ -36,8 +36,11 @@ fun EditProductRoute(
         producers = viewModel.allProducers()
             .collectAsState(initial = emptyList()).value,
         onSubmit = {
-            viewModel.updateProduct(productId)
-            navigateBack()
+            scope.launch {
+                if (viewModel.updateProduct(productId)) {
+                    navigateBack()
+                }
+            }
         },
         onDelete = {
             scope.launch {

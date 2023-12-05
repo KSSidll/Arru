@@ -23,6 +23,8 @@ import me.xdrop.fuzzywuzzy.*
     ],
     indices = [
         Index(
+            // FIX THIS DOES **NOT** PREVENT DUPLICATE VALUES
+            // TODO migrate to software side check since ORM can't even do something this simple
             value = ["producerId", "name"],
             unique = true
         )

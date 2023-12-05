@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.product.addproduct
 
+import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -20,9 +22,14 @@ class AddProductViewModel @Inject constructor(
      */
     suspend fun addProduct(): Long? = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        val product = screenState.extractProductOrNull() ?: return@async null
+        val product = screenState.extractDataOrNull() ?: return@async null
 
-        return@async productRepository.insert(product)
+        try {
+            return@async productRepository.insert(product)
+        } catch (_: SQLiteConstraintException) {
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            return@async null
+        }
     }
         .await()
 }

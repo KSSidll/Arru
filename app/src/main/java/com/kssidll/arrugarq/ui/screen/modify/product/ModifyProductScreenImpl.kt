@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
@@ -65,7 +66,7 @@ fun ModifyProductScreenImpl(
                 items = producers,
                 itemText = { it.name },
                 onItemClick = {
-                    state.selectedProductProducer.value = it
+                    state.selectedProductProducer.value = Field.Loaded(it)
                     state.isProducerSearchDialogExpanded.value = false
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
@@ -86,7 +87,7 @@ fun ModifyProductScreenImpl(
                 },
                 items = categories,
                 onItemClick = {
-                    state.selectedProductCategory.value = it?.category
+                    state.selectedProductCategory.value = Field.Loaded(it?.category)
                     state.validateSelectedProductCategory()
                     state.isCategorySearchDialogExpanded.value = false
                 },
@@ -102,11 +103,11 @@ fun ModifyProductScreenImpl(
             )
         } else {
             StyledOutlinedTextField(
-                enabled = !state.loadingName.value,
+                enabled = state.name.value.isEnabled(),
                 singleLine = true,
-                value = state.name.value,
+                value = state.name.value.data ?: String(),
                 onValueChange = {
-                    state.name.value = it
+                    state.name.value = Field.Loaded(it)
                     state.validateName()
                 },
                 label = {
@@ -114,7 +115,12 @@ fun ModifyProductScreenImpl(
                         text = stringResource(R.string.item_product)
                     )
                 },
-                isError = if (state.attemptedToSubmit.value) state.nameError.value else false,
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.name.value.error?.errorText()
+                    }
+                },
+                isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding.times(2))
@@ -125,8 +131,8 @@ fun ModifyProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                enabled = !state.loadingProductProducer.value,
-                value = state.selectedProductProducer.value?.name ?: String(),
+                enabled = state.selectedProductProducer.value.isEnabled(),
+                value = state.selectedProductProducer.value.data?.name ?: String(),
                 onClick = {
                     state.isProducerSearchDialogExpanded.value = true
                 },
@@ -144,8 +150,9 @@ fun ModifyProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                enabled = !state.loadingProductCategory.value,
-                value = state.selectedProductCategory.value?.name ?: String(),
+                height = 75.dp,
+                enabled = state.selectedProductCategory.value.isEnabled(),
+                value = state.selectedProductCategory.value.data?.name ?: String(),
                 onClick = {
                     state.isCategorySearchDialogExpanded.value = true
                 },
@@ -154,80 +161,18 @@ fun ModifyProductScreenImpl(
                     onCategoryAddButtonClick()
                 },
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
-                error = if (state.attemptedToSubmit.value) state.selectedProductCategoryError.value else false,
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.selectedProductCategory.value.error?.errorText()
+                    }
+                },
+                error = if (state.attemptedToSubmit.value) state.selectedProductCategory.value.isError() else false,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding)
             )
         }
     }
-}
-
-/**
- * Data representing [ModifyProductScreenImpl] screen state
- */
-data class ModifyProductScreenState(
-    val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
-
-    val selectedProductCategory: MutableState<ProductCategory?> = mutableStateOf(null),
-    val selectedProductCategoryError: MutableState<Boolean> = mutableStateOf(false),
-
-    val selectedProductProducer: MutableState<ProductProducer?> = mutableStateOf(null),
-
-    val name: MutableState<String> = mutableStateOf(String()),
-    val nameError: MutableState<Boolean> = mutableStateOf(false),
-
-    val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-
-    val loadingProductCategory: MutableState<Boolean> = mutableStateOf(false),
-    val loadingProductProducer: MutableState<Boolean> = mutableStateOf(false),
-    val loadingName: MutableState<Boolean> = mutableStateOf(false),
-
-    val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
-    val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
-)
-
-/**
- * Validates selectedProductCategory field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyProductScreenState.validateSelectedProductCategory(): Boolean {
-    return !(selectedProductCategory.value == null).also { selectedProductCategoryError.value = it }
-}
-
-/**
- * Validates name field and updates its error flag
- * @return true if field is of correct value, false otherwise
- */
-fun ModifyProductScreenState.validateName(): Boolean {
-    return !(name.value.isBlank()).also { nameError.value = it }
-}
-
-/**
- * Validates state fields and updates state flags
- * @return true if all fields are of correct value, false otherwise
- */
-fun ModifyProductScreenState.validate(): Boolean {
-    val category = validateSelectedProductCategory()
-    val name = validateName()
-
-    return category && name
-}
-
-/**
- * performs data validation and tries to extract embedded data
- * @return Null if validation sets error flags, extracted data otherwise
- */
-fun ModifyProductScreenState.extractProductOrNull(productId: Long = 0): Product? {
-    if (!validate()) return null
-
-    return Product(
-        id = productId,
-        categoryId = selectedProductCategory.value!!.id,
-        producerId = selectedProductProducer.value?.id,
-        name = name.value.trim(),
-    )
 }
 
 @Preview(
