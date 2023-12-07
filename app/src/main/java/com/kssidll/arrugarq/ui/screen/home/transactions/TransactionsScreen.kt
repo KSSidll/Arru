@@ -187,7 +187,7 @@ internal fun TransactionsScreen(
                                 Text(
                                     modifier = Modifier.align(Alignment.Center),
                                     text = SimpleDateFormat(
-                                        "MMM d, yyyy",
+                                        "d MMMM, yyyy",
                                         Locale.getDefault()
                                     ).format(group.first * 86400000),
                                     style = Typography.headlineMedium,
