@@ -17,6 +17,9 @@ import com.kssidll.arrugarq.ui.screen.home.analysis.components.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
+private val TileOuterPadding: Dp = 8.dp
+private val TileInnerPadding: Dp = 12.dp
+
 /**
  * @param year Year for which the main data is fetched
  * @param month Month for which the main data is fetched, in range of 1 - 12
@@ -24,7 +27,10 @@ import kotlinx.coroutines.flow.*
  * @param onMonthDecrement Callback called to request [month] decrement, should handle underflow and decrease year
  * @param setCategorySpending List of items representing the category wise spending for currently set [year] and [month]
  * @param compareCategorySpending List of items representing the category wise spending for previous [month] of currently set [year] and [month]
+ * @param onCategorySpendingComparisonCardClick Callback called when the category spending comparison card is clicked
+ * @param onShopSpendingComparisonCardClick Callback called when the shop spending comparison card is clicked
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AnalysisScreen(
     year: Int,
@@ -33,29 +39,79 @@ internal fun AnalysisScreen(
     onMonthDecrement: () -> Unit,
     setCategorySpending: Flow<List<ItemSpentByCategory>>,
     compareCategorySpending: Flow<List<ItemSpentByCategory>>,
+    setShopSpending: Flow<List<ItemSpentByShop>>,
+    compareShopSpending: Flow<List<ItemSpentByShop>>,
+    onCategorySpendingComparisonCardClick: () -> Unit,
+    onShopSpendingComparisonCardClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Spacer(modifier = Modifier.height(24.dp))
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    DateHeader(
+                        year = year,
+                        month = month,
+                        onMonthIncrement = onMonthIncrement,
+                        onMonthDecrement = onMonthDecrement,
+                    )
+                },
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(12.dp))
 
-        DateHeader(
-            year = year,
-            month = month,
-            onMonthIncrement = onMonthIncrement,
-            onMonthDecrement = onMonthDecrement,
-        )
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                modifier = Modifier
+                    .padding(TileOuterPadding)
+                    .fillMaxWidth()
+                    .heightIn(min = 144.dp)
+                    .clickable {
+                        onCategorySpendingComparisonCardClick()
+                    }
+            ) {
+                SpendingComparisonList(
+                    leftSideItems = compareCategorySpending.collectAsState(initial = emptyList()).value,
+                    leftSideHeader = stringResource(id = R.string.previous),
+                    rightSideItems = setCategorySpending.collectAsState(initial = emptyList()).value,
+                    rightSideHeader = stringResource(id = R.string.current),
+                    itemDisplayLimit = 6,
+                    modifier = Modifier.padding(TileInnerPadding)
+                )
+            }
 
-        Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        ComparisonList(
-            rightSideItems = setCategorySpending.collectAsState(initial = emptyList()).value,
-            rightSideHeader = stringResource(id = R.string.current),
-            leftSideItems = compareCategorySpending.collectAsState(initial = emptyList()).value,
-            leftSideHeader = stringResource(id = R.string.previous),
-        )
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                modifier = Modifier
+                    .padding(TileOuterPadding)
+                    .fillMaxWidth()
+                    .heightIn(min = 144.dp)
+                    .clickable {
+                        onShopSpendingComparisonCardClick()
+                    }
+            ) {
+                SpendingComparisonList(
+                    leftSideItems = compareShopSpending.collectAsState(initial = emptyList()).value,
+                    leftSideHeader = stringResource(id = R.string.previous),
+                    rightSideItems = setShopSpending.collectAsState(initial = emptyList()).value,
+                    rightSideHeader = stringResource(id = R.string.current),
+                    itemDisplayLimit = 6,
+                    modifier = Modifier.padding(TileInnerPadding)
+                )
+            }
+        }
     }
 }
 
@@ -82,6 +138,10 @@ private fun AnalysisScreenPreview() {
                 onMonthDecrement = {},
                 setCategorySpending = flowOf(),
                 compareCategorySpending = flowOf(),
+                setShopSpending = flowOf(),
+                compareShopSpending = flowOf(),
+                onCategorySpendingComparisonCardClick = {},
+                onShopSpendingComparisonCardClick = {},
             )
         }
     }

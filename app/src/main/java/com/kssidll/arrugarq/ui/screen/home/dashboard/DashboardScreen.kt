@@ -107,6 +107,8 @@ internal fun DashboardScreen(
                 ),
                 modifier = Modifier
                     .padding(TileOuterPadding)
+                    .fillMaxWidth()
+                    .heightIn(min = 144.dp)
             ) {
                 RankingList(
                     innerItemPadding = PaddingValues(TileInnerPadding),
@@ -124,6 +126,8 @@ internal fun DashboardScreen(
                 ),
                 modifier = Modifier
                     .padding(TileOuterPadding)
+                    .fillMaxWidth()
+                    .heightIn(min = 144.dp)
             ) {
                 RankingList(
                     innerItemPadding = PaddingValues(TileInnerPadding),

@@ -31,6 +31,8 @@ fun HomeRoute(
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
+    navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
+    navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
@@ -69,7 +71,8 @@ fun HomeRoute(
 
                     HomeRouteLocations.Analysis -> {
                         AnalysisRoute(
-
+                            navigateCategorySpendingComparison = navigateCategorySpendingComparison,
+                            navigateShopSpendingComparison = navigateShopSpendingComparison,
                         )
                     }
 

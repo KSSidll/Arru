@@ -6,7 +6,8 @@ import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 fun AnalysisRoute(
-
+    navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
+    navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
 ) {
     val viewModel: AnalysisViewModel = hiltViewModel()
 
@@ -21,5 +22,19 @@ fun AnalysisRoute(
         },
         setCategorySpending = viewModel.setCategorySpending,
         compareCategorySpending = viewModel.compareCategorySpending,
+        setShopSpending = viewModel.setShopSpending,
+        compareShopSpending = viewModel.compareShopSpending,
+        onCategorySpendingComparisonCardClick = {
+            navigateCategorySpendingComparison(
+                viewModel.year,
+                viewModel.month
+            )
+        },
+        onShopSpendingComparisonCardClick = {
+            navigateShopSpendingComparison(
+                viewModel.year,
+                viewModel.month
+            )
+        },
     )
 }

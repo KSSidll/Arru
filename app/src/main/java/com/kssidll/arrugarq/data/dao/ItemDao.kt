@@ -360,6 +360,9 @@ ORDER BY time
     @Query("SELECT shop.*, SUM(item.price * item.quantity) as total FROM item INNER JOIN shop ON item.shopId = shop.id GROUP BY item.shopId")
     fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>>
 
+    @Query("SELECT shop.*, SUM(item.price * item.quantity) as total FROM item INNER JOIN shop ON item.shopId = shop.id WHERE STRFTIME('%Y-%m', DATE(date / 1000, 'unixepoch')) = :date GROUP BY item.shopId")
+    fun getShopTotalSpentFlowByMonth(date: String): Flow<List<ItemSpentByShop>>
+
     @Query("SELECT productcategory.*, SUM(item.price * item.quantity) as total FROM item INNER JOIN product ON item.productId = product.id INNER JOIN productcategory ON product.categoryId = productcategory.id GROUP BY productcategory.id")
     suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory>
 

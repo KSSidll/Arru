@@ -37,36 +37,63 @@ class AnalysisViewModel @Inject constructor(
         mutableStateOf(flowOf())
     val compareCategorySpending: Flow<List<ItemSpentByCategory>> get() = mCompareCategorySpending.value
 
+    private var mSetShopSpendingJob: Job? = null
+    private val mSetShopSpending: MutableState<Flow<List<ItemSpentByShop>>> =
+        mutableStateOf(flowOf())
+    val setShopSpending: Flow<List<ItemSpentByShop>> get() = mSetShopSpending.value
+
+    private var mCompareShopSpendingJob: Job? = null
+    private val mCompareShopSpending: MutableState<Flow<List<ItemSpentByShop>>> =
+        mutableStateOf(flowOf())
+    val compareShopSpending: Flow<List<ItemSpentByShop>> get() = mCompareShopSpending.value
+
     init {
         updateData()
     }
 
     private fun updateData() {
+        var compareYear: Int = year
+        var compareMonth: Int = month
+
+        if (compareMonth == 1) {
+            compareYear -= 1
+            compareMonth = 12
+        } else {
+            compareMonth -= 1
+        }
+
         mSetCategorySpendingJob?.cancel()
         mSetCategorySpendingJob = viewModelScope.launch {
             mSetCategorySpending.value = itemRepository.getCategoryTotalSpentFlowByMonth(
                 year,
-                month
+                month,
             )
                 .cancellable()
         }
 
         mCompareCategorySpendingJob?.cancel()
         mCompareCategorySpendingJob = viewModelScope.launch {
-            var localYear: Int = year
-            var localMonth: Int = month
-
-
-            if (localMonth == 1) {
-                localYear -= 1
-                localMonth = 12
-            } else {
-                localMonth -= 1
-            }
-
             mCompareCategorySpending.value = itemRepository.getCategoryTotalSpentFlowByMonth(
-                localYear,
-                localMonth
+                compareYear,
+                compareMonth,
+            )
+                .cancellable()
+        }
+
+        mSetShopSpendingJob?.cancel()
+        mSetShopSpendingJob = viewModelScope.launch {
+            mSetShopSpending.value = itemRepository.getShopTotalSpentFlowByMonth(
+                year,
+                month,
+            )
+                .cancellable()
+        }
+
+        mCompareShopSpendingJob?.cancel()
+        mCompareShopSpendingJob = viewModelScope.launch {
+            mCompareShopSpending.value = itemRepository.getShopTotalSpentFlowByMonth(
+                compareYear,
+                compareMonth,
             )
                 .cancellable()
         }

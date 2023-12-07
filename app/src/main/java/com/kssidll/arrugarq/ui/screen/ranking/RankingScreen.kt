@@ -56,8 +56,11 @@ fun <T> RankingScreen(
                 .padding(it)
                 .verticalScroll(state = rememberScrollState())
         ) {
-            RankingScreenContent(
-                data = data,
+            RankingList(
+                innerItemPadding = PaddingValues(horizontal = 16.dp),
+                items = data,
+                displayCount = 0,
+                scaleByRank = false,
                 onItemClick = onItemClick,
                 onItemClickLabel = onItemClickLabel,
                 onItemLongClick = onItemLongClick,
@@ -65,35 +68,6 @@ fun <T> RankingScreen(
             )
         }
     }
-}
-
-/**
- * Generic ranking screen content
- * @param T Type of item, needs to implement [RankSource]
- * @param data List of items to display, items need to implement [RankSource]
- * @param onItemClick Function to call when an item is clicked, null disables click event if [onItemLongClick] is null as well
- * @param onItemClickLabel Semantic / accessibility label for the [onItemClick] action
- * @param onItemLongClick Function to call when an item is long clicked, null disables click event if [onItemClick] is null as well
- * @param onItemLongClickLabel Semantic / accessibility label for the [onItemLongClick] action
- */
-@Composable
-private fun <T> RankingScreenContent(
-    data: List<T>,
-    onItemClick: ((T) -> Unit)? = null,
-    onItemClickLabel: String? = null,
-    onItemLongClick: ((T) -> Unit)? = null,
-    onItemLongClickLabel: String? = null,
-) where T: RankSource {
-    RankingList(
-        innerItemPadding = PaddingValues(horizontal = 16.dp),
-        items = data,
-        displayCount = 0,
-        scaleByRank = false,
-        onItemClick = onItemClick,
-        onItemClickLabel = onItemClickLabel,
-        onItemLongClick = onItemLongClick,
-        onItemLongClickLabel = onItemLongClickLabel,
-    )
 }
 
 @Preview(

@@ -293,6 +293,24 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         return dao.getShopTotalSpentFlow()
     }
 
+    override fun getShopTotalSpentFlowByMonth(
+        year: Int,
+        month: Int
+    ): Flow<List<ItemSpentByShop>> {
+        val date: String = buildString {
+            append(year)
+            append("-")
+
+            val monthStr: String = if (month < 10) {
+                "0$month"
+            } else {
+                month.toString()
+            }
+            append(monthStr)
+        }
+        return dao.getShopTotalSpentFlowByMonth(date)
+    }
+
     override suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory> {
         return dao.getCategoryTotalSpent()
     }

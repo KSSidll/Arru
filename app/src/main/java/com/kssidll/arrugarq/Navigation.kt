@@ -26,6 +26,8 @@ import com.kssidll.arrugarq.ui.screen.ranking.categoryranking.*
 import com.kssidll.arrugarq.ui.screen.ranking.shopranking.*
 import com.kssidll.arrugarq.ui.screen.search.*
 import com.kssidll.arrugarq.ui.screen.settings.*
+import com.kssidll.arrugarq.ui.screen.spendingcomparison.categoryspendingcomparison.*
+import com.kssidll.arrugarq.ui.screen.spendingcomparison.shopspendingcomparison.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
@@ -57,6 +59,16 @@ sealed class Screen: Parcelable {
 
     data object CategoryRanking: Screen()
     data object ShopRanking: Screen()
+
+    data class CategorySpendingComparison(
+        val year: Int,
+        val month: Int
+    ): Screen()
+
+    data class ShopSpendingComparison(
+        val year: Int,
+        val month: Int
+    ): Screen()
 }
 
 /**
@@ -284,6 +296,23 @@ fun Navigation(
         navController.navigate(Screen.ShopRanking)
     }
 
+    val navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit = { year, month ->
+        navController.navigate(
+            Screen.CategorySpendingComparison(
+                year,
+                month
+            )
+        )
+    }
+
+    val navigateShopSpendingComparison: (year: Int, month: Int) -> Unit = { year, month ->
+        navController.navigate(
+            Screen.ShopSpendingComparison(
+                year,
+                month
+            )
+        )
+    }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
 
@@ -310,6 +339,8 @@ fun Navigation(
                     navigateItemEdit = navigateItemEdit,
                     navigateCategoryRanking = navigateCategoryRanking,
                     navigateShopRanking = navigateShopRanking,
+                    navigateCategorySpendingComparison = navigateCategorySpendingComparison,
+                    navigateShopSpendingComparison = navigateShopSpendingComparison,
                 )
             }
 
@@ -506,13 +537,13 @@ fun Navigation(
                 )
             }
 
-            Screen.Settings -> {
+            is Screen.Settings -> {
                 SettingsRoute(
                     navigateBack = navigateBack,
                 )
             }
 
-            Screen.Search -> {
+            is Screen.Search -> {
                 SearchRoute(
                     navigateBack = navigateBack,
                     navigateProduct = navigateProduct,
@@ -523,6 +554,22 @@ fun Navigation(
                     navigateCategoryEdit = navigateCategoryEdit,
                     navigateProducerEdit = navigateProducerEdit,
                     navigateShopEdit = navigateShopEdit,
+                )
+            }
+
+            is Screen.CategorySpendingComparison -> {
+                CategorySpendingComparisonRoute(
+                    navigateBack = navigateBack,
+                    year = screen.year,
+                    month = screen.month,
+                )
+            }
+
+            is Screen.ShopSpendingComparison -> {
+                ShopSpendingComparisonRoute(
+                    navigateBack = navigateBack,
+                    year = screen.year,
+                    month = screen.month,
                 )
             }
         }
