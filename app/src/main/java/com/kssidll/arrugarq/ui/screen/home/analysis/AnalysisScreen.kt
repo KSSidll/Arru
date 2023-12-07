@@ -45,18 +45,15 @@ internal fun AnalysisScreen(
     onShopSpendingComparisonCardClick: () -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    DateHeader(
-                        year = year,
-                        month = month,
-                        onMonthIncrement = onMonthIncrement,
-                        onMonthDecrement = onMonthDecrement,
-                    )
-                },
-                modifier = Modifier.padding(vertical = 12.dp)
-            )
+        bottomBar = {
+            Box(modifier = Modifier.padding(vertical = 12.dp)) {
+                DateHeader(
+                    year = year,
+                    month = month,
+                    onMonthIncrement = onMonthIncrement,
+                    onMonthDecrement = onMonthDecrement,
+                )
+            }
         }
     ) { paddingValues ->
         Column(
