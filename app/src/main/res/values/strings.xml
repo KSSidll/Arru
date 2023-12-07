@@ -88,4 +88,6 @@
     <string name="duplicate_value_error_text">Value already exists</string>
     <string name="no_value_error_text">Value required</string>
     <string name="invalid_value_error_text">This value is invalid</string>
+    <string name="current">Current</string>
+    <string name="previous">Previous</string>
 </resources>

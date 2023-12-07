@@ -11,6 +11,15 @@ fun AnalysisRoute(
     val viewModel: AnalysisViewModel = hiltViewModel()
 
     AnalysisScreen(
-
+        year = viewModel.year,
+        month = viewModel.month,
+        onMonthDecrement = {
+            viewModel.monthDecrement()
+        },
+        onMonthIncrement = {
+            viewModel.monthIncrement()
+        },
+        setCategorySpending = viewModel.setCategorySpending,
+        compareCategorySpending = viewModel.compareCategorySpending,
     )
 }

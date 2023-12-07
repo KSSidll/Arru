@@ -136,6 +136,11 @@ interface ItemRepositorySource {
     fun getShopTotalSpentFlow(): Flow<List<ItemSpentByShop>>
     suspend fun getCategoryTotalSpent(): List<ItemSpentByCategory>
     fun getCategoryTotalSpentFlow(): Flow<List<ItemSpentByCategory>>
+    fun getCategoryTotalSpentFlowByMonth(
+        year: Int,
+        month: Int
+    ): Flow<List<ItemSpentByCategory>>
+
     suspend fun getTotalSpent(): Long
     fun getTotalSpentFlow(): Flow<Long>
     suspend fun getTotalSpentByShop(shopId: Long): Long

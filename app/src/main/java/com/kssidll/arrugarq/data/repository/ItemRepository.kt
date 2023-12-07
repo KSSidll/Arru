@@ -301,6 +301,24 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         return dao.getCategoryTotalSpentFlow()
     }
 
+    override fun getCategoryTotalSpentFlowByMonth(
+        year: Int,
+        month: Int
+    ): Flow<List<ItemSpentByCategory>> {
+        val date: String = buildString {
+            append(year)
+            append("-")
+
+            val monthStr: String = if (month < 10) {
+                "0$month"
+            } else {
+                month.toString()
+            }
+            append(monthStr)
+        }
+        return dao.getCategoryTotalSpentFlowByMonth(date)
+    }
+
     override suspend fun getTotalSpent(): Long {
         return dao.getTotalSpent()
     }
