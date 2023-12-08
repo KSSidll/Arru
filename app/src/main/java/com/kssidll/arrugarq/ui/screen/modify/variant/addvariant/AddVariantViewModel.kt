@@ -1,6 +1,5 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.addvariant
 
-import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
@@ -24,11 +23,11 @@ class AddVariantViewModel @Inject constructor(
         screenState.validate()
 
         screenState.productId = productId
-        val variant = screenState.extractDataOrNull(productId) ?: return@async null
+        val variant = screenState.extractDataOrNull() ?: return@async null
 
-        try {
+        if (screenState.name.value.data?.let { variantRepository.getByProductIdAndName(productId, it) } == null) {
             return@async variantRepository.insert(variant)
-        } catch (_: SQLiteConstraintException) {
+        } else {
             screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
             return@async null
         }
