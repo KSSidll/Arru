@@ -142,27 +142,21 @@ fun <T> SpendingComparisonList(
                                 val otherItemValue = otherItem[0].value()
                                     .roundToLong()
 
-                                val diffStr: String = if (itemValue > otherItemValue) {
-                                    "+${
-                                        (itemValue.toDouble()
-                                            .div(otherItemValue)).minus(1)
-                                            .times(100)
-                                            .toLong()
-                                    } %"
+                                val diff: Long = (itemValue.toDouble()
+                                    .div(otherItemValue)).minus(1)
+                                    .times(100)
+                                    .toLong()
+                                val diffStr: String = if (diff > 0) {
+                                    "+${diff} %"
                                 } else {
-                                    "-${
-                                        (otherItemValue.toDouble()
-                                            .div(itemValue)).minus(1)
-                                            .times(100)
-                                            .toLong()
-                                    } %"
+                                    "$diff %"
                                 }
 
                                 if (itemValue != otherItemValue) {
                                     Text(
                                         text = diffStr,
                                         style = Typography.bodySmall,
-                                        color = if (diffStr[0] == '-') {
+                                        color = if (diff < 0) {
                                             MaterialTheme.colorScheme.tertiary.copy(optionalAlpha)
                                         } else {
                                             MaterialTheme.colorScheme.error.copy(optionalAlpha)
