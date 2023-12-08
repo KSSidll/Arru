@@ -16,10 +16,6 @@ class EditItemViewModel @Inject constructor(
     override val shopRepository: ShopRepositorySource,
 ): ModifyItemViewModel() {
 
-    init {
-        computeStartState()
-    }
-
     /**
      * Tries to update item with provided [itemId] with current screen state data
      * @return Whether the update was successful

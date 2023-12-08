@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.*
 
 /**
  * Base [ViewModel] class for Item modification view models
- * @property computeStartState Initializes start state, should be called as child in init of inheriting view model
+ * @property loadLastItem Initializes start state, should be called as child in init of inheriting view model
  * @property screenState A [ModifyItemScreenState] instance to use as screen state representation
  * @property updateState Updates the screen state representation property values to represent the Item matching provided id, only changes representation data and loading state
  * @property onProductChange Updates the screen state representation property values related to product to represent the product that is currently selected, should be called after the selected product changes
@@ -28,67 +28,31 @@ abstract class ModifyItemViewModel: ViewModel() {
     /**
      * Fetches start data to state
      */
-    protected fun computeStartState() = viewModelScope.launch {
-        screenState.selectedShop.apply { value = value.toLoading() }
-        screenState.date.apply { value = value.toLoading() }
+    protected fun loadLastItem() = viewModelScope.launch {
+        screenState.allToLoading()
 
         val lastItem: Item? = itemRepository.getLast()
 
-        screenState.selectedShop.apply {
-            value = value.data?.let { value.toLoaded() }
-                ?: Field.Loaded(lastItem?.shopId?.let { shopRepository.get(it) })
-        }
-
-        screenState.date.apply {
-            value = value.data?.let { value.toLoaded() } ?: Field.Loaded(lastItem?.date)
-        }
+        updateStateForItem(lastItem)
     }
 
     /**
      * Updates the screen state representation property values related to product to represent the product that is currently selected, should be called after the selected product changes
      */
     fun onProductChange() = viewModelScope.launch {
-        screenState.selectedShop.apply { value = value.toLoading() }
         screenState.selectedVariant.apply { value = value.toLoading() }
         screenState.price.apply { value = value.toLoading() }
         screenState.quantity.apply { value = value.toLoading() }
-
-        updateProductVariants()
 
         val lastItemByProduct: Item? = screenState.selectedProduct.value.data?.let {
             itemRepository.getLastByProductId(it.id)
         }
 
-        screenState.selectedShop.apply {
-            val shop: Shop? = lastItemByProduct?.shopId?.let { shopRepository.get(it) }
-            value = Field.Loaded(shop)
-        }
-
-        screenState.selectedVariant.apply {
-            val variant: ProductVariant? =
-                lastItemByProduct?.variantId?.let { variantsRepository.get(it) }
-            value = Field.Loaded(variant)
-        }
-
-        screenState.price.apply {
-            val price: String = lastItemByProduct?.let {
-                String.format(
-                    "%.2f",
-                    lastItemByProduct.price.toFloat() / Item.PRICE_DIVISOR
-                )
-            } ?: String()
-            value = Field.Loaded(price)
-        }
-
-        screenState.quantity.apply {
-            val quantity: String = lastItemByProduct?.let {
-                String.format(
-                    "%.3f",
-                    lastItemByProduct.quantity.toFloat() / Item.QUANTITY_DIVISOR
-                )
-            } ?: String()
-            value = Field.Loaded(quantity)
-        }
+        updateStateForItem(
+            item = lastItemByProduct,
+            updateDate = false,
+            updateShop = false,
+        )
     }
 
     /**
@@ -127,53 +91,76 @@ abstract class ModifyItemViewModel: ViewModel() {
      * @return true if provided [itemId] was valid, false otherwise
      */
     suspend fun updateState(itemId: Long) = viewModelScope.async {
-        screenState.selectedProduct.apply { value = value.toLoading() }
-        screenState.selectedVariant.apply { value = value.toLoading() }
-        screenState.selectedShop.apply { value = value.toLoading() }
-        screenState.quantity.apply { value = value.toLoading() }
-        screenState.price.apply { value = value.toLoading() }
-        screenState.date.apply { value = value.toLoading() }
+        screenState.allToLoading()
 
         val item: Item? = itemRepository.get(itemId)
-        val product: Product? = item?.let { productRepository.get(item.productId) }
-        val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }
-        val shop: Shop? = item?.shopId?.let { shopRepository.get(it) }
 
-        screenState.selectedProduct.apply {
-            value = item?.let { Field.Loaded(product) } ?: value.toLoadedOrError()
-        }
-        screenState.selectedVariant.apply {
-            value = item?.let { Field.Loaded(variant) } ?: value.toLoaded()
-        }
-        screenState.selectedShop.apply {
-            value = item?.let { Field.Loaded(shop) } ?: value.toLoaded()
-        }
-        screenState.quantity.apply {
-            value = item?.let {
-                Field.Loaded(
-                    it.actualQuantity()
-                        .toString()
-                )
-            } ?: value.toLoadedOrError()
-        }
-        screenState.price.apply {
-            value = item?.let {
-                Field.Loaded(
-                    it.actualPrice()
-                        .toString()
-                )
-            } ?: value.toLoadedOrError()
-        }
-        screenState.date.apply {
-            value = item?.let { Field.Loaded(it.date) } ?: value.toLoadedOrError()
-        }
+        updateStateForItem(item)
 
-        if (item == null) return@async false
-
-        onProductChange()
-        return@async true
+        return@async item != null
     }
         .await()
+
+    /**
+     * Updates the state to represent [item], doesn't switch state to loading status as it should be done before fetching the item
+     */
+    private suspend fun updateStateForItem(
+        item: Item?,
+        updateDate: Boolean = true,
+        updatePrice: Boolean = true,
+        updateQuantity: Boolean = true,
+        updateShop: Boolean = true,
+        updateProduct: Boolean = true,
+        updateVariant: Boolean = true,
+    ) {
+        val shop: Shop? = item?.shopId?.let { shopRepository.get(it) }
+        val itemProduct: Product? = item?.productId?.let { productRepository.get(it) }
+        val itemProductVariant: ProductVariant? =
+            item?.variantId?.let { variantsRepository.get(it) }
+
+        if (updateDate) {
+            screenState.date.apply {
+                value = value.data?.let { value.toLoaded() } ?: Field.Loaded(item?.date)
+            }
+        }
+
+        if (updatePrice) {
+            screenState.price.apply {
+                value = Field.Loaded(
+                    item?.actualPrice()
+                        ?.toString()
+                )
+            }
+        }
+
+        if (updateQuantity) {
+            screenState.quantity.apply {
+                value = Field.Loaded(
+                    item?.actualQuantity()
+                        ?.toString()
+                )
+            }
+        }
+
+        if (updateShop) {
+            screenState.selectedShop.apply {
+                value = Field.Loaded(shop)
+            }
+        }
+
+        if (updateProduct) {
+            screenState.selectedProduct.apply {
+                value = Field.Loaded(itemProduct)
+                updateProductVariants()
+            }
+        }
+
+        if (updateVariant) {
+            screenState.selectedVariant.apply {
+                value = Field.Loaded(itemProductVariant)
+            }
+        }
+    }
 }
 
 /**
@@ -192,6 +179,18 @@ data class ModifyItemScreenState(
     var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 ): ModifyScreenState<Item>() {
+
+    /**
+     * Sets all fields to Loading status
+     */
+    fun allToLoading() {
+        date.apply { value = value.toLoading() }
+        price.apply { value = value.toLoading() }
+        quantity.apply { value = value.toLoading() }
+        selectedShop.apply { value = value.toLoading() }
+        selectedProduct.apply { value = value.toLoading() }
+        selectedVariant.apply { value = value.toLoading() }
+    }
 
     /**
      * Validates selectedProduct field and updates its error flag

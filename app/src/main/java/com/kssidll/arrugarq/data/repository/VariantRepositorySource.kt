@@ -8,7 +8,11 @@ interface VariantRepositorySource {
     fun getAllFlow(): Flow<List<ProductVariant>>
     suspend fun get(id: Long): ProductVariant?
     fun getFlow(id: Long): Flow<ProductVariant>
-    suspend fun getByProductIdAndName(productId: Long, name: String): ProductVariant?
+    suspend fun getByProductIdAndName(
+        productId: Long,
+        name: String
+    ): ProductVariant?
+
     suspend fun getByProductId(productId: Long): List<ProductVariant>
     fun getByProductIdFlow(productId: Long): Flow<List<ProductVariant>>
     suspend fun getByName(name: String): List<ProductVariant>

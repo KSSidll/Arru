@@ -21,9 +21,16 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         return dao.getFlow(id)
     }
 
-    override suspend fun getByProductIdAndName(productId: Long, name: String): ProductVariant? {
-        return dao.getByProductIdAndName(productId, name)
+    override suspend fun getByProductIdAndName(
+        productId: Long,
+        name: String
+    ): ProductVariant? {
+        return dao.getByProductIdAndName(
+            productId,
+            name
+        )
     }
+
     override suspend fun getByProductId(productId: Long): List<ProductVariant> {
         return dao.getByProductId(productId)
     }
