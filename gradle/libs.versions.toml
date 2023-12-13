@@ -24,7 +24,7 @@ room = "2.6.1"
 
 # Other
 fuzzywuzzy = "1.4.0"
-vico-compose = "1.13.0"
+vico-compose = "1.13.1"
 
 ## Plugins
 agp = "8.3.0-alpha18"

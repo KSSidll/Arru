@@ -7,8 +7,10 @@ import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -34,18 +36,11 @@ fun ShopPriceCompareChart(
     val data: MutableMap<String, MutableList<ChartEntry>> = remember { mutableMapOf() }
 
     val chartColorsMap: MutableMap<String, Color> = remember { mutableMapOf() }
-    //    val valueDateMap: MutableMap<Int, String> = remember { mutableMapOf() }
+    val defaultVariantName = stringResource(id = R.string.item_product_variant_default_value)
 
     LaunchedEffect(items.size) {
         data.clear()
         chartColorsMap.clear()
-        //        valueDateMap.clear()
-
-        //        valueDateMap.putAll(
-        //            items.mapIndexed { index, it ->
-        //                Pair(index, it.time)
-        //            }.toMap()
-        //        )
 
         val dateMap: MutableMap<String, Int> = mutableMapOf()
         dateMap.putAll(
@@ -61,7 +56,8 @@ fun ShopPriceCompareChart(
         items.forEach {
             if (it.shopName == null) return@forEach
 
-            data.getOrPut(it.shopName) {
+            val item = it.shopName.plus(" - ".plus(it.variantName ?: defaultVariantName))
+            data.getOrPut(item) {
                 mutableListOf()
             }
                 .add(
@@ -77,14 +73,15 @@ fun ShopPriceCompareChart(
             data.map {
                 chartColorsMap[it.key] =
                     Color.hsl(
-                        hue = 270f.plus(
-                            offset.times(25)
-                                .mod(360f)
-                        ),
+                        hue = 270f.plus(offset.times(25))
+                            .mod(330f)
+                            .plus(30f),
                         saturation = 0.4f.plus(offset)
-                            .mod(1f),
+                            .mod(0.8f)
+                            .plus(0.2f),
                         lightness = 0.6f.plus(offset)
-                            .mod(1f),
+                            .mod(0.4f)
+                            .plus(0.4f),
                     )
                 offset += 0.2f
 
@@ -113,6 +110,7 @@ fun ShopPriceCompareChart(
                 autoScrollAnimationSpec = tween(1200),
             ),
             chartScrollState = rememberChartScrollState(),
+            marker = rememberMarker(),
             legend = verticalLegend(
                 items = chartColorsMap.map {
                     LegendItem(

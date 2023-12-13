@@ -61,7 +61,7 @@ class ProductViewModel @Inject constructor(
     fun productPriceByShop(): Flow<List<ProductPriceByShopByTime>>? {
         if (product == null) return null
 
-        return itemRepository.getProductsAveragePriceByShopByMonthSortedFlow(product!!.id)
+        return itemRepository.getProductsAveragePriceByVariantByShopByMonthSortedFlow(product!!.id)
             .distinctUntilChanged()
     }
 

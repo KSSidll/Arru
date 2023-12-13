@@ -72,8 +72,7 @@ interface ItemRepositorySource {
 
     suspend fun getItemEmbeddedProduct(productId: Long): EmbeddedProduct
     fun getItemEmbeddedProductFlow(productId: Long): Flow<EmbeddedProduct>
-    suspend fun getProductsAveragePriceByShopByMonthSorted(productId: Long): List<ProductPriceByShopByTime>
-    fun getProductsAveragePriceByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>>
+    fun getProductsAveragePriceByVariantByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>>
     suspend fun getFullItems(
         offset: Int,
         count: Int,

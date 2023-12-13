@@ -1003,6 +1003,9 @@ fun generateRandomProductPriceByShopByTime(
     shopNameStringLengthFrom: Int = defaultStringLengthFrom,
     shopNameStringLengthUntil: Int = defaultStringLengthUntil,
     shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
+    variantNameStringLengthFrom: Int = defaultStringLengthFrom,
+    variantNameStringLengthUntil: Int = defaultStringLengthUntil,
+    variantNameAllowedCharacters: String = defaultStringAllowedCharacters,
     timeFrom: Long = defaultTimeFrom,
     timeUntil: Long = defaultTimeUntil,
     dateFormatting: String = defaultDateStringFormatting,
@@ -1031,7 +1034,12 @@ fun generateRandomProductPriceByShopByTime(
             timeUntil = timeUntil,
             dateFormatting = dateFormatting,
             dateLocale = dateLocale,
-        )
+        ),
+        variantName = generateRandomStringValue(
+            stringLengthFrom = variantNameStringLengthFrom,
+            stringLengthUntil = variantNameStringLengthUntil,
+            allowedCharacters = variantNameAllowedCharacters,
+        ),
     )
 }
 

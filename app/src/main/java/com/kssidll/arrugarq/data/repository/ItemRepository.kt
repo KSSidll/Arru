@@ -161,12 +161,8 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         return dao.getItemEmbeddedProductFlow(productId)
     }
 
-    override suspend fun getProductsAveragePriceByShopByMonthSorted(productId: Long): List<ProductPriceByShopByTime> {
-        return dao.getProductsAveragePriceByShopByMonthSorted(productId)
-    }
-
-    override fun getProductsAveragePriceByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>> {
-        return dao.getProductsAveragePriceByShopByMonthSortedFlow(productId)
+    override fun getProductsAveragePriceByVariantByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>> {
+        return dao.getProductsAveragePriceByVariantByShopByMonthSortedFlow(productId)
     }
 
     override suspend fun getFullItems(

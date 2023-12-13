@@ -130,43 +130,19 @@ WITH date_series AS (
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
 )
-SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, STRFTIME('%Y-%m', date_series.start_date) AS time
+SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, productvariant.name as variantName, STRFTIME('%Y-%m', date_series.start_date) AS time
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-    AND productId = :productId
-LEFT JOIN shop ON shopId = shop.id
-LEFT JOIN product ON productId = product.id
+    AND item.productId = :productId
+LEFT JOIN shop ON item.shopId = shop.id
+LEFT JOIN productvariant ON item.variantId = productvariant.id
+LEFT JOIN product ON item.productId = product.id
 WHERE time IS NOT NULL
-GROUP BY time, shopName
+GROUP BY time, shopId, variantId
 ORDER BY time
     """
     )
-    suspend fun getProductsAveragePriceByShopByMonthSorted(productId: Long): List<ProductPriceByShopByTime>
-
-    @Query(
-        """
-WITH date_series AS (
-    SELECT DATE(MIN(item.date) / 1000, 'unixepoch', 'start of month') AS start_date,
-           DATE(MAX(item.date) / 1000, 'unixepoch', 'start of month') AS end_date
-    FROM item
-    WHERE productId = :productId
-    UNION ALL
-    SELECT DATE(start_date, '+1 month') AS start_date, end_date
-    FROM date_series
-    WHERE date_series.end_date > date_series.start_date
-)
-SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, STRFTIME('%Y-%m', date_series.start_date) AS time
-FROM date_series
-LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
-    AND productId = :productId
-LEFT JOIN shop ON shopId = shop.id
-LEFT JOIN product ON productId = product.id
-WHERE time IS NOT NULL
-GROUP BY time, shopName
-ORDER BY time
-    """
-    )
-    fun getProductsAveragePriceByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>>
+    fun getProductsAveragePriceByVariantByShopByMonthSortedFlow(productId: Long): Flow<List<ProductPriceByShopByTime>>
 
     suspend fun getFullItemsByShop(
         offset: Int,
