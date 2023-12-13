@@ -64,7 +64,7 @@ private val guidelineShape = DashedShape(
 )
 
 @Composable
-internal fun rememberMarker(): Marker {
+internal fun rememberMarker(labelFormatter: MarkerLabelFormatter = DefaultMarkerLabelFormatter()): Marker {
     val labelBackgroundColor = MaterialTheme.colorScheme.surface
     val labelBackground =
         remember(labelBackgroundColor) {
@@ -136,6 +136,8 @@ internal fun rememberMarker(): Marker {
                         )
                     }
                 }
+
+                this.labelFormatter = labelFormatter
             }
 
             override fun getInsets(

@@ -3,6 +3,8 @@ package com.kssidll.arrugarq.ui.component.chart
 
 import android.content.res.Configuration.*
 import android.graphics.*
+import android.text.*
+import android.text.style.*
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,6 +14,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.chart.*
@@ -110,7 +113,18 @@ fun ShopPriceCompareChart(
                 autoScrollAnimationSpec = tween(1200),
             ),
             chartScrollState = rememberChartScrollState(),
-            marker = rememberMarker(),
+            marker = rememberMarker(
+                labelFormatter = { markedEntries, _ ->
+                    markedEntries.transformToSpannable { model ->
+                        appendCompat(
+                            model.entry.y.div(Item.PRICE_DIVISOR)
+                                .formatToCurrency(),
+                            ForegroundColorSpan(model.color),
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+                        )
+                    }
+                }
+            ),
             legend = verticalLegend(
                 items = chartColorsMap.map {
                     LegendItem(
