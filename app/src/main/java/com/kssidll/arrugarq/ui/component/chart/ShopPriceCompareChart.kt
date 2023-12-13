@@ -93,7 +93,7 @@ fun ShopPriceCompareChart(
         )
     }
 
-    if (chartEntryModelProducer.getModel().entries.maxOfOrNull { it.size }.orZero > chartMinimumEntrySize) {
+    if (chartEntryModelProducer.getModel()?.entries?.maxOfOrNull { it.size }.orZero > chartMinimumEntrySize) {
         Chart(
             chart = lineChart(
                 lines = chartColorsMap.map {
@@ -105,12 +105,6 @@ fun ShopPriceCompareChart(
                         LocalChartStyle.current.lineChart.lines
                     }
             ),
-            //        bottomAxis = rememberBottomAxis(
-            //            guideline = null,
-            //            valueFormatter = { value, _ ->
-            //                valueDateMap[value.toInt()].orEmpty()
-            //            }
-            //        ),
             chartModelProducer = chartEntryModelProducer,
             chartScrollSpec = rememberChartScrollSpec(
                 isScrollEnabled = true,

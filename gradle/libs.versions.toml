@@ -4,7 +4,7 @@
 activity-compose = "1.8.1"
 core-splashscreen = "1.0.1"
 appcompat = "1.7.0-alpha03"
-datastore-preferences = "1.1.0-alpha06"
+datastore-preferences = "1.1.0-alpha07"
 lifecycle-viewmodel-compose = "2.6.2"
 accompanist-systemuicontroller = "0.32.0"
 
@@ -12,22 +12,22 @@ accompanist-systemuicontroller = "0.32.0"
 reimagined = "1.5.0"
 
 # Compose
-compose-ui = "1.6.0-beta01"
-material3 = "1.2.0-alpha11"
-material = "1.6.0-beta01"
+compose-ui = "1.6.0-beta02"
+material3 = "1.2.0-alpha12"
+material = "1.6.0-beta02"
 
 # DI
 hilt = "2.48"
 
 # Room
-room = "2.6.0"
+room = "2.6.1"
 
 # Other
 fuzzywuzzy = "1.4.0"
-vico-compose = "1.12.0"
+vico-compose = "1.13.0"
 
 ## Plugins
-agp = "8.3.0-alpha17"
+agp = "8.3.0-alpha18"
 kotlin = "1.9.20"
 # hilt plugin has same version as hilt library so it is declared in the library section
 ksp = "1.9.20-1.0.14"

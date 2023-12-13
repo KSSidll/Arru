@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.ui.component.chart
 
 import android.content.res.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.gestures.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -21,7 +20,6 @@ import com.patrykandpatrick.vico.core.component.shape.*
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
-import kotlinx.coroutines.*
 
 @Composable
 fun OneDimensionalColumnChart(
@@ -58,62 +56,39 @@ fun OneDimensionalColumnChart(
         chartEntryModelProducer.setEntries(data.mapIndexed { index, iChartable -> iChartable.chartEntry(index) })
     }
 
-    com.patrykandpatrick.vico.compose.chart.Chart(
-        modifier = modifier,
-        chartScrollState = scrollState,
-        chartScrollSpec = rememberChartScrollSpec(
-            isScrollEnabled = true,
-            initialScroll = InitialScroll.End,
-            autoScrollCondition = { _, oldModel ->
-                if (oldModel == null) return@rememberChartScrollSpec false
-
-                val newDataSize = data.size
-                val previousDataSize = oldModel.entries.getOrElse(0) { emptyList() }
-                    .indexOfLast { it.y > 0F }
-
-                // handle back scroll
-                if (newDataSize < previousDataSize) {
-                    val itemWidth =
-                        (scrollState.maxValue + chart.bounds.width()).div(previousDataSize)
-                    val itemDiff = newDataSize - previousDataSize
-                    val scrollAmount = itemWidth * itemDiff
-                    val relativeScrollAmount =
-                        (scrollState.maxValue - scrollState.value) + scrollAmount
-                    scope.launch {
-                        scrollState.animateScrollBy(
-                            value = relativeScrollAmount,
-                            animationSpec = autoScrollSpec,
-                        )
-                    }
-                    return@rememberChartScrollSpec false
-                }
-
-                return@rememberChartScrollSpec true
-            },
-            autoScrollAnimationSpec = autoScrollSpec,
-        ),
-        diffAnimationSpec = diffAnimationSpec,
-        chart = chart,
-        chartModelProducer = chartEntryModelProducer,
-        topAxis = rememberTopAxis(
-            valueFormatter = { value, _ ->
-                data.getOrNull(value.toInt())
-                    ?.topAxisLabel()
-                    .orEmpty()
-            },
-        ),
-        bottomAxis = rememberBottomAxis(
-            valueFormatter = { value, _ ->
-                data.getOrNull(value.toInt())
-                    ?.bottomAxisLabel()
-                    .orEmpty()
-            },
-        ),
-        runInitialAnimation = runInitialAnimation,
-        fadingEdges = fadingEdges,
-        isZoomEnabled = isZoomEnabled,
-        autoScaleUp = AutoScaleUp.None,
-    )
+    if (chartEntryModelProducer.getModel()?.entries?.isNotEmpty() == true) {
+        com.patrykandpatrick.vico.compose.chart.Chart(
+            modifier = modifier,
+            chartScrollState = scrollState,
+            chartScrollSpec = rememberChartScrollSpec(
+                isScrollEnabled = true,
+                initialScroll = InitialScroll.End,
+                autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased,
+                autoScrollAnimationSpec = autoScrollSpec,
+            ),
+            diffAnimationSpec = diffAnimationSpec,
+            chart = chart,
+            chartModelProducer = chartEntryModelProducer,
+            topAxis = rememberTopAxis(
+                valueFormatter = { value, _ ->
+                    data.getOrNull(value.toInt())
+                        ?.topAxisLabel()
+                        .orEmpty()
+                },
+            ),
+            bottomAxis = rememberBottomAxis(
+                valueFormatter = { value, _ ->
+                    data.getOrNull(value.toInt())
+                        ?.bottomAxisLabel()
+                        .orEmpty()
+                },
+            ),
+            runInitialAnimation = runInitialAnimation,
+            fadingEdges = fadingEdges,
+            isZoomEnabled = isZoomEnabled,
+            autoScaleUp = AutoScaleUp.None,
+        )
+    }
 }
 
 @Preview(
