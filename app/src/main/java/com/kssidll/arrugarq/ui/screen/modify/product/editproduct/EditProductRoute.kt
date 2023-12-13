@@ -13,8 +13,8 @@ fun EditProductRoute(
     productId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: () -> Unit,
-    navigateCategoryAdd: () -> Unit,
-    navigateProducerAdd: () -> Unit,
+    navigateCategoryAdd: (query: String?) -> Unit,
+    navigateProducerAdd: (query: String?) -> Unit,
     navigateCategoryEdit: (categoryId: Long) -> Unit,
     navigateProducerEdit: (producerId: Long) -> Unit,
 ) {

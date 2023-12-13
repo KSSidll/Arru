@@ -44,11 +44,15 @@ sealed class Screen: Parcelable {
     data class Shop(val shopId: Long): Screen()
 
     data object ItemAdd: Screen()
-    data object ProductAdd: Screen()
-    data class VariantAdd(val productId: Long): Screen()
-    data object CategoryAdd: Screen()
-    data object ProducerAdd: Screen()
-    data object ShopAdd: Screen()
+    data class ProductAdd(val defaultName: String? = null): Screen()
+    data class VariantAdd(
+        val productId: Long,
+        val defaultName: String? = null
+    ): Screen()
+
+    data class CategoryAdd(val defaultName: String? = null): Screen()
+    data class ProducerAdd(val defaultName: String? = null): Screen()
+    data class ShopAdd(val defaultName: String? = null): Screen()
 
     data class ItemEdit(val itemId: Long): Screen()
     data class ProductEdit(val productId: Long): Screen()
@@ -207,11 +211,6 @@ fun Navigation(
         }
     }
 
-
-    val navigateHome: () -> Unit = {
-        navController.navigate(Screen.Home)
-    }
-
     val navigateSettings: () -> Unit = {
         navController.navigate(Screen.Settings)
     }
@@ -242,24 +241,29 @@ fun Navigation(
         navController.navigate(Screen.ItemAdd)
     }
 
-    val navigateProductAdd: () -> Unit = {
-        navController.navigate(Screen.ProductAdd)
+    val navigateProductAdd: (query: String?) -> Unit = {
+        navController.navigate(Screen.ProductAdd(it))
     }
 
-    val navigateVariantAdd: (productId: Long) -> Unit = {
-        navController.navigate(Screen.VariantAdd(it))
+    val navigateVariantAdd: (productId: Long, query: String?) -> Unit = { productId, query ->
+        navController.navigate(
+            Screen.VariantAdd(
+                productId,
+                query
+            )
+        )
     }
 
-    val navigateCategoryAdd: () -> Unit = {
-        navController.navigate(Screen.CategoryAdd)
+    val navigateCategoryAdd: (query: String?) -> Unit = {
+        navController.navigate(Screen.CategoryAdd(it))
     }
 
-    val navigateProducerAdd: () -> Unit = {
-        navController.navigate(Screen.ProducerAdd)
+    val navigateProducerAdd: (query: String?) -> Unit = {
+        navController.navigate(Screen.ProducerAdd(it))
     }
 
-    val navigateShopAdd: () -> Unit = {
-        navController.navigate(Screen.ShopAdd)
+    val navigateShopAdd: (query: String?) -> Unit = {
+        navController.navigate(Screen.ShopAdd(it))
     }
 
 
@@ -358,6 +362,7 @@ fun Navigation(
 
             is Screen.ProductAdd -> {
                 AddProductRoute(
+                    defaultName = screen.defaultName,
                     navigateBack = navigateBack,
                     navigateCategoryAdd = navigateCategoryAdd,
                     navigateProducerAdd = navigateProducerAdd,
@@ -369,24 +374,28 @@ fun Navigation(
             is Screen.VariantAdd -> {
                 AddVariantRoute(
                     productId = screen.productId,
+                    defaultName = screen.defaultName,
                     navigateBack = navigateBack,
                 )
             }
 
             is Screen.CategoryAdd -> {
                 AddCategoryRoute(
+                    defaultName = screen.defaultName,
                     navigateBack = navigateBack,
                 )
             }
 
             is Screen.ProducerAdd -> {
                 AddProducerRoute(
+                    defaultName = screen.defaultName,
                     navigateBack = navigateBack,
                 )
             }
 
             is Screen.ShopAdd -> {
                 AddShopRoute(
+                    defaultName = screen.defaultName,
                     navigateBack = navigateBack,
                 )
             }

@@ -8,9 +8,9 @@ import kotlinx.coroutines.*
 @Composable
 fun AddItemRoute(
     navigateBack: () -> Unit,
-    navigateProductAdd: () -> Unit,
-    navigateVariantAdd: (productId: Long) -> Unit,
-    navigateShopAdd: () -> Unit,
+    navigateProductAdd: (query: String?) -> Unit,
+    navigateVariantAdd: (productId: Long, query: String?) -> Unit,
+    navigateShopAdd: (query: String?) -> Unit,
     navigateProductEdit: (productId: Long) -> Unit,
     navigateVariantEdit: (variantId: Long) -> Unit,
     navigateShopEdit: (shopId: Long) -> Unit,
@@ -37,13 +37,7 @@ fun AddItemRoute(
             viewModel.onProductChange()
         },
         onProductAddButtonClick = navigateProductAdd,
-        onVariantAddButtonClick = {
-            with(viewModel.screenState.selectedProduct.value) {
-                if (data != null) {
-                    navigateVariantAdd(data.id)
-                }
-            }
-        },
+        onVariantAddButtonClick = navigateVariantAdd,
         onShopAddButtonClick = navigateShopAdd,
         onItemLongClick = navigateProductEdit,
         onItemVariantLongClick = navigateVariantEdit,

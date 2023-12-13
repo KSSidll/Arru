@@ -28,7 +28,7 @@ import com.kssidll.arrugarq.ui.theme.*
  * @param itemText: Transfarmation used to determine what to display on the item card
  * @param onItemClick: Function called when an item is clicked
  * @param showAddButton: Whether to show an Add/'+' button in the search field
- * @param onAddButtonClick: Function called when the Add/'+' button is clicked
+ * @param onAddButtonClick: Function called when the Add/'+' button is clicked. Provides searched for value at the time of the event as parameter
  * @param addButtonDescription: Description for the Add/'+' button icon
  * @param showDefaultValueItem: Whether to show a default, null value item under the search field
  * @param defaultItemText: String to display on the default, null value item
@@ -45,7 +45,7 @@ fun <T> FuzzySearchableListDialog(
     onItemLongClick: ((T) -> Unit)? = null,
     onItemLongClickLabel: String? = null,
     showAddButton: Boolean = true,
-    onAddButtonClick: (() -> Unit)? = null,
+    onAddButtonClick: ((query: String) -> Unit)? = null,
     addButtonDescription: String? = null,
     showDefaultValueItem: Boolean = false,
     defaultItemText: String = String(),
@@ -139,7 +139,7 @@ fun <T> FuzzySearchableListDialog(
                                     modifier = Modifier
                                         .clickable {
                                             onDismissRequest()
-                                            onAddButtonClick?.invoke()
+                                            onAddButtonClick?.invoke(query)
                                         },
                                     contentAlignment = Alignment.Center
                                 ) {

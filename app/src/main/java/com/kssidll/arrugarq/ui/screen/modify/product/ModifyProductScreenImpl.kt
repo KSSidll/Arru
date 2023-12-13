@@ -29,8 +29,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
- * @param onProducerAddButtonClick Callback called when the producer add button is clicked
- * @param onCategoryAddButtonClick Callback called when the category add button is clicked
+ * @param onProducerAddButtonClick Callback called when the producer add button is clicked. Provides search value or null as parameter
+ * @param onCategoryAddButtonClick Callback called when the category add button is clicked. Provides search value or null as parameter
  * @param onItemProducerLongClick Callback called when the item producer label is long clicked/pressed. Provides producer id as parameter
  * @param onItemCategoryLongClick Callback called when the item category label is long clicked/pressed. Provides category id as parameter
  */
@@ -43,8 +43,8 @@ fun ModifyProductScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
-    onProducerAddButtonClick: () -> Unit,
-    onCategoryAddButtonClick: () -> Unit,
+    onProducerAddButtonClick: (query: String?) -> Unit,
+    onCategoryAddButtonClick: (query: String?) -> Unit,
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onItemCategoryLongClick: (categoryId: Long) -> Unit,
 ) {
@@ -143,7 +143,7 @@ fun ModifyProductScreenImpl(
                 },
                 label = stringResource(R.string.item_product_producer),
                 onAddButtonClick = {
-                    onProducerAddButtonClick()
+                    onProducerAddButtonClick(null)
                 },
                 addButtonDescription = stringResource(R.string.item_product_producer_add_description),
                 optional = true,
@@ -167,7 +167,7 @@ fun ModifyProductScreenImpl(
                 },
                 label = stringResource(R.string.item_product_category),
                 onAddButtonClick = {
-                    onCategoryAddButtonClick()
+                    onCategoryAddButtonClick(null)
                 },
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
                 supportingText = {
