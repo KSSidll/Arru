@@ -183,7 +183,6 @@ fun ModifyItemScreenImpl(
 
         val date = state.date.value.data
         SearchField(
-            height = 76.dp,
             enabled = state.date.value.isEnabled(),
             value = if (date != null) SimpleDateFormat(
                 "MMM d, yyyy",
@@ -440,6 +439,11 @@ fun ModifyItemScreenImpl(
             onClick = {
                 state.isShopSearchDialogExpanded.value = true
             },
+            onLongClick = {
+                state.selectedShop.value.data?.let {
+                    onItemShopLongClick(it.id)
+                }
+            },
             label = stringResource(R.string.item_shop),
             onAddButtonClick = {
                 onShopAddButtonClick()
@@ -453,11 +457,15 @@ fun ModifyItemScreenImpl(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            height = 75.dp,
             enabled = state.selectedProduct.value.isEnabled(),
             value = state.selectedProduct.value.data?.name ?: String(),
             onClick = {
                 state.isProductSearchDialogExpanded.value = true
+            },
+            onLongClick = {
+                state.selectedProduct.value.data?.let {
+                    onItemLongClick(it.id)
+                }
             },
             label = stringResource(R.string.item_product),
             supportingText = {
@@ -483,6 +491,11 @@ fun ModifyItemScreenImpl(
                 ?: stringResource(R.string.item_product_variant_default_value),
             onClick = {
                 state.isVariantSearchDialogExpanded.value = true
+            },
+            onLongClick = {
+                state.selectedVariant.value.data?.let {
+                    onItemVariantLongClick(it.id)
+                }
             },
             label = stringResource(R.string.item_product_variant),
             onAddButtonClick = {

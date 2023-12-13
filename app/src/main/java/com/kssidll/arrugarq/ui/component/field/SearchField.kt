@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.component.field
 
 import android.content.res.*
+import android.view.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
@@ -12,12 +14,16 @@ import androidx.compose.ui.*
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchField(
     modifier: Modifier = Modifier,
@@ -26,7 +32,8 @@ fun SearchField(
     optional: Boolean = false,
     value: String = String(),
     onClick: (() -> Unit)? = null,
-    readOnly: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    singleLine: Boolean = true,
     label: String = String(),
     supportingText: @Composable (() -> Unit)? = null,
     error: Boolean = false,
@@ -59,71 +66,105 @@ fun SearchField(
         }
     }
 
-    val errorBonusHeight: Dp = if (error) 28.dp else 0.dp
+    val isPressed by interactionSource.collectIsPressedAsState()
+    var pressedLatch by remember { mutableStateOf(false) }
+    var pressedJob: Job? = null
 
-    StyledOutlinedTextField(
-        modifier = modifier
-            .height(height + errorBonusHeight)
-            .onFocusEvent {
-                if (it.isFocused) {
-                    onClick?.invoke()
-                    focusControllerModifier = Modifier.focusProperties { canFocus = false }
-                    focusDisabled = true
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            pressedLatch = true
+
+            pressedJob?.cancel()
+            pressedJob = launch {
+                delay(
+                    ViewConfiguration.getLongPressTimeout()
+                        .toLong()
+                )
+
+                @Suppress("KotlinConstantConditions") // it is not always true kotlin, pls
+                if (isPressed) {
+                    onLongClick?.invoke()
+                    pressedLatch = false
+
                 }
             }
-            .then(focusControllerModifier),
-        enabled = enabled,
-        optional = optional,
-        readOnly = readOnly,
-        singleLine = true,
-        value = value,
-        onValueChange = {},
-        textStyle = TextStyle.Default.copy(
-            fontSize = 16.sp
-        ),
-        label = {
-            Text(
-                text = label,
-                fontSize = 16.sp,
+        } else if (pressedLatch) {
+            onClick?.invoke()
+            pressedLatch = false
+        }
+    }
+
+    Modifier.pointerInput(Unit) {
+        detectTapGestures()
+    }
+
+    Box(
+        modifier = modifier
+            .width(IntrinsicSize.Min)
+            .combinedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.DropdownList,
+                onClick = {}
             )
-        },
-        supportingText = supportingText,
-        isError = error,
-        trailingIcon = {
-            if (showAddButton) {
-                Box(
-                    modifier = Modifier
-                        .height(height)
-                        .aspectRatio(1F)
-                        .clickable {
-                            onAddButtonClick?.invoke()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        drawLine(
-                            color = lineColor,
-                            start = Offset(
-                                0F,
-                                0F
-                            ),
-                            end = Offset(
-                                0F,
-                                size.height
-                            ),
-                            strokeWidth = Dp.Hairline.value
+    ) {
+        StyledOutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusProperties { canFocus = false },
+            enabled = enabled,
+            optional = optional,
+            readOnly = true,
+            singleLine = singleLine,
+            value = value,
+            onValueChange = {},
+            textStyle = TextStyle.Default.copy(
+                fontSize = 16.sp
+            ),
+            label = {
+                Text(
+                    text = label,
+                    fontSize = 16.sp,
+                )
+            },
+            supportingText = supportingText,
+            isError = error,
+            trailingIcon = {
+                if (showAddButton) {
+                    Box(
+                        modifier = Modifier
+                            .height(height)
+                            .aspectRatio(1F)
+                            .clickable {
+                                onAddButtonClick?.invoke()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Canvas(modifier = Modifier.fillMaxSize()) {
+                            drawLine(
+                                color = lineColor,
+                                start = Offset(
+                                    0F,
+                                    0F
+                                ),
+                                end = Offset(
+                                    0F,
+                                    size.height
+                                ),
+                                strokeWidth = Dp.Hairline.value
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = addButtonDescription,
+                            modifier = Modifier.fillMaxSize(0.75F)
                         )
                     }
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = addButtonDescription,
-                        modifier = Modifier.fillMaxSize(0.75F)
-                    )
                 }
-            }
-        },
-        interactionSource = interactionSource,
-    )
+            },
+            interactionSource = interactionSource,
+        )
+    }
 }
 
 

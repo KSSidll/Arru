@@ -35,8 +35,6 @@ fun OneDimensionalColumnChart(
     scrollState: ChartScrollState = rememberChartScrollState(),
     runInitialAnimation: Boolean = true,
 ) {
-    val scope = rememberCoroutineScope()
-
     val defaultColumns = currentChartStyle.columnChart.columns
 
     val chart = columnChart(

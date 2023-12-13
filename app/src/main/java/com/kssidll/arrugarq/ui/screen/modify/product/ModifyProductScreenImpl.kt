@@ -136,6 +136,11 @@ fun ModifyProductScreenImpl(
                 onClick = {
                     state.isProducerSearchDialogExpanded.value = true
                 },
+                onLongClick = {
+                    state.selectedProductProducer.value.data?.let {
+                        onItemProducerLongClick(it.id)
+                    }
+                },
                 label = stringResource(R.string.item_product_producer),
                 onAddButtonClick = {
                     onProducerAddButtonClick()
@@ -150,11 +155,15 @@ fun ModifyProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                height = 75.dp,
                 enabled = state.selectedProductCategory.value.isEnabled(),
                 value = state.selectedProductCategory.value.data?.name ?: String(),
                 onClick = {
                     state.isCategorySearchDialogExpanded.value = true
+                },
+                onLongClick = {
+                    state.selectedProductCategory.value.data?.let {
+                        onItemCategoryLongClick(it.id)
+                    }
                 },
                 label = stringResource(R.string.item_product_category),
                 onAddButtonClick = {
