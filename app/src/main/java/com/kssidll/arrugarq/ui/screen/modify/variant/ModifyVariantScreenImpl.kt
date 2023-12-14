@@ -36,7 +36,7 @@ fun ModifyVariantScreenImpl(
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
-    ModifyScreen(
+    ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
         onSubmit = onSubmit,

@@ -17,6 +17,7 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -26,6 +27,10 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param state [ModifyCategoryScreenState] instance representing the screen state
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onMerge Callback called when the merge action is triggered. Provides merge candidate as parameter. Setting to null will hide merge action
+ * @param mergeCandidates List of potential candidates for merge operation
+ * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
+ *
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
  */
 @Composable
@@ -34,6 +39,13 @@ fun ModifyCategoryScreenImpl(
     state: ModifyCategoryScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    onMerge: ((candidate: ProductCategory) -> Unit)? = null,
+    mergeCandidates: Flow<List<ProductCategory>> = flowOf(),
+    mergeConfirmMessageTemplate: String = String(),
+    chosenMergeCandidate: ProductCategory? = null,
+    onChosenMergeCandidateChange: ((ProductCategory?) -> Unit)? = null,
+    showMergeConfirmDialog: Boolean = false,
+    onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_category_add),
 ) {
     ModifyScreen(
@@ -41,6 +53,14 @@ fun ModifyCategoryScreenImpl(
         title = stringResource(id = R.string.item_product_category),
         onSubmit = onSubmit,
         onDelete = onDelete,
+        onMerge = onMerge,
+        mergeCandidates = mergeCandidates,
+        mergeCandidatesTextTransformation = { it.name },
+        mergeConfirmMessageTemplate = mergeConfirmMessageTemplate,
+        chosenMergeCandidate = chosenMergeCandidate,
+        onChosenMergeCandidateChange = onChosenMergeCandidateChange,
+        showMergeConfirmDialog = showMergeConfirmDialog,
+        onShowMergeConfirmDialogChange = onShowMergeConfirmDialogChange,
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,

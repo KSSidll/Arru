@@ -66,7 +66,7 @@ fun ModifyItemScreenImpl(
 ) {
     val datePickerState = rememberDatePickerState()
 
-    ModifyScreen(
+    ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item),
         onSubmit = onSubmit,

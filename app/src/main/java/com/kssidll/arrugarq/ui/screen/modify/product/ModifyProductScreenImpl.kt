@@ -48,7 +48,7 @@ fun ModifyProductScreenImpl(
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onItemCategoryLongClick: (categoryId: Long) -> Unit,
 ) {
-    ModifyScreen(
+    ModifyScreen<Product>(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
         onSubmit = onSubmit,

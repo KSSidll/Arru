@@ -21,6 +21,10 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         return dao.getFlow(id)
     }
 
+    override suspend fun allByCategoryId(categoryId: Long): List<Item> {
+        return dao.allByCategoryId(categoryId)
+    }
+
     override suspend fun getLast(): Item? {
         return dao.getLast()
     }

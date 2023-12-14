@@ -90,4 +90,9 @@
     <string name="invalid_value_error_text">Wartość nie jest poprawna</string>
     <string name="current">Aktualne</string>
     <string name="previous">Poprzednie</string>
+    <string name="merge_action_confirm">Potwierdź</string>
+    <string name="merge_action_cancel">Anuluj</string>
+    <string name="merge_action">Połącz</string>
+    <string name="merge_action_message_template">Ta akcja połączy wszystkie {value_1} w {value_2}\nWszystkie transakcje {value_1} będą należeć do {value_2}\nCzy na pewno chcesz kontynuować?</string>
+    <string name="merge_action_chose_candidate">Wybierz to jako kandydata do operacji połączenia</string>
 </resources>

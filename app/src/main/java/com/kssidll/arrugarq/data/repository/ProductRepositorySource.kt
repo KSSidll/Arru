@@ -21,6 +21,7 @@ interface ProductRepositorySource {
     suspend fun insert(product: Product): Long
     suspend fun addAltName(alternativeName: ProductAltName): Long
     suspend fun update(product: Product)
+    suspend fun update(products: List<Product>)
     suspend fun updateAltName(alternativeName: ProductAltName)
     suspend fun delete(product: Product)
     suspend fun delete(products: List<Product>)

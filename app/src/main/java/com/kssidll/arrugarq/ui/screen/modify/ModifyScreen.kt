@@ -13,9 +13,11 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
 
 /**
  * @param T Type of data which the inheriting screen state represents
@@ -24,6 +26,8 @@ abstract class ModifyScreenState<T>(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
     val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
     val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
+
+    val showMergeMessage: MutableState<Boolean> = mutableStateOf(false),
 ) {
 
     /**
@@ -41,10 +45,16 @@ abstract class ModifyScreenState<T>(
 }
 
 /**
+ * @param T Type of item, doesn't matter if doesn't support merging
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param title Text displayed on the top app bar
  * @param onSubmit Called to request data submission
  * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onMerge Called to request a merge operation. Provides merge candidate as parameter
+ * @param mergeCandidates List of candidates for merge operation as flow
+ * @param mergeCandidatesTextTransformation Transformation used to determine what to display on the merge candidate item card
+ * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
+ *
  * @param submitButtonText Text displayed in the submit button
  * @param showDeleteWarning Mutable flag that exposes whether a delete warning dialog is shown, optional as it is handled internally by the component, but exposed for state dependent actions
  * @param deleteWarningConfirmed Mutable flag that exposes whether user confirmed the action of deletion in the warning dialog, exposed for state dependant actions
@@ -53,17 +63,29 @@ abstract class ModifyScreenState<T>(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyScreen(
+fun <T> ModifyScreen(
     onBack: () -> Unit,
     title: String,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    onMerge: ((candidate: T) -> Unit)? = null,
+    mergeCandidates: Flow<List<T>> = flowOf(),
+    mergeCandidatesTextTransformation: ((T) -> String)? = null,
+    mergeConfirmMessageTemplate: String = String(),
+    chosenMergeCandidate: T? = null,
+    onChosenMergeCandidateChange: ((T?) -> Unit)? = null,
+    showMergeConfirmDialog: Boolean = false,
+    onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String,
     showDeleteWarning: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningConfirmed: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningMessage: String = String(),
     content: @Composable ColumnScope.() -> Unit,
-) {
+) where T: FuzzySearchSource {
+    var showMergeSearchDialog by remember {
+        mutableStateOf(false)
+    }
+
     Box {
         if (showDeleteWarning.value) {
             DeleteWarningConfirmDialog(
@@ -81,6 +103,39 @@ fun ModifyScreen(
                     showDeleteWarning.value = false
                 },
             )
+        } else if (showMergeSearchDialog) {
+            FuzzySearchableListDialog(
+                onDismissRequest = {
+                    showMergeSearchDialog = false
+                },
+                items = mergeCandidates.collectAsState(initial = emptyList()).value,
+                itemText = {
+                    mergeCandidatesTextTransformation?.invoke(it)
+                        .orEmpty()
+                },
+                onItemClick = {
+                    onChosenMergeCandidateChange?.invoke(it)
+                    showMergeSearchDialog = false
+                    onShowMergeConfirmDialogChange?.invoke(true)
+                },
+                onItemClickLabel = stringResource(id = R.string.merge_action_chose_candidate),
+                showAddButton = false,
+            )
+        } else if (showMergeConfirmDialog) {
+            MergeConfirmDialog(
+                message = mergeConfirmMessageTemplate.replace(
+                    "{value_2}",
+                    chosenMergeCandidate?.let { mergeCandidatesTextTransformation?.invoke(it) }
+                        .orEmpty()
+                ),
+                onCancel = {
+                    onShowMergeConfirmDialogChange?.invoke(false)
+                },
+                onConfirm = {
+                    chosenMergeCandidate?.let { onMerge?.invoke(it) }
+                    onShowMergeConfirmDialogChange?.invoke(false)
+                }
+            )
         }
 
         Scaffold(
@@ -96,6 +151,21 @@ fun ModifyScreen(
                         )
                     },
                     actions = {
+                        if (onMerge != null) {
+                            IconButton(
+                                onClick = {
+                                    showMergeSearchDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Merge,
+                                    contentDescription = stringResource(id = R.string.merge_action),
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(27.dp),
+                                )
+                            }
+                        }
+
                         if (onDelete != null) {
                             IconButton(
                                 onClick = {
@@ -219,13 +289,15 @@ private fun EditScreenContent(
 fun EditScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            ModifyScreen(
+            ModifyScreen<FuzzySearchSource>(
                 onBack = {},
                 title = "test",
                 onSubmit = {},
                 onDelete = {},
+                onMerge = {},
                 submitButtonText = "Submit It",
                 content = {},
+                mergeCandidatesTextTransformation = { String() },
             )
         }
     }
@@ -247,12 +319,13 @@ fun EditScreenPreview() {
 fun ModifyScreenNoDeletePreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            ModifyScreen(
+            ModifyScreen<FuzzySearchSource>(
                 onBack = {},
                 title = "test",
                 onSubmit = {},
                 submitButtonText = "Submit It",
                 content = {},
+                mergeCandidatesTextTransformation = { String() },
             )
         }
     }

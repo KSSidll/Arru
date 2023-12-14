@@ -36,7 +36,7 @@ fun ModifyShopScreenImpl(
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_shop_add),
 ) {
-    ModifyScreen(
+    ModifyScreen<Shop>(
         onBack = onBack,
         title = stringResource(id = R.string.item_shop),
         onSubmit = onSubmit,

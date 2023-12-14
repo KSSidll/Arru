@@ -32,10 +32,10 @@ import me.xdrop.fuzzywuzzy.*
 )
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val categoryId: Long,
+    @ColumnInfo(index = true) var categoryId: Long,
     @ColumnInfo(index = true) val producerId: Long?,
     val name: String,
-) {
+): FuzzySearchSource {
     @Ignore
     constructor(
         categoryId: Long,
@@ -47,6 +47,13 @@ data class Product(
         producerId,
         name
     )
+
+    override fun fuzzyScore(query: String): Int {
+        return FuzzySearch.extractOne(
+            query,
+            listOf(name)
+        ).score
+    }
 }
 
 @Entity(

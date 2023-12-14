@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
@@ -85,6 +86,10 @@ fun DeleteWarningConfirmDialog(
                 Row {
                     Button(
                         onClick = onCancel,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                        ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()
                             .weight(1f)
@@ -100,7 +105,7 @@ fun DeleteWarningConfirmDialog(
                     Button(
                         enabled = warningConfirmed,
                         onClick = onSubmit,
-                        colors = ButtonDefaults.buttonColors(
+                        colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onErrorContainer,
                             disabledContainerColor = MaterialTheme.colorScheme.errorContainer.copy(disabledAlpha),

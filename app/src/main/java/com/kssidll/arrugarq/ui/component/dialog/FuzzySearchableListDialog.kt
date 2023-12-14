@@ -25,7 +25,7 @@ import com.kssidll.arrugarq.ui.theme.*
  * @param T: Type of the item, needs to implement FuzzySearchSource
  * @param onDismissRequest: Function called when the user tries to dismiss the Dialog by clicking outside. This is also called when the Add/'+' button is clicked
  * @param items: Items to be displayed in the list
- * @param itemText: Transfarmation used to determine what to display on the item card
+ * @param itemText: Transformation used to determine what to display on the item card
  * @param onItemClick: Function called when an item is clicked
  * @param showAddButton: Whether to show an Add/'+' button in the search field
  * @param onAddButtonClick: Function called when the Add/'+' button is clicked. Provides searched for value at the time of the event as parameter

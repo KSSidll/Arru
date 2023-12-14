@@ -36,7 +36,7 @@ fun ModifyProducerScreenImpl(
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_producer_add),
 ) {
-    ModifyScreen(
+    ModifyScreen<ProductProducer>(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_producer),
         onSubmit = onSubmit,

@@ -60,6 +60,9 @@ interface ProductDao {
     suspend fun update(product: Product)
 
     @Update
+    suspend fun update(products: List<Product>)
+
+    @Update
     suspend fun updateAltName(alternativeName: ProductAltName)
 
     @Delete

@@ -1,7 +1,7 @@
 package com.kssidll.arrugarq.ui.screen.modify.category.editcategory
 
 
-import android.database.sqlite.*
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
@@ -18,6 +18,18 @@ class EditCategoryViewModel @Inject constructor(
     private val productRepository: ProductRepositorySource,
     private val variantRepository: VariantRepositorySource,
 ): ModifyCategoryViewModel() {
+    private val mMergeMessageCategoryName: MutableState<String> = mutableStateOf(String())
+    val mergeMessageCategoryName get() = mMergeMessageCategoryName.value
+
+    val chosenMergeCandidate: MutableState<ProductCategory?> = mutableStateOf(null)
+    val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
+
+    override suspend fun updateState(categoryId: Long): Boolean {
+        return super.updateState(categoryId)
+            .also {
+                mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
+            }
+    }
 
     /**
      * Tries to update product with provided [categoryId] with current screen state data
@@ -30,16 +42,20 @@ class EditCategoryViewModel @Inject constructor(
         val category: ProductCategory =
             screenState.extractDataOrNull(categoryId) ?: return@async false
 
-        try {
-            categoryRepository.update(category)
-        } catch (_: SQLiteConstraintException) {
-            screenState.name.let {
-                it.value = it.value.toError(FieldError.DuplicateValueError)
+        val other = categoryRepository.getByName(category.name)
+        if (other != null) {
+            screenState.name.apply {
+                value = value.toError(FieldError.DuplicateValueError)
             }
-            return@async false
-        }
 
-        return@async true
+            chosenMergeCandidate.value = other
+            showMergeConfirmDialog.value = true
+
+            return@async false
+        } else {
+            categoryRepository.update(category)
+            return@async true
+        }
     }
         .await()
 
@@ -76,6 +92,25 @@ class EditCategoryViewModel @Inject constructor(
             categoryRepository.delete(category)
             return@async true
         }
+    }
+        .await()
+
+    /**
+     * Tries to delete merge category into provided [mergeCandidate]
+     * @return True if operation succeded, false otherwise
+     */
+    suspend fun mergeWith(mergeCandidate: ProductCategory) = viewModelScope.async {
+        val products =
+            mCategory?.let { productRepository.getByCategoryId(it.id) } ?: return@async false
+
+        if (products.isNotEmpty()) {
+            products.forEach { it.categoryId = mergeCandidate.id }
+            productRepository.update(products)
+        }
+
+        mCategory?.let { categoryRepository.delete(it) }
+
+        return@async true
     }
         .await()
 }

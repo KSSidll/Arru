@@ -8,6 +8,7 @@ interface ItemRepositorySource {
     fun getAllFlow(): Flow<List<Item>>
     suspend fun get(id: Long): Item?
     fun getFlow(id: Long): Flow<Item>
+    suspend fun allByCategoryId(categoryId: Long): List<Item>
     suspend fun getLast(): Item?
     fun getLastFlow(): Flow<Item>
     suspend fun getAllEmbeddedItemSorted(): List<EmbeddedItem>

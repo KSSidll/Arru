@@ -7,6 +7,7 @@ import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 /**
  * Base [ViewModel] class for Category modification view models
@@ -15,24 +16,34 @@ import kotlinx.coroutines.*
  */
 abstract class ModifyCategoryViewModel: ViewModel() {
     protected abstract val categoryRepository: CategoryRepositorySource
+    protected var mCategory: ProductCategory? = null
     internal val screenState: ModifyCategoryScreenState = ModifyCategoryScreenState()
 
     /**
      * Updates data in the screen state
      * @return true if provided [categoryId] was valid, false otherwise
      */
-    suspend fun updateState(categoryId: Long) = viewModelScope.async {
+    open suspend fun updateState(categoryId: Long) = viewModelScope.async {
         screenState.name.value = screenState.name.value.toLoading()
 
-        val category: ProductCategory? = categoryRepository.get(categoryId)
+        mCategory = categoryRepository.get(categoryId)
 
         screenState.name.apply {
-            value = category?.let { Field.Loaded(it.name) } ?: value.toLoadedOrError()
+            value = mCategory?.let { Field.Loaded(it.name) } ?: value.toLoadedOrError()
         }
 
-        return@async category != null
+        return@async mCategory != null
     }
         .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(categoryId: Long): Flow<List<ProductCategory>> {
+        return categoryRepository.getAllFlow()
+            .onEach { it.filter { item -> item.id != categoryId } }
+            .distinctUntilChanged()
+    }
 }
 
 /**

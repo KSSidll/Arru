@@ -73,6 +73,10 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         dao.update(product)
     }
 
+    override suspend fun update(products: List<Product>) {
+        dao.update(products)
+    }
+
     override suspend fun updateAltName(alternativeName: ProductAltName) {
         dao.updateAltName(alternativeName)
     }

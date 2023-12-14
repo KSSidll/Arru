@@ -18,6 +18,9 @@ interface ItemDao {
     @Query("SELECT * FROM item WHERE id == :id")
     fun getFlow(id: Long): Flow<Item>
 
+    @Query("SELECT item.* FROM item LEFT JOIN product ON item.productId = product.id WHERE categoryId = :categoryId")
+    suspend fun allByCategoryId(categoryId: Long): List<Item>
+
     @Query("SELECT * FROM item ORDER BY id DESC LIMIT 1")
     suspend fun getLast(): Item?
 
