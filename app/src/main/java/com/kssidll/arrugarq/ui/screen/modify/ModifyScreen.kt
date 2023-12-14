@@ -3,7 +3,6 @@ package com.kssidll.arrugarq.ui.screen.modify
 
 import android.content.res.Configuration.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.rounded.*
@@ -14,6 +13,7 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
+import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 
@@ -66,103 +66,21 @@ fun ModifyScreen(
 ) {
     Box {
         if (showDeleteWarning.value) {
-            BasicAlertDialog(
-                onDismissRequest = {},
-                modifier = Modifier
-                    .width(360.dp)
-                    .heightIn(min = 200.dp)
-            ) {
-                Surface(
-                    shape = ShapeDefaults.ExtraLarge,
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    tonalElevation = 1.dp,
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(IntrinsicSize.Min)
-                    ) {
-                        Text(
-                            text = deleteWarningMessage,
-                            style = Typography.bodyLarge,
-                            modifier = Modifier.weight(1F)
-                        )
-
-                        val warningConfirmationInteractionSource =
-                            remember { MutableInteractionSource() }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .minimumInteractiveComponentSize()
-                                .fillMaxWidth()
-                                .clickable(
-                                    interactionSource = warningConfirmationInteractionSource,
-                                    indication = null
-                                ) {
-                                    deleteWarningConfirmed.value = !deleteWarningConfirmed.value
-                                }
-                        ) {
-                            Checkbox(
-                                checked = deleteWarningConfirmed.value,
-                                onCheckedChange = {
-                                    deleteWarningConfirmed.value = !deleteWarningConfirmed.value
-                                },
-                                interactionSource = warningConfirmationInteractionSource,
-                                modifier = Modifier
-                                    .minimumInteractiveComponentSize()
-                            )
-
-                            Text(
-                                text = stringResource(id = R.string.destructive_action_confirmation_text),
-                                style = Typography.bodyLarge,
-                            )
-                        }
-
-                        Row {
-                            Button(
-                                onClick = {
-                                    showDeleteWarning.value = false
-                                    deleteWarningConfirmed.value = false
-                                },
-                                modifier = Modifier
-                                    .minimumInteractiveComponentSize()
-                                    .weight(1f)
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.destructive_action_cancel),
-                                    style = Typography.bodyLarge,
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Button(
-                                enabled = deleteWarningConfirmed.value,
-                                onClick = {
-                                    onDelete?.invoke()
-                                    showDeleteWarning.value = false
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer.copy(disabledAlpha),
-                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer.copy(disabledAlpha),
-                                ),
-                                modifier = Modifier
-                                    .minimumInteractiveComponentSize()
-                                    .weight(1f)
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.destructive_action_confirm),
-                                    style = Typography.bodyLarge,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            DeleteWarningConfirmDialog(
+                message = deleteWarningMessage,
+                warningConfirmed = deleteWarningConfirmed.value,
+                onWarningConfirmedChange = {
+                    deleteWarningConfirmed.value = it
+                },
+                onCancel = {
+                    deleteWarningConfirmed.value = false
+                    showDeleteWarning.value = false
+                },
+                onSubmit = {
+                    onDelete?.invoke()
+                    showDeleteWarning.value = false
+                },
+            )
         }
 
         Scaffold(
