@@ -30,7 +30,10 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param onMerge Callback called when the merge action is triggered. Provides merge candidate as parameter. Setting to null will hide merge action
  * @param mergeCandidates List of potential candidates for merge operation
  * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
- *
+ * @param chosenMergeCandidate Currently chosen merge candidate if any
+ * @param onChosenMergeCandidateChange Callback called when the [chosenMergeCandidate] should change. Provides candidate as Parameter
+ * @param showMergeConfirmDialog Whether to show the merge confirmation dialog
+ * @param onShowMergeConfirmDialogChange Callback called when the [showMergeConfirmDialog] flag should change. Provides new flag value as parameter
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
  */
 @Composable

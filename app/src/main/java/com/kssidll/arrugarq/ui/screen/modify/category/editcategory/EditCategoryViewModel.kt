@@ -43,7 +43,10 @@ class EditCategoryViewModel @Inject constructor(
             screenState.extractDataOrNull(categoryId) ?: return@async false
 
         val other = categoryRepository.getByName(category.name)
+
         if (other != null) {
+            if (other.id == categoryId) return@async true
+
             screenState.name.apply {
                 value = value.toError(FieldError.DuplicateValueError)
             }

@@ -1,6 +1,5 @@
 package com.kssidll.arrugarq.ui.screen.modify.category.addcategory
 
-import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
@@ -24,14 +23,16 @@ class AddCategoryViewModel @Inject constructor(
         screenState.validate()
 
         val category: ProductCategory = screenState.extractDataOrNull() ?: return@async null
+        val other = categoryRepository.getByName(category.name)
 
-        try {
-            return@async categoryRepository.insert(category)
-        } catch (_: SQLiteConstraintException) {
+        if (other != null) {
             screenState.name.apply {
                 value = value.toError(FieldError.DuplicateValueError)
             }
+
             return@async null
+        } else {
+            return@async categoryRepository.insert(category)
         }
     }
         .await()

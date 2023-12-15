@@ -33,7 +33,7 @@ import me.xdrop.fuzzywuzzy.*
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var categoryId: Long,
-    @ColumnInfo(index = true) val producerId: Long?,
+    @ColumnInfo(index = true) var producerId: Long?,
     val name: String,
 ): FuzzySearchSource {
     @Ignore

@@ -1,7 +1,6 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.editvariant
 
 
-import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
@@ -29,14 +28,21 @@ class EditVariantViewModel @Inject constructor(
 
         val variant = screenState.extractDataOrNull(variantId) ?: return@async false
 
-        try {
-            variantRepository.update(variant)
-        } catch (_: SQLiteConstraintException) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
-            return@async false
-        }
+        val other = variantRepository.getByProductIdAndName(
+            screenState.productId,
+            variant.name
+        )
 
-        return@async true
+        if (other != null) {
+            if (other.id == variantId) return@async true
+
+            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+
+            return@async false
+        } else {
+            variantRepository.update(variant)
+            return@async true
+        }
     }
         .await()
 

@@ -23,18 +23,19 @@ class AddVariantViewModel @Inject constructor(
         screenState.validate()
 
         screenState.productId = productId
-        val variant = screenState.extractDataOrNull() ?: return@async null
 
-        if (screenState.name.value.data?.let {
-                variantRepository.getByProductIdAndName(
-                    productId,
-                    it
-                )
-            } == null) {
-            return@async variantRepository.insert(variant)
-        } else {
+        val variant = screenState.extractDataOrNull() ?: return@async null
+        val other = variantRepository.getByProductIdAndName(
+            productId,
+            variant.name
+        )
+
+        if (other != null) {
             screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+
             return@async null
+        } else {
+            return@async variantRepository.insert(variant)
         }
     }
         .await()

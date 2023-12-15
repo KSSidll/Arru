@@ -7,6 +7,7 @@ import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 /**
  * Base [ViewModel] class for Producer modification view models
@@ -15,25 +16,34 @@ import kotlinx.coroutines.*
  */
 abstract class ModifyProducerViewModel: ViewModel() {
     protected abstract val producerRepository: ProducerRepositorySource
-
+    protected var mProducer: ProductProducer? = null
     internal val screenState: ModifyProducerScreenState = ModifyProducerScreenState()
 
     /**
      * Updates data in the screen state
      * @return true if provided [producerId] was valid, false otherwise
      */
-    suspend fun updateState(producerId: Long) = viewModelScope.async {
+    open suspend fun updateState(producerId: Long) = viewModelScope.async {
         screenState.name.apply { value = value.toLoading() }
 
-        val producer: ProductProducer? = producerRepository.get(producerId)
+        mProducer = producerRepository.get(producerId)
 
         screenState.name.apply {
-            value = producer?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = mProducer?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        return@async producer != null
+        return@async mProducer != null
     }
         .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(producerId: Long): Flow<List<ProductProducer>> {
+        return producerRepository.getAllFlow()
+            .onEach { it.filter { item -> item.id != producerId } }
+            .distinctUntilChanged()
+    }
 }
 
 /**

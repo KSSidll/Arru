@@ -1,8 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.producer.editproducer
 
 
-import android.database.sqlite.*
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.producer.*
@@ -17,6 +18,18 @@ class EditProducerViewModel @Inject constructor(
     private val variantRepository: VariantRepositorySource,
     private val itemRepository: ItemRepositorySource,
 ): ModifyProducerViewModel() {
+    private val mMergeMessageProducerName: MutableState<String> = mutableStateOf(String())
+    val mergeMessageProducerName get() = mMergeMessageProducerName.value
+
+    val chosenMergeCandidate: MutableState<ProductProducer?> = mutableStateOf(null)
+    val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
+
+    override suspend fun updateState(producerId: Long): Boolean {
+        return super.updateState(producerId)
+            .also {
+                mMergeMessageProducerName.value = mProducer?.name.orEmpty()
+            }
+    }
 
     /**
      * Tries to update product with provided [producerId] with current screen state data
@@ -27,15 +40,24 @@ class EditProducerViewModel @Inject constructor(
         screenState.validate()
 
         val producer = screenState.extractDataOrNull(producerId) ?: return@async false
+        val other = producerRepository.getByName(producer.name)
 
-        try {
-            producerRepository.update(producer)
-        } catch (_: SQLiteConstraintException) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        if (other != null) {
+            if (other.id == producerId) return@async true
+
+            screenState.name.apply {
+                value = value.toError(FieldError.DuplicateValueError)
+            }
+
+            chosenMergeCandidate.value = other
+            showMergeConfirmDialog.value = true
+
             return@async false
+        } else {
+            producerRepository.update(producer)
+            return@async true
         }
 
-        return@async true
     }
         .await()
 
@@ -72,6 +94,25 @@ class EditProducerViewModel @Inject constructor(
             producerRepository.delete(producer)
             return@async true
         }
+    }
+        .await()
+
+    /**
+     * Tries to delete merge category into provided [mergeCandidate]
+     * @return True if operation succeded, false otherwise
+     */
+    suspend fun mergeWith(mergeCandidate: ProductProducer) = viewModelScope.async {
+        val products =
+            mProducer?.let { productRepository.getByProducerId(it.id) } ?: return@async false
+
+        if (products.isNotEmpty()) {
+            products.forEach { it.producerId = mergeCandidate.id }
+            productRepository.update(products)
+        }
+
+        mProducer?.let { producerRepository.delete(it) }
+
+        return@async true
     }
         .await()
 }

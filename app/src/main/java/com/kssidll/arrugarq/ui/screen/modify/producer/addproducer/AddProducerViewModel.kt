@@ -1,6 +1,5 @@
 package com.kssidll.arrugarq.ui.screen.modify.producer.addproducer
 
-import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
@@ -23,12 +22,14 @@ class AddProducerViewModel @Inject constructor(
         screenState.validate()
 
         val producer = screenState.extractDataOrNull() ?: return@async null
+        val other = producerRepository.getByName(producer.name)
 
-        try {
-            return@async producerRepository.insert(producer)
-        } catch (_: SQLiteConstraintException) {
+        if (other != null) {
             screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+
             return@async null
+        } else {
+            return@async producerRepository.insert(producer)
         }
     }
         .await()
