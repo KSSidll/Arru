@@ -28,7 +28,7 @@ abstract class ModifyVariantViewModel: ViewModel() {
         val variant = variantRepository.get(variantId)
 
         screenState.name.apply {
-            value = variant?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
         return@async variant != null

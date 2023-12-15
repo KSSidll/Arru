@@ -16,7 +16,7 @@ class TimePeriodFlowHandler(
     private val weekFlow: () -> Flow<List<ItemSpentByTime>>,
     private val monthFlow: () -> Flow<List<ItemSpentByTime>>,
     private val yearFlow: () -> Flow<List<ItemSpentByTime>>,
-    startPeriod: TimePeriodFlowHandler.Periods = Periods.Month,
+    startPeriod: Periods = Periods.Month,
 ) {
     private var mCurrentPeriod: MutableState<Periods>
     val currentPeriod get() = mCurrentPeriod.value
@@ -31,7 +31,7 @@ class TimePeriodFlowHandler(
         handlePeriodSwitch()
     }
 
-    fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
+    fun switchPeriod(newPeriod: Periods) {
         mCurrentPeriod.value = newPeriod
         handlePeriodSwitch()
     }

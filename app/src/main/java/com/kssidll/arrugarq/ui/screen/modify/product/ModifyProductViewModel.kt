@@ -35,7 +35,7 @@ abstract class ModifyProductViewModel: ViewModel() {
         val category = mProduct?.categoryId?.let { categoryRepository.get(it) }
 
         screenState.name.apply {
-            value = mProduct?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
         screenState.selectedProductProducer.apply {

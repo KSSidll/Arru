@@ -29,7 +29,7 @@ abstract class ModifyProducerViewModel: ViewModel() {
         mProducer = producerRepository.get(producerId)
 
         screenState.name.apply {
-            value = mProducer?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = mProducer?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
         return@async mProducer != null

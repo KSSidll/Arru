@@ -96,8 +96,8 @@ internal enum class HomeRouteLocations(
     val initial: Boolean = false,
 ) {
     Dashboard(initial = true),
-    Analysis(),
-    Transactions(),
+    Analysis,
+    Transactions,
     ;
 
     val description: String

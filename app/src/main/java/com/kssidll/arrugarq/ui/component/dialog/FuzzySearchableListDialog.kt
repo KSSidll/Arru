@@ -34,7 +34,6 @@ import com.kssidll.arrugarq.ui.theme.*
  * @param defaultItemText: String to display on the default, null value item
  * @param shape: Shape of the Dialog
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> FuzzySearchableListDialog(
     onDismissRequest: () -> Unit,

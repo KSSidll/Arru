@@ -30,7 +30,6 @@ private val TileInnerPadding: Dp = 12.dp
  * @param onCategorySpendingComparisonCardClick Callback called when the category spending comparison card is clicked
  * @param onShopSpendingComparisonCardClick Callback called when the shop spending comparison card is clicked
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AnalysisScreen(
     year: Int,

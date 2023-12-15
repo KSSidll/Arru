@@ -13,9 +13,9 @@ import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.theme.*
 
 /**
- * Bottom navigation bar for [HomeScreen] screen
- * @param currentLocation Current [HomeScreen] location
- * @param onLocationChange Callback called as request to change [HomeScreen] location, Provides new location as parameter
+ * Bottom navigation bar for home screen
+ * @param currentLocation Current home location
+ * @param onLocationChange Callback called as request to change home location. Provides new location as parameter
  * @param onActionButtonClick Callback called when the FAB is clicked
  */
 @Composable

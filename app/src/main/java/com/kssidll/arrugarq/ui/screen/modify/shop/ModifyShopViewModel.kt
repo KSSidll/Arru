@@ -29,7 +29,7 @@ abstract class ModifyShopViewModel: ViewModel() {
         mShop = shopRepository.get(shopId)
 
         screenState.name.apply {
-            value = mShop?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = mShop?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
         return@async mShop != null
