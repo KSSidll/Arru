@@ -613,6 +613,10 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         dao.update(item)
     }
 
+    override suspend fun update(items: List<Item>) {
+        dao.update(items)
+    }
+
     override suspend fun delete(item: Item) {
         dao.delete(item)
     }

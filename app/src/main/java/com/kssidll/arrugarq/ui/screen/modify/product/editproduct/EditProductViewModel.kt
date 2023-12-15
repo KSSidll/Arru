@@ -1,8 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.product.editproduct
 
 
-import android.database.sqlite.*
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
@@ -18,6 +19,18 @@ class EditProductViewModel @Inject constructor(
     private val variantRepository: VariantRepositorySource,
     private val itemRepository: ItemRepositorySource,
 ): ModifyProductViewModel() {
+    private val mMergeMessageProductName: MutableState<String> = mutableStateOf(String())
+    val mergeMessageProductName get() = mMergeMessageProductName.value
+
+    val chosenMergeCandidate: MutableState<Product?> = mutableStateOf(null)
+    val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
+
+    override suspend fun updateState(productId: Long): Boolean {
+        return super.updateState(productId)
+            .also {
+                mMergeMessageProductName.value = mProduct?.name.orEmpty()
+            }
+    }
 
     /**
      * Tries to update product with provided [productId] with current screen state data
@@ -28,15 +41,30 @@ class EditProductViewModel @Inject constructor(
         screenState.validate()
 
         val product = screenState.extractDataOrNull(productId) ?: return@async false
+        val other = productRepository.getByNameAndProducerId(
+            product.name,
+            product.producerId
+        )
 
-        try {
-            productRepository.update(product)
-        } catch (_: SQLiteConstraintException) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        if (other != null) {
+            if (other.id == productId) return@async true
+
+            screenState.name.apply {
+                value = value.toError(FieldError.DuplicateValueError)
+            }
+
+            screenState.selectedProductProducer.apply {
+                value = value.toError(FieldError.DuplicateValueError)
+            }
+
+            chosenMergeCandidate.value = other
+            showMergeConfirmDialog.value = true
+
             return@async false
+        } else {
+            productRepository.update(product)
+            return@async true
         }
-
-        return@async true
     }
         .await()
 
@@ -61,6 +89,31 @@ class EditProductViewModel @Inject constructor(
             productRepository.delete(product)
             return@async true
         }
+    }
+        .await()
+
+    /**
+     * Tries to delete merge category into provided [mergeCandidate]
+     * @return True if operation succeded, false otherwise
+     */
+    suspend fun mergeWith(mergeCandidate: Product) = viewModelScope.async {
+        val items = mProduct?.let { itemRepository.getByProductId(it.id) } ?: return@async false
+        val variants =
+            mProduct?.let { variantRepository.getByProductId(it.id) } ?: return@async false
+
+        if (items.isNotEmpty()) {
+            items.forEach { it.productId = mergeCandidate.id }
+            itemRepository.update(items)
+        }
+
+        if (variants.isNotEmpty()) {
+            variants.forEach { it.productId = mergeCandidate.id }
+            variantRepository.update(variants)
+        }
+
+        mProduct?.let { productRepository.delete(it) }
+
+        return@async true
     }
         .await()
 }

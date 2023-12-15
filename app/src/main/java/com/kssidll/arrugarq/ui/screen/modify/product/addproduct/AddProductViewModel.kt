@@ -1,6 +1,5 @@
 package com.kssidll.arrugarq.ui.screen.modify.product.addproduct
 
-import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
@@ -25,12 +24,20 @@ class AddProductViewModel @Inject constructor(
         screenState.validate()
 
         val product = screenState.extractDataOrNull() ?: return@async null
+        val other = productRepository.getByNameAndProducerId(
+            product.name,
+            product.producerId
+        )
 
-        try {
-            return@async productRepository.insert(product)
-        } catch (_: SQLiteConstraintException) {
+        if (other != null) {
             screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+            screenState.selectedProductProducer.apply {
+                value = value.toError(FieldError.DuplicateValueError)
+            }
+
             return@async null
+        } else {
+            return@async productRepository.insert(product)
         }
     }
         .await()

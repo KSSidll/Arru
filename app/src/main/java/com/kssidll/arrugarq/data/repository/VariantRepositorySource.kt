@@ -19,6 +19,7 @@ interface VariantRepositorySource {
     fun getByNameFlow(name: String): Flow<List<ProductVariant>>
     suspend fun insert(variant: ProductVariant): Long
     suspend fun update(variant: ProductVariant)
+    suspend fun update(variants: List<ProductVariant>)
     suspend fun delete(variant: ProductVariant)
     suspend fun delete(variants: List<ProductVariant>)
 }

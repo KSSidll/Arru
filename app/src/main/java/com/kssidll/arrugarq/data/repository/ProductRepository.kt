@@ -45,6 +45,16 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         return dao.getByNameFlow(name)
     }
 
+    override suspend fun getByNameAndProducerId(
+        name: String,
+        producerId: Long?
+    ): Product? {
+        return dao.getByNameAndProducerId(
+            name,
+            producerId
+        )
+    }
+
     override suspend fun findLike(name: String): List<Product> {
         return dao.findLike(name)
     }

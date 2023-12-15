@@ -1431,9 +1431,12 @@ ORDER BY time
     @Update
     suspend fun update(item: Item)
 
+    @Update
+    suspend fun update(items: List<Item>)
+
     @Delete
     suspend fun delete(item: Item)
 
     @Delete
-    suspend fun delete(item: List<Item>)
+    suspend fun delete(items: List<Item>)
 }

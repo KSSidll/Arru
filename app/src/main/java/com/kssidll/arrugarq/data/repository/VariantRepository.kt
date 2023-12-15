@@ -55,6 +55,10 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         dao.update(variant)
     }
 
+    override suspend fun update(variants: List<ProductVariant>) {
+        dao.update(variants)
+    }
+
     override suspend fun delete(variant: ProductVariant) {
         dao.delete(variant)
     }

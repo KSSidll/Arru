@@ -18,24 +18,24 @@ abstract class ModifyProductViewModel: ViewModel() {
     protected abstract val productRepository: ProductRepositorySource
     protected abstract val producerRepository: ProducerRepositorySource
     protected abstract val categoryRepository: CategoryRepositorySource
-
+    protected var mProduct: Product? = null
     internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 
     /**
      * Updates data in the screen state
      * @return true if provided [productId] was valid, false otherwise
      */
-    suspend fun updateState(productId: Long) = viewModelScope.async {
+    open suspend fun updateState(productId: Long) = viewModelScope.async {
         screenState.name.apply { value = value.toLoading() }
         screenState.selectedProductProducer.apply { value = value.toLoading() }
         screenState.selectedProductCategory.apply { value = value.toLoading() }
 
-        val product: Product? = productRepository.get(productId)
-        val producer: ProductProducer? = product?.producerId?.let { producerRepository.get(it) }
-        val category = product?.categoryId?.let { categoryRepository.get(it) }
+        mProduct = productRepository.get(productId)
+        val producer: ProductProducer? = mProduct?.producerId?.let { producerRepository.get(it) }
+        val category = mProduct?.categoryId?.let { categoryRepository.get(it) }
 
         screenState.name.apply {
-            value = product?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = mProduct?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
         screenState.selectedProductProducer.apply {
@@ -46,7 +46,7 @@ abstract class ModifyProductViewModel: ViewModel() {
             value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        return@async product != null
+        return@async mProduct != null
     }
         .await()
 
@@ -62,6 +62,15 @@ abstract class ModifyProductViewModel: ViewModel() {
      */
     fun allProducers(): Flow<List<ProductProducer>> {
         return producerRepository.getAllFlow()
+    }
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(productId: Long): Flow<List<Product>> {
+        return productRepository.getAllFlow()
+            .onEach { it.filter { item -> item.id != productId } }
+            .distinctUntilChanged()
     }
 }
 

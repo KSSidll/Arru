@@ -32,7 +32,7 @@ import com.patrykandpatrick.vico.core.entry.*
 )
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val productId: Long,
+    @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) val variantId: Long?,
     @ColumnInfo(index = true) val shopId: Long?,
     val quantity: Long,

@@ -16,6 +16,7 @@ import com.kssidll.arrugarq.ui.component.dialog.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
 import androidx.compose.material3.Surface as Surface1
 
 private val ItemHorizontalPadding: Dp = 20.dp
@@ -28,6 +29,13 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param producers Producers that can be set for current product
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onMerge Callback called when the merge action is triggered. Provides merge candidate as parameter. Setting to null will hide merge action
+ * @param mergeCandidates List of potential candidates for merge operation
+ * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
+ * @param chosenMergeCandidate Currently chosen merge candidate if any
+ * @param onChosenMergeCandidateChange Callback called when the [chosenMergeCandidate] should change. Provides candidate as Parameter
+ * @param showMergeConfirmDialog Whether to show the merge confirmation dialog
+ * @param onShowMergeConfirmDialogChange Callback called when the [showMergeConfirmDialog] flag should change. Provides new flag value as parameter
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
  * @param onProducerAddButtonClick Callback called when the producer add button is clicked. Provides search value or null as parameter
  * @param onCategoryAddButtonClick Callback called when the category add button is clicked. Provides search value or null as parameter
@@ -42,17 +50,32 @@ fun ModifyProductScreenImpl(
     producers: List<ProductProducer>,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    onMerge: ((candidate: Product) -> Unit)? = null,
+    mergeCandidates: Flow<List<Product>> = flowOf(),
+    mergeConfirmMessageTemplate: String = String(),
+    chosenMergeCandidate: Product? = null,
+    onChosenMergeCandidateChange: ((Product?) -> Unit)? = null,
+    showMergeConfirmDialog: Boolean = false,
+    onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
     onProducerAddButtonClick: (query: String?) -> Unit,
     onCategoryAddButtonClick: (query: String?) -> Unit,
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onItemCategoryLongClick: (categoryId: Long) -> Unit,
 ) {
-    ModifyScreen<Product>(
+    ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
         onSubmit = onSubmit,
         onDelete = onDelete,
+        onMerge = onMerge,
+        mergeCandidates = mergeCandidates,
+        mergeCandidatesTextTransformation = { it.name },
+        mergeConfirmMessageTemplate = mergeConfirmMessageTemplate,
+        chosenMergeCandidate = chosenMergeCandidate,
+        onChosenMergeCandidateChange = onChosenMergeCandidateChange,
+        showMergeConfirmDialog = showMergeConfirmDialog,
+        onShowMergeConfirmDialogChange = onShowMergeConfirmDialogChange,
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,

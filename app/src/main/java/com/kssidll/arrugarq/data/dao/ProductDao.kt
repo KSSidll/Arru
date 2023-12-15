@@ -36,6 +36,12 @@ interface ProductDao {
     @Query("SELECT * FROM product WHERE name == :name")
     fun getByNameFlow(name: String): Flow<Product>
 
+    @Query("SELECT * FROM product WHERE name = :name AND (producerId = :producerId OR (:producerId IS NULL AND producerId IS NULL))")
+    suspend fun getByNameAndProducerId(
+        name: String,
+        producerId: Long?
+    ): Product?
+
     @Query("SELECT product.* FROM product LEFT JOIN productaltname ON product.id = productaltname.productId WHERE product.name LIKE '%' || :name || '%' OR productaltname.name LIKE '%' || :name || '%' OR :name = ''")
     suspend fun findLike(name: String): List<Product>
 

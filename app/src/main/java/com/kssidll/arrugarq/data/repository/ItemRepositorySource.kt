@@ -220,6 +220,7 @@ interface ItemRepositorySource {
 
     suspend fun insert(item: Item): Long
     suspend fun update(item: Item)
+    suspend fun update(items: List<Item>)
     suspend fun delete(item: Item)
     suspend fun delete(items: List<Item>)
 }

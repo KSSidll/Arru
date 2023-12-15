@@ -49,6 +49,28 @@ fun EditProductRoute(
                 }
             }
         },
+        onMerge = {
+            scope.launch {
+                if (viewModel.mergeWith(it)) {
+                    navigateBackDelete()
+                }
+            }
+        },
+        mergeCandidates = viewModel.allMergeCandidates(productId),
+        mergeConfirmMessageTemplate = stringResource(id = R.string.merge_action_message_template)
+            .replace(
+                "{value_1}",
+                viewModel.mergeMessageProductName
+            ),
+
+        chosenMergeCandidate = viewModel.chosenMergeCandidate.value,
+        onChosenMergeCandidateChange = {
+            viewModel.chosenMergeCandidate.apply { value = it }
+        },
+        showMergeConfirmDialog = viewModel.showMergeConfirmDialog.value,
+        onShowMergeConfirmDialogChange = {
+            viewModel.showMergeConfirmDialog.apply { value = it }
+        },
         submitButtonText = stringResource(id = R.string.item_product_edit),
         onCategoryAddButtonClick = navigateCategoryAdd,
         onProducerAddButtonClick = navigateProducerAdd,

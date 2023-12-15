@@ -14,6 +14,11 @@ interface ProductRepositorySource {
     fun getByProducerIdFlow(producerId: Long): Flow<List<Product>>
     suspend fun getByName(name: String): Product?
     fun getByNameFlow(name: String): Flow<Product>
+    suspend fun getByNameAndProducerId(
+        name: String,
+        producerId: Long?
+    ): Product?
+
     suspend fun findLike(name: String): List<Product>
     fun findLikeFlow(name: String): Flow<List<Product>>
     suspend fun getAllWithAltNames(): List<ProductWithAltNames>
