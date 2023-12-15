@@ -7,6 +7,7 @@ import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 /**
  * Base [ViewModel] class for Shop modification view models
@@ -15,25 +16,34 @@ import kotlinx.coroutines.*
  */
 abstract class ModifyShopViewModel: ViewModel() {
     protected abstract val shopRepository: ShopRepositorySource
-
+    protected var mShop: Shop? = null
     internal val screenState: ModifyShopScreenState = ModifyShopScreenState()
 
     /**
      * Updates data in the screen state
      * @return true if provided [shopId] was valid, false otherwise
      */
-    suspend fun updateState(shopId: Long) = viewModelScope.async {
+    open suspend fun updateState(shopId: Long) = viewModelScope.async {
         screenState.name.apply { value = value.toLoading() }
 
-        val shop: Shop? = shopRepository.get(shopId)
+        mShop = shopRepository.get(shopId)
 
         screenState.name.apply {
-            value = shop?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            value = mShop?.name.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
-        return@async shop != null
+        return@async mShop != null
     }
         .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(shopId: Long): Flow<List<Shop>> {
+        return shopRepository.getAllFlow()
+            .onEach { it.filter { item -> item.id != shopId } }
+            .distinctUntilChanged()
+    }
 }
 
 /**

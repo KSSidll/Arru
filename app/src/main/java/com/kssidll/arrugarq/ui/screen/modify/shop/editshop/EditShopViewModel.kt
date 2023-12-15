@@ -1,8 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop.editshop
 
 
-import android.database.sqlite.*
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
@@ -15,6 +16,18 @@ class EditShopViewModel @Inject constructor(
     override val shopRepository: ShopRepositorySource,
     private val itemRepository: ItemRepositorySource,
 ): ModifyShopViewModel() {
+    private val mMergeMessageShopName: MutableState<String> = mutableStateOf(String())
+    val mergeMessageShopName get() = mMergeMessageShopName.value
+
+    val chosenMergeCandidate: MutableState<Shop?> = mutableStateOf(null)
+    val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
+
+    override suspend fun updateState(shopId: Long): Boolean {
+        return super.updateState(shopId)
+            .also {
+                mMergeMessageShopName.value = mShop?.name.orEmpty()
+            }
+    }
 
     /**
      * Tries to update shop with provided [shopId] with current screen state data
@@ -25,15 +38,23 @@ class EditShopViewModel @Inject constructor(
         screenState.validate()
 
         val shop = screenState.extractDataOrNull(shopId) ?: return@async false
+        val other = shopRepository.getByName(shop.name)
 
-        try {
-            shopRepository.update(shop)
-        } catch (_: SQLiteConstraintException) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        if (other != null) {
+            if (other.id == shopId) return@async true
+
+            screenState.name.apply {
+                value = value.toError(FieldError.DuplicateValueError)
+            }
+
+            chosenMergeCandidate.value = other
+            showMergeConfirmDialog.value = true
+
             return@async false
+        } else {
+            shopRepository.update(shop)
+            return@async true
         }
-
-        return@async true
     }
         .await()
 
@@ -56,6 +77,25 @@ class EditShopViewModel @Inject constructor(
             shopRepository.delete(shop)
             return@async true
         }
+    }
+        .await()
+
+    /**
+     * Tries to delete merge category into provided [mergeCandidate]
+     * @return True if operation succeded, false otherwise
+     */
+    suspend fun mergeWith(mergeCandidate: Shop) = viewModelScope.async {
+        val items =
+            mShop?.let { itemRepository.getByShopId(it.id) } ?: return@async false
+
+        if (items.isNotEmpty()) {
+            items.forEach { it.shopId = mergeCandidate.id }
+            itemRepository.update(items)
+        }
+
+        mShop?.let { shopRepository.delete(it) }
+
+        return@async true
     }
         .await()
 }

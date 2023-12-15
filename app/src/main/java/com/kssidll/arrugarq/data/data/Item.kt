@@ -34,7 +34,7 @@ data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) val variantId: Long?,
-    @ColumnInfo(index = true) val shopId: Long?,
+    @ColumnInfo(index = true) var shopId: Long?,
     val quantity: Long,
     val price: Long,
     @ColumnInfo(index = true) val date: Long,

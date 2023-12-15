@@ -17,6 +17,7 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.component.field.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import com.kssidll.arrugarq.ui.theme.*
+import kotlinx.coroutines.flow.*
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -26,6 +27,13 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param state [ModifyShopScreenState] instance representing the screen state
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onMerge Callback called when the merge action is triggered. Provides merge candidate as parameter. Setting to null will hide merge action
+ * @param mergeCandidates List of potential candidates for merge operation
+ * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
+ * @param chosenMergeCandidate Currently chosen merge candidate if any
+ * @param onChosenMergeCandidateChange Callback called when the [chosenMergeCandidate] should change. Provides candidate as Parameter
+ * @param showMergeConfirmDialog Whether to show the merge confirmation dialog
+ * @param onShowMergeConfirmDialogChange Callback called when the [showMergeConfirmDialog] flag should change. Provides new flag value as parameter
  * @param submitButtonText Text displayed in the submit button, defaults to shop add string resource
  */
 @Composable
@@ -34,13 +42,28 @@ fun ModifyShopScreenImpl(
     state: ModifyShopScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    onMerge: ((candidate: Shop) -> Unit)? = null,
+    mergeCandidates: Flow<List<Shop>> = flowOf(),
+    mergeConfirmMessageTemplate: String = String(),
+    chosenMergeCandidate: Shop? = null,
+    onChosenMergeCandidateChange: ((Shop?) -> Unit)? = null,
+    showMergeConfirmDialog: Boolean = false,
+    onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_shop_add),
 ) {
-    ModifyScreen<Shop>(
+    ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_shop),
         onSubmit = onSubmit,
         onDelete = onDelete,
+        onMerge = onMerge,
+        mergeCandidates = mergeCandidates,
+        mergeCandidatesTextTransformation = { it.name },
+        mergeConfirmMessageTemplate = mergeConfirmMessageTemplate,
+        chosenMergeCandidate = chosenMergeCandidate,
+        onChosenMergeCandidateChange = onChosenMergeCandidateChange,
+        showMergeConfirmDialog = showMergeConfirmDialog,
+        onShowMergeConfirmDialogChange = onShowMergeConfirmDialogChange,
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,

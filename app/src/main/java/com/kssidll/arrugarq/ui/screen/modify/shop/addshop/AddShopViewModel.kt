@@ -1,6 +1,5 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop.addshop
 
-import android.database.sqlite.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
@@ -23,12 +22,14 @@ class AddShopViewModel @Inject constructor(
         screenState.validate()
 
         val shop = screenState.extractDataOrNull() ?: return@async null
+        val other = shopRepository.getByName(shop.name)
 
-        try {
-            return@async shopRepository.insert(shop)
-        } catch (_: SQLiteConstraintException) {
+        if (other != null) {
             screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+
             return@async null
+        } else {
+            return@async shopRepository.insert(shop)
         }
     }
         .await()
