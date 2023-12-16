@@ -133,15 +133,16 @@ WITH date_series AS (
     FROM date_series
     WHERE date_series.end_date > date_series.start_date
 )
-SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, productvariant.name as variantName, STRFTIME('%Y-%m', date_series.start_date) AS time
+SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, productvariant.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
 FROM date_series
 LEFT JOIN item ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(item.date / 1000, 'unixepoch'))
     AND item.productId = :productId
 LEFT JOIN shop ON item.shopId = shop.id
 LEFT JOIN productvariant ON item.variantId = productvariant.id
 LEFT JOIN product ON item.productId = product.id
+LEFT JOIN productproducer ON product.producerId = productproducer.id
 WHERE time IS NOT NULL
-GROUP BY time, shopId, variantId
+GROUP BY time, shopId, variantId, producerId
 ORDER BY time
     """
     )

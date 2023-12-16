@@ -59,7 +59,21 @@ fun ShopPriceCompareChart(
         items.forEach {
             if (it.shopName == null) return@forEach
 
-            val item = it.shopName.plus(" - ".plus(it.variantName ?: defaultVariantName))
+            val item = buildString {
+                append(it.shopName)
+
+                append(" - ")
+                append(it.variantName ?: defaultVariantName)
+
+                if (it.producerName.isNullOrBlank()
+                        .not()
+                ) {
+                    append(" (")
+                    append(it.producerName)
+                    append(")")
+                }
+            }
+
             data.getOrPut(item) {
                 mutableListOf()
             }
@@ -144,7 +158,8 @@ fun ShopPriceCompareChart(
                 iconPadding = 10.dp,
                 spacing = 4.dp,
                 padding = dimensionsOf(start = 16.dp),
-            )
+            ),
+            isZoomEnabled = false,
         )
     }
 }

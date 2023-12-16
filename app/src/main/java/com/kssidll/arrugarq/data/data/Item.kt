@@ -210,6 +210,7 @@ data class ItemSpentByCategory(
 data class ProductPriceByShopByTime(
     @Embedded val product: Product?,
     val variantName: String?,
+    val producerName: String?,
     val price: Long?,
     val shopName: String?,
     val time: String,
