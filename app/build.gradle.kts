@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kssidll.arrugarq"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
