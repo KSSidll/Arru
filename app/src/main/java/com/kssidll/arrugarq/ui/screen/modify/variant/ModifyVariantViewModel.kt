@@ -63,7 +63,7 @@ data class ModifyVariantScreenState(
 
     override fun extractDataOrNull(id: Long): ProductVariant? {
         if (!validate()) return null
-        if (productId < 1) error("ProductVariant Extraction from ModifyVariatScreenState Failed, productId was not set before trying to extract data")
+        if (productId < 0) error("ProductVariant Extraction from ModifyVariatScreenState Failed, productId was not set before trying to extract data")
 
         return ProductVariant(
             id = id,
