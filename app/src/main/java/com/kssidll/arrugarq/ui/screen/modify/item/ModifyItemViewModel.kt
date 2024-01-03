@@ -52,7 +52,10 @@ abstract class ModifyItemViewModel: ViewModel() {
             item = lastItemByProduct,
             updateDate = false,
             updateShop = false,
+            updateProduct = false,
         )
+
+        updateProductVariants()
     }
 
     /**
