@@ -33,6 +33,11 @@
 - Comparisons between prices at different shops
 - Ranking of categories and shops based on total money spent
 
+### TBD
+
+- Alternative names for Products and Product Categories for easier searching
+- Filtering for easier searching
+
 # Tech Stack & Libraries
 
 - Developed in Android Studio Iguana (currently on version `Beta 1`)
