@@ -27,7 +27,7 @@ fun HomeRoute(
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
-    navigateItemAdd: () -> Unit,
+    navigateTransactionAdd: () -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
@@ -50,7 +50,7 @@ fun HomeRoute(
                         pagerState.animateScrollToPage(it.ordinal)
                     }
                 },
-                onActionButtonClick = navigateItemAdd,
+                onActionButtonClick = navigateTransactionAdd,
             )
         }
     ) {

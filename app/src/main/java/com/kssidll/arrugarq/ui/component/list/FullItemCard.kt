@@ -35,8 +35,6 @@ fun LazyItemScope.FullItemCard(
     showCategory: Boolean = true,
     onProducerClick: (producer: ProductProducer) -> Unit,
     showProducer: Boolean = true,
-    onShopClick: (shop: Shop) -> Unit,
-    showShop: Boolean = true,
 ) {
     val itemModifier =
         if (itemClickable)
@@ -234,36 +232,6 @@ fun LazyItemScope.FullItemCard(
                     }
                 }
             }
-
-            if (showShop) {
-                val shop = fullItem.embeddedItem.shop
-                if (shop != null) {
-                    Button(
-                        onClick = {
-                            onShopClick(shop)
-                        },
-                        contentPadding = PaddingValues(
-                            vertical = 0.dp,
-                            horizontal = 12.dp
-                        ),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary,
-                        ),
-                    ) {
-                        Text(
-                            text = shop.name,
-                            textAlign = TextAlign.Center,
-                            style = Typography.labelMedium,
-                        )
-                        Icon(
-                            imageVector = Icons.Rounded.Store,
-                            contentDescription = null,
-                            modifier = Modifier.size(17.dp),
-                        )
-                    }
-                }
-            }
         }
     }
 }
@@ -292,7 +260,6 @@ fun FullItemCardPreview() {
                         onItemLongClick = {},
                         onCategoryClick = {},
                         onProducerClick = {},
-                        onShopClick = {},
                     )
                 }
             }

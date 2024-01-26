@@ -16,10 +16,7 @@ internal fun TransactionsRoute(
     val viewModel: TransactionsViewModel = hiltViewModel()
 
     TransactionsScreen(
-        requestMoreItems = {
-            viewModel.queryMoreFullItems()
-        },
-        items = viewModel.fullItemsData,
+        transactions = viewModel.transactions().collectAsState(initial = emptyList()).value,
         onSearchAction = navigateSearch,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,

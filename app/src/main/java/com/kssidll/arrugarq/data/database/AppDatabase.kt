@@ -35,6 +35,7 @@ import java.io.*
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
+    abstract fun getTransactionBasketDao(): TransactionBasketDao
     abstract fun getItemDao(): ItemDao
     abstract fun getProductDao(): ProductDao
     abstract fun getVariantDao(): VariantDao

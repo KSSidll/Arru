@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "7b134098e6aa58b6bb7ed9e6fe64b66b",
+    "identityHash": "6715727aee28564c91ce35a8fd975b70",
     "entities": [
       {
         "tableName": "TransactionBasket",
@@ -149,7 +149,7 @@
       },
       {
         "tableName": "Item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productId` INTEGER NOT NULL, `variantId` INTEGER, `shopId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, `date` INTEGER NOT NULL, FOREIGN KEY(`productId`) REFERENCES `Product`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`variantId`) REFERENCES `ProductVariant`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`shopId`) REFERENCES `Shop`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productId` INTEGER NOT NULL, `variantId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, FOREIGN KEY(`productId`) REFERENCES `Product`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`variantId`) REFERENCES `ProductVariant`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -170,12 +170,6 @@
             "notNull": false
           },
           {
-            "fieldPath": "shopId",
-            "columnName": "shopId",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
             "fieldPath": "quantity",
             "columnName": "quantity",
             "affinity": "INTEGER",
@@ -184,12 +178,6 @@
           {
             "fieldPath": "price",
             "columnName": "price",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "date",
-            "columnName": "date",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -218,24 +206,6 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_variantId` ON `${TABLE_NAME}` (`variantId`)"
-          },
-          {
-            "name": "index_Item_shopId",
-            "unique": false,
-            "columnNames": [
-              "shopId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_shopId` ON `${TABLE_NAME}` (`shopId`)"
-          },
-          {
-            "name": "index_Item_date",
-            "unique": false,
-            "columnNames": [
-              "date"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_date` ON `${TABLE_NAME}` (`date`)"
           }
         ],
         "foreignKeys": [
@@ -256,17 +226,6 @@
             "onUpdate": "RESTRICT",
             "columns": [
               "variantId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "Shop",
-            "onDelete": "RESTRICT",
-            "onUpdate": "RESTRICT",
-            "columns": [
-              "shopId"
             ],
             "referencedColumns": [
               "id"
@@ -656,7 +615,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b134098e6aa58b6bb7ed9e6fe64b66b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6715727aee28564c91ce35a8fd975b70')"
     ]
   }
 }

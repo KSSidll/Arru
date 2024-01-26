@@ -50,19 +50,10 @@ abstract class ModifyItemViewModel: ViewModel() {
 
         updateStateForItem(
             item = lastItemByProduct,
-            updateDate = false,
-            updateShop = false,
             updateProduct = false,
         )
 
         updateProductVariants()
-    }
-
-    /**
-     * @return List of all shops
-     */
-    fun allShops(): Flow<List<Shop>> {
-        return shopRepository.getAllFlow()
     }
 
     /**
@@ -109,23 +100,14 @@ abstract class ModifyItemViewModel: ViewModel() {
      */
     private suspend fun updateStateForItem(
         item: Item?,
-        updateDate: Boolean = true,
         updatePrice: Boolean = true,
         updateQuantity: Boolean = true,
-        updateShop: Boolean = true,
         updateProduct: Boolean = true,
         updateVariant: Boolean = true,
     ) {
-        val shop: Shop? = item?.shopId?.let { shopRepository.get(it) }
         val itemProduct: Product? = item?.productId?.let { productRepository.get(it) }
         val itemProductVariant: ProductVariant? =
             item?.variantId?.let { variantsRepository.get(it) }
-
-        if (updateDate) {
-            screenState.date.apply {
-                value = value.data?.let { value.toLoaded() } ?: Field.Loaded(item?.date)
-            }
-        }
 
         if (updatePrice) {
             screenState.price.apply {
@@ -142,12 +124,6 @@ abstract class ModifyItemViewModel: ViewModel() {
                     item?.actualQuantity()
                         ?.toString()
                 )
-            }
-        }
-
-        if (updateShop) {
-            screenState.selectedShop.apply {
-                value = Field.Loaded(shop)
             }
         }
 
@@ -172,13 +148,10 @@ abstract class ModifyItemViewModel: ViewModel() {
 data class ModifyItemScreenState(
     val selectedProduct: MutableState<Field<Product>> = mutableStateOf(Field.Loaded()),
     val selectedVariant: MutableState<Field<ProductVariant?>> = mutableStateOf(Field.Loaded()),
-    val selectedShop: MutableState<Field<Shop?>> = mutableStateOf(Field.Loaded()),
     val quantity: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
     val price: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-    val date: MutableState<Field<Long>> = mutableStateOf(Field.Loaded()),
 
     var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 ): ModifyScreenState<Item>() {
@@ -187,10 +160,8 @@ data class ModifyItemScreenState(
      * Sets all fields to Loading status
      */
     fun allToLoading() {
-        date.apply { value = value.toLoading() }
         price.apply { value = value.toLoading() }
         quantity.apply { value = value.toLoading() }
-        selectedShop.apply { value = value.toLoading() }
         selectedProduct.apply { value = value.toLoading() }
         selectedVariant.apply { value = value.toLoading() }
     }
@@ -241,27 +212,12 @@ data class ModifyItemScreenState(
         }
     }
 
-    /**
-     * Validates date field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateDate(): Boolean {
-        date.apply {
-            if (value.data == null) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
     override fun validate(): Boolean {
         val product = validateSelectedProduct()
         val quantity = validateQuantity()
         val price = validatePrice()
-        val date = validateDate()
 
-        return product && quantity && price && date
+        return product && quantity && price
     }
 
     override fun extractDataOrNull(id: Long): Item? {
@@ -271,11 +227,9 @@ data class ModifyItemScreenState(
             id = id,
             productId = selectedProduct.value.data?.id ?: return null,
             variantId = selectedVariant.value.data?.id,
-            shopId = selectedShop.value.data?.id,
             actualQuantity = quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
                 ?: return null,
             actualPrice = price.value.data?.let { StringHelper.toDoubleOrNull(it) } ?: return null,
-            date = date.value.data ?: return null,
         )
     }
 

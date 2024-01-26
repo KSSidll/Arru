@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
 
-// TODO remove shopid and date from item after implementing transaction basket frontend
 @Entity(
     foreignKeys = [
         ForeignKey(
@@ -47,4 +46,12 @@ data class TransactionBasketItem(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val transactionBasketId: Long,
     @ColumnInfo(index = true) val itemId: Long?,
+)
+
+data class TransactionBasketWithItems(
+    val id: Long,
+    val date: Long,
+    val shop: Shop?,
+    val totalCost: Long,
+    val items: List<FullItem>,
 )

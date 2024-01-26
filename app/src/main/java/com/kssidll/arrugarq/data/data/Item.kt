@@ -20,13 +20,6 @@ import com.patrykandpatrick.vico.core.entry.*
             childColumns = ["variantId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
-        ),
-        ForeignKey(
-            entity = Shop::class,
-            parentColumns = ["id"],
-            childColumns = ["shopId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
         )
     ]
 )
@@ -34,27 +27,21 @@ data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) val variantId: Long?,
-    @ColumnInfo(index = true) var shopId: Long?,
     val quantity: Long,
     val price: Long,
-    @ColumnInfo(index = true) val date: Long,
 ) {
     @Ignore
     constructor(
         productId: Long,
         variantId: Long?,
-        shopId: Long?,
         quantity: Long,
         price: Long,
-        date: Long
     ): this(
         0,
         productId,
         variantId,
-        shopId,
         quantity,
         price,
-        date
     )
 
     @Ignore
@@ -62,20 +49,16 @@ data class Item(
         id: Long = 0,
         productId: Long,
         variantId: Long?,
-        shopId: Long?,
         actualQuantity: Double,
         actualPrice: Double,
-        date: Long
     ): this(
         id,
         productId,
         variantId,
-        shopId,
         actualQuantity.times(QUANTITY_DIVISOR)
             .toLong(),
         actualPrice.times(PRICE_DIVISOR)
             .toLong(),
-        date
     )
 
     @Ignore
@@ -106,10 +89,6 @@ data class EmbeddedItem(
         parentColumn = "variantId",
         entityColumn = "id",
     ) val variant: ProductVariant?,
-    @Relation(
-        parentColumn = "shopId",
-        entityColumn = "id",
-    ) val shop: Shop?,
 )
 
 data class FullItem(

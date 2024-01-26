@@ -237,6 +237,11 @@ fun Navigation(
     }
 
 
+    val navigateTransactionAdd: () -> Unit = {
+        // TODO add navigation to transaction add screen once implemented
+//        navController.navigate(Screen.TransactionAdd)
+    }
+
     val navigateItemAdd: () -> Unit = {
         navController.navigate(Screen.ItemAdd)
     }
@@ -339,7 +344,7 @@ fun Navigation(
                     navigateCategory = navigateCategory,
                     navigateProducer = navigateProducer,
                     navigateShop = navigateShop,
-                    navigateItemAdd = navigateItemAdd,
+                    navigateTransactionAdd = navigateTransactionAdd,
                     navigateItemEdit = navigateItemEdit,
                     navigateCategoryRanking = navigateCategoryRanking,
                     navigateShopRanking = navigateShopRanking,
@@ -539,10 +544,8 @@ fun Navigation(
                     },
                     navigateProductAdd = navigateProductAdd,
                     navigateVariantAdd = navigateVariantAdd,
-                    navigateShopAdd = navigateShopAdd,
                     navigateProductEdit = navigateProductEdit,
                     navigateVariantEdit = navigateVariantEdit,
-                    navigateShopEdit = navigateShopEdit,
                 )
             }
 

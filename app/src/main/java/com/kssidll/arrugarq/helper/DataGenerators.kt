@@ -132,19 +132,15 @@ fun generateRandomItem(
     itemId: Long = defaultItemId,
     productId: Long = defaultProductId,
     variantId: Long? = defaultVariantId,
-    shopId: Long? = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
 ): Item {
     return Item(
         id = itemId,
         productId = productId,
         variantId = variantId,
-        shopId = shopId,
         quantity = generateRandomLongValue(
             itemQuantityFrom,
             itemQuantityUntil
@@ -152,10 +148,6 @@ fun generateRandomItem(
         price = generateRandomLongValue(
             itemPriceFrom,
             itemPriceUntil
-        ),
-        date = generateRandomTime(
-            itemDateTimeFrom,
-            itemDateTimeUntil
         ),
     )
 }
@@ -464,26 +456,20 @@ fun generateRandomItemList(
     amount: Int = defaultItemAmount,
     productId: Long = defaultProductId,
     variantId: Long? = defaultVariantId,
-    shopId: Long? = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil
 ): List<Item> {
     return List(amount) { index ->
         generateRandomItem(
             itemId = index.toLong(),
             productId = productId,
             variantId = variantId,
-            shopId = shopId,
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
         )
     }
 }
@@ -492,26 +478,20 @@ fun generateRandomItemListFlow(
     amount: Int = defaultItemAmount,
     productId: Long = defaultProductId,
     variantId: Long? = defaultVariantId,
-    shopId: Long? = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil
 ): Flow<List<Item>> {
     return flowOf(
         generateRandomItemList(
             amount = amount,
             productId = productId,
             variantId = variantId,
-            shopId = shopId,
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
         )
     )
 }
@@ -520,13 +500,10 @@ fun generateRandomEmbeddedItem(
     itemId: Long = defaultItemId,
     productId: Long = defaultProductId,
     variantId: Long = defaultVariantId,
-    shopId: Long = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
     categoryId: Long = defaultCategoryId,
     producerId: Long = defaultProducerId,
     productNameLengthFrom: Int = defaultStringLengthFrom,
@@ -534,22 +511,16 @@ fun generateRandomEmbeddedItem(
     allowedCharacters: String = defaultStringAllowedCharacters,
     variantNameLengthFrom: Int = defaultStringLengthFrom,
     variantNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameLengthFrom: Int = defaultStringLengthFrom,
-    shopNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
 ): EmbeddedItem {
     return EmbeddedItem(
         item = generateRandomItem(
             itemId = itemId,
             productId = productId,
             variantId = variantId,
-            shopId = shopId,
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
         ),
         product = generateRandomProduct(
             productId = productId,
@@ -566,12 +537,6 @@ fun generateRandomEmbeddedItem(
             variantNameLengthUntil = variantNameLengthUntil,
             allowedCharacters = allowedCharacters,
         ),
-        shop = generateRandomShop(
-            shopId = shopId,
-            shopNameLengthFrom = shopNameLengthFrom,
-            shopNameLengthUntil = shopNameLengthUntil,
-            shopNameAllowedCharacters = shopNameAllowedCharacters,
-        ),
     )
 }
 
@@ -581,29 +546,21 @@ fun generateRandomEmbeddedItemList(
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
     productNameLengthFrom: Int = defaultStringLengthFrom,
     productNameLengthUntil: Int = defaultStringLengthUntil,
     allowedCharacters: String = defaultStringAllowedCharacters,
     variantNameLengthFrom: Int = defaultStringLengthFrom,
     variantNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameLengthFrom: Int = defaultStringLengthFrom,
-    shopNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
 ): List<EmbeddedItem> {
     return List(amount) { index ->
         generateRandomEmbeddedItem(
             itemId = index.toLong(),
             productId = index.toLong(),
             variantId = index.toLong(),
-            shopId = index.toLong(),
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
             categoryId = index.toLong(),
             producerId = index.toLong(),
             productNameLengthFrom = productNameLengthFrom,
@@ -611,9 +568,6 @@ fun generateRandomEmbeddedItemList(
             allowedCharacters = allowedCharacters,
             variantNameLengthFrom = variantNameLengthFrom,
             variantNameLengthUntil = variantNameLengthUntil,
-            shopNameLengthFrom = shopNameLengthFrom,
-            shopNameLengthUntil = shopNameLengthUntil,
-            shopNameAllowedCharacters = shopNameAllowedCharacters,
         )
     }
 }
@@ -624,16 +578,11 @@ fun generateRandomEmbeddedItemListFlow(
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
     productNameLengthFrom: Int = defaultStringLengthFrom,
     productNameLengthUntil: Int = defaultStringLengthUntil,
     allowedCharacters: String = defaultStringAllowedCharacters,
     variantNameLengthFrom: Int = defaultStringLengthFrom,
     variantNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameLengthFrom: Int = defaultStringLengthFrom,
-    shopNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
 ): Flow<List<EmbeddedItem>> {
     return flowOf(
         generateRandomEmbeddedItemList(
@@ -642,16 +591,11 @@ fun generateRandomEmbeddedItemListFlow(
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
             productNameLengthFrom = productNameLengthFrom,
             productNameLengthUntil = productNameLengthUntil,
             allowedCharacters = allowedCharacters,
             variantNameLengthFrom = variantNameLengthFrom,
             variantNameLengthUntil = variantNameLengthUntil,
-            shopNameLengthFrom = shopNameLengthFrom,
-            shopNameLengthUntil = shopNameLengthUntil,
-            shopNameAllowedCharacters = shopNameAllowedCharacters,
         )
     )
 }
@@ -810,13 +754,10 @@ fun generateRandomFullItem(
     itemId: Long = defaultItemId,
     productId: Long = defaultProductId,
     variantId: Long = defaultVariantId,
-    shopId: Long = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
     categoryId: Long = defaultCategoryId,
     producerId: Long = defaultProducerId,
     productNameLengthFrom: Int = defaultStringLengthFrom,
@@ -824,9 +765,6 @@ fun generateRandomFullItem(
     allowedCharacters: String = defaultStringAllowedCharacters,
     variantNameLengthFrom: Int = defaultStringLengthFrom,
     variantNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameLengthFrom: Int = defaultStringLengthFrom,
-    shopNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
     categoryNameLengthFrom: Int = defaultStringLengthFrom,
     categoryNameLengthUntil: Int = defaultStringLengthUntil,
     categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
@@ -839,13 +777,10 @@ fun generateRandomFullItem(
             itemId = itemId,
             productId = productId,
             variantId = variantId,
-            shopId = shopId,
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
             categoryId = categoryId,
             producerId = producerId,
             productNameLengthFrom = productNameLengthFrom,
@@ -853,9 +788,6 @@ fun generateRandomFullItem(
             allowedCharacters = allowedCharacters,
             variantNameLengthFrom = variantNameLengthFrom,
             variantNameLengthUntil = variantNameLengthUntil,
-            shopNameLengthFrom = shopNameLengthFrom,
-            shopNameLengthUntil = shopNameLengthUntil,
-            shopNameAllowedCharacters = shopNameAllowedCharacters,
         ),
         embeddedProduct = generateRandomEmbeddedProduct(
             productId = productId,
@@ -877,13 +809,10 @@ fun generateRandomFullItem(
 fun generateRandomFullItemList(
     amount: Int = defaultFullItemAmount,
     variantId: Long = defaultVariantId,
-    shopId: Long = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
     categoryId: Long = defaultCategoryId,
     producerId: Long = defaultProducerId,
     productNameLengthFrom: Int = defaultStringLengthFrom,
@@ -891,9 +820,6 @@ fun generateRandomFullItemList(
     allowedCharacters: String = defaultStringAllowedCharacters,
     variantNameLengthFrom: Int = defaultStringLengthFrom,
     variantNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameLengthFrom: Int = defaultStringLengthFrom,
-    shopNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
     categoryNameLengthFrom: Int = defaultStringLengthFrom,
     categoryNameLengthUntil: Int = defaultStringLengthUntil,
     categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
@@ -906,13 +832,10 @@ fun generateRandomFullItemList(
             itemId = it.toLong(),
             productId = it.toLong(),
             variantId = variantId,
-            shopId = shopId,
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
             categoryId = categoryId,
             producerId = producerId,
             productNameLengthFrom = productNameLengthFrom,
@@ -920,9 +843,6 @@ fun generateRandomFullItemList(
             allowedCharacters = allowedCharacters,
             variantNameLengthFrom = variantNameLengthFrom,
             variantNameLengthUntil = variantNameLengthUntil,
-            shopNameLengthFrom = shopNameLengthFrom,
-            shopNameLengthUntil = shopNameLengthUntil,
-            shopNameAllowedCharacters = shopNameAllowedCharacters,
             categoryNameLengthFrom = categoryNameLengthFrom,
             categoryNameLengthUntil = categoryNameLengthUntil,
             categoryNameAllowedCharacters = categoryNameAllowedCharacters,
@@ -936,13 +856,10 @@ fun generateRandomFullItemList(
 fun generateRandomFullItemListFlow(
     amount: Int = defaultFullItemAmount,
     variantId: Long = defaultVariantId,
-    shopId: Long = defaultShopId,
     itemQuantityFrom: Long = defaultItemQuantityFrom,
     itemQuantityUntil: Long = defaultItemQuantityUntil,
     itemPriceFrom: Long = defaultItemPriceFrom,
     itemPriceUntil: Long = defaultItemPriceUntil,
-    itemDateTimeFrom: Long = defaultTimeFrom,
-    itemDateTimeUntil: Long = defaultTimeUntil,
     categoryId: Long = defaultCategoryId,
     producerId: Long = defaultProducerId,
     productNameLengthFrom: Int = defaultStringLengthFrom,
@@ -950,9 +867,6 @@ fun generateRandomFullItemListFlow(
     allowedCharacters: String = defaultStringAllowedCharacters,
     variantNameLengthFrom: Int = defaultStringLengthFrom,
     variantNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameLengthFrom: Int = defaultStringLengthFrom,
-    shopNameLengthUntil: Int = defaultStringLengthUntil,
-    shopNameAllowedCharacters: String = defaultStringAllowedCharacters,
     categoryNameLengthFrom: Int = defaultStringLengthFrom,
     categoryNameLengthUntil: Int = defaultStringLengthUntil,
     categoryNameAllowedCharacters: String = defaultStringAllowedCharacters,
@@ -964,13 +878,10 @@ fun generateRandomFullItemListFlow(
         generateRandomFullItemList(
             amount = amount,
             variantId = variantId,
-            shopId = shopId,
             itemQuantityFrom = itemQuantityFrom,
             itemQuantityUntil = itemQuantityUntil,
             itemPriceFrom = itemPriceFrom,
             itemPriceUntil = itemPriceUntil,
-            itemDateTimeFrom = itemDateTimeFrom,
-            itemDateTimeUntil = itemDateTimeUntil,
             categoryId = categoryId,
             producerId = producerId,
             productNameLengthFrom = productNameLengthFrom,
@@ -978,9 +889,6 @@ fun generateRandomFullItemListFlow(
             allowedCharacters = allowedCharacters,
             variantNameLengthFrom = variantNameLengthFrom,
             variantNameLengthUntil = variantNameLengthUntil,
-            shopNameLengthFrom = shopNameLengthFrom,
-            shopNameLengthUntil = shopNameLengthUntil,
-            shopNameAllowedCharacters = shopNameAllowedCharacters,
             categoryNameLengthFrom = categoryNameLengthFrom,
             categoryNameLengthUntil = categoryNameLengthUntil,
             categoryNameAllowedCharacters = categoryNameAllowedCharacters,
@@ -1119,4 +1027,24 @@ fun generateRandomProductPriceByShopByTimeListFlow(
             dateLocale = dateLocale,
         )
     )
+}
+
+fun generateRandomTransactionBasketWithItems(
+    transactionBasketId: Long,
+): TransactionBasketWithItems {
+    return TransactionBasketWithItems(
+        id = transactionBasketId,
+        date = generateRandomDate().time,
+        shop = generateRandomShop(),
+        totalCost = generateRandomLongValue(),
+        items = generateRandomFullItemList(),
+    )
+}
+
+fun generateRandomTransactionBasketWithItemsList(
+    amount: Int = defaultItemAmount,
+): List<TransactionBasketWithItems> {
+    return List(amount) {
+        generateRandomTransactionBasketWithItems(it.toLong())
+    }
 }
