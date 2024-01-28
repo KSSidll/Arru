@@ -1,6 +1,6 @@
 <h1 align="center">Arrugarq</h1>
 
-</br>
+<br />
 
 <p align="center">
   <img alt="API" src="https://img.shields.io/badge/Api%2021+-50f270?logo=android&logoColor=black&style=for-the-badge"/>
