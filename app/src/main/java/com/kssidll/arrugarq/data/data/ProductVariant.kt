@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
 import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.helper.*
 import me.xdrop.fuzzywuzzy.*
 
 @Entity(
@@ -20,6 +21,24 @@ data class ProductVariant(
     @ColumnInfo(index = true) var productId: Long,
     val name: String,
 ): FuzzySearchSource {
+    companion object {
+        @Ignore
+        fun generate(variantId: Long = 0): ProductVariant {
+            return ProductVariant(
+                id = variantId,
+                productId = generateRandomLongValue(),
+                name = generateRandomStringValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<ProductVariant> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
     @Ignore
     constructor(
         productId: Long,
@@ -37,5 +56,4 @@ data class ProductVariant(
             listOf(name)
         ).score
     }
-
 }

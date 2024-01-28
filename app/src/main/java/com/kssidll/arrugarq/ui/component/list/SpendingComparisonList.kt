@@ -8,8 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlin.math.*
 
@@ -196,9 +196,9 @@ private fun SpendingComparisonListPreview() {
     ArrugarqTheme {
         Surface {
             SpendingComparisonList(
-                leftSideItems = generateRandomItemSpentByCategoryList(4),
+                leftSideItems = ItemSpentByCategory.generateList(4),
                 leftSideHeader = "left",
-                rightSideItems = generateRandomItemSpentByCategoryList(4),
+                rightSideItems = ItemSpentByCategory.generateList(4),
                 rightSideHeader = "right",
             )
         }

@@ -272,9 +272,9 @@ fun ProducerScreenPreview() {
             ProducerScreen(
                 onBack = {},
                 producer = null,
-                transactionItems = generateRandomFullItemList(),
+                transactionItems = FullItem.generateList(),
                 requestMoreTransactionItems = {},
-                spentByTimeData = generateRandomItemSpentByTimeList(),
+                spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},

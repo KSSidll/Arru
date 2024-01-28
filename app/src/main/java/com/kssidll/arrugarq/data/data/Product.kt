@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
 import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.helper.*
 import me.xdrop.fuzzywuzzy.*
 
 @Entity(
@@ -46,6 +47,25 @@ data class Product(
         name
     )
 
+    companion object {
+        @Ignore
+        fun generate(productId: Long = 0): Product {
+            return Product(
+                id = productId,
+                categoryId = generateRandomLongValue(),
+                producerId = generateRandomLongValue(),
+                name = generateRandomStringValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<Product> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
     override fun fuzzyScore(query: String): Int {
         return FuzzySearch.extractOne(
             query,
@@ -85,6 +105,24 @@ data class ProductAltName(
         productId,
         name
     )
+
+    companion object {
+        @Ignore
+        fun generate(productWithAltNameId: Long = 0): ProductAltName {
+            return ProductAltName(
+                id = productWithAltNameId,
+                productId = generateRandomLongValue(),
+                name = generateRandomStringValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<ProductAltName> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
 }
 
 data class ProductWithAltNames(
@@ -94,6 +132,21 @@ data class ProductWithAltNames(
         entityColumn = "productId"
     ) val alternativeNames: List<ProductAltName>
 ): FuzzySearchSource, NameSource {
+    companion object {
+        fun generate(productId: Long = 0): ProductWithAltNames {
+            return ProductWithAltNames(
+                product = Product.generate(productId),
+                alternativeNames = ProductAltName.generateList(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ProductWithAltNames> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
     override fun fuzzyScore(query: String): Int {
         val productNameScore = FuzzySearch.extractOne(
             query,
@@ -116,16 +169,3 @@ data class ProductWithAltNames(
     }
 
 }
-
-data class EmbeddedProduct(
-    @Embedded val product: Product,
-    @Relation(
-        parentColumn = "categoryId",
-        entityColumn = "id",
-    ) val category: ProductCategory,
-    @Relation(
-        parentColumn = "producerId",
-        entityColumn = "id",
-    ) val producer: ProductProducer?,
-)
-

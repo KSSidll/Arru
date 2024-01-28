@@ -255,7 +255,7 @@ fun FullItemCardPreview() {
             LazyColumn {
                 item {
                     FullItemCard(
-                        fullItem = generateRandomFullItem(),
+                        fullItem = FullItem.generate(),
                         onItemClick = {},
                         onItemLongClick = {},
                         onCategoryClick = {},

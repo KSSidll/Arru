@@ -10,9 +10,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.chart.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
@@ -123,7 +123,7 @@ fun SpendingSummaryComponentPreview() {
     ArrugarqTheme {
         Surface {
             SpendingSummaryComponent(
-                spentByTimeData = generateRandomItemSpentByTimeList(),
+                spentByTimeData = ItemSpentByTime.generateList(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodUpdate = {},
             )

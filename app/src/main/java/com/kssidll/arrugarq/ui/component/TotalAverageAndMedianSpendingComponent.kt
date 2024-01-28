@@ -119,7 +119,7 @@ fun TotalAverageAndMedianSpendingComponentPreview() {
     ArrugarqTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(
-                spentByTimeData = generateRandomItemSpentByTimeList(),
+                spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
             )
         }

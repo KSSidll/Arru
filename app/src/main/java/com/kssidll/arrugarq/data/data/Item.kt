@@ -3,6 +3,7 @@ package com.kssidll.arrugarq.data.data
 import androidx.room.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
+import com.kssidll.arrugarq.helper.*
 import com.patrykandpatrick.vico.core.entry.*
 
 @Entity(
@@ -74,32 +75,81 @@ data class Item(
     }
 
     companion object {
-        const val PRICE_DIVISOR: Long = 100
-        const val QUANTITY_DIVISOR: Long = 1000
+        @Ignore const val PRICE_DIVISOR: Long = 100
+        @Ignore const val QUANTITY_DIVISOR: Long = 1000
+
+        @Ignore
+        fun generate(itemId: Long = 0): Item {
+            return Item(
+                id = itemId,
+                productId = generateRandomLongValue(),
+                variantId = generateRandomLongValue(),
+                quantity = generateRandomLongValue(),
+                price = generateRandomLongValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<Item> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
     }
 }
 
-data class EmbeddedItem(
-    @Embedded val item: Item,
-    @Relation(
-        parentColumn = "productId",
-        entityColumn = "id",
-    ) val product: Product,
-    @Relation(
-        parentColumn = "variantId",
-        entityColumn = "id",
-    ) val variant: ProductVariant?,
-)
-
 data class FullItem(
-    val embeddedItem: EmbeddedItem,
-    val embeddedProduct: EmbeddedProduct,
-)
+    val id: Long,
+    val quantity: Long,
+    val price: Long,
+    val product: Product,
+    val variant: ProductVariant?,
+    val category: ProductCategory,
+    val producer: ProductProducer?,
+    val date: Long,
+) {
+    companion object {
+        fun generate(itemId: Long = 0): FullItem {
+            return FullItem(
+                id = itemId,
+                quantity = generateRandomLongValue(),
+                price = generateRandomLongValue(),
+                product = Product.generate(),
+                variant = ProductVariant.generate(),
+                category = ProductCategory.generate(),
+                producer = ProductProducer.generate(),
+                date = generateRandomDate().time,
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<FullItem> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+}
+
 
 data class ItemSpentByTime(
     val time: String,
     val total: Long,
 ): ChartSource {
+    companion object {
+        fun generate(): ItemSpentByTime {
+            return ItemSpentByTime(
+                time = generateRandomDateString(),
+                total = generateRandomLongValue(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ItemSpentByTime> {
+            return List(amount) {
+                generate()
+            }
+        }
+    }
+
     override fun value(): Double {
         return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
@@ -137,6 +187,21 @@ data class ItemSpentByShop(
     @Embedded val shop: Shop,
     val total: Long,
 ): RankSource {
+    companion object {
+        fun generate(shopId: Long = 0): ItemSpentByShop {
+            return ItemSpentByShop(
+                shop = Shop.generate(shopId),
+                total = generateRandomLongValue(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ItemSpentByShop> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
     override fun value(): Double {
         return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
@@ -163,6 +228,21 @@ data class ItemSpentByCategory(
     @Embedded val category: ProductCategory,
     val total: Long,
 ): RankSource {
+    companion object {
+        fun generate(categoryId: Long = 0): ItemSpentByCategory {
+            return ItemSpentByCategory(
+                category = ProductCategory.generate(categoryId),
+                total = generateRandomLongValue(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ItemSpentByCategory> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
     override fun value(): Double {
         return total.toDouble()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
@@ -193,4 +273,23 @@ data class ProductPriceByShopByTime(
     val price: Long?,
     val shopName: String?,
     val time: String,
-)
+) {
+    companion object {
+        fun generate(productId: Long = 0): ProductPriceByShopByTime {
+            return ProductPriceByShopByTime(
+                product = Product.generate(productId),
+                variantName = generateRandomStringValue(),
+                producerName = generateRandomStringValue(),
+                price = generateRandomLongValue(),
+                shopName = generateRandomStringValue(),
+                time = generateRandomDateString(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ProductPriceByShopByTime> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+}

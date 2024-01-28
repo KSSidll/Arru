@@ -278,10 +278,10 @@ fun ProductScreenPreview() {
             ProductScreen(
                 onBack = {},
                 product = null,
-                transactionItems = generateRandomFullItemList(),
+                transactionItems = FullItem.generateList(),
                 requestMoreTransactionItems = {},
-                spentByTimeData = generateRandomItemSpentByTimeList(),
-                productPriceByShopByTimeData = generateRandomProductPriceByShopByTimeList(),
+                spentByTimeData = ItemSpentByTime.generateList(),
+                productPriceByShopByTimeData = ProductPriceByShopByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},

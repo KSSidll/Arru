@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.utils.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
@@ -283,7 +282,7 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
-                transactions = generateRandomTransactionBasketWithItemsList(),
+                transactions = TransactionBasketWithItems.generateList(),
                 onItemLongClick = {},
                 onItemProducerClick = {},
                 onItemCategoryClick = {},

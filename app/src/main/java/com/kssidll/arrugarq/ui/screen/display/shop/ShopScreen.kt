@@ -270,9 +270,9 @@ fun ShopScreenPreview() {
             ShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = generateRandomFullItemList(),
+                transactionItems = FullItem.generateList(),
                 requestMoreTransactionItems = {},
-                spentByTimeData = generateRandomItemSpentByTimeList(),
+                spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
