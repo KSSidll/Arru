@@ -103,7 +103,7 @@ internal fun ProducerScreen(
         }
         grouppedItems.clear()
         grouppedItems.addAll(
-            transactionItems.groupBy { it.embeddedItem.item.date / 86400000 }
+            transactionItems.groupBy { it.date / 86400000 }
                 .toList()
                 .sortedByDescending { it.first })
     }
@@ -230,21 +230,19 @@ internal fun ProducerScreen(
 
                 items(group.second) { item ->
                     FullItemCard(
-                        fullItem = item,
+                        item = item,
                         onItemClick = {
-                            onItemClick(it.embeddedProduct.product.id)
+                            onItemClick(it.product.id)
                         },
                         onItemLongClick = {
-                            onItemLongClick(it.embeddedItem.item.id)
+                            onItemLongClick(it.id)
                         },
                         onCategoryClick = {
                             onItemCategoryClick(it.id)
                         },
-                        onProducerClick = {},
                         onShopClick = {
                             onItemShopClick(it.id)
                         },
-                        showProducer = false,
                     )
                 }
             }

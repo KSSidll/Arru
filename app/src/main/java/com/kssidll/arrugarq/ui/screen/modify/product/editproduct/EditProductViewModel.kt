@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -37,34 +36,36 @@ class EditProductViewModel @Inject constructor(
      * @return Whether the update was successful
      */
     suspend fun updateProduct(productId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val product = screenState.extractDataOrNull(productId) ?: return@async false
-        val other = productRepository.getByNameAndProducerId(
-            product.name,
-            product.producerId
-        )
-
-        if (other != null) {
-            if (other.id == productId) return@async true
-
-            screenState.name.apply {
-                value = value.toError(FieldError.DuplicateValueError)
-            }
-
-            screenState.selectedProductProducer.apply {
-                value = value.toError(FieldError.DuplicateValueError)
-            }
-
-            chosenMergeCandidate.value = other
-            showMergeConfirmDialog.value = true
-
-            return@async false
-        } else {
-            productRepository.update(product)
-            return@async true
-        }
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val product = screenState.extractDataOrNull(productId) ?: return@async false
+        //        val other = productRepository.byNameAndProducerId(
+        //            product.name,
+        //            product.producerId
+        //        )
+        //
+        //        if (other != null) {
+        //            if (other.id == productId) return@async true
+        //
+        //            screenState.name.apply {
+        //                value = value.toError(FieldError.DuplicateValueError)
+        //            }
+        //
+        //            screenState.selectedProductProducer.apply {
+        //                value = value.toError(FieldError.DuplicateValueError)
+        //            }
+        //
+        //            chosenMergeCandidate.value = other
+        //            showMergeConfirmDialog.value = true
+        //
+        //            return@async false
+        //        } else {
+        //            productRepository.update(product)
+        //            return@async true
+        //        }
+        return@async true
+        // TODO add use case
     }
         .await()
 
@@ -75,20 +76,22 @@ class EditProductViewModel @Inject constructor(
      */
     suspend fun deleteProduct(productId: Long) = viewModelScope.async {
         // return true if no such product exists
-        val product = productRepository.get(productId) ?: return@async true
-
-        val items = itemRepository.getByProductId(productId)
-        val variants = variantRepository.getByProductId(productId)
-
-        if ((items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
-            screenState.showDeleteWarning.value = true
-            return@async false
-        } else {
-            itemRepository.delete(items)
-            variantRepository.delete(variants)
-            productRepository.delete(product)
-            return@async true
-        }
+        //        val product = productRepository.get(productId) ?: return@async true
+        //
+        //        val items = itemRepository.byProduct(product)
+        //        val variants = variantRepository.byProduct(product)
+        //
+        //        if ((items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
+        //            screenState.showDeleteWarning.value = true
+        //            return@async false
+        //        } else {
+        //            itemRepository.delete(items)
+        //            variantRepository.delete(variants)
+        //            productRepository.delete(product)
+        //            return@async true
+        //        }
+        return@async true
+        // TODO add use case
     }
         .await()
 
@@ -97,23 +100,24 @@ class EditProductViewModel @Inject constructor(
      * @return True if operation succeded, false otherwise
      */
     suspend fun mergeWith(mergeCandidate: Product) = viewModelScope.async {
-        val items = mProduct?.let { itemRepository.getByProductId(it.id) } ?: return@async false
-        val variants =
-            mProduct?.let { variantRepository.getByProductId(it.id) } ?: return@async false
-
-        if (items.isNotEmpty()) {
-            items.forEach { it.productId = mergeCandidate.id }
-            itemRepository.update(items)
-        }
-
-        if (variants.isNotEmpty()) {
-            variants.forEach { it.productId = mergeCandidate.id }
-            variantRepository.update(variants)
-        }
-
-        mProduct?.let { productRepository.delete(it) }
-
+        //        val items = mProduct?.let { itemRepository.byProduct(it) } ?: return@async false
+        //        val variants = mProduct?.let { variantRepository.byProduct(it) } ?: return@async false
+        //
+        //        if (items.isNotEmpty()) {
+        //            items.forEach { it.productId = mergeCandidate.id }
+        //            itemRepository.update(items)
+        //        }
+        //
+        //        if (variants.isNotEmpty()) {
+        //            variants.forEach { it.productId = mergeCandidate.id }
+        //            variantRepository.update(variants)
+        //        }
+        //
+        //        mProduct?.let { productRepository.delete(it) }
+        //
+        //        return@async true
         return@async true
+        // TODO add use case
     }
         .await()
 }

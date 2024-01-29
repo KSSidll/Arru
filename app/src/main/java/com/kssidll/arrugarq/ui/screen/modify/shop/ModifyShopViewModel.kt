@@ -40,7 +40,7 @@ abstract class ModifyShopViewModel: ViewModel() {
      * @return list of merge candidates as flow
      */
     fun allMergeCandidates(shopId: Long): Flow<List<Shop>> {
-        return shopRepository.getAllFlow()
+        return shopRepository.allFlow()
             .onEach { it.filter { item -> item.id != shopId } }
             .distinctUntilChanged()
     }

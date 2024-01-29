@@ -40,7 +40,7 @@ abstract class ModifyCategoryViewModel: ViewModel() {
      * @return list of merge candidates as flow
      */
     fun allMergeCandidates(categoryId: Long): Flow<List<ProductCategory>> {
-        return categoryRepository.getAllFlow()
+        return categoryRepository.allFlow()
             .onEach { it.filter { item -> item.id != categoryId } }
             .distinctUntilChanged()
     }

@@ -106,7 +106,7 @@ internal fun ProductScreen(
         }
         grouppedItems.clear()
         grouppedItems.addAll(
-            transactionItems.groupBy { it.embeddedItem.item.date / 86400000 }
+            transactionItems.groupBy { it.date / 86400000 }
                 .toList()
                 .sortedByDescending { it.first })
     }
@@ -238,10 +238,10 @@ internal fun ProductScreen(
 
                 items(group.second) { item ->
                     FullItemCard(
-                        fullItem = item,
+                        item = item,
                         onItemClick = {},
                         onItemLongClick = {
-                            onItemLongClick(it.embeddedItem.item.id)
+                            onItemLongClick(it.id)
                         },
                         onCategoryClick = {
                             onItemCategoryClick(it.id)

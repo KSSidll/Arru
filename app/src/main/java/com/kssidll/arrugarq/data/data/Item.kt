@@ -75,8 +75,22 @@ data class Item(
     }
 
     companion object {
-        @Ignore const val PRICE_DIVISOR: Long = 100
-        @Ignore const val QUANTITY_DIVISOR: Long = 1000
+        @Ignore
+        const val PRICE_DIVISOR: Long = 100
+        @Ignore
+        const val QUANTITY_DIVISOR: Long = 1000
+
+        @Ignore
+        fun actualQuantity(quantity: Long): Double {
+            return quantity.toDouble()
+                .div(QUANTITY_DIVISOR)
+        }
+
+        @Ignore
+        fun actualPrice(price: Long): Double {
+            return price.toDouble()
+                .div(PRICE_DIVISOR)
+        }
 
         @Ignore
         fun generate(itemId: Long = 0): Item {
@@ -107,7 +121,16 @@ data class FullItem(
     val category: ProductCategory,
     val producer: ProductProducer?,
     val date: Long,
+    val shop: Shop?,
 ) {
+    fun actualQuantity(): Double {
+        return Item.actualQuantity(quantity)
+    }
+
+    fun actualPrice(): Double {
+        return Item.actualPrice(price)
+    }
+
     companion object {
         fun generate(itemId: Long = 0): FullItem {
             return FullItem(
@@ -119,6 +142,7 @@ data class FullItem(
                 category = ProductCategory.generate(),
                 producer = ProductProducer.generate(),
                 date = generateRandomDate().time,
+                shop = Shop.generate(),
             )
         }
 
@@ -136,6 +160,7 @@ data class ItemSpentByTime(
     val total: Long,
 ): ChartSource {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(): ItemSpentByTime {
             return ItemSpentByTime(
                 time = generateRandomDateString(),
@@ -188,6 +213,7 @@ data class ItemSpentByShop(
     val total: Long,
 ): RankSource {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(shopId: Long = 0): ItemSpentByShop {
             return ItemSpentByShop(
                 shop = Shop.generate(shopId),
@@ -229,6 +255,7 @@ data class ItemSpentByCategory(
     val total: Long,
 ): RankSource {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(categoryId: Long = 0): ItemSpentByCategory {
             return ItemSpentByCategory(
                 category = ProductCategory.generate(categoryId),
@@ -275,6 +302,7 @@ data class ProductPriceByShopByTime(
     val time: String,
 ) {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(productId: Long = 0): ProductPriceByShopByTime {
             return ProductPriceByShopByTime(
                 product = Product.generate(productId),

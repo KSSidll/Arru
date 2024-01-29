@@ -150,7 +150,7 @@ internal fun TransactionsScreen(
                 .padding(paddingValues)
                 .padding(top = 12.dp),
         ) {
-            items(transactions) {transaction ->
+            items(transactions) { transaction ->
                 var itemsVisible by remember {
                     mutableStateOf(false)
                 }
@@ -166,7 +166,7 @@ internal fun TransactionsScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Column (
+                        Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(
@@ -187,12 +187,15 @@ internal fun TransactionsScreen(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .padding(start = 8.dp, end = 20.dp)
+                                    .padding(
+                                        start = 8.dp,
+                                        end = 20.dp
+                                    )
                             ) {
                                 if (transaction.shop != null) {
                                     Button(
                                         onClick = {
-                                              onItemShopClick(transaction.shop.id)
+                                            onItemShopClick(transaction.shop.id)
                                         },
                                         contentPadding = PaddingValues(
                                             vertical = 0.dp,
@@ -225,7 +228,9 @@ internal fun TransactionsScreen(
                             )
                         ) {
                             Text(
-                                text = transaction.totalCost.toFloat().div(TransactionBasket.COST_DIVISOR).formatToCurrency(),
+                                text = transaction.totalCost.toFloat()
+                                    .div(TransactionBasket.COST_DIVISOR)
+                                    .formatToCurrency(),
                                 style = Typography.titleLarge,
                             )
 
@@ -246,13 +251,21 @@ internal fun TransactionsScreen(
                             shape = ShapeDefaults.Medium
                         ) {
                             Column {
-                                transaction.items.forEach {
+                                transaction.items.forEach { item ->
                                     FullItemCard(
-                                        fullItem = it,
-                                        onItemClick = {},
-                                        onItemLongClick = {},
-                                        onCategoryClick = {},
-                                        onProducerClick = {},
+                                        item = item,
+                                        onItemClick = {
+                                            onItemClick(it.product.id)
+                                        },
+                                        onItemLongClick = {
+                                            onItemLongClick(it.id)
+                                        },
+                                        onCategoryClick = {
+                                            onItemCategoryClick(it.id)
+                                        },
+                                        onProducerClick = {
+                                            onItemProducerClick(it.id)
+                                        },
                                     )
                                 }
                             }

@@ -50,19 +50,13 @@ class ProductViewModel @Inject constructor(
     fun productTotalSpent(): Flow<Float>? {
         if (product == null) return null
 
-        return itemRepository.getTotalSpentByProductFlow(product!!.id)
-            .map {
-                it.toFloat()
-                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
-            }
-            .distinctUntilChanged()
+        return productRepository.totalSpentFlow(product!!)
     }
 
     fun productPriceByShop(): Flow<List<ProductPriceByShopByTime>>? {
         if (product == null) return null
 
-        return itemRepository.getProductsAveragePriceByVariantByShopByMonthSortedFlow(product!!.id)
-            .distinctUntilChanged()
+        return productRepository.averagePriceByVariantByShopByMonthFlow(product!!)
     }
 
     /**
@@ -89,23 +83,22 @@ class ProductViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
-                itemRepository.getTotalSpentByProductByDayFlow(productId)
+                productRepository.totalSpentByDayFlow(product)
             },
             weekFlow = {
-                itemRepository.getTotalSpentByProductByWeekFlow(productId)
+                productRepository.totalSpentByWeekFlow(product)
             },
             monthFlow = {
-                itemRepository.getTotalSpentByProductByMonthFlow(productId)
+                productRepository.totalSpentByMonthFlow(product)
             },
             yearFlow = {
-                itemRepository.getTotalSpentByProductByYearFlow(productId)
+                productRepository.totalSpentByYearFlow(product)
             },
         )
 
         mNewFullItemFlowJob?.cancel()
         mNewFullItemFlowJob = viewModelScope.launch {
-            mNewFullItemFlow = itemRepository.getLastFlow()
-                .cancellable()
+            mNewFullItemFlow = itemRepository.newestFlow()
 
             mNewFullItemFlow?.collect {
                 mFullItemOffset = 0
@@ -139,10 +132,10 @@ class ProductViewModel @Inject constructor(
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
         mTransactionItems.addAll(
-            itemRepository.getFullItemsByProduct(
-                offset = queryOffset,
+            productRepository.fullItems(
+                product = product!!,
                 count = fullItemFetchCount,
-                productId = product!!.id,
+                offset = queryOffset,
             )
         )
     }

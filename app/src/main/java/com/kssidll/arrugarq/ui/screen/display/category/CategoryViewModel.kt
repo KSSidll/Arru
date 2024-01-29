@@ -50,12 +50,7 @@ class CategoryViewModel @Inject constructor(
     fun categoryTotalSpent(): Flow<Float>? {
         if (category == null) return null
 
-        return itemRepository.getTotalSpentByCategoryFlow(category!!.id)
-            .map {
-                it.toFloat()
-                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
-            }
-            .distinctUntilChanged()
+        return categoryRepository.totalSpentFlow(category!!)
     }
 
     /**
@@ -82,22 +77,22 @@ class CategoryViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
-                itemRepository.getTotalSpentByCategoryByDayFlow(categoryId)
+                categoryRepository.totalSpentByDayFlow(category)
             },
             weekFlow = {
-                itemRepository.getTotalSpentByCategoryByWeekFlow(categoryId)
+                categoryRepository.totalSpentByWeekFlow(category)
             },
             monthFlow = {
-                itemRepository.getTotalSpentByCategoryByMonthFlow(categoryId)
+                categoryRepository.totalSpentByMonthFlow(category)
             },
             yearFlow = {
-                itemRepository.getTotalSpentByCategoryByYearFlow(categoryId)
+                categoryRepository.totalSpentByYearFlow(category)
             },
         )
 
         mNewFullItemFlowJob?.cancel()
         mNewFullItemFlowJob = launch {
-            mNewFullItemFlow = itemRepository.getLastFlow()
+            mNewFullItemFlow = itemRepository.newestFlow()
                 .cancellable()
 
             mNewFullItemFlow?.collect {
@@ -132,10 +127,10 @@ class CategoryViewModel @Inject constructor(
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
         mTransactionItems.addAll(
-            itemRepository.getFullItemsByCategory(
-                offset = queryOffset,
+            categoryRepository.fullItems(
+                category = category!!,
                 count = fullItemFetchCount,
-                categoryId = category!!.id,
+                offset = queryOffset,
             )
         )
     }

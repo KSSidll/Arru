@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.utils.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.theme.*
 
 @OptIn(
@@ -27,25 +26,23 @@ import com.kssidll.arrugarq.ui.theme.*
 )
 @Composable
 fun LazyItemScope.FullItemCard(
-    fullItem: FullItem,
-    onItemClick: (item: FullItem) -> Unit,
-    onItemLongClick: (item: FullItem) -> Unit,
-    itemClickable: Boolean = true,
-    onCategoryClick: (category: ProductCategory) -> Unit,
-    showCategory: Boolean = true,
-    onProducerClick: (producer: ProductProducer) -> Unit,
-    showProducer: Boolean = true,
+    item: FullItem,
+    onItemClick: ((item: FullItem) -> Unit)? = null,
+    onItemLongClick: ((item: FullItem) -> Unit)? = null,
+    onCategoryClick: ((category: ProductCategory) -> Unit)? = null,
+    onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
+    onShopClick: ((shop: Shop) -> Unit)? = null,
 ) {
     val itemModifier =
-        if (itemClickable)
+        if (onItemClick != null || onItemLongClick != null)
             Modifier.combinedClickable(
                 role = Role.Button,
                 onClick = {
-                    onItemClick(fullItem)
+                    onItemClick?.invoke(item)
                 },
                 onClickLabel = stringResource(id = R.string.select),
                 onLongClick = {
-                    onItemLongClick(fullItem)
+                    onItemLongClick?.invoke(item)
                 },
                 onLongClickLabel = stringResource(id = R.string.edit)
             )
@@ -75,7 +72,7 @@ fun LazyItemScope.FullItemCard(
                 ) {
                     Text(
                         modifier = Modifier.align(Alignment.CenterStart),
-                        text = fullItem.embeddedItem.product.name,
+                        text = item.product.name,
                         style = Typography.titleLarge,
                     )
                 }
@@ -87,7 +84,7 @@ fun LazyItemScope.FullItemCard(
                         modifier = Modifier.size(17.dp),
                     )
                     Text(
-                        text = fullItem.embeddedItem.variant?.name
+                        text = item.variant?.name
                             ?: stringResource(R.string.item_product_variant_default_value),
                         textAlign = TextAlign.Center,
                         style = Typography.labelMedium,
@@ -104,7 +101,7 @@ fun LazyItemScope.FullItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = fullItem.embeddedItem.item.actualQuantity()
+                        text = item.actualQuantity()
                             .toString()
                             .removeSuffix(".0"),
                         style = Typography.bodyLarge,
@@ -128,7 +125,7 @@ fun LazyItemScope.FullItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = fullItem.embeddedItem.item.actualPrice()
+                        text = item.actualPrice()
                             .formatToCurrency(),
                         style = Typography.bodyLarge,
                     )
@@ -153,7 +150,7 @@ fun LazyItemScope.FullItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = (fullItem.embeddedItem.item.actualQuantity() * fullItem.embeddedItem.item.actualPrice()).formatToCurrency(),
+                        text = (item.actualQuantity() * item.actualPrice()).formatToCurrency(),
                         style = Typography.bodyLarge,
                     )
 
@@ -176,12 +173,12 @@ fun LazyItemScope.FullItemCard(
                 modifier = Modifier.weight(1F),
                 verticalArrangement = Arrangement.Center,
             ) {
-                if (showCategory) {
-                    val category = fullItem.embeddedProduct.category
+                if (onCategoryClick != null) {
+                    val category = item.category
                     Button(
                         modifier = Modifier.padding(end = 3.dp),
                         onClick = {
-                            onCategoryClick(category)
+                            onCategoryClick.invoke(category)
                         },
                         contentPadding = PaddingValues(
                             vertical = 0.dp,
@@ -201,13 +198,13 @@ fun LazyItemScope.FullItemCard(
 
                 }
 
-                if (showProducer) {
-                    val producer = fullItem.embeddedProduct.producer
+                if (onProducerClick != null) {
+                    val producer = item.producer
                     if (producer != null) {
                         Button(
                             modifier = Modifier.padding(end = 3.dp),
                             onClick = {
-                                onProducerClick(producer)
+                                onProducerClick.invoke(producer)
                             },
                             contentPadding = PaddingValues(
                                 vertical = 0.dp,
@@ -229,6 +226,36 @@ fun LazyItemScope.FullItemCard(
                                 style = Typography.labelMedium,
                             )
                         }
+                    }
+                }
+            }
+
+            if (onShopClick != null) {
+                val shop = item.shop
+                if (shop != null) {
+                    Button(
+                        onClick = {
+                            onShopClick.invoke(shop)
+                        },
+                        contentPadding = PaddingValues(
+                            vertical = 0.dp,
+                            horizontal = 12.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary,
+                        ),
+                    ) {
+                        Text(
+                            text = shop.name,
+                            textAlign = TextAlign.Center,
+                            style = Typography.labelMedium,
+                        )
+                        Icon(
+                            imageVector = Icons.Rounded.Store,
+                            contentDescription = null,
+                            modifier = Modifier.size(17.dp),
+                        )
                     }
                 }
             }
@@ -255,11 +282,12 @@ fun FullItemCardPreview() {
             LazyColumn {
                 item {
                     FullItemCard(
-                        fullItem = FullItem.generate(),
+                        item = FullItem.generate(),
                         onItemClick = {},
                         onItemLongClick = {},
                         onCategoryClick = {},
                         onProducerClick = {},
+                        onShopClick = {},
                     )
                 }
             }

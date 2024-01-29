@@ -5,39 +5,78 @@ import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
 class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
-    override suspend fun getAll(): List<Shop> {
-        return dao.getAll()
-    }
-
-    override fun getAllFlow(): Flow<List<Shop>> {
-        return dao.getAllFlow()
-    }
-
-    override suspend fun get(id: Long): Shop? {
-        return dao.get(id)
-    }
-
-    override fun getFlow(id: Long): Flow<Shop> {
-        return dao.getFlow(id)
-    }
-
-    override suspend fun getByName(name: String): Shop? {
-        return dao.getByName(name)
-    }
-
-    override fun getByNameFlow(name: String): Flow<Shop> {
-        return dao.getByNameFlow(name)
-    }
+    // Create
 
     override suspend fun insert(shop: Shop): Long {
-        return dao.insert(shop)
+        TODO("Not yet implemented")
     }
+
+    // Update
 
     override suspend fun update(shop: Shop) {
-        dao.update(shop)
+        TODO("Not yet implemented")
     }
 
+    override suspend fun update(shops: List<Shop>) {
+        TODO("Not yet implemented")
+    }
+
+    // Delete
+
     override suspend fun delete(shop: Shop) {
-        dao.delete(shop)
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(shops: List<Shop>) {
+        TODO("Not yet implemented")
+    }
+
+    // Read
+
+    override suspend fun get(shopId: Long): Shop? {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentFlow(shop: Shop): Flow<Float> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByDayFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByWeekFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByMonthFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByYearFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun fullItems(
+        shop: Shop,
+        count: Int,
+        offset: Int
+    ): List<FullItem> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByShopFlow(): Flow<List<ItemSpentByShop>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByShopByMonthFlow(
+        year: Int,
+        month: Int
+    ): Flow<List<ItemSpentByShop>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun allFlow(): Flow<List<Shop>> {
+        TODO("Not yet implemented")
     }
 }

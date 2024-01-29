@@ -9,13 +9,13 @@ import javax.inject.*
 
 @HiltViewModel
 class ShopRankingViewModel @Inject constructor(
-    private val itemRepository: ItemRepositorySource,
+    private val shopRepository: ShopRepositorySource
 ): ViewModel() {
 
     /**
      * @return List of data points representing shop spending in time as flow
      */
     fun shopTotalSpentFlow(): Flow<List<ItemSpentByShop>> {
-        return itemRepository.getShopTotalSpentFlow()
+        return shopRepository.totalSpentByShopFlow()
     }
 }

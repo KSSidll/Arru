@@ -21,14 +21,16 @@ class EditItemViewModel @Inject constructor(
      * @return Whether the update was successful
      */
     suspend fun updateItem(itemId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val item = screenState.extractDataOrNull(itemId) ?: return@async false
-
-        itemRepository.update(item)
-
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val item = screenState.extractDataOrNull(itemId) ?: return@async false
+        //
+        //        itemRepository.update(item)
+        //
+        //        return@async true
         return@async true
+        // TODO add use case
     }
         .await()
 
@@ -38,10 +40,12 @@ class EditItemViewModel @Inject constructor(
      */
     suspend fun deleteItem(itemId: Long) = viewModelScope.async {
         // return true if no such item exists
-        val item = itemRepository.get(itemId) ?: return@async true
-
-        itemRepository.delete(item)
+        //        val item = itemRepository.get(itemId) ?: return@async true
+        //
+        //        itemRepository.delete(item)
+        //        return@async true
         return@async true
+        // TODO add use case
     }
         .await()
 }

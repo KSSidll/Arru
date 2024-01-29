@@ -9,13 +9,13 @@ import javax.inject.*
 
 @HiltViewModel
 class CategoryRankingViewModel @Inject constructor(
-    private val itemRepository: ItemRepositorySource,
+    private val categoryRepository: CategoryRepositorySource,
 ): ViewModel() {
 
     /**
      * @return List of data points representing shop spending in time as flow
      */
     fun categoryTotalSpentFlow(): Flow<List<ItemSpentByCategory>> {
-        return itemRepository.getCategoryTotalSpentFlow()
+        return categoryRepository.totalSpentByCategoryFlow()
     }
 }

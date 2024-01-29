@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -36,29 +35,31 @@ class EditCategoryViewModel @Inject constructor(
      * @return Whether the update was successful
      */
     suspend fun updateCategory(categoryId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val category: ProductCategory =
-            screenState.extractDataOrNull(categoryId) ?: return@async false
-
-        val other = categoryRepository.getByName(category.name)
-
-        if (other != null) {
-            if (other.id == categoryId) return@async true
-
-            screenState.name.apply {
-                value = value.toError(FieldError.DuplicateValueError)
-            }
-
-            chosenMergeCandidate.value = other
-            showMergeConfirmDialog.value = true
-
-            return@async false
-        } else {
-            categoryRepository.update(category)
-            return@async true
-        }
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val category: ProductCategory =
+        //            screenState.extractDataOrNull(categoryId) ?: return@async false
+        //
+        //        val other = categoryRepository.byName(category.name)
+        //
+        //        if (other != null) {
+        //            if (other.id == categoryId) return@async true
+        //
+        //            screenState.name.apply {
+        //                value = value.toError(FieldError.DuplicateValueError)
+        //            }
+        //
+        //            chosenMergeCandidate.value = other
+        //            showMergeConfirmDialog.value = true
+        //
+        //            return@async false
+        //        } else {
+        //            categoryRepository.update(category)
+        //            return@async true
+        //        }
+        return@async true
+        // TODO add use case
     }
         .await()
 
@@ -69,32 +70,34 @@ class EditCategoryViewModel @Inject constructor(
      */
     suspend fun deleteCategory(categoryId: Long) = viewModelScope.async {
         // return true if no such category exists
-        val category = categoryRepository.get(categoryId) ?: return@async true
-
-        val products = productRepository.getByCategoryId(categoryId)
-
-        val items = buildList {
-            products.forEach {
-                addAll(itemRepository.getByProductId(it.id))
-            }
-        }.toList()
-
-        val variants = buildList {
-            products.forEach {
-                addAll(variantRepository.getByProductId(it.id))
-            }
-        }.toList()
-
-        if ((products.isNotEmpty() || items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
-            screenState.showDeleteWarning.value = true
-            return@async false
-        } else {
-            itemRepository.delete(items)
-            variantRepository.delete(variants)
-            productRepository.delete(products)
-            categoryRepository.delete(category)
-            return@async true
-        }
+        //        val category = categoryRepository.get(categoryId) ?: return@async true
+        //
+        //        val products = productRepository.byCategory(category)
+        //
+        //        val items = buildList {
+        //            products.forEach {
+        //                addAll(itemRepository.byProduct(it))
+        //            }
+        //        }.toList()
+        //
+        //        val variants = buildList {
+        //            products.forEach {
+        //                addAll(variantRepository.byProduct(it))
+        //            }
+        //        }.toList()
+        //
+        //        if ((products.isNotEmpty() || items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
+        //            screenState.showDeleteWarning.value = true
+        //            return@async false
+        //        } else {
+        //            itemRepository.delete(items)
+        //            variantRepository.delete(variants)
+        //            productRepository.delete(products)
+        //            categoryRepository.delete(category)
+        //            return@async true
+        //        }
+        return@async true
+        // TODO add use case
     }
         .await()
 
@@ -103,17 +106,19 @@ class EditCategoryViewModel @Inject constructor(
      * @return True if operation succeded, false otherwise
      */
     suspend fun mergeWith(mergeCandidate: ProductCategory) = viewModelScope.async {
-        val products =
-            mCategory?.let { productRepository.getByCategoryId(it.id) } ?: return@async false
-
-        if (products.isNotEmpty()) {
-            products.forEach { it.categoryId = mergeCandidate.id }
-            productRepository.update(products)
-        }
-
-        mCategory?.let { categoryRepository.delete(it) }
-
+        //        val products =
+        //            mCategory?.let { productRepository.byCategory(it) } ?: return@async false
+        //
+        //        if (products.isNotEmpty()) {
+        //            products.forEach { it.categoryId = mergeCandidate.id }
+        //            productRepository.update(products)
+        //        }
+        //
+        //        mCategory?.let { categoryRepository.delete(it) }
+        //
+        //        return@async true
         return@async true
+        // TODO add use case
     }
         .await()
 }

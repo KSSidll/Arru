@@ -5,101 +5,101 @@ import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
 class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
-    override suspend fun getAll(): List<Product> {
-        return dao.getAll()
-    }
-
-    override fun getAllFlow(): Flow<List<Product>> {
-        return dao.getAllFlow()
-    }
-
-    override suspend fun get(id: Long): Product? {
-        return dao.get(id)
-    }
-
-    override fun getFlow(id: Long): Flow<Product> {
-        return dao.getFlow(id)
-    }
-
-    override suspend fun getByCategoryId(categoryId: Long): List<Product> {
-        return dao.getByCategoryId(categoryId)
-    }
-
-    override fun getByCategoryIdFlow(categoryId: Long): Flow<List<Product>> {
-        return dao.getByCategoryIdFlow(categoryId)
-    }
-
-    override suspend fun getByProducerId(producerId: Long): List<Product> {
-        return dao.getByProducerId(producerId)
-    }
-
-    override fun getByProducerIdFlow(producerId: Long): Flow<List<Product>> {
-        return dao.getByProducerIdFlow(producerId)
-    }
-
-    override suspend fun getByName(name: String): Product? {
-        return dao.getByName(name)
-    }
-
-    override fun getByNameFlow(name: String): Flow<Product> {
-        return dao.getByNameFlow(name)
-    }
-
-    override suspend fun getByNameAndProducerId(
-        name: String,
-        producerId: Long?
-    ): Product? {
-        return dao.getByNameAndProducerId(
-            name,
-            producerId
-        )
-    }
-
-    override suspend fun findLike(name: String): List<Product> {
-        return dao.findLike(name)
-    }
-
-    override fun findLikeFlow(name: String): Flow<List<Product>> {
-        return dao.findLikeFlow(name)
-    }
-
-    override suspend fun getAllWithAltNames(): List<ProductWithAltNames> {
-        return dao.getAllWithAltNames()
-    }
-
-    override fun getAllWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
-        return dao.getAllWithAltNamesFlow()
-    }
+    // Create
 
     override suspend fun insert(product: Product): Long {
-        return dao.insert(product)
+        TODO("Not yet implemented")
     }
 
-    override suspend fun addAltName(alternativeName: ProductAltName): Long {
-        return dao.addAltName(alternativeName)
+    override suspend fun insertAltName(
+        product: Product,
+        alternativeName: String
+    ): Long {
+        TODO("Not yet implemented")
     }
+
+    // Update
 
     override suspend fun update(product: Product) {
-        dao.update(product)
+        TODO("Not yet implemented")
     }
 
     override suspend fun update(products: List<Product>) {
-        dao.update(products)
+        TODO("Not yet implemented")
     }
 
-    override suspend fun updateAltName(alternativeName: ProductAltName) {
-        dao.updateAltName(alternativeName)
+    override suspend fun updateAltName(
+        id: Long,
+        alternativeName: String
+    ) {
+        TODO("Not yet implemented")
     }
+
+    // Delete
 
     override suspend fun delete(product: Product) {
-        dao.delete(product)
+        TODO("Not yet implemented")
     }
 
     override suspend fun delete(products: List<Product>) {
-        dao.delete(products)
+        TODO("Not yet implemented")
     }
 
     override suspend fun deleteAltName(alternativeName: ProductAltName) {
-        dao.deleteAltName(alternativeName)
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAltName(alternativeNames: List<ProductAltName>) {
+        TODO("Not yet implemented")
+    }
+
+    // Read
+
+    override suspend fun get(productId: Long): Product? {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentFlow(product: Product): Flow<Float> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByDayFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByWeekFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByMonthFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun totalSpentByYearFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun fullItems(
+        product: Product,
+        count: Int,
+        offset: Int
+    ): List<FullItem> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun newestItem(product: Product): Item? {
+        TODO("Not yet implemented")
+    }
+
+    override fun allWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<List<ProductPriceByShopByTime>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun allFlow(): Flow<List<Product>> {
+        TODO("Not yet implemented")
     }
 }

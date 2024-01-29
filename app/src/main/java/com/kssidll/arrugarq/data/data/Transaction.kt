@@ -17,11 +17,12 @@ import com.kssidll.arrugarq.helper.*
 data class TransactionBasket(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val date: Long,
-    @ColumnInfo(index = true) val shopId: Long?,
+    @ColumnInfo(index = true) var shopId: Long?,
     val totalCost: Long,
 ) {
     companion object {
-        @Ignore const val COST_DIVISOR: Long = 100
+        @Ignore
+        const val COST_DIVISOR: Long = 100
 
         @Ignore
         fun generate(transactionId: Long = 0): TransactionBasket {
@@ -92,6 +93,7 @@ data class TransactionBasketWithItems(
     val items: List<FullItem>,
 ) {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(transactionBasketWithItemsId: Long = 0): TransactionBasketWithItems {
             return TransactionBasketWithItems(
                 id = transactionBasketWithItemsId,

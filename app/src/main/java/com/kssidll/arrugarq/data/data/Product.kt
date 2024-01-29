@@ -96,16 +96,6 @@ data class ProductAltName(
     @ColumnInfo(index = true) val productId: Long,
     val name: String,
 ) {
-    @Ignore
-    constructor(
-        productId: Long,
-        name: String,
-    ): this(
-        0,
-        productId,
-        name
-    )
-
     companion object {
         @Ignore
         fun generate(productWithAltNameId: Long = 0): ProductAltName {
@@ -133,6 +123,7 @@ data class ProductWithAltNames(
     ) val alternativeNames: List<ProductAltName>
 ): FuzzySearchSource, NameSource {
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(productId: Long = 0): ProductWithAltNames {
             return ProductWithAltNames(
                 product = Product.generate(productId),

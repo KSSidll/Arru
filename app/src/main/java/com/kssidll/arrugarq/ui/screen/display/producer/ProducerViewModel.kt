@@ -50,12 +50,7 @@ class ProducerViewModel @Inject constructor(
     fun producerTotalSpent(): Flow<Float>? {
         if (producer == null) return null
 
-        return itemRepository.getTotalSpentByProducerFlow(producer!!.id)
-            .map {
-                it.toFloat()
-                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
-            }
-            .distinctUntilChanged()
+        return producerRepository.totalSpentFlow(producer!!)
     }
 
     /**
@@ -82,23 +77,22 @@ class ProducerViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
-                itemRepository.getTotalSpentByProducerByDayFlow(producerId)
+                producerRepository.totalSpentByDayFlow(producer)
             },
             weekFlow = {
-                itemRepository.getTotalSpentByProducerByWeekFlow(producerId)
+                producerRepository.totalSpentByWeekFlow(producer)
             },
             monthFlow = {
-                itemRepository.getTotalSpentByProducerByMonthFlow(producerId)
+                producerRepository.totalSpentByMonthFlow(producer)
             },
             yearFlow = {
-                itemRepository.getTotalSpentByProducerByYearFlow(producerId)
+                producerRepository.totalSpentByYearFlow(producer)
             },
         )
 
         mNewFullItemFlowJob?.cancel()
         mNewFullItemFlowJob = launch {
-            mNewFullItemFlow = itemRepository.getLastFlow()
-                .cancellable()
+            mNewFullItemFlow = itemRepository.newestFlow()
 
             mNewFullItemFlow?.collect {
                 mFullItemOffset = 0
@@ -132,10 +126,10 @@ class ProducerViewModel @Inject constructor(
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
         mTransactionItems.addAll(
-            itemRepository.getFullItemsByProducer(
-                offset = queryOffset,
+            producerRepository.fullItems(
+                producer = producer!!,
                 count = fullItemFetchCount,
-                producerId = producer!!.id,
+                offset = queryOffset,
             )
         )
     }

@@ -3,7 +3,6 @@ package com.kssidll.arrugarq.ui.screen.modify.variant.editvariant
 
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -20,29 +19,30 @@ class EditVariantViewModel @Inject constructor(
      * @return Whether the update was successful
      */
     suspend fun updateVariant(variantId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val oldVariant = variantRepository.get(variantId) ?: return@async false
-        screenState.productId = oldVariant.productId
-
-        val variant = screenState.extractDataOrNull(variantId) ?: return@async false
-
-        val other = variantRepository.getByProductIdAndName(
-            screenState.productId,
-            variant.name
-        )
-
-        if (other != null) {
-            if (other.id == variantId) return@async true
-
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
-
-            return@async false
-        } else {
-            variantRepository.update(variant)
-            return@async true
-        }
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val oldVariant = variantRepository.get(variantId) ?: return@async false
+        //        screenState.productId = oldVariant.productId
+        //
+        //        val variant = screenState.extractDataOrNull(variantId) ?: return@async false
+        //
+        //        val other = variantRepository.byNameAndProductId(
+        //            variant.name,
+        //            screenState.productId,
+        //        )
+        //
+        //        if (other != null) {
+        //            if (other.id == variantId) return@async true
+        //
+        //            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        //
+        //            return@async false
+        //        } else {
+        //            variantRepository.update(variant)
+        //            return@async true
+        //        }
+        return@async true
     }
         .await()
 
@@ -53,18 +53,19 @@ class EditVariantViewModel @Inject constructor(
      */
     suspend fun deleteVariant(variantId: Long) = viewModelScope.async {
         // return true if no such variant exists
-        val variant = variantRepository.get(variantId) ?: return@async true
-
-        val items = itemRepository.getByVariantId(variantId)
-
-        if (items.isNotEmpty() && !screenState.deleteWarningConfirmed.value) {
-            screenState.showDeleteWarning.value = true
-            return@async false
-        } else {
-            itemRepository.delete(items)
-            variantRepository.delete(variant)
-            return@async true
-        }
+        //        val variant = variantRepository.get(variantId) ?: return@async true
+        //
+        //        val items = itemRepository.byVariant(variant)
+        //
+        //        if (items.isNotEmpty() && !screenState.deleteWarningConfirmed.value) {
+        //            screenState.showDeleteWarning.value = true
+        //            return@async false
+        //        } else {
+        //            itemRepository.delete(items)
+        //            variantRepository.delete(variant)
+        //            return@async true
+        //        }
+        return@async true
     }
         .await()
 }

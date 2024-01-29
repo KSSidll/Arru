@@ -49,12 +49,7 @@ class ShopViewModel @Inject constructor(
     fun shopTotalSpent(): Flow<Float>? {
         if (shop == null) return null
 
-        return itemRepository.getTotalSpentByShopFlow(shop!!.id)
-            .map {
-                it.toFloat()
-                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
-            }
-            .distinctUntilChanged()
+        return shopRepository.totalSpentFlow(shop!!)
     }
 
     /**
@@ -81,23 +76,22 @@ class ShopViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
-                itemRepository.getTotalSpentByShopByDayFlow(shopId)
+                shopRepository.totalSpentByDayFlow(shop)
             },
             weekFlow = {
-                itemRepository.getTotalSpentByShopByWeekFlow(shopId)
+                shopRepository.totalSpentByWeekFlow(shop)
             },
             monthFlow = {
-                itemRepository.getTotalSpentByShopByMonthFlow(shopId)
+                shopRepository.totalSpentByMonthFlow(shop)
             },
             yearFlow = {
-                itemRepository.getTotalSpentByShopByYearFlow(shopId)
+                shopRepository.totalSpentByYearFlow(shop)
             },
         )
 
         mNewFullItemFlowJob?.cancel()
         mNewFullItemFlowJob = launch {
-            mNewFullItemFlow = itemRepository.getLastFlow()
-                .cancellable()
+            mNewFullItemFlow = itemRepository.newestFlow()
 
             mNewFullItemFlow?.collect {
                 mFullItemOffset = 0
@@ -131,10 +125,10 @@ class ShopViewModel @Inject constructor(
      */
     private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
         mTransactionItems.addAll(
-            itemRepository.getFullItemsByShop(
-                offset = queryOffset,
+            shopRepository.fullItems(
+                shop = shop!!,
                 count = fullItemFetchCount,
-                shopId = shop!!.id,
+                offset = queryOffset,
             )
         )
     }

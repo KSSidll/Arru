@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.ui.screen.modify.shop.addshop
 
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -18,19 +17,21 @@ class AddShopViewModel @Inject constructor(
      * @return Id of newly inserted row, null if operation failed
      */
     suspend fun addShop(): Long? = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val shop = screenState.extractDataOrNull() ?: return@async null
-        val other = shopRepository.getByName(shop.name)
-
-        if (other != null) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
-
-            return@async null
-        } else {
-            return@async shopRepository.insert(shop)
-        }
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val shop = screenState.extractDataOrNull() ?: return@async null
+        //        val other = shopRepository.byName(shop.name)
+        //
+        //        if (other != null) {
+        //            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        //
+        //            return@async null
+        //        } else {
+        //            return@async shopRepository.insert(shop)
+        //        }
+        return@async 1L
+        // TODO add use case
     }
         .await()
 }

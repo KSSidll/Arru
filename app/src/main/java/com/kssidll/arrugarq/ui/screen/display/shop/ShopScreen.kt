@@ -102,7 +102,7 @@ internal fun ShopScreen(
         }
         grouppedItems.clear()
         grouppedItems.addAll(
-            transactionItems.groupBy { it.embeddedItem.item.date / 86400000 }
+            transactionItems.groupBy { it.date / 86400000 }
                 .toList()
                 .sortedByDescending { it.first })
     }
@@ -229,12 +229,12 @@ internal fun ShopScreen(
 
                 items(group.second) { item ->
                     FullItemCard(
-                        fullItem = item,
+                        item = item,
                         onItemClick = {
-                            onItemClick(it.embeddedProduct.product.id)
+                            onItemClick(it.product.id)
                         },
                         onItemLongClick = {
-                            onItemLongClick(it.embeddedItem.item.id)
+                            onItemLongClick(it.id)
                         },
                         onCategoryClick = {
                             onItemCategoryClick(it.id)
@@ -242,8 +242,6 @@ internal fun ShopScreen(
                         onProducerClick = {
                             onItemProducerClick(it.id)
                         },
-                        onShopClick = {},
-                        showShop = false,
                     )
                 }
             }

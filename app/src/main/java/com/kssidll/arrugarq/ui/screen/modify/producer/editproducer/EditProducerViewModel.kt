@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
-import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.producer.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -36,28 +35,29 @@ class EditProducerViewModel @Inject constructor(
      * @return Whether the update was successful
      */
     suspend fun updateProducer(producerId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val producer = screenState.extractDataOrNull(producerId) ?: return@async false
-        val other = producerRepository.getByName(producer.name)
-
-        if (other != null) {
-            if (other.id == producerId) return@async true
-
-            screenState.name.apply {
-                value = value.toError(FieldError.DuplicateValueError)
-            }
-
-            chosenMergeCandidate.value = other
-            showMergeConfirmDialog.value = true
-
-            return@async false
-        } else {
-            producerRepository.update(producer)
-            return@async true
-        }
-
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val producer = screenState.extractDataOrNull(producerId) ?: return@async false
+        //        val other = producerRepository.byName(producer.name)
+        //
+        //        if (other != null) {
+        //            if (other.id == producerId) return@async true
+        //
+        //            screenState.name.apply {
+        //                value = value.toError(FieldError.DuplicateValueError)
+        //            }
+        //
+        //            chosenMergeCandidate.value = other
+        //            showMergeConfirmDialog.value = true
+        //
+        //            return@async false
+        //        } else {
+        //            producerRepository.update(producer)
+        //            return@async true
+        //        }
+        return@async true
+        // TODO add use case
     }
         .await()
 
@@ -68,32 +68,34 @@ class EditProducerViewModel @Inject constructor(
      */
     suspend fun deleteProducer(producerId: Long) = viewModelScope.async {
         // return true if no such producer exists
-        val producer = producerRepository.get(producerId) ?: return@async true
-
-        val products = productRepository.getByProducerId(producerId)
-
-        val items = buildList {
-            products.forEach {
-                addAll(itemRepository.getByProductId(it.id))
-            }
-        }.toList()
-
-        val variants = buildList {
-            products.forEach {
-                addAll(variantRepository.getByProductId(it.id))
-            }
-        }.toList()
-
-        if ((products.isNotEmpty() || items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
-            screenState.showDeleteWarning.value = true
-            return@async false
-        } else {
-            itemRepository.delete(items)
-            variantRepository.delete(variants)
-            productRepository.delete(products)
-            producerRepository.delete(producer)
-            return@async true
-        }
+        //        val producer = producerRepository.get(producerId) ?: return@async true
+        //
+        //        val products = productRepository.byProducer(producer)
+        //
+        //        val items = buildList {
+        //            products.forEach {
+        //                addAll(itemRepository.byProduct(it))
+        //            }
+        //        }.toList()
+        //
+        //        val variants = buildList {
+        //            products.forEach {
+        //                addAll(variantRepository.byProduct(it))
+        //            }
+        //        }.toList()
+        //
+        //        if ((products.isNotEmpty() || items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
+        //            screenState.showDeleteWarning.value = true
+        //            return@async false
+        //        } else {
+        //            itemRepository.delete(items)
+        //            variantRepository.delete(variants)
+        //            productRepository.delete(products)
+        //            producerRepository.delete(producer)
+        //            return@async true
+        //        }
+        return@async true
+        // TODO add use case
     }
         .await()
 
@@ -102,17 +104,18 @@ class EditProducerViewModel @Inject constructor(
      * @return True if operation succeded, false otherwise
      */
     suspend fun mergeWith(mergeCandidate: ProductProducer) = viewModelScope.async {
-        val products =
-            mProducer?.let { productRepository.getByProducerId(it.id) } ?: return@async false
-
-        if (products.isNotEmpty()) {
-            products.forEach { it.producerId = mergeCandidate.id }
-            productRepository.update(products)
-        }
-
-        mProducer?.let { producerRepository.delete(it) }
-
+        //        val products = mProducer?.let { productRepository.byProducer(it) } ?: return@async false
+        //
+        //        if (products.isNotEmpty()) {
+        //            products.forEach { it.producerId = mergeCandidate.id }
+        //            productRepository.update(products)
+        //        }
+        //
+        //        mProducer?.let { producerRepository.delete(it) }
+        //
+        //        return@async true
         return@async true
+        // TODO add use case
     }
         .await()
 }

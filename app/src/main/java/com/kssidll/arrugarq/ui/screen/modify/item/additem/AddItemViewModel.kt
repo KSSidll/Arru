@@ -24,12 +24,14 @@ class AddItemViewModel @Inject constructor(
      * @return Id of newly inserted row, null if operation failed
      */
     suspend fun addItem(): Long? = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
-        screenState.validate()
-
-        val item = screenState.extractDataOrNull() ?: return@async null
-
-        return@async itemRepository.insert(item)
+        //        screenState.attemptedToSubmit.value = true
+        //        screenState.validate()
+        //
+        //        val item = screenState.extractDataOrNull() ?: return@async null
+        //
+        //        return@async itemRepository.insert(item)
+        return@async 1L
+        // TODO add use case
     }
         .await()
 }

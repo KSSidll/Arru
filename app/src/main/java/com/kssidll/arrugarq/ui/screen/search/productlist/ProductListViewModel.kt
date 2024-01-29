@@ -22,6 +22,6 @@ class ProductListViewModel @Inject constructor(
      * Fetches new data to screen state
      */
     private fun fillStateItems() {
-        screenState.items.value = productRepository.getAllWithAltNamesFlow()
+        screenState.items.value = productRepository.allWithAltNamesFlow()
     }
 }

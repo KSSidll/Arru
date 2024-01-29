@@ -9,7 +9,7 @@ import javax.inject.*
 
 @HiltViewModel
 class ShopSpendingComparisonViewModel @Inject constructor(
-    private val itemRepository: ItemRepositorySource,
+    private val shopRepository: ShopRepositorySource
 ): ViewModel() {
 
     /**
@@ -19,7 +19,7 @@ class ShopSpendingComparisonViewModel @Inject constructor(
         year: Int,
         month: Int
     ): Flow<List<ItemSpentByShop>> {
-        return itemRepository.getShopTotalSpentFlowByMonth(
+        return shopRepository.totalSpentByShopByMonthFlow(
             year,
             month
         )
@@ -42,7 +42,7 @@ class ShopSpendingComparisonViewModel @Inject constructor(
             localMonth -= 1
         }
 
-        return itemRepository.getShopTotalSpentFlowByMonth(
+        return shopRepository.totalSpentByShopByMonthFlow(
             localYear,
             localMonth
         )

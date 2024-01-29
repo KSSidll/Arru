@@ -5,66 +5,39 @@ import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
-    override suspend fun getAll(): List<ProductVariant> {
-        return dao.getAll()
-    }
-
-    override fun getAllFlow(): Flow<List<ProductVariant>> {
-        return dao.getAllFlow()
-    }
-
-    override suspend fun get(id: Long): ProductVariant? {
-        return dao.get(id)
-    }
-
-    override fun getFlow(id: Long): Flow<ProductVariant> {
-        return dao.getFlow(id)
-    }
-
-    override suspend fun getByProductIdAndName(
-        productId: Long,
-        name: String
-    ): ProductVariant? {
-        return dao.getByProductIdAndName(
-            productId,
-            name
-        )
-    }
-
-    override suspend fun getByProductId(productId: Long): List<ProductVariant> {
-        return dao.getByProductId(productId)
-    }
-
-    override fun getByProductIdFlow(productId: Long): Flow<List<ProductVariant>> {
-        return dao.getByProductIdFlow(productId)
-    }
-
-    override suspend fun getByName(name: String): List<ProductVariant> {
-        return dao.getByName(name)
-    }
-
-    override fun getByNameFlow(name: String): Flow<List<ProductVariant>> {
-        return dao.getByNameFlow(name)
-    }
+    // Create
 
     override suspend fun insert(variant: ProductVariant): Long {
-        return dao.insert(variant)
+        TODO("Not yet implemented")
     }
 
+    // Update
+
     override suspend fun update(variant: ProductVariant) {
-        dao.update(variant)
+        TODO("Not yet implemented")
     }
 
     override suspend fun update(variants: List<ProductVariant>) {
-        dao.update(variants)
+        TODO("Not yet implemented")
     }
 
+    // Delete
+
     override suspend fun delete(variant: ProductVariant) {
-        dao.delete(variant)
+        TODO("Not yet implemented")
     }
 
     override suspend fun delete(variants: List<ProductVariant>) {
-        dao.delete(variants)
+        TODO("Not yet implemented")
     }
 
+    // Read
+
+    override suspend fun get(variantId: Long): ProductVariant? {
+        TODO("Not yet implemented")
+    }
+
+    override fun byProductFlow(product: Product): Flow<List<ProductVariant>> {
+        TODO("Not yet implemented")
+    }
 }

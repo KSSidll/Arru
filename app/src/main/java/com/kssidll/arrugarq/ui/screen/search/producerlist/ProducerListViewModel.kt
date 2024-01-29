@@ -22,6 +22,6 @@ class ProducerListViewModel @Inject constructor(
      * Fetches new data to screen state
      */
     private fun fillStateItems() {
-        screenState.items.value = producerRepository.getAllFlow()
+        screenState.items.value = producerRepository.allFlow()
     }
 }

@@ -6,17 +6,40 @@ import kotlinx.coroutines.flow.*
 
 @Dao
 interface TransactionBasketDao {
-    @Query("SELECT * FROM transactionbasket ORDER BY id ASC")
-    suspend fun allTransactionBaskets(): List<TransactionBasket>
+    // Create
 
-    @Query("SELECT * FROM transactionbasket ORDER BY id ASC")
-    fun allTransactionBasketsFlow(): Flow<List<TransactionBasket>>
+    @Insert
+    suspend fun insert(transactionBasket: TransactionBasket): Long
+
+    @Insert
+    suspend fun insertTransactionBasketItem(transactionBasketItem: TransactionBasketItem): Long
+
+    // Update
+
+    @Update
+    suspend fun update(transactionBasket: TransactionBasket)
+
+    @Update
+    suspend fun update(transactionBaskets: List<TransactionBasket>)
+
+    // Delete
+
+    @Delete
+    suspend fun delete(transactionBasket: TransactionBasket)
+
+    @Delete
+    suspend fun delete(transactionBaskets: List<TransactionBasket>)
+
+    @Delete
+    suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem)
+
+    @Delete
+    suspend fun deleteTransactionBasketItem(transactionBasketItems: List<TransactionBasketItem>)
+
+    // Helper
 
     @Query("SELECT * FROM shop WHERE shop.id = :shopId")
     suspend fun shopById(shopId: Long): Shop
-
-    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId")
-    suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
 
     @Query("SELECT * FROM product WHERE product.id = :productId")
     suspend fun productById(productId: Long): Product
@@ -27,53 +50,68 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun categoryById(categoryId: Long): ProductCategory
 
-
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer
 
+    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId")
+    suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
+
     @Transaction
     suspend fun fullItemsByTransactionBasketId(transactionBasketId: Long): List<FullItem> {
+        val transactionBasket = get(transactionBasketId) ?: return emptyList()
+
         val items = itemsByTransactionBasketId(transactionBasketId)
 
-        return items.map {
-            val product = productById(it.productId)
+        if (items.isEmpty()) return emptyList()
+
+        return items.map { item ->
+            val product = productById(item.productId)
+            val variant = item.variantId?.let { variantById(it) }
+            val category = categoryById(product.categoryId)
+            val producer = product.producerId?.let { producerById(it) }
+            val shop = transactionBasket.shopId?.let { shopById(it) }
+
             FullItem(
-                embeddedItem = EmbeddedItem(
-                    item = it,
-                    product = product,
-                    variant = it.variantId?.let { variantById(it) },
-                ),
-                embeddedProduct = EmbeddedProduct(
-                    product = product,
-                    category = categoryById(product.categoryId),
-                    producer = product.producerId?.let { producerById(it) },
-                )
+                id = item.id,
+                quantity = item.quantity,
+                price = item.price,
+                product = product,
+                variant = variant,
+                category = category,
+                producer = producer,
+                date = transactionBasket.date,
+                shop = shop,
             )
         }
     }
 
+    // Read
+
+    @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
+    suspend fun get(transactionBasketId: Long): TransactionBasket?
+
+    @Query("SELECT * FROM transactionbasket ORDER BY id ASC")
+    suspend fun all(): List<TransactionBasket>
+
+    @Query("SELECT * FROM transactionbasket ORDER BY id ASC")
+    fun allFlow(): Flow<List<TransactionBasket>>
+
     fun allTransactionBasketsWithItemsFlow(): Flow<List<TransactionBasketWithItems>> {
-        val transactionBaskets = allTransactionBasketsFlow()
+        val transactionBaskets = allFlow()
 
         return transactionBaskets.map { baskets ->
             baskets.map { basket ->
+                val shop = basket.shopId?.let { shopById(it) }
+                val items = fullItemsByTransactionBasketId(basket.id)
+
                 TransactionBasketWithItems(
                     id = basket.id,
                     date = basket.date,
-                    shop = basket.shopId?.let { shopById(it) },
+                    shop = shop,
                     totalCost = basket.totalCost,
-                    items = fullItemsByTransactionBasketId(basket.id),
+                    items = items,
                 )
             }
         }
     }
-
-    @Insert
-    suspend fun insert(transactionBasket: TransactionBasket): Long
-
-    @Update
-    suspend fun update(transactionBasket: TransactionBasket)
-
-    @Delete
-    suspend fun delete(transactionBasket: TransactionBasket)
 }

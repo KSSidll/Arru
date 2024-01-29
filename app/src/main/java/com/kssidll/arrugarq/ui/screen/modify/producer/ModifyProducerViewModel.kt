@@ -40,7 +40,7 @@ abstract class ModifyProducerViewModel: ViewModel() {
      * @return list of merge candidates as flow
      */
     fun allMergeCandidates(producerId: Long): Flow<List<ProductProducer>> {
-        return producerRepository.getAllFlow()
+        return producerRepository.allFlow()
             .onEach { it.filter { item -> item.id != producerId } }
             .distinctUntilChanged()
     }

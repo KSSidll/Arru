@@ -31,7 +31,7 @@ abstract class ModifyItemViewModel: ViewModel() {
     protected fun loadLastItem() = viewModelScope.launch {
         screenState.allToLoading()
 
-        val lastItem: Item? = itemRepository.getLast()
+        val lastItem: Item? = itemRepository.newest()
 
         updateStateForItem(lastItem)
     }
@@ -45,7 +45,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         screenState.quantity.apply { value = value.toLoading() }
 
         val lastItemByProduct: Item? = screenState.selectedProduct.value.data?.let {
-            itemRepository.getLastByProductId(it.id)
+            productRepository.newestItem(it)
         }
 
         updateStateForItem(
@@ -60,7 +60,7 @@ abstract class ModifyItemViewModel: ViewModel() {
      * @return List of all products
      */
     fun allProducts(): Flow<List<ProductWithAltNames>> {
-        return productRepository.getAllWithAltNamesFlow()
+        return productRepository.allWithAltNamesFlow()
     }
 
     private val mProductVariants: MutableState<Flow<List<ProductVariant>>> =
@@ -75,7 +75,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         mUpdateProductVariantsJob?.cancel()
         mUpdateProductVariantsJob = viewModelScope.launch {
             mProductVariants.value =
-                screenState.selectedProduct.value.data?.let { variantsRepository.getByProductIdFlow(it.id) }
+                screenState.selectedProduct.value.data?.let { variantsRepository.byProductFlow(it) }
                     ?: emptyFlow()
         }
     }
