@@ -51,6 +51,10 @@ class ProducerViewModel @Inject constructor(
         if (producer == null) return null
 
         return producerRepository.totalSpentFlow(producer!!)
+            .map {
+                it.toFloat()
+                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            }
     }
 
     /**
