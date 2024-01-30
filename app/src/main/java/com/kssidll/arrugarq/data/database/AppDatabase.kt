@@ -10,7 +10,7 @@ import com.kssidll.arrugarq.di.module.*
 import java.io.*
 
 @Database(
-    version = 4,
+    version = 5,
     entities = [
         TransactionBasket::class,
         TransactionBasketItem::class,
@@ -31,6 +31,11 @@ import java.io.*
         AutoMigration(
             from = 2,
             to = 3
+        ),
+        AutoMigration(
+            from = 4,
+            to = 5,
+            spec = MIGRATION_4_5_SPEC::class
         ),
     ]
 )
@@ -183,3 +188,8 @@ val MIGRATION_3_4 = object: Migration(
         }
     }
 }
+
+@Suppress("ClassName")
+@DeleteColumn("Item", "shopId")
+@DeleteColumn("Item", "date")
+class MIGRATION_4_5_SPEC: AutoMigrationSpec

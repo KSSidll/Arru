@@ -51,6 +51,7 @@ class CategoryViewModel @Inject constructor(
         if (category == null) return null
 
         return categoryRepository.totalSpentFlow(category!!)
+            .map { it.toFloat().div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR) }
     }
 
     /**
@@ -93,7 +94,6 @@ class CategoryViewModel @Inject constructor(
         mNewFullItemFlowJob?.cancel()
         mNewFullItemFlowJob = launch {
             mNewFullItemFlow = itemRepository.newestFlow()
-                .cancellable()
 
             mNewFullItemFlow?.collect {
                 mFullItemOffset = 0

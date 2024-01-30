@@ -45,14 +45,10 @@ interface CategoryRepositorySource {
     /**
      * Updates matching [ProductCategoryAltName] to provided [alternativeName]
      *
-     * Matches by [id]
-     * @param id [ProductCategoryAltName] id to update the [alternativeName] for
-     * @param alternativeName alternative name to update the [ProductCategoryAltName] to
+     * Matches by id
+     * @param alternativeName [ProductCategoryAltName] to update
      */
-    suspend fun updateAltName(
-        id: Long,
-        alternativeName: String
-    )
+    suspend fun updateAltName(alternativeName: ProductCategoryAltName)
 
     // Delete
 
@@ -92,7 +88,7 @@ interface CategoryRepositorySource {
      * @param category [ProductCategory] to get the total spending from
      * @return float representing total spending for the [category] as flow
      */
-    fun totalSpentFlow(category: ProductCategory): Flow<Float>
+    fun totalSpentFlow(category: ProductCategory): Flow<Long>
 
     /**
      * @param category [ProductCategory] to get the total spending by day from

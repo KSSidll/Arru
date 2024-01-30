@@ -8,75 +8,87 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
     // Create
 
     override suspend fun insert(productCategory: ProductCategory): Long {
-        TODO("Not yet implemented")
+        return dao.insert(productCategory)
     }
 
     override suspend fun insertAltName(
         category: ProductCategory,
         alternativeName: String
     ): Long {
-        TODO("Not yet implemented")
+        return dao.insertAltName(
+            ProductCategoryAltName(
+            category = category,
+            name = alternativeName,
+        )
+        )
     }
 
     // Update
 
     override suspend fun update(productCategory: ProductCategory) {
-        TODO("Not yet implemented")
+        dao.update(productCategory)
     }
 
     override suspend fun update(productCategories: List<ProductCategory>) {
-        TODO("Not yet implemented")
+        dao.update(productCategories)
     }
 
-    override suspend fun updateAltName(
-        id: Long,
-        alternativeName: String
-    ) {
-        TODO("Not yet implemented")
+    override suspend fun updateAltName(alternativeName: ProductCategoryAltName) {
+        dao.updateAltName(alternativeName)
     }
 
     // Delete
 
     override suspend fun delete(productCategory: ProductCategory) {
-        TODO("Not yet implemented")
+        dao.delete(productCategory)
     }
 
     override suspend fun delete(productCategories: List<ProductCategory>) {
-        TODO("Not yet implemented")
+        dao.delete(productCategories)
     }
 
     override suspend fun deleteAltName(alternativeName: ProductCategoryAltName) {
-        TODO("Not yet implemented")
+        dao.updateAltName(alternativeName)
     }
 
     override suspend fun deleteAltName(alternativeNames: List<ProductCategoryAltName>) {
-        TODO("Not yet implemented")
+        dao.deleteAltName(alternativeNames)
     }
 
     // Read
 
     override suspend fun get(categoryId: Long): ProductCategory? {
-        TODO("Not yet implemented")
+        return dao.get(categoryId)
     }
 
-    override fun totalSpentFlow(category: ProductCategory): Flow<Float> {
-        TODO("Not yet implemented")
+    override fun totalSpentFlow(category: ProductCategory): Flow<Long> {
+        return dao.totalSpentFlow(category.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByDayFlow(category: ProductCategory): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+        return dao.totalSpentByDayFlow(category.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByWeekFlow(category: ProductCategory): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+        return dao.totalSpentByWeekFlow(category.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByMonthFlow(category: ProductCategory): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+        return dao.totalSpentByMonthFlow(category.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByYearFlow(category: ProductCategory): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+        return dao.totalSpentByYearFlow(category.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override suspend fun fullItems(
@@ -84,25 +96,45 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         count: Int,
         offset: Int
     ): List<FullItem> {
-        TODO("Not yet implemented")
+        return dao.fullItems(category.id, count, offset)
     }
 
     override fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>> {
-        TODO("Not yet implemented")
+        return dao.totalSpentByCategoryFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByCategoryByMonthFlow(
         year: Int,
         month: Int
     ): Flow<List<ItemSpentByCategory>> {
-        TODO("Not yet implemented")
+        val date: String = buildString {
+            append(year)
+            append("-")
+
+            val monthStr: String = if (month < 10) {
+                "0$month"
+            } else {
+                month.toString()
+            }
+            append(monthStr)
+        }
+
+        return dao.totalSpentByCategoryByMonthFlow(date)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun allFlow(): Flow<List<ProductCategory>> {
-        TODO("Not yet implemented")
+        return dao.allFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun allWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>> {
-        TODO("Not yet implemented")
+        return dao.allWithAltNamesFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 }

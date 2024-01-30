@@ -34,14 +34,18 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     // Read
 
     override suspend fun get(itemId: Long): Item? {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return null
     }
 
     override suspend fun newest(): Item? {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return null
     }
 
     override suspend fun newestFlow(): Flow<Item> {
-        TODO("Not yet implemented")
+        return dao.newestFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 }

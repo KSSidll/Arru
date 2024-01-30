@@ -72,6 +72,9 @@ data class ProductCategoryAltName(
     @ColumnInfo(index = true) val productCategoryId: Long,
     val name: String,
 ) {
+    constructor(categoryId: Long, name: String): this(0, categoryId, name)
+    constructor(category: ProductCategory, name: String): this(category.id, name)
+
     companion object {
         @Ignore
         fun generate(categoryAltNameId: Long = 0): ProductCategoryAltName {
@@ -95,15 +98,15 @@ data class ProductCategoryWithAltNames(
     @Embedded val category: ProductCategory,
     @Relation(
         parentColumn = "id",
-        entityColumn = "productId"
-    ) val alternativeNames: List<ProductAltName>
+        entityColumn = "productCategoryId"
+    ) val alternativeNames: List<ProductCategoryAltName>
 ): FuzzySearchSource, NameSource {
     companion object {
         @Suppress("MemberVisibilityCanBePrivate")
         fun generate(categoryId: Long = 0): ProductCategoryWithAltNames {
             return ProductCategoryWithAltNames(
                 category = ProductCategory.generate(categoryId),
-                alternativeNames = ProductAltName.generateList(),
+                alternativeNames = ProductCategoryAltName.generateList(),
             )
         }
 

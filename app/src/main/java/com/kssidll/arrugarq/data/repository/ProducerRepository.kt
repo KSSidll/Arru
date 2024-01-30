@@ -34,27 +34,33 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
     // Read
 
     override suspend fun get(producerId: Long): ProductProducer? {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return null
     }
 
     override fun totalSpentFlow(producer: ProductProducer): Flow<Float> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 
     override fun totalSpentByDayFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 
     override fun totalSpentByWeekFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 
     override fun totalSpentByMonthFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 
     override fun totalSpentByYearFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 
     override suspend fun fullItems(
@@ -62,10 +68,12 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         count: Int,
         offset: Int
     ): List<FullItem> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override fun allFlow(): Flow<List<ProductProducer>> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 }

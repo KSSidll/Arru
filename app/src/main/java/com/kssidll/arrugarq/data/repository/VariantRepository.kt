@@ -34,10 +34,12 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Read
 
     override suspend fun get(variantId: Long): ProductVariant? {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return null
     }
 
     override fun byProductFlow(product: Product): Flow<List<ProductVariant>> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return emptyFlow()
     }
 }
