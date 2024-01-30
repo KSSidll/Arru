@@ -190,6 +190,12 @@ val MIGRATION_3_4 = object: Migration(
 }
 
 @Suppress("ClassName")
-@DeleteColumn("Item", "shopId")
-@DeleteColumn("Item", "date")
+@DeleteColumn(
+    "Item",
+    "shopId"
+)
+@DeleteColumn(
+    "Item",
+    "date"
+)
 class MIGRATION_4_5_SPEC: AutoMigrationSpec

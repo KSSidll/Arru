@@ -56,47 +56,47 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
     // Read
 
     override suspend fun get(transactionBasketId: Long): TransactionBasket? {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return null
     }
 
     override fun totalSpentFlow(): Flow<Float> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByDayFlow(): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByWeekFlow(): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByMonthFlow(): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByYearFlow(): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override suspend fun all(): List<TransactionBasket> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyList()
     }
 
     override fun allFlow(): Flow<List<TransactionBasket>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun allTransactionBasketsWithItemsFlow(): Flow<List<TransactionBasketWithItems>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 }

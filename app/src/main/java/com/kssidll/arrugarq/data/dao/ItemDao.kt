@@ -40,7 +40,4 @@ interface ItemDao {
 
     @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
     fun newestFlow(): Flow<Item>
-
-    @Query("SELECT item.* FROM item WHERE item.productId = :productId ORDER BY id DESC LIMIT 1")
-    suspend fun newestByProductId(productId: Long): Item?
 }

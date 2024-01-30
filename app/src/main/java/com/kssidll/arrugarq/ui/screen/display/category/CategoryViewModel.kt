@@ -51,7 +51,10 @@ class CategoryViewModel @Inject constructor(
         if (category == null) return null
 
         return categoryRepository.totalSpentFlow(category!!)
-            .map { it.toFloat().div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR) }
+            .map {
+                it.toFloat()
+                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            }
     }
 
     /**

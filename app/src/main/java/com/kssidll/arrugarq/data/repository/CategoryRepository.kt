@@ -17,9 +17,9 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
     ): Long {
         return dao.insertAltName(
             ProductCategoryAltName(
-            category = category,
-            name = alternativeName,
-        )
+                category = category,
+                name = alternativeName,
+            )
         )
     }
 
@@ -96,7 +96,11 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         count: Int,
         offset: Int
     ): List<FullItem> {
-        return dao.fullItems(category.id, count, offset)
+        return dao.fullItems(
+            category.id,
+            count,
+            offset
+        )
     }
 
     override fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>> {

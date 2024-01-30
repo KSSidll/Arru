@@ -8,39 +8,37 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     // Create
 
     override suspend fun insert(item: Item): Long {
-        TODO("Not yet implemented")
+        return dao.insert(item)
     }
 
     // Update
 
     override suspend fun update(item: Item) {
-        TODO("Not yet implemented")
+        dao.update(item)
     }
 
     override suspend fun update(items: List<Item>) {
-        TODO("Not yet implemented")
+        dao.update(items)
     }
 
     // Delete
 
     override suspend fun delete(item: Item) {
-        TODO("Not yet implemented")
+        dao.delete(item)
     }
 
     override suspend fun delete(items: List<Item>) {
-        TODO("Not yet implemented")
+        dao.delete(items)
     }
 
     // Read
 
     override suspend fun get(itemId: Long): Item? {
-//        TODO("Not yet implemented")
-        return null
+        return dao.get(itemId)
     }
 
     override suspend fun newest(): Item? {
-//        TODO("Not yet implemented")
-        return null
+        return dao.newest()
     }
 
     override suspend fun newestFlow(): Flow<Item> {

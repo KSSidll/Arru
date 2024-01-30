@@ -56,15 +56,18 @@ interface CategoryDao {
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer
 
-    @Query("""
+    @Query(
+        """
         SELECT transactionbasket.*
         FROM transactionbasket
         JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
             AND transactionbasketitem.itemId = :itemId
-    """)
+    """
+    )
     suspend fun transactionBasketByItemId(itemId: Long): TransactionBasket
 
-    @Query("""
+    @Query(
+        """
         SELECT item.*
         FROM transactionbasket
         JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
@@ -74,8 +77,13 @@ interface CategoryDao {
         ORDER BY date DESC
         LIMIT :count
         OFFSET :offset
-    """)
-    suspend fun itemsByCategory(categoryId: Long, count: Int, offset: Int): List<Item>
+    """
+    )
+    suspend fun itemsByCategory(
+        categoryId: Long,
+        count: Int,
+        offset: Int
+    ): List<Item>
 
     @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.productCategoryId = :categoryId")
     suspend fun altNames(categoryId: Long): List<ProductCategoryAltName>
@@ -85,16 +93,19 @@ interface CategoryDao {
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun get(categoryId: Long): ProductCategory?
 
-    @Query("""
+    @Query(
+        """
         SELECT SUM(item.price * item.quantity)
         FROM item
         JOIN product ON product.id = item.productId
         JOIN productcategory ON productcategory.id = product.categoryId
         WHERE productcategory.id = :categoryId
-    """)
+    """
+    )
     fun totalSpentFlow(categoryId: Long): Flow<Long>
 
-    @Query("""
+    @Query(
+        """
         WITH date_series AS (
             SELECT MIN(transactionbasket.date) AS start_date,
                    MAX(transactionbasket.date) AS end_date
@@ -122,10 +133,12 @@ interface CategoryDao {
         WHERE time IS NOT NULL
         GROUP BY time
         ORDER BY time
-    """)
+    """
+    )
     fun totalSpentByDayFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
 
-    @Query("""
+    @Query(
+        """
         WITH date_series AS (
         SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
                  (MAX(transactionbasket.date) - 604800000) AS end_date
@@ -153,10 +166,12 @@ interface CategoryDao {
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
-    """)
+    """
+    )
     fun totalSpentByWeekFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
 
-    @Query("""
+    @Query(
+        """
         WITH date_series AS (
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
@@ -184,10 +199,12 @@ interface CategoryDao {
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
-    """)
+    """
+    )
     fun totalSpentByMonthFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
 
-    @Query("""
+    @Query(
+        """
         WITH date_series AS (
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
                DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS end_date
@@ -215,12 +232,21 @@ interface CategoryDao {
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
-    """)
+    """
+    )
     fun totalSpentByYearFlow(categoryId: Long): Flow<List<ItemSpentByTime>>
 
     @Transaction
-    suspend fun fullItems(categoryId: Long, count: Int, offset: Int): List<FullItem> {
-        val items = itemsByCategory(categoryId, count, offset)
+    suspend fun fullItems(
+        categoryId: Long,
+        count: Int,
+        offset: Int
+    ): List<FullItem> {
+        val items = itemsByCategory(
+            categoryId,
+            count,
+            offset
+        )
 
         if (items.isEmpty()) return emptyList()
 
@@ -246,7 +272,8 @@ interface CategoryDao {
         }
     }
 
-    @Query("""
+    @Query(
+        """
         SELECT productcategory.*, SUM(item.price * item.quantity) as total
         FROM transactionbasket
         JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
@@ -254,10 +281,12 @@ interface CategoryDao {
         JOIN product ON product.id = item.productId
         JOIN productcategory ON productcategory.id = product.categoryId
         GROUP BY productcategory.id
-    """)
+    """
+    )
     fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>>
 
-    @Query("""
+    @Query(
+        """
         SELECT productcategory.*, SUM(item.price * item.quantity) as total
         FROM transactionbasket
         JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
@@ -266,7 +295,8 @@ interface CategoryDao {
         INNER JOIN productcategory ON product.categoryId = productcategory.id
         WHERE STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) = :date
         GROUP BY productcategory.id
-    """)
+    """
+    )
     fun totalSpentByCategoryByMonthFlow(date: String): Flow<List<ItemSpentByCategory>>
 
     @Query("SELECT productcategory.* FROM productcategory ORDER BY productcategory.id DESC")

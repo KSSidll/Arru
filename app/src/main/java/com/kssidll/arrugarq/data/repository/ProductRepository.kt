@@ -56,32 +56,32 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
     // Read
 
     override suspend fun get(productId: Long): Product? {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return null
     }
 
     override fun totalSpentFlow(product: Product): Flow<Float> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByDayFlow(product: Product): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByWeekFlow(product: Product): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByMonthFlow(product: Product): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun totalSpentByYearFlow(product: Product): Flow<List<ItemSpentByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
@@ -90,27 +90,27 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         count: Int,
         offset: Int
     ): List<FullItem> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyList()
     }
 
     override suspend fun newestItem(product: Product): Item? {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return null
     }
 
     override fun allWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<List<ProductPriceByShopByTime>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 
     override fun allFlow(): Flow<List<Product>> {
-//        TODO("Not yet implemented")
+        //        TODO("Not yet implemented")
         return emptyFlow()
     }
 }

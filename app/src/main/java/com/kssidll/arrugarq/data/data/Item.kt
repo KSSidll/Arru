@@ -77,6 +77,7 @@ data class Item(
     companion object {
         @Ignore
         const val PRICE_DIVISOR: Long = 100
+
         @Ignore
         const val QUANTITY_DIVISOR: Long = 1000
 
