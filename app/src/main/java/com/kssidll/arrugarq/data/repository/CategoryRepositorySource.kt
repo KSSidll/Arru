@@ -86,7 +86,7 @@ interface CategoryRepositorySource {
 
     /**
      * @param category [ProductCategory] to get the total spending from
-     * @return float representing total spending for the [category] as flow
+     * @return long representing total spending for the [category] as flow
      */
     fun totalSpentFlow(category: ProductCategory): Flow<Long>
 

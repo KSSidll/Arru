@@ -60,7 +60,7 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         return null
     }
 
-    override fun totalSpentFlow(): Flow<Float> {
+    override fun totalSpentFlow(): Flow<Long> {
         //        TODO("Not yet implemented")
         return emptyFlow()
     }

@@ -88,9 +88,9 @@ interface TransactionBasketRepositorySource {
     suspend fun get(transactionBasketId: Long): TransactionBasket?
 
     /**
-     * @return float representing total spending for the [category] as flow
+     * @return long representing total spending for the [category] as flow
      */
-    fun totalSpentFlow(): Flow<Float>
+    fun totalSpentFlow(): Flow<Long>
 
     /**
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow

@@ -55,9 +55,9 @@ interface ShopRepositorySource {
 
     /**
      * @param shop [Shop] to get the total spending from
-     * @return float representing total spending for the [shop] as flow
+     * @return long representing total spending for the [shop] as flow
      */
-    fun totalSpentFlow(shop: Shop): Flow<Float>
+    fun totalSpentFlow(shop: Shop): Flow<Long>
 
     /**
      * @param shop [Shop] to get the total spending by day from

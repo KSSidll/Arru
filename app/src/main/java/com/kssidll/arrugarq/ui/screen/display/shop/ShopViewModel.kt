@@ -50,6 +50,10 @@ class ShopViewModel @Inject constructor(
         if (shop == null) return null
 
         return shopRepository.totalSpentFlow(shop!!)
+            .map {
+                it.toFloat()
+                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            }
     }
 
     /**

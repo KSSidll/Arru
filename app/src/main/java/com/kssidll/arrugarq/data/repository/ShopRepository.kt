@@ -38,7 +38,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         return null
     }
 
-    override fun totalSpentFlow(shop: Shop): Flow<Float> {
+    override fun totalSpentFlow(shop: Shop): Flow<Long> {
         //        TODO("Not yet implemented")
         return emptyFlow()
     }

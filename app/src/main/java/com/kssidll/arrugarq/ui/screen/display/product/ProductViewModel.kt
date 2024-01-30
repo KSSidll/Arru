@@ -51,6 +51,10 @@ class ProductViewModel @Inject constructor(
         if (product == null) return null
 
         return productRepository.totalSpentFlow(product!!)
+            .map {
+                it.toFloat()
+                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            }
     }
 
     fun productPriceByShop(): Flow<List<ProductPriceByShopByTime>>? {

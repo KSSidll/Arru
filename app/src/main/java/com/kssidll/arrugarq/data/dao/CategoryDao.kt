@@ -242,6 +242,8 @@ interface CategoryDao {
         count: Int,
         offset: Int
     ): List<FullItem> {
+        val category = get(categoryId) ?: return emptyList()
+
         val items = itemsByCategory(
             categoryId,
             count,
@@ -254,7 +256,6 @@ interface CategoryDao {
             val transactionBasket = transactionBasketByItemId(item.id)
             val product = productById(item.productId)
             val variant = item.variantId?.let { variantById(it) }
-            val category = categoryById(product.categoryId)
             val producer = product.producerId?.let { producerById(it) }
             val shop = transactionBasket.shopId?.let { shopById(it) }
 

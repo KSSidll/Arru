@@ -54,6 +54,10 @@ class DashboardViewModel @Inject constructor(
      */
     fun getTotalSpent(): Flow<Float> {
         return transactionRepository.totalSpentFlow()
+            .map {
+                it.toFloat()
+                    .div(TransactionBasket.COST_DIVISOR)
+            }
     }
 
     /**

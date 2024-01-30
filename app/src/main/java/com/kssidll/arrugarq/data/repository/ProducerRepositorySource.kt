@@ -55,7 +55,7 @@ interface ProducerRepositorySource {
 
     /**
      * @param producer [ProductProducer] to get the total spending from
-     * @return float representing total spending for the [producer] as flow
+     * @return long representing total spending for the [producer] as flow
      */
     fun totalSpentFlow(producer: ProductProducer): Flow<Long>
 

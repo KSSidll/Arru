@@ -41,9 +41,6 @@ interface ProducerDao {
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun categoryById(categoryId: Long): ProductCategory
 
-    @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducer
-
     @Query(
         """
         SELECT transactionbasket.*
@@ -226,6 +223,8 @@ interface ProducerDao {
         count: Int,
         offset: Int
     ): List<FullItem> {
+        val producer = get(producerId) ?: return emptyList()
+
         val items = itemsByProducer(
             producerId,
             count,
@@ -239,7 +238,6 @@ interface ProducerDao {
             val product = productById(item.productId)
             val variant = item.variantId?.let { variantById(it) }
             val category = categoryById(product.categoryId)
-            val producer = product.producerId?.let { producerById(it) }
             val shop = transactionBasket.shopId?.let { shopById(it) }
 
             FullItem(

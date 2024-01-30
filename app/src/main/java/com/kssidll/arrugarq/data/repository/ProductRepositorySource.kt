@@ -15,14 +15,10 @@ interface ProductRepositorySource {
 
     /**
      * Inserts [ProductAltName]
-     * @param product [Product] to add the [alternativeName] to
-     * @param alternativeName alternative name to add to the [product]
+     * @param alternativeName [ProductAltName] to insert
      * @return id of newly inserted [ProductAltName]
      */
-    suspend fun insertAltName(
-        product: Product,
-        alternativeName: String
-    ): Long
+    suspend fun insertAltName(alternativeName: ProductAltName): Long
 
     // Update
 
@@ -46,13 +42,9 @@ interface ProductRepositorySource {
      * Updates matching [ProductAltName] to provided [alternativeName]
      *
      * Matches by id
-     * @param id [ProductAltName] id to update the [alternativeName] for
-     * @param alternativeName alternative name to update the [ProductAltName] to
+     * @param alternativeName [ProductAltName] to update
      */
-    suspend fun updateAltName(
-        id: Long,
-        alternativeName: String
-    )
+    suspend fun updateAltName(alternativeName: ProductAltName)
 
     // Delete
 
@@ -90,9 +82,9 @@ interface ProductRepositorySource {
 
     /**
      * @param product [Product] to get the total spending from
-     * @return float representing total spending for the [product] as flow
+     * @return long representing total spending for the [product] as flow
      */
-    fun totalSpentFlow(product: Product): Flow<Float>
+    fun totalSpentFlow(product: Product): Flow<Long>
 
     /**
      * @param product [Product] to get the total spending by day from
