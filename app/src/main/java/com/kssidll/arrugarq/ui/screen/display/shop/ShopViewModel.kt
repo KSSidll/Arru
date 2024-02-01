@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.*
+import com.kssidll.arrugarq.domain.data.*
 import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -38,7 +39,7 @@ class ShopViewModel @Inject constructor(
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     private var mFullItemsDataQuery: Job? = null
     private var mFullItemOffset: Int = 0
@@ -114,6 +115,7 @@ class ShopViewModel @Inject constructor(
      * Requests a query of [fullItemFetchCount] items to be appended to transactions list
      */
     fun queryMoreFullItems() {
+        // TODO add paging3
         if (mFullItemsDataQuery == null) return
 
         if (mFullItemsDataQuery!!.isCompleted) {

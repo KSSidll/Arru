@@ -90,6 +90,109 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
     suspend fun get(transactionBasketId: Long): TransactionBasket?
 
+    @Query("SELECT SUM(transactionbasket.totalCost) FROM transactionbasket")
+    fun totalSpentFlow(): Flow<Long>
+
+    @Query(
+        """
+        WITH date_series AS (
+            SELECT MIN(transactionbasket.date) AS start_date,
+                   MAX(transactionbasket.date) AS end_date
+            FROM transactionbasket
+            UNION ALL
+            SELECT (start_date + 86400000) AS start_date, end_date
+            FROM date_series
+            WHERE date_series.end_date > date_series.start_date
+        ), items AS (
+            SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(transactionbasket.totalCost) AS item_total
+            FROM transactionbasket
+            GROUP BY transaction_time
+        )
+        SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
+        FROM date_series
+        LEFT JOIN items ON (date_series.start_date / 86400000) = transaction_time
+        WHERE time IS NOT NULL
+        GROUP BY time
+        ORDER BY time
+    """
+    )
+    fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>>
+
+    @Query(
+        """
+        WITH date_series AS (
+        SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+                 (MAX(transactionbasket.date) - 604800000) AS end_date
+        FROM transactionbasket
+        UNION ALL
+        SELECT (start_date + 604800000) AS start_date, end_date
+        FROM date_series
+        WHERE date_series.end_date >= date_series.start_date
+    ), items AS (
+        SELECT ((transactionbasket.date - 345600000) / 604800000) AS items_time, SUM(transactionbasket.totalCost) AS item_total
+        FROM transactionbasket
+        GROUP BY items_time
+    )
+    SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
+    FROM date_series
+    LEFT JOIN items ON (date_series.start_date / 604800000) = items_time
+    WHERE time IS NOT NULL
+    GROUP BY time
+    ORDER BY time
+    """
+    )
+    fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>>
+
+    @Query(
+        """
+        WITH date_series AS (
+        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+               DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
+        FROM transactionbasket
+        UNION ALL
+        SELECT DATE(start_date, '+1 month') AS start_date, end_date
+        FROM date_series
+        WHERE date_series.end_date > date_series.start_date
+    ), items AS (
+        SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS items_time, SUM(transactionbasket.totalCost) AS item_total
+        FROM transactionbasket
+        GROUP BY items_time
+    )
+    SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
+    FROM date_series
+    LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = items_time
+    WHERE time IS NOT NULL
+    GROUP BY time
+    ORDER BY time
+    """
+    )
+    fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>>
+
+    @Query(
+        """
+        WITH date_series AS (
+        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+               DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS end_date
+        FROM transactionbasket
+        UNION ALL
+        SELECT DATE(start_date, '+1 year') AS start_date, end_date
+        FROM date_series
+        WHERE date_series.end_date > date_series.start_date
+    ), items AS (
+        SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS items_time, SUM(transactionbasket.totalCost) AS item_total
+        FROM transactionbasket
+        GROUP BY items_time
+    )
+    SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
+    FROM date_series
+    LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = items_time
+    WHERE time IS NOT NULL
+    GROUP BY time
+    ORDER BY time
+    """
+    )
+    fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
+
     @Query("SELECT * FROM transactionbasket ORDER BY id ASC")
     suspend fun all(): List<TransactionBasket>
 

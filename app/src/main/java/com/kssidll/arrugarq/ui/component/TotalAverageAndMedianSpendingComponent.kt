@@ -18,7 +18,7 @@ import com.kssidll.arrugarq.ui.theme.*
 
 @Composable
 fun TotalAverageAndMedianSpendingComponent(
-    spentByTimeData: List<ItemSpentByTime>,
+    spentByTimeData: List<ChartSource>,
     totalSpentData: Float,
     animationSpec: AnimationSpec<Float> = tween(1200),
 ) {

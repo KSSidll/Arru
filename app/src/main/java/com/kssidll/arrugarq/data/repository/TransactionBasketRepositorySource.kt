@@ -15,25 +15,10 @@ interface TransactionBasketRepositorySource {
 
     /**
      * Inserts [TransactionBasketItem]
-     * @param transactionBasket [TransactionBasket] to insert the [item] to
-     * @param item [Item] to insert to the [transactionBasket]
+     * @param transactionBasketItem [TransactionBasketItem] to insert
      * @return id of newly inserted [TransactionBasketItem]
      */
-    suspend fun insertItemToBasket(
-        transactionBasket: TransactionBasket,
-        item: Item
-    ): Long
-
-    /**
-     * Inserts [TransactionBasketItem]
-     * @param transactionBasket [TransactionBasket] to insert the [item] to
-     * @param item [FullItem] to insert to the [transactionBasket]
-     * @return id of newly inserted [TransactionBasketItem]
-     */
-    suspend fun insertItemToBasket(
-        transactionBasket: TransactionBasket,
-        item: FullItem
-    ): Long
+    suspend fun insertTransactionItem(transactionBasketItem: TransactionBasketItem): Long
 
     // Update
 
@@ -93,24 +78,24 @@ interface TransactionBasketRepositorySource {
     fun totalSpentFlow(): Flow<Long>
 
     /**
-     * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(): Flow<List<ItemSpentByTime>>
+    fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
-     * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(): Flow<List<ItemSpentByTime>>
+    fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
-     * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(): Flow<List<ItemSpentByTime>>
+    fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
-     * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(): Flow<List<ItemSpentByTime>>
+    fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
      * @return list of all [TransactionBasket]

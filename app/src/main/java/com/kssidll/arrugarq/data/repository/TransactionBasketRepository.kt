@@ -8,95 +8,90 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
     // Create
 
     override suspend fun insert(transactionBasket: TransactionBasket): Long {
-        TODO("Not yet implemented")
+        return dao.insert(transactionBasket)
     }
 
-    override suspend fun insertItemToBasket(
-        transactionBasket: TransactionBasket,
-        item: Item
-    ): Long {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun insertItemToBasket(
-        transactionBasket: TransactionBasket,
-        item: FullItem
-    ): Long {
-        TODO("Not yet implemented")
+    override suspend fun insertTransactionItem(transactionBasketItem: TransactionBasketItem): Long {
+        return dao.insertTransactionBasketItem(transactionBasketItem)
     }
 
     // Update
 
     override suspend fun update(transactionBasket: TransactionBasket) {
-        TODO("Not yet implemented")
+        dao.update(transactionBasket)
     }
 
     override suspend fun update(transactionBaskets: List<TransactionBasket>) {
-        TODO("Not yet implemented")
+        dao.update(transactionBaskets)
     }
 
     // Delete
 
     override suspend fun delete(transactionBasket: TransactionBasket) {
-        TODO("Not yet implemented")
+        dao.delete(transactionBasket)
     }
 
     override suspend fun delete(transactionBaskets: List<TransactionBasket>) {
-        TODO("Not yet implemented")
+        dao.delete(transactionBaskets)
     }
 
     override suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem) {
-        TODO("Not yet implemented")
+        dao.deleteTransactionBasketItem(transactionBasketItem)
     }
 
     override suspend fun deleteTransactionBasketItem(transactionBasketItems: List<TransactionBasketItem>) {
-        TODO("Not yet implemented")
+        dao.deleteTransactionBasketItem(transactionBasketItems)
     }
 
     // Read
 
     override suspend fun get(transactionBasketId: Long): TransactionBasket? {
-        //        TODO("Not yet implemented")
-        return null
+        return dao.get(transactionBasketId)
     }
 
     override fun totalSpentFlow(): Flow<Long> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
-    override fun totalSpentByDayFlow(): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+    override fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>> {
+        return dao.totalSpentByDayFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
-    override fun totalSpentByWeekFlow(): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+    override fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>> {
+        return dao.totalSpentByWeekFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
-    override fun totalSpentByMonthFlow(): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+    override fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>> {
+        return dao.totalSpentByMonthFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
-    override fun totalSpentByYearFlow(): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+    override fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>> {
+        return dao.totalSpentByYearFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override suspend fun all(): List<TransactionBasket> {
-        //        TODO("Not yet implemented")
-        return emptyList()
+        return dao.all()
     }
 
     override fun allFlow(): Flow<List<TransactionBasket>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.allFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun allTransactionBasketsWithItemsFlow(): Flow<List<TransactionBasketWithItems>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.allTransactionBasketsWithItemsFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 }

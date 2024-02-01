@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.*
 import com.kssidll.arrugarq.ui.component.chart.*
@@ -55,7 +56,7 @@ internal fun ProductScreen(
     product: Product?,
     transactionItems: List<FullItem>,
     requestMoreTransactionItems: () -> Unit,
-    spentByTimeData: List<ItemSpentByTime>,
+    spentByTimeData: List<ChartSource>,
     productPriceByShopByTimeData: List<ProductPriceByShopByTime>,
     totalSpentData: Float,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,

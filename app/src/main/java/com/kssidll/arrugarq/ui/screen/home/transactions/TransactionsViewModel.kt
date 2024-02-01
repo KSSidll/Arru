@@ -23,6 +23,7 @@ class TransactionsViewModel @Inject constructor(
     private val transactionBasketRepository: TransactionBasketRepositorySource
 ): ViewModel() {
     fun transactions(): Flow<List<TransactionBasketWithItems>> {
+        // TODO add paging3
         return transactionBasketRepository.allTransactionBasketsWithItemsFlow()
     }
 }

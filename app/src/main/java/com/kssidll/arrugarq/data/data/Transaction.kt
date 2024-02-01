@@ -1,7 +1,10 @@
 package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
+import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
+import com.patrykandpatrick.vico.core.entry.*
 
 @Entity(
     foreignKeys = [
@@ -109,5 +112,58 @@ data class TransactionBasketWithItems(
                 generate(it.toLong())
             }
         }
+    }
+}
+
+data class TransactionSpentByTime(
+    val time: String,
+    val total: Long,
+): ChartSource {
+    companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
+        fun generate(): ItemSpentByTime {
+            return ItemSpentByTime(
+                time = generateRandomDateString(),
+                total = generateRandomLongValue(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ItemSpentByTime> {
+            return List(amount) {
+                generate()
+            }
+        }
+    }
+
+    override fun value(): Double {
+        return total.toDouble()
+            .div(TransactionBasket.COST_DIVISOR)
+    }
+
+    override fun sortValue(): Long {
+        return total
+    }
+
+    override fun chartEntry(x: Int): ChartEntry {
+        return FloatEntry(
+            x.toFloat(),
+            value().toFloat()
+        )
+    }
+
+    override fun startAxisLabel(): String? {
+        return null
+    }
+
+    override fun topAxisLabel(): String {
+        return value().formatToCurrency(dropDecimal = true)
+    }
+
+    override fun bottomAxisLabel(): String {
+        return time
+    }
+
+    override fun endAxisLabel(): String? {
+        return null
     }
 }

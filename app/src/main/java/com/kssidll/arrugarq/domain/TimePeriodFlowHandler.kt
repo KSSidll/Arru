@@ -3,7 +3,7 @@ package com.kssidll.arrugarq.domain
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arrugarq.R
-import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.domain.data.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.*
  */
 class TimePeriodFlowHandler(
     private val scope: CoroutineScope,
-    private val dayFlow: () -> Flow<List<ItemSpentByTime>>,
-    private val weekFlow: () -> Flow<List<ItemSpentByTime>>,
-    private val monthFlow: () -> Flow<List<ItemSpentByTime>>,
-    private val yearFlow: () -> Flow<List<ItemSpentByTime>>,
+    private val dayFlow: () -> Flow<List<ChartSource>>,
+    private val weekFlow: () -> Flow<List<ChartSource>>,
+    private val monthFlow: () -> Flow<List<ChartSource>>,
+    private val yearFlow: () -> Flow<List<ChartSource>>,
     startPeriod: Periods = Periods.Month,
 ) {
     private var mCurrentPeriod: MutableState<Periods>
     val currentPeriod get() = mCurrentPeriod.value
 
     private var mSpentByTimeQuery: Job? = null
-    private var mSpentByTimeData: MutableState<Flow<List<ItemSpentByTime>>> =
+    private var mSpentByTimeData: MutableState<Flow<List<ChartSource>>> =
         mutableStateOf(flowOf())
     val spentByTimeData by mSpentByTimeData
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.display.shop.fullItemFetchCount
 import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
@@ -39,7 +40,7 @@ class CategoryViewModel @Inject constructor(
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     private var mFullItemsDataQuery: Job? = null
     private var mFullItemOffset: Int = 0
@@ -115,6 +116,7 @@ class CategoryViewModel @Inject constructor(
      * Requests a query of [fullItemFetchCount] items to be appended to transactions list
      */
     fun queryMoreFullItems() {
+        // TODO add paging3
         if (category == null || mFullItemsDataQuery == null) return
 
         if (mFullItemsDataQuery!!.isCompleted) {
