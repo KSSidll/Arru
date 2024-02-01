@@ -8,59 +8,63 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
     // Create
 
     override suspend fun insert(shop: Shop): Long {
-        TODO("Not yet implemented")
+        return dao.insert(shop)
     }
 
     // Update
 
     override suspend fun update(shop: Shop) {
-        TODO("Not yet implemented")
+        dao.update(shop)
     }
 
     override suspend fun update(shops: List<Shop>) {
-        TODO("Not yet implemented")
+        dao.update(shops)
     }
 
     // Delete
 
     override suspend fun delete(shop: Shop) {
-        TODO("Not yet implemented")
+        dao.delete(shop)
     }
 
     override suspend fun delete(shops: List<Shop>) {
-        TODO("Not yet implemented")
+        dao.delete(shops)
     }
 
     // Read
 
     override suspend fun get(shopId: Long): Shop? {
-        //        TODO("Not yet implemented")
-        return null
+        return dao.get(shopId)
     }
 
     override fun totalSpentFlow(shop: Shop): Flow<Long> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentFlow(shop.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByDayFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentByDayFlow(shop.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByWeekFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentByWeekFlow(shop.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByMonthFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentByMonthFlow(shop.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByYearFlow(shop: Shop): Flow<List<ItemSpentByTime>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentByYearFlow(shop.id)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override suspend fun fullItems(
@@ -68,25 +72,43 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         count: Int,
         offset: Int
     ): List<FullItem> {
-        //        TODO("Not yet implemented")
-        return emptyList()
+        return dao.fullItems(
+            shop.id,
+            count,
+            offset
+        )
     }
 
     override fun totalSpentByShopFlow(): Flow<List<ItemSpentByShop>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.totalSpentByShopFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun totalSpentByShopByMonthFlow(
         year: Int,
         month: Int
     ): Flow<List<ItemSpentByShop>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        val date: String = buildString {
+            append(year)
+            append("-")
+
+            val monthStr: String = if (month < 10) {
+                "0$month"
+            } else {
+                month.toString()
+            }
+            append(monthStr)
+        }
+
+        return dao.totalSpentByShopByMonthFlow(date)
+            .cancellable()
+            .distinctUntilChanged()
     }
 
     override fun allFlow(): Flow<List<Shop>> {
-        //        TODO("Not yet implemented")
-        return emptyFlow()
+        return dao.allFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 }
