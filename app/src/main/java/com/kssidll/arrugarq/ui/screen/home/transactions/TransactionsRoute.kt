@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.ui.screen.home.transactions
 
 
 import androidx.compose.runtime.*
+import androidx.paging.compose.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -16,8 +17,7 @@ internal fun TransactionsRoute(
     val viewModel: TransactionsViewModel = hiltViewModel()
 
     TransactionsScreen(
-        transactions = viewModel.transactions()
-            .collectAsState(initial = emptyList()).value,
+        transactions = viewModel.transactions().collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,

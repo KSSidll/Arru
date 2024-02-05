@@ -120,6 +120,10 @@ dependencies {
     ksp(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    // Paging
+    implementation(libs.paging)
+    implementation(libs.paging.compose)
+
     // Other
     implementation(libs.fuzzywuzzy)
     implementation(libs.vico.compose)

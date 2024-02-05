@@ -1,5 +1,6 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
@@ -98,17 +99,15 @@ interface TransactionBasketRepositorySource {
     fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
-     * @return list of all [TransactionBasket]
+     * @param startPosition position, from 0 up, to get next [count] items from
+     * @param count how many items to query
+     * @return list of [count] [TransactionBasketWithItems] where the first item is the item at [startPosition]
      */
-    suspend fun all(): List<TransactionBasket>
+    suspend fun transactionBasketsWithItems(startPosition: Int, count: Int): List<TransactionBasketWithItems>
+
 
     /**
-     * @return list of all [TransactionBasket] as flow
+     * @return [TransactionBasketWithItems] as [PagingData] as [Flow]
      */
-    fun allFlow(): Flow<List<TransactionBasket>>
-
-    /**
-     * @return list of all [TransactionBasketWithItems] as flow
-     */
-    fun allTransactionBasketsWithItemsFlow(): Flow<List<TransactionBasketWithItems>>
+    fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>>
 }

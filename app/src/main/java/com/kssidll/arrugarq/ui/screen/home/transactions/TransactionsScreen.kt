@@ -19,17 +19,20 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import androidx.paging.*
+import androidx.paging.compose.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
 /**
- * @param transactions List of transactions to display in the transactions list
+ * @param transactions Transactions to display in the transactions list
  * @param onSearchAction Callback called when the 'search' action is triggered
  * @param onItemClick Callback called when the transaction item is clicked. Provides product id as parameter
  * @param onItemLongClick Callback called when the transaction item is long clicked/pressed. Provides item id as parameter
@@ -40,7 +43,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionsScreen(
-    transactions: List<TransactionBasketWithItems>,
+    transactions: LazyPagingItems<TransactionBasketWithItems>,
     onSearchAction: () -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onItemLongClick: (itemId: Long) -> Unit,
@@ -72,12 +75,6 @@ internal fun TransactionsScreen(
             // scrolling down
             returnActionButtonVisible = false
             previousFirstVisibleItemIndex = firstVisibleItemIndex
-        }
-    }
-
-    LaunchedEffect(transactions.size) {
-        if (transactions.isEmpty()) {
-            listState.scrollToItem(0)
         }
     }
 
@@ -150,128 +147,134 @@ internal fun TransactionsScreen(
                 .padding(paddingValues)
                 .padding(top = 12.dp),
         ) {
-            items(transactions) { transaction ->
-                var itemsVisible by remember {
-                    mutableStateOf(false)
-                }
+            items(
+                transactions.itemCount,
+                key = transactions.itemKey { it.id }
+            ) { index ->
+                val transaction = transactions[index]
 
-                Column(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(bottom = 12.dp)
-                        .clickable {
-                            itemsVisible = !itemsVisible
-                        }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                if (transaction != null) {
+                    var itemsVisible by remember {
+                        mutableStateOf(false)
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(bottom = 12.dp)
+                            .clickable {
+                                itemsVisible = !itemsVisible
+                            }
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(
-                                    start = 20.dp,
-                                    end = 8.dp
-                                )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(
-                                text = SimpleDateFormat(
-                                    "d MMMM, yyyy",
-                                    Locale.getDefault()
-                                ).format(transaction.date),
-                                style = Typography.headlineSmall,
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 8.dp
+                                    )
+                            ) {
+                                Text(
+                                    text = SimpleDateFormat(
+                                        "d MMMM, yyyy",
+                                        Locale.getDefault()
+                                    ).format(transaction.date),
+                                    style = Typography.headlineSmall,
+                                )
 
-                            Spacer(Modifier.height(5.dp))
+                                Spacer(Modifier.height(5.dp))
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 8.dp,
+                                            end = 20.dp
+                                        )
+                                ) {
+                                    if (transaction.shop != null) {
+                                        Button(
+                                            onClick = {
+                                                onItemShopClick(transaction.shop.id)
+                                            },
+                                            contentPadding = PaddingValues(
+                                                vertical = 0.dp,
+                                                horizontal = 12.dp
+                                            ),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                                contentColor = MaterialTheme.colorScheme.onTertiary,
+                                            ),
+                                        ) {
+                                            Text(
+                                                text = transaction.shop.name,
+                                                textAlign = TextAlign.Center,
+                                                style = Typography.labelMedium,
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Rounded.Store,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(17.dp),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 20.dp
-                                    )
+                                modifier = Modifier.padding(
+                                    end = 20.dp,
+                                )
                             ) {
-                                if (transaction.shop != null) {
-                                    Button(
-                                        onClick = {
-                                            onItemShopClick(transaction.shop.id)
-                                        },
-                                        contentPadding = PaddingValues(
-                                            vertical = 0.dp,
-                                            horizontal = 12.dp
-                                        ),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.tertiary,
-                                            contentColor = MaterialTheme.colorScheme.onTertiary,
-                                        ),
-                                    ) {
-                                        Text(
-                                            text = transaction.shop.name,
-                                            textAlign = TextAlign.Center,
-                                            style = Typography.labelMedium,
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Rounded.Store,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(17.dp),
+                                Text(
+                                    text = transaction.totalCost.toFloat()
+                                        .div(TransactionBasket.COST_DIVISOR)
+                                        .formatToCurrency(),
+                                    style = Typography.titleLarge,
+                                )
+
+                                Spacer(Modifier.width(5.dp))
+
+                                Icon(
+                                    imageVector = Icons.Outlined.Payment,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(visible = itemsVisible) {
+                            Surface(
+                                color = MaterialTheme.colorScheme.surfaceContainer,
+                                shape = ShapeDefaults.Medium
+                            ) {
+                                Column {
+                                    transaction.items.forEach { item ->
+                                        FullItemCard(
+                                            item = item,
+                                            onItemClick = {
+                                                onItemClick(it.product.id)
+                                            },
+                                            onItemLongClick = {
+                                                onItemLongClick(it.id)
+                                            },
+                                            onCategoryClick = {
+                                                onItemCategoryClick(it.id)
+                                            },
+                                            onProducerClick = {
+                                                onItemProducerClick(it.id)
+                                            },
                                         )
                                     }
                                 }
                             }
                         }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(
-                                end = 20.dp,
-                            )
-                        ) {
-                            Text(
-                                text = transaction.totalCost.toFloat()
-                                    .div(TransactionBasket.COST_DIVISOR)
-                                    .formatToCurrency(),
-                                style = Typography.titleLarge,
-                            )
-
-                            Spacer(Modifier.width(5.dp))
-
-                            Icon(
-                                imageVector = Icons.Outlined.Payment,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.tertiary,
-                            )
-                        }
                     }
-
-                    AnimatedVisibility(visible = itemsVisible) {
-                        Surface(
-                            color = MaterialTheme.colorScheme.surfaceContainer,
-                            shape = ShapeDefaults.Medium
-                        ) {
-                            Column {
-                                transaction.items.forEach { item ->
-                                    FullItemCard(
-                                        item = item,
-                                        onItemClick = {
-                                            onItemClick(it.product.id)
-                                        },
-                                        onItemLongClick = {
-                                            onItemLongClick(it.id)
-                                        },
-                                        onCategoryClick = {
-                                            onItemCategoryClick(it.id)
-                                        },
-                                        onProducerClick = {
-                                            onItemProducerClick(it.id)
-                                        },
-                                    )
-                                }
-                            }
-                        }
-                    }
-
                 }
             }
         }
@@ -295,7 +298,7 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
-                transactions = TransactionBasketWithItems.generateList(),
+                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).collectAsLazyPagingItems(),
                 onItemLongClick = {},
                 onItemProducerClick = {},
                 onItemCategoryClick = {},

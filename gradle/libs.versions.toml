@@ -22,6 +22,9 @@ hilt = "2.48"
 # Room
 room = "2.6.1"
 
+# Paging
+paging = "3.2.1"
+
 # Other
 fuzzywuzzy = "1.4.0"
 vico-compose = "1.13.1"
@@ -61,6 +64,10 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 # Room
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Paging
+paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 
 # Other
 fuzzywuzzy = { group = "me.xdrop", name = "fuzzywuzzy", version.ref = "fuzzywuzzy" }

@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.paging.*
 import kotlinx.coroutines.flow.*
 
 class TransactionBasketRepository(private val dao: TransactionBasketDao): TransactionBasketRepositorySource {
@@ -79,19 +81,22 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
             .distinctUntilChanged()
     }
 
-    override suspend fun all(): List<TransactionBasket> {
-        return dao.all()
+    override suspend fun transactionBasketsWithItems(
+        startPosition: Int,
+        count: Int
+    ): List<TransactionBasketWithItems> {
+        return dao.transactionBasketsWithItems(startPosition, count)
     }
 
-    override fun allFlow(): Flow<List<TransactionBasket>> {
-        return dao.allFlow()
-            .cancellable()
-            .distinctUntilChanged()
+    override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { TransactionBasketWithItemsPagingSource(this) }
+        )
+            .flow
     }
 
-    override fun allTransactionBasketsWithItemsFlow(): Flow<List<TransactionBasketWithItems>> {
-        return dao.allTransactionBasketsWithItemsFlow()
-            .cancellable()
-            .distinctUntilChanged()
-    }
 }
