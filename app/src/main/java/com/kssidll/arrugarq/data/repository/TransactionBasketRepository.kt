@@ -85,7 +85,10 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         startPosition: Int,
         count: Int
     ): List<TransactionBasketWithItems> {
-        return dao.transactionBasketsWithItems(startPosition, count)
+        return dao.transactionBasketsWithItems(
+            startPosition,
+            count
+        )
     }
 
     override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {

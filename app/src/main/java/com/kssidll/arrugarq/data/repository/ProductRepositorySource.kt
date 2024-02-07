@@ -1,5 +1,6 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
@@ -112,15 +113,8 @@ interface ProductRepositorySource {
 
     /**
      * @param product [Product] to match the items to
-     * @param count how many items to return
-     * @param offset how many items to skip before returning [count] items
-     * @return list of [count] [FullItem] offset by [offset] that match the [product]
      */
-    suspend fun fullItems(
-        product: Product,
-        count: Int,
-        offset: Int
-    ): List<FullItem>
+    fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>>
 
     /**
      * @param product [Product] to match the [Item] with

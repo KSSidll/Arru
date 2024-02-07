@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.paging.*
 import kotlinx.coroutines.flow.*
 
 class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
@@ -67,16 +69,25 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .distinctUntilChanged()
     }
 
-    override suspend fun fullItems(
-        producer: ProductProducer,
-        count: Int,
-        offset: Int
-    ): List<FullItem> {
-        return dao.fullItems(
-            producer.id,
-            count,
-            offset
+    override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                FullItemPagingSource(
+                    query = { start, loadSize ->
+                        dao.fullItems(
+                            producer.id,
+                            loadSize,
+                            start
+                        )
+                    }
+                )
+            }
         )
+            .flow
     }
 
     override fun allFlow(): Flow<List<ProductProducer>> {

@@ -11,12 +11,13 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import androidx.paging.*
+import androidx.paging.compose.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
@@ -28,14 +29,14 @@ import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.core.entry.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
 /**
  * @param onBack Called to request a back navigation
  * @param producer Producer for which the data is displayed
- * @param transactionItems List of transaction items of [producer]
- * @param requestMoreTransactionItems Called to request more transaction items to be added to [transactionItems]
+ * @param transactionItems Transaction items of [producer]
  * @param spentByTimeData Data list representing [producer] spending for current [spentByTimePeriod]
  * @param totalSpentData Value representing total [producer] spending
  * @param spentByTimePeriod Time period to get the [spentByTimeData] by
@@ -52,8 +53,7 @@ import java.util.*
 internal fun ProducerScreen(
     onBack: () -> Unit,
     producer: ProductProducer?,
-    transactionItems: List<FullItem>,
-    requestMoreTransactionItems: () -> Unit,
+    transactionItems: LazyPagingItems<FullItem>,
     spentByTimeData: List<ChartSource>,
     totalSpentData: Float,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -66,8 +66,6 @@ internal fun ProducerScreen(
     onEditAction: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
-        remember { mutableStateListOf() }
 
     val listState = rememberLazyListState()
     val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
@@ -92,21 +90,6 @@ internal fun ProducerScreen(
             returnActionButtonVisible = false
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         }
-
-        if (firstVisibleItemIndex + fullItemMaxPrefetchCount > transactionItems.size) {
-            requestMoreTransactionItems()
-        }
-    }
-
-    LaunchedEffect(transactionItems.size) {
-        if (transactionItems.isEmpty()) {
-            listState.scrollToItem(0)
-        }
-        grouppedItems.clear()
-        grouppedItems.addAll(
-            transactionItems.groupBy { it.date / 86400000 }
-                .toList()
-                .sortedByDescending { it.first })
     }
 
     Scaffold(
@@ -198,38 +181,44 @@ internal fun ProducerScreen(
                 }
             }
 
-            grouppedItems.forEach { group ->
-                item {
-                    Column(
-                        modifier = Modifier.fillParentMaxWidth()
-                    ) {
-                        Surface(
-                            modifier = Modifier.fillParentMaxWidth(),
-                            shape = RoundedCornerShape(
-                                topStart = 24.dp,
-                                topEnd = 24.dp
-                            ),
-                            color = MaterialTheme.colorScheme.surfaceContainer,
+            items(
+                transactionItems.itemCount,
+                key = transactionItems.itemKey { it.id }
+            ) { index ->
+                val item = transactionItems[index]
+
+                if (item != null) {
+                    //... yeah
+                    if (index == 0 || (transactionItems[index - 1] != null && item.date / 86400000 != transactionItems[index - 1]!!.date / 86400000)) {
+                        Column(
+                            modifier = Modifier.fillParentMaxWidth()
                         ) {
-                            Box(
-                                Modifier
-                                    .fillParentMaxWidth()
-                                    .padding(vertical = 8.dp)
+                            Surface(
+                                modifier = Modifier.fillParentMaxWidth(),
+                                shape = RoundedCornerShape(
+                                    topStart = 24.dp,
+                                    topEnd = 24.dp
+                                ),
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                             ) {
-                                Text(
-                                    modifier = Modifier.align(Alignment.Center),
-                                    text = SimpleDateFormat(
-                                        "MMM d, yyyy",
-                                        Locale.getDefault()
-                                    ).format(group.first * 86400000),
-                                    style = Typography.headlineMedium,
-                                )
+                                Box(
+                                    Modifier
+                                        .fillParentMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        modifier = Modifier.align(Alignment.Center),
+                                        text = SimpleDateFormat(
+                                            "MMM d, yyyy",
+                                            Locale.getDefault()
+                                        ).format(item.date),
+                                        style = Typography.headlineMedium,
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                items(group.second) { item ->
                     FullItemCard(
                         item = item,
                         onItemClick = {
@@ -271,8 +260,7 @@ fun ProducerScreenPreview() {
             ProducerScreen(
                 onBack = {},
                 producer = null,
-                transactionItems = FullItem.generateList(),
-                requestMoreTransactionItems = {},
+                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,

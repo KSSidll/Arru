@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.ui.screen.display.shop
 
 
 import androidx.compose.runtime.*
+import androidx.paging.compose.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -25,10 +26,8 @@ fun ShopRoute(
     ShopScreen(
         onBack = navigateBack,
         shop = viewModel.shop,
-        transactionItems = viewModel.transactionItems,
-        requestMoreTransactionItems = {
-            viewModel.queryMoreFullItems()
-        },
+        transactionItems = viewModel.transactions()
+            .collectAsLazyPagingItems(),
         spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList())?.value
             ?: emptyList(),
         totalSpentData = viewModel.shopTotalSpent()

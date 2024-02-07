@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.paging.*
 import kotlinx.coroutines.flow.*
 
 class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource {
@@ -91,16 +93,25 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .distinctUntilChanged()
     }
 
-    override suspend fun fullItems(
-        category: ProductCategory,
-        count: Int,
-        offset: Int
-    ): List<FullItem> {
-        return dao.fullItems(
-            category.id,
-            count,
-            offset
+    override fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<FullItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                FullItemPagingSource(
+                    query = { start, loadSize ->
+                        dao.fullItems(
+                            category.id,
+                            loadSize,
+                            start
+                        )
+                    }
+                )
+            }
         )
+            .flow
     }
 
     override fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>> {

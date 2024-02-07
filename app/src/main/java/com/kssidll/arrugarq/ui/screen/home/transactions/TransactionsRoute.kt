@@ -17,7 +17,8 @@ internal fun TransactionsRoute(
     val viewModel: TransactionsViewModel = hiltViewModel()
 
     TransactionsScreen(
-        transactions = viewModel.transactions().collectAsLazyPagingItems(),
+        transactions = viewModel.transactions()
+            .collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,

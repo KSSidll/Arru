@@ -103,7 +103,10 @@ interface TransactionBasketRepositorySource {
      * @param count how many items to query
      * @return list of [count] [TransactionBasketWithItems] where the first item is the item at [startPosition]
      */
-    suspend fun transactionBasketsWithItems(startPosition: Int, count: Int): List<TransactionBasketWithItems>
+    suspend fun transactionBasketsWithItems(
+        startPosition: Int,
+        count: Int
+    ): List<TransactionBasketWithItems>
 
 
     /**

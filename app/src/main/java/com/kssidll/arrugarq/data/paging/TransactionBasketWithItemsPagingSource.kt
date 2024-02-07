@@ -8,13 +8,19 @@ import kotlin.math.*
 class TransactionBasketWithItemsPagingSource(
     private val transactionRepository: TransactionBasketRepositorySource
 ): PagingSource<Int, TransactionBasketWithItems>() {
-    private fun ensureValidKey(key: Int) = max(0, key)
+    private fun ensureValidKey(key: Int) = max(
+        0,
+        key
+    )
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TransactionBasketWithItems> {
         val start = params.key ?: 0
 
         return LoadResult.Page(
-            data = transactionRepository.transactionBasketsWithItems(start, params.loadSize),
+            data = transactionRepository.transactionBasketsWithItems(
+                start,
+                params.loadSize
+            ),
             prevKey = when (start) {
                 0 -> null
                 else -> ensureValidKey(start)

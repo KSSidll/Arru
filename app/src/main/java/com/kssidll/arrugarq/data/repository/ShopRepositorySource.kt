@@ -1,5 +1,6 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
@@ -85,15 +86,8 @@ interface ShopRepositorySource {
 
     /**
      * @param shop [Shop] to match the items to
-     * @param count how many items to return
-     * @param offset how many items to skip before returning [count] items
-     * @return list of [count] [FullItem] offset by [offset] that match the [shop]
      */
-    suspend fun fullItems(
-        shop: Shop,
-        count: Int,
-        offset: Int
-    ): List<FullItem>
+    fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<FullItem>>
 
     /**
      * @return list of [ItemSpentByShop] representing total spending groupped by shop

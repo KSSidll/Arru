@@ -194,10 +194,19 @@ interface TransactionBasketDao {
     fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
 
     @Query("SELECT transactionbasket.* FROM transactionbasket ORDER BY id DESC LIMIT :count OFFSET :startPosition")
-    suspend fun partDesc(startPosition: Int, count: Int): List<TransactionBasket>
+    suspend fun partDesc(
+        startPosition: Int,
+        count: Int
+    ): List<TransactionBasket>
 
-    suspend fun transactionBasketsWithItems(startPosition: Int, count: Int): List<TransactionBasketWithItems> {
-        return partDesc(startPosition, count).map { basket ->
+    suspend fun transactionBasketsWithItems(
+        startPosition: Int,
+        count: Int
+    ): List<TransactionBasketWithItems> {
+        return partDesc(
+            startPosition,
+            count
+        ).map { basket ->
             val shop = basket.shopId?.let { shopById(it) }
             val items = fullItemsByTransactionBasketId(basket.id)
 
