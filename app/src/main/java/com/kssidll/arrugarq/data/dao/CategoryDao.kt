@@ -93,6 +93,9 @@ interface CategoryDao {
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun get(categoryId: Long): ProductCategory?
 
+    @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.name = :name")
+    suspend fun byName(name: String): ProductCategory?
+
     @Query(
         """
         SELECT SUM(item.price * item.quantity)

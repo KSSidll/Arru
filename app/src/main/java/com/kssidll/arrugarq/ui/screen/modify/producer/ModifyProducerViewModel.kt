@@ -66,18 +66,18 @@ data class ModifyProducerScreenState(
             return value.isNotError()
         }
     }
-
-    override fun validate(): Boolean {
-        return validateName()
-    }
-
-    override fun extractDataOrNull(id: Long): ProductProducer? {
-        if (!validate()) return null
-
-        return ProductProducer(
-            id = id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
+    //
+    //    override fun validate(): Boolean {
+    //        return validateName()
+    //    }
+    //
+    //    override fun extractDataOrNull(id: Long): ProductProducer? {
+    //        if (!validate()) return null
+    //
+    //        return ProductProducer(
+    //            id = id,
+    //            name = name.value.data?.trim() ?: return null,
+    //        )
+    //    }
 
 }

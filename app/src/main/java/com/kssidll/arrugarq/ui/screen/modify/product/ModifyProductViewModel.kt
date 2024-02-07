@@ -113,23 +113,23 @@ data class ModifyProductScreenState(
             return value.isNotError()
         }
     }
-
-    override fun validate(): Boolean {
-        val category = validateSelectedProductCategory()
-        val name = validateName()
-
-        return category && name
-    }
-
-    override fun extractDataOrNull(id: Long): Product? {
-        if (!validate()) return null
-
-        return Product(
-            id = id,
-            categoryId = selectedProductCategory.value.data?.id ?: return null,
-            producerId = selectedProductProducer.value.data?.id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
+    //
+    //    override fun validate(): Boolean {
+    //        val category = validateSelectedProductCategory()
+    //        val name = validateName()
+    //
+    //        return category && name
+    //    }
+    //
+    //    override fun extractDataOrNull(id: Long): Product? {
+    //        if (!validate()) return null
+    //
+    //        return Product(
+    //            id = id,
+    //            categoryId = selectedProductCategory.value.data?.id ?: return null,
+    //            producerId = selectedProductProducer.value.data?.id,
+    //            name = name.value.data?.trim() ?: return null,
+    //        )
+    //    }
 
 }

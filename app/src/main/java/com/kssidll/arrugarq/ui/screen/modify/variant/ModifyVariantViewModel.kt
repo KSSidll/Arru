@@ -56,20 +56,20 @@ data class ModifyVariantScreenState(
             return value.isNotError()
         }
     }
-
-    override fun validate(): Boolean {
-        return validateName()
-    }
-
-    override fun extractDataOrNull(id: Long): ProductVariant? {
-        if (!validate()) return null
-        if (productId < 0) error("ProductVariant Extraction from ModifyVariatScreenState Failed, productId was not set before trying to extract data")
-
-        return ProductVariant(
-            id = id,
-            productId = productId,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
+    //
+    //    override fun validate(): Boolean {
+    //        return validateName()
+    //    }
+    //
+    //    override fun extractDataOrNull(id: Long): ProductVariant? {
+    //        if (!validate()) return null
+    //        if (productId < 0) error("ProductVariant Extraction from ModifyVariatScreenState Failed, productId was not set before trying to extract data")
+    //
+    //        return ProductVariant(
+    //            id = id,
+    //            productId = productId,
+    //            name = name.value.data?.trim() ?: return null,
+    //        )
+    //    }
 
 }

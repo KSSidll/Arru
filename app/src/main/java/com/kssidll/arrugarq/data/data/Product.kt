@@ -66,6 +66,7 @@ data class Product(
         }
     }
 
+    @Ignore
     override fun fuzzyScore(query: String): Int {
         return FuzzySearch.extractOne(
             query,

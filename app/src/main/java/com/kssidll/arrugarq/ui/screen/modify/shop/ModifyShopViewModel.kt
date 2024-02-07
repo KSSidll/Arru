@@ -65,18 +65,18 @@ data class ModifyShopScreenState(
             return name.value.isNotError()
         }
     }
-
-    override fun validate(): Boolean {
-        return validateName()
-    }
-
-    override fun extractDataOrNull(id: Long): Shop? {
-        if (!validate()) return null
-
-        return Shop(
-            id = id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
+    //
+    //    override fun validate(): Boolean {
+    //        return validateName()
+    //    }
+    //
+    //    override fun extractDataOrNull(id: Long): Shop? {
+    //        if (!validate()) return null
+    //
+    //        return Shop(
+    //            id = id,
+    //            name = name.value.data?.trim() ?: return null,
+    //        )
+    //    }
 
 }

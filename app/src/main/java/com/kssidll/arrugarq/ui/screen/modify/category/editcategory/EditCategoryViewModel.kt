@@ -13,9 +13,6 @@ import javax.inject.*
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
     override val categoryRepository: CategoryRepositorySource,
-    private val itemRepository: ItemRepositorySource,
-    private val productRepository: ProductRepositorySource,
-    private val variantRepository: VariantRepositorySource,
 ): ModifyCategoryViewModel() {
     private val mMergeMessageCategoryName: MutableState<String> = mutableStateOf(String())
     val mergeMessageCategoryName get() = mMergeMessageCategoryName.value

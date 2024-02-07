@@ -5,25 +5,59 @@ import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
 interface CategoryRepositorySource {
+    companion object {
+        sealed class InsertResult(
+            val id: Long? = null,
+            val error: Errors? = null
+        ) {
+            class Success(id: Long): InsertResult(id)
+            class Error(error: Errors): InsertResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class AltInsertResult(
+            val id: Long? = null,
+            val error: Errors? = null
+        ) {
+            class Success(id: Long): AltInsertResult(id)
+            class Error(error: Errors): AltInsertResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+    }
+
     // Create
 
     /**
      * Inserts [ProductCategory]
-     * @param productCategory [ProductCategory] to insert
-     * @return id of the newly inserted [ProductCategory]
+     * @param name name of the [ProductCategory] to insert
+     * @return [InsertResult] with id of the newly inserted [ProductCategory] or an error if any
      */
-    suspend fun insert(productCategory: ProductCategory): Long
+    suspend fun insert(name: String): InsertResult
 
     /**
      * Inserts [ProductCategoryAltName]
      * @param category [ProductCategory] to add the [alternativeName] to
      * @param alternativeName alternative name to add to the [category]
-     * @return id of the newly inserted [ProductCategoryAltName]
+     * @return [AltInsertResult] with id of the newly inserted [ProductCategoryAltName] or an error if any
      */
     suspend fun insertAltName(
         category: ProductCategory,
         alternativeName: String
-    ): Long
+    ): AltInsertResult
 
     // Update
 

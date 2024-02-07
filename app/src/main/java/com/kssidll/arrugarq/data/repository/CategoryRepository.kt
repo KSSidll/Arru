@@ -4,25 +4,57 @@ import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.paging.*
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.AltInsertResult
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.InsertResult
 import kotlinx.coroutines.flow.*
 
 class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource {
     // Create
 
-    override suspend fun insert(productCategory: ProductCategory): Long {
-        return dao.insert(productCategory)
+    override suspend fun insert(name: String): InsertResult {
+        val category = ProductCategory(name)
+
+        if (category.validName()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidName)
+        }
+
+        val other = dao.byName(category.name)
+
+        if (other != null) {
+            return InsertResult.Error(InsertResult.DuplicateName)
+        }
+
+        return InsertResult.Success(dao.insert(category))
     }
 
     override suspend fun insertAltName(
         category: ProductCategory,
         alternativeName: String
-    ): Long {
-        return dao.insertAltName(
-            ProductCategoryAltName(
-                category = category,
-                name = alternativeName,
-            )
+    ): AltInsertResult {
+        if (dao.get(category.id) != category) {
+            return AltInsertResult.Error(AltInsertResult.InvalidId)
+        }
+
+        val categoryAltName = ProductCategoryAltName(
+            category = category,
+            name = alternativeName,
         )
+
+        if (categoryAltName.validName()
+                .not()
+        ) {
+            return AltInsertResult.Error(AltInsertResult.InvalidName)
+        }
+
+        val others = dao.altNames(category.id)
+
+        if (categoryAltName.name in others.map { it.name }) {
+            return AltInsertResult.Error(AltInsertResult.DuplicateName)
+        }
+
+        return AltInsertResult.Success(dao.insertAltName(categoryAltName))
     }
 
     // Update

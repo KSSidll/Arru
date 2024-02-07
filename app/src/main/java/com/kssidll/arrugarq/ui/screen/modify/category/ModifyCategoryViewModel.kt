@@ -42,7 +42,6 @@ abstract class ModifyCategoryViewModel: ViewModel() {
     fun allMergeCandidates(categoryId: Long): Flow<List<ProductCategory>> {
         return categoryRepository.allFlow()
             .onEach { it.filter { item -> item.id != categoryId } }
-            .distinctUntilChanged()
     }
 }
 
@@ -51,32 +50,4 @@ abstract class ModifyCategoryViewModel: ViewModel() {
  */
 data class ModifyCategoryScreenState(
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String())),
-): ModifyScreenState<ProductCategory>() {
-
-    /**
-     * Validates name field and sets it to error state if value is not valid
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateName(): Boolean {
-        name.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
-    override fun validate(): Boolean {
-        return validateName()
-    }
-
-    override fun extractDataOrNull(id: Long): ProductCategory? {
-        if (!validate()) return null
-
-        return ProductCategory(
-            id = id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
-}
+): ModifyScreenState<ProductCategory>()

@@ -211,26 +211,26 @@ data class ModifyItemScreenState(
             return value.isNotError()
         }
     }
-
-    override fun validate(): Boolean {
-        val product = validateSelectedProduct()
-        val quantity = validateQuantity()
-        val price = validatePrice()
-
-        return product && quantity && price
-    }
-
-    override fun extractDataOrNull(id: Long): Item? {
-        if (!validate()) return null
-
-        return Item(
-            id = id,
-            productId = selectedProduct.value.data?.id ?: return null,
-            variantId = selectedVariant.value.data?.id,
-            actualQuantity = quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
-                ?: return null,
-            actualPrice = price.value.data?.let { StringHelper.toDoubleOrNull(it) } ?: return null,
-        )
-    }
+    //
+    //    override fun validate(): Boolean {
+    //        val product = validateSelectedProduct()
+    //        val quantity = validateQuantity()
+    //        val price = validatePrice()
+    //
+    //        return product && quantity && price
+    //    }
+    //
+    //    override fun extractDataOrNull(id: Long): Item? {
+    //        if (!validate()) return null
+    //
+    //        return Item(
+    //            id = id,
+    //            productId = selectedProduct.value.data?.id ?: return null,
+    //            variantId = selectedVariant.value.data?.id,
+    //            actualQuantity = quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
+    //                ?: return null,
+    //            actualPrice = price.value.data?.let { StringHelper.toDoubleOrNull(it) } ?: return null,
+    //        )
+    //    }
 
 }

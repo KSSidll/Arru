@@ -22,7 +22,7 @@ data class ProductCategory(
         name: String,
     ): this(
         0,
-        name
+        name.trim()
     )
 
     companion object {
@@ -42,12 +42,22 @@ data class ProductCategory(
         }
     }
 
+    @Ignore
     override fun fuzzyScore(query: String): Int {
         return FuzzySearch.extractOne(
             query,
             listOf(name)
         ).score
     }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
+    }
+
 }
 
 @Entity(
@@ -86,7 +96,7 @@ data class ProductCategoryAltName(
         name: String
     ): this(
         category.id,
-        name
+        name.trim()
     )
 
     companion object {
@@ -105,6 +115,14 @@ data class ProductCategoryAltName(
                 generate(it.toLong())
             }
         }
+    }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
     }
 }
 
