@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.UpdateResult
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
@@ -107,19 +108,40 @@ class EditCategoryViewModel @Inject constructor(
      * @return True if operation succeded, false otherwise
      */
     suspend fun mergeWith(mergeCandidate: ProductCategory) = viewModelScope.async {
-        //        val products =
-        //            mCategory?.let { productRepository.byCategory(it) } ?: return@async false
-        //
-        //        if (products.isNotEmpty()) {
-        //            products.forEach { it.categoryId = mergeCandidate.id }
-        //            productRepository.update(products)
-        //        }
-        //
-        //        mCategory?.let { categoryRepository.delete(it) }
-        //
-        //        return@async true
-        return@async true
-        // TODO add use case
+        if (mCategory == null) {
+            Log.e(
+                "InvalidId",
+                "Tried to merge category without the category being set in EditCategoryViewModel"
+            )
+            return@async MergeResult.Success
+        }
+
+        val result = categoryRepository.merge(
+            mCategory!!,
+            mergeCandidate
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                MergeResult.InvalidCategory -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to merge category without the category being set in EditCategoryViewModel"
+                    )
+                    return@async MergeResult.Success
+                }
+
+                MergeResult.InvalidMergingInto -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to merge category without the category being set in EditCategoryViewModel"
+                    )
+                    return@async MergeResult.Success
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 }

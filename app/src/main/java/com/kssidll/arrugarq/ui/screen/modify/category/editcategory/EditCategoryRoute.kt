@@ -47,7 +47,9 @@ fun EditCategoryRoute(
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it)) {
+                if (viewModel.mergeWith(it)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }

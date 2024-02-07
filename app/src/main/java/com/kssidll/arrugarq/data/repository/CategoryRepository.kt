@@ -8,6 +8,7 @@ import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.A
 import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.AltUpdateResult
 import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.DeleteResult
 import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
@@ -107,7 +108,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         }
 
         if (dao.getAltName(alternativeNameId) == null) {
-            return AltUpdateResult.Error(AltUpdateResult.InvalidId)
+            return AltUpdateResult.Error(AltUpdateResult.InvalidCategoryId)
         }
 
         val alternativeName = ProductCategoryAltName(
@@ -135,6 +136,28 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         dao.updateAltName(alternativeName)
 
         return AltUpdateResult.Success
+    }
+
+    override suspend fun merge(
+        category: ProductCategory,
+        mergingInto: ProductCategory
+    ): MergeResult {
+        if (dao.get(category.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidCategory)
+        }
+
+        if (dao.get(mergingInto.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidMergingInto)
+        }
+
+        val products = dao.getProducts(category.id)
+        products.forEach { it.categoryId = mergingInto.id }
+        dao.updateProducts(products)
+
+        dao.deleteAltName(dao.altNames(category.id))
+        dao.delete(category)
+
+        return MergeResult.Success
     }
 
     // Delete

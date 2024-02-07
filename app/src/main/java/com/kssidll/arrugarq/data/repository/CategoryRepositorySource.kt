@@ -68,6 +68,20 @@ interface CategoryRepositorySource {
             data object DuplicateName: Errors()
         }
 
+        sealed class MergeResult(
+            val error: Errors? = null
+        ) {
+            data object Success: MergeResult()
+            class Error(error: Errors): MergeResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidCategory: Errors()
+            data object InvalidMergingInto: Errors()
+        }
+
         sealed class DeleteResult(
             val error: Errors? = null
         ) {
@@ -129,6 +143,16 @@ interface CategoryRepositorySource {
         categoryId: Long,
         name: String
     ): AltUpdateResult
+
+    /**
+     * Merges [category] into [mergingInto]
+     * @param category [ProductCategory] to merge
+     * @param category [ProductCategory] to merge the [category] into
+     */
+    suspend fun merge(
+        category: ProductCategory,
+        mergingInto: ProductCategory,
+    ): MergeResult
 
     // Delete
 

@@ -158,6 +158,9 @@ interface CategoryDao {
     @Delete
     suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
 
+    @Update
+    suspend fun updateProducts(products: List<Product>)
+
     // Read
 
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
