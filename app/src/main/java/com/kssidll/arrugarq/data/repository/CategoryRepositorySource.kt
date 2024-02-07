@@ -37,6 +37,51 @@ interface CategoryRepositorySource {
             data object DuplicateName: Errors()
         }
 
+        sealed class UpdateResult(
+            val error: Errors? = null
+        ) {
+            data object Success: UpdateResult()
+            class Error(error: Errors): UpdateResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class AltUpdateResult(
+            val error: Errors? = null
+        ) {
+            data object Success: AltUpdateResult()
+            class Error(error: Errors): AltUpdateResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object InvalidCategoryId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class DeleteResult(
+            val error: Errors? = null
+        ) {
+            data object Success: DeleteResult()
+            class Error(error: Errors): DeleteResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object DangerousDelete: Errors()
+        }
+
     }
 
     // Create
@@ -62,54 +107,48 @@ interface CategoryRepositorySource {
     // Update
 
     /**
-     * Updates matching [ProductCategory] to provided [productCategory]
-     *
-     * Matches by id
-     * @param productCategory [ProductCategory] to update
+     * Updates [ProductCategory] with [categoryId] id to provided [name]
+     * @param categoryId id to match [ProductCategory]
+     * @param name name to update the matching [ProductCategory] to
+     * @return [UpdateResult] with the result
      */
-    suspend fun update(productCategory: ProductCategory)
+    suspend fun update(
+        categoryId: Long,
+        name: String
+    ): UpdateResult
 
     /**
-     * Updates all matching [ProductCategory] to provided [productCategories]
-     *
-     * Matches by id
-     * @param productCategories list of [ProductCategory] to update
+     * Updates [ProductCategoryAltName] with [alternativeNameId] id to provided [categoryId] and [name]
+     * @param alternativeNameId id to match [ProductCategoryAltName]
+     * @param categoryId categoryId to update the matching [ProductCategoryAltName] to
+     * @param name name to update the matching [ProductCategoryAltName] to
+     * @return [UpdateResult] with the result
      */
-    suspend fun update(productCategories: List<ProductCategory>)
-
-    /**
-     * Updates matching [ProductCategoryAltName] to provided [alternativeName]
-     *
-     * Matches by id
-     * @param alternativeName [ProductCategoryAltName] to update
-     */
-    suspend fun updateAltName(alternativeName: ProductCategoryAltName)
+    suspend fun updateAltName(
+        alternativeNameId: Long,
+        categoryId: Long,
+        name: String
+    ): AltUpdateResult
 
     // Delete
 
     /**
-     * Deletes [ProductCategory]
-     * @param productCategory [ProductCategory] to delete
+     * Deletes [ProductCategory] matching [productCategoryId]
+     * @param productCategoryId id of the [ProductCategory] to delete
+     * @param force whether to force delete on dangerous delete
+     * @return [DeleteResult] with the result
      */
-    suspend fun delete(productCategory: ProductCategory)
+    suspend fun delete(
+        productCategoryId: Long,
+        force: Boolean
+    ): DeleteResult
 
     /**
-     * Deletes [ProductCategory]
-     * @param productCategories list of [ProductCategory] to delete
+     * Deletes [ProductCategoryAltName] matching [alternativeNameId]
+     * @param alternativeNameId id of the [ProductCategoryAltName] to delete
+     * @return [DeleteResult] with the result
      */
-    suspend fun delete(productCategories: List<ProductCategory>)
-
-    /**
-     * Deletes [ProductCategoryAltName]
-     * @param alternativeName [ProductCategoryAltName] to delete
-     */
-    suspend fun deleteAltName(alternativeName: ProductCategoryAltName)
-
-    /**
-     * Deletes [ProductCategoryAltName]
-     * @param alternativeNames list of [ProductCategoryAltName] to delete
-     */
-    suspend fun deleteAltName(alternativeNames: List<ProductCategoryAltName>)
+    suspend fun deleteAltName(alternativeNameId: Long): DeleteResult
 
     // Read
 

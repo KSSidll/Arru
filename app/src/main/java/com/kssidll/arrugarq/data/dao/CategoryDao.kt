@@ -88,10 +88,83 @@ interface CategoryDao {
     @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.productCategoryId = :categoryId")
     suspend fun altNames(categoryId: Long): List<ProductCategoryAltName>
 
+    @Query(
+        """
+        SELECT product.*
+        FROM product
+        JOIN productcategory ON productcategory.id = product.categoryId
+        WHERE productcategory.id = :categoryId
+    """
+    )
+    suspend fun getProducts(categoryId: Long): List<Product>
+
+    @Query(
+        """
+        SELECT productvariant.*
+        FROM productvariant
+        JOIN product ON product.id = productvariant.productId
+        JOIN productcategory ON productcategory.id = product.categoryId
+        WHERE productcategory.id = :categoryId
+    """
+    )
+    suspend fun getProductsVariants(categoryId: Long): List<ProductVariant>
+
+    @Query(
+        """
+        SELECT productaltname.*
+        FROM productaltname
+        JOIN product ON product.id = productaltname.productId
+        JOIN productcategory ON productcategory.id = product.categoryId
+        WHERE productcategory.id = :categoryId
+    """
+    )
+    suspend fun getProductsAltNames(categoryId: Long): List<ProductAltName>
+
+    @Query(
+        """
+        SELECT item.*
+        FROM item
+        JOIN product ON product.id = item.productId
+        JOIN productcategory ON productcategory.id = product.categoryId
+        WHERE productcategory.id = :categoryId
+    """
+    )
+    suspend fun getItems(categoryId: Long): List<Item>
+
+    @Query(
+        """
+        SELECT transactionbasketitem.*
+        FROM transactionbasketitem
+        JOIN item ON item.id = transactionbasketitem.itemId
+        JOIN product ON product.id = item.productId
+        JOIN productcategory ON productcategory.id = product.categoryId
+        WHERE productcategory.id = :categoryId
+    """
+    )
+    suspend fun getTransactionBasketItems(categoryId: Long): List<TransactionBasketItem>
+
+    @Delete
+    suspend fun deleteProducts(products: List<Product>)
+
+    @Delete
+    suspend fun deleteProductVariants(productVariants: List<ProductVariant>)
+
+    @Delete
+    suspend fun deleteProductAltNames(productAltNames: List<ProductAltName>)
+
+    @Delete
+    suspend fun deleteItems(items: List<Item>)
+
+    @Delete
+    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
+
     // Read
 
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun get(categoryId: Long): ProductCategory?
+
+    @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.id = :altNameId")
+    suspend fun getAltName(altNameId: Long): ProductCategoryAltName?
 
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.name = :name")
     suspend fun byName(name: String): ProductCategory?

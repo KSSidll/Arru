@@ -1,10 +1,14 @@
 package com.kssidll.arrugarq.ui.screen.modify.category.editcategory
 
 
+import android.util.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.UpdateResult
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -32,31 +36,38 @@ class EditCategoryViewModel @Inject constructor(
      * @return Whether the update was successful
      */
     suspend fun updateCategory(categoryId: Long) = viewModelScope.async {
-        //        screenState.attemptedToSubmit.value = true
-        //        screenState.validate()
-        //
-        //        val category: ProductCategory =
-        //            screenState.extractDataOrNull(categoryId) ?: return@async false
-        //
-        //        val other = categoryRepository.byName(category.name)
-        //
-        //        if (other != null) {
-        //            if (other.id == categoryId) return@async true
-        //
-        //            screenState.name.apply {
-        //                value = value.toError(FieldError.DuplicateValueError)
-        //            }
-        //
-        //            chosenMergeCandidate.value = other
-        //            showMergeConfirmDialog.value = true
-        //
-        //            return@async false
-        //        } else {
-        //            categoryRepository.update(category)
-        //            return@async true
-        //        }
-        return@async true
-        // TODO add use case
+        screenState.attemptedToSubmit.value = true
+
+        val result = categoryRepository.update(
+            categoryId,
+            screenState.name.value.data.orEmpty()
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                UpdateResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to update category with invalid category id in EditCategoryViewModel"
+                    )
+                    return@async UpdateResult.Success
+                }
+
+                UpdateResult.InvalidName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                UpdateResult.DuplicateName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.DuplicateValueError)
+                    }
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 
@@ -66,35 +77,28 @@ class EditCategoryViewModel @Inject constructor(
      * @return True if operation started, false otherwise
      */
     suspend fun deleteCategory(categoryId: Long) = viewModelScope.async {
-        // return true if no such category exists
-        //        val category = categoryRepository.get(categoryId) ?: return@async true
-        //
-        //        val products = productRepository.byCategory(category)
-        //
-        //        val items = buildList {
-        //            products.forEach {
-        //                addAll(itemRepository.byProduct(it))
-        //            }
-        //        }.toList()
-        //
-        //        val variants = buildList {
-        //            products.forEach {
-        //                addAll(variantRepository.byProduct(it))
-        //            }
-        //        }.toList()
-        //
-        //        if ((products.isNotEmpty() || items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
-        //            screenState.showDeleteWarning.value = true
-        //            return@async false
-        //        } else {
-        //            itemRepository.delete(items)
-        //            variantRepository.delete(variants)
-        //            productRepository.delete(products)
-        //            categoryRepository.delete(category)
-        //            return@async true
-        //        }
-        return@async true
-        // TODO add use case
+        val result = categoryRepository.delete(
+            categoryId,
+            screenState.deleteWarningConfirmed.value
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                DeleteResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to delete category with invalid category id in EditCategoryViewModel"
+                    )
+                    return@async DeleteResult.Success
+                }
+
+                DeleteResult.DangerousDelete -> {
+                    screenState.showDeleteWarning.value = true
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 

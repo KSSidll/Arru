@@ -29,14 +29,18 @@ fun EditCategoryRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateCategory(categoryId)) {
+                if (viewModel.updateCategory(categoryId)
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteCategory(categoryId)) {
+                if (viewModel.deleteCategory(categoryId)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }
