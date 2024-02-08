@@ -29,6 +29,24 @@ interface ItemDao {
 
     // Helper
 
+    @Query("SELECT product.* FROM product WHERE product.id = :productId")
+    suspend fun getProduct(productId: Long): Product?
+
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
+    suspend fun getVariant(variantId: Long): ProductVariant?
+
+    @Query(
+        """
+        SELECT transactionbasketitem.*
+        FROM transactionbasketitem
+        JOIN item ON item.id = transactionbasketitem.itemId
+        WHERE item.id = :itemId
+    """
+    )
+    suspend fun getTransactionBasketItems(itemId: Long): List<TransactionBasketItem>
+
+    @Delete
+    suspend fun deleteTransactionBasketItems(items: List<TransactionBasketItem>)
 
     // Read
 

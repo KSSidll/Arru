@@ -24,7 +24,9 @@ fun AddItemRoute(
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                if (viewModel.addItem() != null) {
+                if (viewModel.addItem()
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }

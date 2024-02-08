@@ -71,7 +71,6 @@ fun ModifyItemScreenImpl(
                 onItemClick = {
                     state.selectedProduct.value = Field.Loaded(it?.product)
                     state.isProductSearchDialogExpanded.value = false
-                    state.validateSelectedProduct()
                     onProductChange()
                 },
                 onItemClickLabel = stringResource(id = R.string.select),

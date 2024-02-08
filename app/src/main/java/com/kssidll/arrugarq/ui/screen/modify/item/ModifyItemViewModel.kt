@@ -167,20 +167,6 @@ data class ModifyItemScreenState(
     }
 
     /**
-     * Validates selectedProduct field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateSelectedProduct(): Boolean {
-        selectedProduct.apply {
-            if (value.data == null) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
-    /**
      * Validates quantity field and updates its error flag
      * @return true if field is of correct value, false otherwise
      */
@@ -211,26 +197,5 @@ data class ModifyItemScreenState(
             return value.isNotError()
         }
     }
-    //
-    //    override fun validate(): Boolean {
-    //        val product = validateSelectedProduct()
-    //        val quantity = validateQuantity()
-    //        val price = validatePrice()
-    //
-    //        return product && quantity && price
-    //    }
-    //
-    //    override fun extractDataOrNull(id: Long): Item? {
-    //        if (!validate()) return null
-    //
-    //        return Item(
-    //            id = id,
-    //            productId = selectedProduct.value.data?.id ?: return null,
-    //            variantId = selectedVariant.value.data?.id,
-    //            actualQuantity = quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
-    //                ?: return null,
-    //            actualPrice = price.value.data?.let { StringHelper.toDoubleOrNull(it) } ?: return null,
-    //        )
-    //    }
 
 }

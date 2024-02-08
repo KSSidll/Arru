@@ -1,6 +1,6 @@
 package com.kssidll.arrugarq.helper
 
-class RegexHelper {
+sealed class RegexHelper {
     companion object {
         /**
          * Checks whether [value] is a representation of digits optionally divided by some other character

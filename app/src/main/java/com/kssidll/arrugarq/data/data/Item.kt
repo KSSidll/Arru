@@ -27,9 +27,9 @@ import com.patrykandpatrick.vico.core.entry.*
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var productId: Long,
-    @ColumnInfo(index = true) val variantId: Long?,
-    val quantity: Long,
-    val price: Long,
+    @ColumnInfo(index = true) var variantId: Long?,
+    var quantity: Long,
+    var price: Long,
 ) {
     @Ignore
     constructor(
@@ -43,23 +43,6 @@ data class Item(
         variantId,
         quantity,
         price,
-    )
-
-    @Ignore
-    constructor(
-        id: Long = 0,
-        productId: Long,
-        variantId: Long?,
-        actualQuantity: Double,
-        actualPrice: Double,
-    ): this(
-        id,
-        productId,
-        variantId,
-        actualQuantity.times(QUANTITY_DIVISOR)
-            .toLong(),
-        actualPrice.times(PRICE_DIVISOR)
-            .toLong(),
     )
 
     @Ignore
@@ -110,6 +93,22 @@ data class Item(
                 generate(it.toLong())
             }
         }
+    }
+
+    /**
+     * @return true if quantity is valid, false otherwise
+     */
+    @Ignore
+    fun validQuantity(): Boolean {
+        return quantity > 0
+    }
+
+    /**
+     * @return true if price is valid, false otherwise
+     */
+    @Ignore
+    fun validPrice(): Boolean {
+        return true
     }
 }
 

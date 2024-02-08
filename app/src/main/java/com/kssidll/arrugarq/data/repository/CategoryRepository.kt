@@ -176,7 +176,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         val items = dao.getItems(productCategoryId)
         val transactionBasketItems = dao.getTransactionBasketItems(productCategoryId)
 
-        if (!force && (altNames.isNotEmpty() || products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty() || transactionBasketItems.isNotEmpty())) {
+        if (!force && (altNames.isNotEmpty() || products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
             dao.deleteTransactionBasketItems(transactionBasketItems)

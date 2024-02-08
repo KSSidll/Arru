@@ -58,7 +58,7 @@ interface VariantRepositorySource {
      * Inserts [ProductVariant]
      * @param productId id of the [Product] to insert the [ProductVariant] for
      * @param name name of the variant
-     * @return [InsertResult] with id of the newly inserted [ProductCategory] or an error if any
+     * @return [InsertResult] with id of the newly inserted [ProductVariant] or an error if any
      */
     suspend fun insert(
         productId: Long,
