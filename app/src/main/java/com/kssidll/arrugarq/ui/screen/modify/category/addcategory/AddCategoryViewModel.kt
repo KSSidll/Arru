@@ -16,7 +16,7 @@ class AddCategoryViewModel @Inject constructor(
 
     /**
      * Tries to add a product category to the repository
-     * @return Id of newly inserted row, null if operation failed
+     * @return resulting [InsertResult]
      */
     suspend fun addCategory(): InsertResult = viewModelScope.async {
         screenState.attemptedToSubmit.value = true

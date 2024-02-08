@@ -1,49 +1,104 @@
 package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
 interface VariantRepositorySource {
+    companion object {
+        sealed class InsertResult(
+            val id: Long? = null,
+            val error: Errors? = null
+        ) {
+            class Success(id: Long): InsertResult(id)
+            class Error(error: Errors): InsertResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidProductId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class UpdateResult(
+            val error: Errors? = null
+        ) {
+            data object Success: UpdateResult()
+            class Error(error: Errors): UpdateResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object InvalidProductId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class DeleteResult(
+            val error: Errors? = null
+        ) {
+            data object Success: DeleteResult()
+            class Error(error: Errors): DeleteResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+        }
+    }
+
     // Create
 
     /**
      * Inserts [ProductVariant]
-     * @param variant [ProductVariant] to insert
-     * @return id of newly inserted [ProductVariant]
+     * @param productId id of the [Product] to insert the [ProductVariant] for
+     * @param name name of the variant
+     * @return [InsertResult] with id of the newly inserted [ProductCategory] or an error if any
      */
-    suspend fun insert(variant: ProductVariant): Long
+    suspend fun insert(
+        productId: Long,
+        name: String
+    ): InsertResult
 
     // Update
 
     /**
-     * Updates matching [ProductVariant] to provided [variant]
-     *
-     * Matches by id
-     * @param variant [ProductVariant] to update
+     * Updates [ProductVariant] with [variantId] id to provided [name]
+     * @param variantId id to match [ProductVariant]
+     * @param name name to update the matching [ProductVariant] to
+     * @return [UpdateResult] with the result
      */
-    suspend fun update(variant: ProductVariant)
+    suspend fun update(
+        variantId: Long,
+        name: String
+    ): UpdateResult
 
     /**
-     * Updates all matching [ProductVariant] to provided [variants]
-     *
-     * Matches by id
-     * @param variants list of [ProductVariant] to update
+     * Updates [ProductVariant] with [variantId] id to provided [productId] and [name]
+     * @param variantId id to match [ProductVariant]
+     * @param productId [Product] id to update the matching [ProductVariant] to
+     * @param name name to update the matching [ProductVariant] to
+     * @return [UpdateResult] with the result
      */
-    suspend fun update(variants: List<ProductVariant>)
+    suspend fun update(
+        variantId: Long,
+        productId: Long,
+        name: String
+    ): UpdateResult
 
     // Delete
 
     /**
      * Deletes [ProductVariant]
-     * @param variant [ProductVariant] to delete
+     * @param variantId id of the [ProductVariant] to delete
+     * @return [DeleteResult] with the result
      */
-    suspend fun delete(variant: ProductVariant)
-
-    /**
-     * Deletes [ProductVariant]
-     * @param variants list of [ProductVariant] to delete
-     */
-    suspend fun delete(variants: List<ProductVariant>)
+    suspend fun delete(variantId: Long): DeleteResult
 
     // Read
 

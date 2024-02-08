@@ -34,7 +34,7 @@ class EditCategoryViewModel @Inject constructor(
 
     /**
      * Tries to update product with provided [categoryId] with current screen state data
-     * @return Whether the update was successful
+     * @return resulting [UpdateResult]
      */
     suspend fun updateCategory(categoryId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
@@ -75,7 +75,7 @@ class EditCategoryViewModel @Inject constructor(
     /**
      * Tries to delete category with provided [categoryId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,
      * state deleteWarningConfirmed flag needs to be set to start foreign constrained data deletion
-     * @return True if operation started, false otherwise
+     * @return resulting [DeleteResult]
      */
     suspend fun deleteCategory(categoryId: Long) = viewModelScope.async {
         val result = categoryRepository.delete(

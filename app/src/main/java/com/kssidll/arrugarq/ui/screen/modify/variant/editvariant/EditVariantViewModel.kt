@@ -1,8 +1,12 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.editvariant
 
 
+import android.util.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.UpdateResult
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -11,61 +15,80 @@ import javax.inject.*
 @HiltViewModel
 class EditVariantViewModel @Inject constructor(
     override val variantRepository: VariantRepositorySource,
-    private val itemRepository: ItemRepositorySource,
 ): ModifyVariantViewModel() {
 
     /**
      * Tries to update variant with provided [variantId] with current screen state data
-     * @return Whether the update was successful
+     * @return resulting [UpdateResult]
      */
     suspend fun updateVariant(variantId: Long) = viewModelScope.async {
-        //        screenState.attemptedToSubmit.value = true
-        //        screenState.validate()
-        //
-        //        val oldVariant = variantRepository.get(variantId) ?: return@async false
-        //        screenState.productId = oldVariant.productId
-        //
-        //        val variant = screenState.extractDataOrNull(variantId) ?: return@async false
-        //
-        //        val other = variantRepository.byNameAndProductId(
-        //            variant.name,
-        //            screenState.productId,
-        //        )
-        //
-        //        if (other != null) {
-        //            if (other.id == variantId) return@async true
-        //
-        //            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
-        //
-        //            return@async false
-        //        } else {
-        //            variantRepository.update(variant)
-        //            return@async true
-        //        }
-        return@async true
+        screenState.attemptedToSubmit.value = true
+
+        val result = variantRepository.update(
+            variantId,
+            screenState.name.value.data.orEmpty()
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                is UpdateResult.InvalidName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                is UpdateResult.DuplicateName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.DuplicateValueError)
+                    }
+                }
+
+                is UpdateResult.InvalidProductId -> {
+                    Log.e(
+                        "InvalidId",
+                        "This is impossible, tried to update variant with invalid productId in AddVariantViewModel, productId is taken from the database"
+                    )
+
+                    return@async UpdateResult.Success
+                }
+
+                is UpdateResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to update variant with invalid id in AddVariantViewModel"
+                    )
+
+                    return@async UpdateResult.Success
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 
     /**
      * Tries to delete variant with provided [variantId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,
      * state deleteWarningConfirmed flag needs to be set to start foreign constrained data deletion
-     * @return True if operation started, false otherwise
+     * @return resulting [DeleteResult]
      */
     suspend fun deleteVariant(variantId: Long) = viewModelScope.async {
-        // return true if no such variant exists
-        //        val variant = variantRepository.get(variantId) ?: return@async true
-        //
-        //        val items = itemRepository.byVariant(variant)
-        //
-        //        if (items.isNotEmpty() && !screenState.deleteWarningConfirmed.value) {
-        //            screenState.showDeleteWarning.value = true
-        //            return@async false
-        //        } else {
-        //            itemRepository.delete(items)
-        //            variantRepository.delete(variant)
-        //            return@async true
-        //        }
-        return@async true
+
+        val result = variantRepository.delete(variantId)
+
+        if (result.isError()) {
+            when (result.error!!) {
+                DeleteResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to delete variant with invalid variant id in EditVariantViewModel"
+                    )
+                    return@async DeleteResult.Success
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 }

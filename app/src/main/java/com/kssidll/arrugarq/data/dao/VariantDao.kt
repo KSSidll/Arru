@@ -29,11 +29,19 @@ interface VariantDao {
 
     // Helper
 
+    @Query("SELECT product.* FROM product WHERE product.id = :productId")
+    suspend fun getProduct(productId: Long): Product?
 
     // Read
 
     @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
     suspend fun get(variantId: Long): ProductVariant?
+
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId = :productId AND productvariant.name = :name")
+    suspend fun byProductAndName(
+        productId: Long,
+        name: String
+    ): ProductVariant?
 
     @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId == :productId")
     fun byProductFlow(productId: Long): Flow<List<ProductVariant>>

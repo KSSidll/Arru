@@ -40,36 +40,5 @@ abstract class ModifyVariantViewModel: ViewModel() {
  * Data representing [ModifyVariantScreenImpl] screen state
  */
 data class ModifyVariantScreenState(
-    var productId: Long = -1, // not sure how to handle this any other way
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-): ModifyScreenState<ProductVariant>() {
-    /**
-     * Validates name field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateName(): Boolean {
-        name.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-    //
-    //    override fun validate(): Boolean {
-    //        return validateName()
-    //    }
-    //
-    //    override fun extractDataOrNull(id: Long): ProductVariant? {
-    //        if (!validate()) return null
-    //        if (productId < 0) error("ProductVariant Extraction from ModifyVariatScreenState Failed, productId was not set before trying to extract data")
-    //
-    //        return ProductVariant(
-    //            id = id,
-    //            productId = productId,
-    //            name = name.value.data?.trim() ?: return null,
-    //        )
-    //    }
-
-}
+): ModifyScreenState<ProductVariant>()

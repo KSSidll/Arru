@@ -95,7 +95,6 @@ interface CategoryRepositorySource {
             data object InvalidId: Errors()
             data object DangerousDelete: Errors()
         }
-
     }
 
     // Create
