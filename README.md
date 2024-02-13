@@ -40,7 +40,7 @@
 
 # Tech Stack & Libraries
 
-- Developed in Android Studio Iguana (currently on version `RC 1`)
+- Developed in Android Studio Iguana (currently on version `RC 2`)
 
 - [Kotlin](https://kotlinlang.org/) based
 
