@@ -139,8 +139,6 @@ fun ModifyItemScreenImpl(
                             value = Field.Loaded(newValue)
                         }
                     }
-
-                    state.validatePrice()
                 },
                 label = {
                     Text(
@@ -163,16 +161,15 @@ fun ModifyItemScreenImpl(
                 IconButton(
                     enabled = state.price.value.isEnabled(),
                     onClick = {
-                        if (state.validatePrice()) {
-                            val value =
-                                state.price.value.data?.let { StringHelper.toDoubleOrNull(it) }
-                                    ?: error("Price validation failed, got null instead of float")
-
-                            state.price.value = Field.Loaded("%.2f".format(value.plus(0.5f)))
-                        }
-
                         if (state.price.value.data.isNullOrBlank()) {
                             state.price.value = Field.Loaded("%.2f".format(0f))
+                        } else {
+                            val value =
+                                state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                            if (value != null) {
+                                state.price.value = Field.Loaded("%.2f".format(value.plus(0.5f)))
+                            }
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -191,22 +188,21 @@ fun ModifyItemScreenImpl(
                 IconButton(
                     enabled = state.price.value.isEnabled(),
                     onClick = {
-                        if (state.validatePrice()) {
-                            val value =
-                                state.price.value.data?.let { StringHelper.toDoubleOrNull(it) }
-                                    ?: error("Price validation failed, got null instead of float")
-
-                            state.price.value = Field.Loaded(
-                                "%.2f".format(
-                                    if (value > 0.5f) value.minus(0.5f) else {
-                                        0f
-                                    }
-                                )
-                            )
-                        }
-
                         if (state.price.value.data.isNullOrBlank()) {
                             state.price.value = Field.Loaded("%.2f".format(0f))
+                        } else {
+                            val value =
+                                state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                            if (value != null) {
+                                state.price.value = Field.Loaded(
+                                    "%.2f".format(
+                                        if (value > 0.5f) value.minus(0.5f) else {
+                                            0f
+                                        }
+                                    )
+                                )
+                            }
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -250,8 +246,6 @@ fun ModifyItemScreenImpl(
                             value = Field.Loaded(newValue)
                         }
                     }
-
-                    state.validateQuantity()
                 },
                 label = {
                     Text(
@@ -277,16 +271,15 @@ fun ModifyItemScreenImpl(
                 IconButton(
                     enabled = state.quantity.value.isEnabled(),
                     onClick = {
-                        if (state.validateQuantity()) {
-                            val value =
-                                state.quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
-                                    ?: error("Quantity validation failed, got null instead of float")
-
-                            state.quantity.value = Field.Loaded("%.3f".format(value.plus(1f)))
-                        }
-
                         if (state.quantity.value.data.isNullOrBlank()) {
                             state.quantity.value = Field.Loaded("%.3f".format(0f))
+                        } else {
+                            val value =
+                                state.quantity.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                            if (value != null) {
+                                state.quantity.value = Field.Loaded("%.3f".format(value.plus(0.5f)))
+                            }
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -305,22 +298,21 @@ fun ModifyItemScreenImpl(
                 IconButton(
                     enabled = state.quantity.value.isEnabled(),
                     onClick = {
-                        if (state.validateQuantity()) {
-                            val value =
-                                state.quantity.value.data?.let { StringHelper.toDoubleOrNull(it) }
-                                    ?: error("Quantity validation failed, got null instead of float")
-
-                            state.quantity.value = Field.Loaded(
-                                "%.3f".format(
-                                    if (value > 1f) value.minus(1f) else {
-                                        0f
-                                    }
-                                )
-                            )
-                        }
-
                         if (state.quantity.value.data.isNullOrBlank()) {
                             state.quantity.value = Field.Loaded("%.3f".format(0f))
+                        } else {
+                            val value =
+                                state.quantity.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                            if (value != null) {
+                                state.quantity.value = Field.Loaded(
+                                    "%.3f".format(
+                                        if (value > 0.5f) value.minus(0.5f) else {
+                                            0f
+                                        }
+                                    )
+                                )
+                            }
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(

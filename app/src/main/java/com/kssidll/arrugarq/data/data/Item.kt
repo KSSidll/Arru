@@ -5,6 +5,7 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.patrykandpatrick.vico.core.entry.*
+import kotlin.math.*
 
 @Entity(
     foreignKeys = [
@@ -65,6 +66,15 @@ data class Item(
         const val QUANTITY_DIVISOR: Long = 1000
 
         @Ignore
+        const val INVALID_PRICE: Long = Long.MIN_VALUE
+
+        @Ignore
+        const val INVALID_QUANTITY: Long = Long.MIN_VALUE
+
+        @Ignore
+        const val INVALID_PRODUCT_ID: Long = Long.MIN_VALUE
+
+        @Ignore
         fun actualQuantity(quantity: Long): Double {
             return quantity.toDouble()
                 .div(QUANTITY_DIVISOR)
@@ -88,6 +98,54 @@ data class Item(
         }
 
         @Ignore
+        fun quantityFromString(string: String): Long? {
+            val rFactor = log10(QUANTITY_DIVISOR.toFloat()).toInt()
+
+            if (!RegexHelper.isFloat(
+                    string,
+                    rFactor
+                )
+            ) {
+                return null
+            }
+
+            val factor = rFactor - string.dropWhile { it.isDigit() }
+                .drop(1).length
+
+            val remainder = "".padEnd(
+                factor,
+                '0'
+            )
+            return string.filter { it.isDigit() }
+                .plus(remainder)
+                .toLongOrNull()
+        }
+
+        @Ignore
+        fun priceFromString(string: String): Long? {
+            val rFactor = log10(PRICE_DIVISOR.toFloat()).toInt()
+
+            if (!RegexHelper.isFloat(
+                    string,
+                    rFactor
+                )
+            ) {
+                return null
+            }
+
+            val factor = rFactor - string.dropWhile { it.isDigit() }
+                .drop(1).length
+
+            val remainder = "".padEnd(
+                factor,
+                '0'
+            )
+            return string.filter { it.isDigit() }
+                .plus(remainder)
+                .toLongOrNull()
+        }
+
+        @Ignore
         fun generateList(amount: Int = 10): List<Item> {
             return List(amount) {
                 generate(it.toLong())
@@ -100,7 +158,7 @@ data class Item(
      */
     @Ignore
     fun validQuantity(): Boolean {
-        return quantity > 0
+        return quantity != INVALID_QUANTITY && quantity > 0
     }
 
     /**
@@ -108,7 +166,7 @@ data class Item(
      */
     @Ignore
     fun validPrice(): Boolean {
-        return true
+        return price != INVALID_PRICE
     }
 }
 

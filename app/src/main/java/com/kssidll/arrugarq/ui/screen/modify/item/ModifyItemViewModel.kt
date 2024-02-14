@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.screen.modify.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -21,7 +20,6 @@ abstract class ModifyItemViewModel: ViewModel() {
     protected abstract val itemRepository: ItemRepositorySource
     protected abstract val productRepository: ProductRepositorySource
     protected abstract val variantsRepository: VariantRepositorySource
-    protected abstract val shopRepository: ShopRepositorySource
 
     internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
 
@@ -165,37 +163,4 @@ data class ModifyItemScreenState(
         selectedProduct.apply { value = value.toLoading() }
         selectedVariant.apply { value = value.toLoading() }
     }
-
-    /**
-     * Validates quantity field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateQuantity(): Boolean {
-        quantity.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            } else if (StringHelper.toDoubleOrNull(value.data!!) == null) {
-                value = value.toError(FieldError.InvalidValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
-    /**
-     * Validates price field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validatePrice(): Boolean {
-        price.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            } else if (StringHelper.toDoubleOrNull(value.data!!) == null) {
-                value = value.toError(FieldError.InvalidValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
 }

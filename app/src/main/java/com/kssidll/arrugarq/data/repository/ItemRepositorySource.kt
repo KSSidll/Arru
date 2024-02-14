@@ -84,7 +84,7 @@ interface ItemRepositorySource {
     suspend fun update(
         itemId: Long,
         productId: Long,
-        variantId: Long,
+        variantId: Long?,
         quantity: Long,
         price: Long
     ): UpdateResult

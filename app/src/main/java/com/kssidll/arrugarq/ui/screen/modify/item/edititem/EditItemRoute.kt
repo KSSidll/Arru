@@ -36,14 +36,18 @@ fun EditItemRoute(
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateItem(itemId)) {
+                if (viewModel.updateItem(itemId)
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteItem(itemId)) {
+                if (viewModel.deleteItem(itemId)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }

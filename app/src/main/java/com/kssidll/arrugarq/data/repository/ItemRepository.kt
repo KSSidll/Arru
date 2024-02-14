@@ -44,7 +44,6 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         }
 
         return InsertResult.Success(dao.insert(item))
-
     }
 
     // Update
@@ -52,17 +51,22 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     override suspend fun update(
         itemId: Long,
         productId: Long,
-        variantId: Long,
+        variantId: Long?,
         quantity: Long,
         price: Long
     ): UpdateResult {
         val item = dao.get(itemId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
+        item.productId = productId
+        item.variantId = variantId
+        item.quantity = quantity
+        item.price = price
+
         if (dao.getProduct(productId) == null) {
             return UpdateResult.Error(UpdateResult.InvalidProductId)
         }
 
-        if (dao.getVariant(variantId) == null) {
+        if (variantId != null && dao.getVariant(variantId) == null) {
             return UpdateResult.Error(UpdateResult.InvalidVariantId)
         }
 
@@ -77,11 +81,6 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         ) {
             return UpdateResult.Error(UpdateResult.InvalidPrice)
         }
-
-        item.productId = productId
-        item.variantId = variantId
-        item.quantity = quantity
-        item.price = price
 
         dao.update(item)
 
