@@ -31,14 +31,6 @@ interface TransactionBasketRepositorySource {
      */
     suspend fun update(transactionBasket: TransactionBasket)
 
-    /**
-     * Updates all matching [TransactionBasket] to provided [transactionBaskets]
-     *
-     * Matches by id
-     * @param transactionBaskets list of [TransactionBasket] to update
-     */
-    suspend fun update(transactionBaskets: List<TransactionBasket>)
-
     // Delete
 
     /**
@@ -48,22 +40,10 @@ interface TransactionBasketRepositorySource {
     suspend fun delete(transactionBasket: TransactionBasket)
 
     /**
-     * Deletes [TransactionBasket]
-     * @param transactionBaskets list of [TransactionBasket] to delete
-     */
-    suspend fun delete(transactionBaskets: List<TransactionBasket>)
-
-    /**
      * Deletes [TransactionBasketItem]
      * @param transactionBasketItem [TransactionBasket] to delete
      */
     suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem)
-
-    /**
-     * Deletes [TransactionBasketItem]
-     * @param transactionBasketItems list of [TransactionBasket] to delete
-     */
-    suspend fun deleteTransactionBasketItem(transactionBasketItems: List<TransactionBasketItem>)
 
     // Read
 

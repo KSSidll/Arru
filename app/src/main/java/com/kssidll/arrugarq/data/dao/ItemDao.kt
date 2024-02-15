@@ -16,16 +16,10 @@ interface ItemDao {
     @Update
     suspend fun update(item: Item)
 
-    @Update
-    suspend fun update(items: List<Item>)
-
     // Delete
 
     @Delete
     suspend fun delete(item: Item)
-
-    @Delete
-    suspend fun delete(items: List<Item>)
 
     // Helper
 

@@ -31,9 +31,6 @@ interface CategoryDao {
     suspend fun delete(productCategory: ProductCategory)
 
     @Delete
-    suspend fun delete(productCategories: List<ProductCategory>)
-
-    @Delete
     suspend fun deleteAltName(alternativeName: ProductCategoryAltName)
 
     @Delete

@@ -20,9 +20,6 @@ interface ProductDao {
     suspend fun update(product: Product)
 
     @Update
-    suspend fun update(products: List<Product>)
-
-    @Update
     suspend fun updateAltName(alternativeName: ProductAltName)
 
     // Delete
@@ -31,13 +28,7 @@ interface ProductDao {
     suspend fun delete(product: Product)
 
     @Delete
-    suspend fun delete(products: List<Product>)
-
-    @Delete
     suspend fun deleteAltName(alternativeName: ProductAltName)
-
-    @Delete
-    suspend fun deleteAltName(alternativeNames: List<ProductAltName>)
 
     // Helper
 

@@ -32,14 +32,6 @@ interface ProductRepositorySource {
     suspend fun update(product: Product)
 
     /**
-     * Updates all matching [Product] to provided [products]
-     *
-     * Matches by id
-     * @param products list of [Product] to update
-     */
-    suspend fun update(products: List<Product>)
-
-    /**
      * Updates matching [ProductAltName] to provided [alternativeName]
      *
      * Matches by id
@@ -56,22 +48,10 @@ interface ProductRepositorySource {
     suspend fun delete(product: Product)
 
     /**
-     * Deletes [Product]
-     * @param products list of [Product] to delete
-     */
-    suspend fun delete(products: List<Product>)
-
-    /**
      * Deletes [ProductAltName]
      * @param alternativeName [ProductAltName] to delete
      */
     suspend fun deleteAltName(alternativeName: ProductAltName)
-
-    /**
-     * Deletes [ProductAltName]
-     * @param alternativeNames list of [ProductAltName] to delete
-     */
-    suspend fun deleteAltName(alternativeNames: List<ProductAltName>)
 
     // Read
 

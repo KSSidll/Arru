@@ -24,14 +24,6 @@ interface ShopRepositorySource {
      */
     suspend fun update(shop: Shop)
 
-    /**
-     * Updates all matching [Shop] to provided [shops]
-     *
-     * Matches by id
-     * @param shops list of [Shop] to update
-     */
-    suspend fun update(shops: List<Shop>)
-
     // Delete
 
     /**
@@ -39,12 +31,6 @@ interface ShopRepositorySource {
      * @param shop [Shop] to delete
      */
     suspend fun delete(shop: Shop)
-
-    /**
-     * Deletes [Shop]
-     * @param shops list of [Shop] to delete
-     */
-    suspend fun delete(shops: List<Shop>)
 
     // Read
 

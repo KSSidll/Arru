@@ -23,10 +23,6 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         dao.update(product)
     }
 
-    override suspend fun update(products: List<Product>) {
-        dao.update(products)
-    }
-
     override suspend fun updateAltName(alternativeName: ProductAltName) {
         dao.updateAltName(alternativeName)
     }
@@ -37,16 +33,8 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         dao.delete(product)
     }
 
-    override suspend fun delete(products: List<Product>) {
-        dao.delete(products)
-    }
-
     override suspend fun deleteAltName(alternativeName: ProductAltName) {
         dao.deleteAltName(alternativeName)
-    }
-
-    override suspend fun deleteAltName(alternativeNames: List<ProductAltName>) {
-        dao.deleteAltName(alternativeNames)
     }
 
     // Read

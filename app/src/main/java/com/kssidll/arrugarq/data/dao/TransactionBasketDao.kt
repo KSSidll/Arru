@@ -19,22 +19,13 @@ interface TransactionBasketDao {
     @Update
     suspend fun update(transactionBasket: TransactionBasket)
 
-    @Update
-    suspend fun update(transactionBaskets: List<TransactionBasket>)
-
     // Delete
 
     @Delete
     suspend fun delete(transactionBasket: TransactionBasket)
 
     @Delete
-    suspend fun delete(transactionBaskets: List<TransactionBasket>)
-
-    @Delete
     suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem)
-
-    @Delete
-    suspend fun deleteTransactionBasketItem(transactionBasketItems: List<TransactionBasketItem>)
 
     // Helper
 

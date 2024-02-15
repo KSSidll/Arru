@@ -19,18 +19,10 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         dao.update(shop)
     }
 
-    override suspend fun update(shops: List<Shop>) {
-        dao.update(shops)
-    }
-
     // Delete
 
     override suspend fun delete(shop: Shop) {
         dao.delete(shop)
-    }
-
-    override suspend fun delete(shops: List<Shop>) {
-        dao.delete(shops)
     }
 
     // Read

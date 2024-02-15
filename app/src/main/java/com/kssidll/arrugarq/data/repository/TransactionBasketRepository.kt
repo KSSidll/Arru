@@ -23,26 +23,14 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         dao.update(transactionBasket)
     }
 
-    override suspend fun update(transactionBaskets: List<TransactionBasket>) {
-        dao.update(transactionBaskets)
-    }
-
     // Delete
 
     override suspend fun delete(transactionBasket: TransactionBasket) {
         dao.delete(transactionBasket)
     }
 
-    override suspend fun delete(transactionBaskets: List<TransactionBasket>) {
-        dao.delete(transactionBaskets)
-    }
-
     override suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem) {
         dao.deleteTransactionBasketItem(transactionBasketItem)
-    }
-
-    override suspend fun deleteTransactionBasketItem(transactionBasketItems: List<TransactionBasketItem>) {
-        dao.deleteTransactionBasketItem(transactionBasketItems)
     }
 
     // Read

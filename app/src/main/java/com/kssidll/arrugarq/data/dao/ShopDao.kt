@@ -16,16 +16,10 @@ interface ShopDao {
     @Update
     suspend fun update(shop: Shop)
 
-    @Update
-    suspend fun update(shops: List<Shop>)
-
     // Delete
 
     @Delete
     suspend fun delete(shop: Shop)
-
-    @Delete
-    suspend fun delete(shops: List<Shop>)
 
     // Helper
 

@@ -16,16 +16,10 @@ interface VariantDao {
     @Update
     suspend fun update(variant: ProductVariant)
 
-    @Update
-    suspend fun update(variants: List<ProductVariant>)
-
     // Delete
 
     @Delete
     suspend fun delete(variant: ProductVariant)
-
-    @Delete
-    suspend fun delete(variants: List<ProductVariant>)
 
     // Helper
 

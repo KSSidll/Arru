@@ -16,16 +16,10 @@ interface ProducerDao {
     @Update
     suspend fun update(producer: ProductProducer)
 
-    @Update
-    suspend fun update(producers: List<ProductProducer>)
-
     // Delete
 
     @Delete
     suspend fun delete(producer: ProductProducer)
-
-    @Delete
-    suspend fun delete(producers: List<ProductProducer>)
 
     // Helper
 
