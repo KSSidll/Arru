@@ -4,25 +4,112 @@ import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.paging.*
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.MergeResult
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
 class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
     // Create
 
-    override suspend fun insert(shop: Shop): Long {
-        return dao.insert(shop)
+    override suspend fun insert(name: String): InsertResult {
+        val shop = Shop(name)
+
+        if (shop.validName()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidName)
+        }
+
+        val other = dao.byName(shop.name)
+
+        if (other != null) {
+            return InsertResult.Error(InsertResult.DuplicateName)
+        }
+
+        return InsertResult.Success(dao.insert(shop))
     }
 
     // Update
 
-    override suspend fun update(shop: Shop) {
+    override suspend fun update(
+        shopId: Long,
+        name: String
+    ): UpdateResult {
+        if (dao.get(shopId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidId)
+        }
+
+        val shop = Shop(
+            id = shopId,
+            name = name.trim()
+        )
+
+        if (shop.validName()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidName)
+        }
+
+        val other = dao.byName(shop.name)
+
+        if (other != null) {
+            if (other.id == shop.id) {
+                return UpdateResult.Success
+            }
+
+            return UpdateResult.Error(UpdateResult.DuplicateName)
+        }
+
         dao.update(shop)
+
+        return UpdateResult.Success
+    }
+
+    override suspend fun merge(
+        shop: Shop,
+        mergingInto: Shop
+    ): MergeResult {
+        if (dao.get(shop.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidShop)
+        }
+
+        if (dao.get(mergingInto.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidMergingInto)
+        }
+
+        val transactionBaskets = dao.getTransactionBaskets(shop.id)
+        transactionBaskets.forEach { it.shopId = mergingInto.id }
+        dao.updateTransactionBaskets(transactionBaskets)
+
+        dao.delete(shop)
+
+        return MergeResult.Success
     }
 
     // Delete
 
-    override suspend fun delete(shop: Shop) {
-        dao.delete(shop)
+    override suspend fun delete(
+        shopId: Long,
+        force: Boolean
+    ): DeleteResult {
+        val shop = dao.get(shopId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+
+        val transactionBaskets = dao.getTransactionBaskets(shopId)
+        val items = dao.getItems(shopId)
+        val transactionBasketItems = dao.getTransactionBasketItems(shopId)
+
+        if (!force && transactionBaskets.isNotEmpty()) {
+            return DeleteResult.Error(DeleteResult.DangerousDelete)
+        } else {
+            dao.deleteTransactionBasketItems(transactionBasketItems)
+            dao.deleteItems(items)
+            dao.deleteTransactionBaskets(transactionBaskets)
+            dao.delete(shop)
+        }
+
+        return DeleteResult.Success
     }
 
     // Read

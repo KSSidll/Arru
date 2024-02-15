@@ -1,10 +1,15 @@
 package com.kssidll.arrugarq.ui.screen.modify.shop.editshop
 
 
+import android.util.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.MergeResult
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.UpdateResult
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -33,8 +38,37 @@ class EditShopViewModel @Inject constructor(
      */
     suspend fun updateShop(shopId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        return@async true
-        // TODO add use case
+
+        val result = shopRepository.update(
+            shopId = shopId,
+            name = screenState.name.value.data.orEmpty()
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                UpdateResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to update shop with invalid shop id in EditShopViewModel"
+                    )
+                    return@async UpdateResult.Success
+                }
+
+                UpdateResult.InvalidName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                UpdateResult.DuplicateName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.DuplicateValueError)
+                    }
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 
@@ -44,8 +78,28 @@ class EditShopViewModel @Inject constructor(
      * @return resulting [DeleteResult]
      */
     suspend fun deleteShop(shopId: Long) = viewModelScope.async {
-        return@async true
-        // TODO add use case
+        val result = shopRepository.delete(
+            shopId,
+            screenState.deleteWarningConfirmed.value
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                DeleteResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to delete shop with invalid shop id in EditShopViewModel"
+                    )
+                    return@async DeleteResult.Success
+                }
+
+                DeleteResult.DangerousDelete -> {
+                    screenState.showDeleteWarning.value = true
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 
@@ -54,8 +108,40 @@ class EditShopViewModel @Inject constructor(
      * @return resulting [MergeResult]
      */
     suspend fun mergeWith(mergeCandidate: Shop) = viewModelScope.async {
-        return@async true
-        // TODO add use case
+        if (mShop == null) {
+            Log.e(
+                "InvalidId",
+                "Tried to merge shop without the shop being set in EditShopViewModel"
+            )
+            return@async MergeResult.Success
+        }
+
+        val result = shopRepository.merge(
+            mShop!!,
+            mergeCandidate
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                MergeResult.InvalidShop -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to merge shop without the shop being set in EditShopViewModel"
+                    )
+                    return@async MergeResult.Success
+                }
+
+                MergeResult.InvalidMergingInto -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to merge shop without the shop being set in EditShopViewModel"
+                    )
+                    return@async MergeResult.Success
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 }

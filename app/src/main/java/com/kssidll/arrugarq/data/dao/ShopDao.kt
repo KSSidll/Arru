@@ -64,10 +64,42 @@ interface ShopDao {
         offset: Int
     ): List<Item>
 
+    @Query(
+        """
+        SELECT item.*
+        FROM item
+        JOIN transactionbasketitem ON transactionbasketitem.itemId = item.id
+        JOIN transactionbasket ON transactionbasket.id = transactionbasketitem.transactionBasketId
+        WHERE shopId = :shopId
+    """
+    )
+    suspend fun getItems(shopId: Long): List<Item>
+
+    @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.shopId = :shopId")
+    suspend fun getTransactionBaskets(shopId: Long): List<TransactionBasket>
+
+    @Query("SELECT transactionbasketitem.* FROM transactionbasketitem JOIN transactionbasket ON transactionbasketitem.transactionBasketId = transactionbasket.id WHERE shopId = :shopId")
+    suspend fun getTransactionBasketItems(shopId: Long): List<TransactionBasketItem>
+
+    @Update
+    suspend fun updateTransactionBaskets(baskets: List<TransactionBasket>)
+
+    @Delete
+    suspend fun deleteTransactionBasketItems(items: List<TransactionBasketItem>)
+
+    @Delete
+    suspend fun deleteTransactionBaskets(baskets: List<TransactionBasket>)
+
+    @Delete
+    suspend fun deleteItems(items: List<Item>)
+
     // Read
 
     @Query("SELECT shop.* FROM shop WHERE shop.id = :shopId")
     suspend fun get(shopId: Long): Shop?
+
+    @Query("SELECT shop.* FROM shop WHERE shop.name = :name")
+    suspend fun byName(name: String): Shop?
 
     @Query(
         """

@@ -39,7 +39,7 @@ data class Shop(
         name: String
     ): this(
         0,
-        name
+        name.trim()
     )
 
     @Ignore
@@ -48,6 +48,14 @@ data class Shop(
             query,
             listOf(name)
         ).score
+    }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
     }
 
     @Ignore

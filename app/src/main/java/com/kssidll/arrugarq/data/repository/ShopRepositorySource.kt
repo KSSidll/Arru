@@ -5,32 +5,111 @@ import com.kssidll.arrugarq.data.data.*
 import kotlinx.coroutines.flow.*
 
 interface ShopRepositorySource {
+    companion object {
+        sealed class InsertResult(
+            val id: Long? = null,
+            val error: Errors? = null
+        ) {
+            class Success(id: Long): InsertResult(id)
+            class Error(error: Errors): InsertResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class UpdateResult(
+            val error: Errors? = null
+        ) {
+            data object Success: UpdateResult()
+            class Error(error: Errors): UpdateResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class MergeResult(
+            val error: Errors? = null
+        ) {
+            data object Success: MergeResult()
+            class Error(error: Errors): MergeResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidShop: Errors()
+            data object InvalidMergingInto: Errors()
+        }
+
+        sealed class DeleteResult(
+            val error: Errors? = null
+        ) {
+            data object Success: DeleteResult()
+            class Error(error: Errors): DeleteResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object DangerousDelete: Errors()
+        }
+    }
+
     // Create
 
     /**
      * Inserts [Shop]
-     * @param shop [Shop] to insert
-     * @return id of newly inserted [Shop]
+     * @param name name of the [Shop] to insert
+     * @return [InsertResult] with id of the newly inserted [Shop] or an error if any
      */
-    suspend fun insert(shop: Shop): Long
+    suspend fun insert(name: String): InsertResult
 
     // Update
 
     /**
-     * Updates matching [Shop] to provided [shop]
-     *
-     * Matches by id
-     * @param shop [Shop] to update
+     * Updates [Shop] with [shopId] to provided [name]
+     * @param shopId id to match [Shop]
+     * @param name name to update the matching [Shop] to
+     * @return [UpdateResult] with the result
      */
-    suspend fun update(shop: Shop)
+    suspend fun update(
+        shopId: Long,
+        name: String
+    ): UpdateResult
+
+    /**
+     * Merges [shop] into [mergingInto]
+     * @param shop [Shop] to merge
+     * @param mergingInto [Shop] to merge the [shop] into
+     * @return [MergeResult] with the result
+     */
+    suspend fun merge(
+        shop: Shop,
+        mergingInto: Shop
+    ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [Shop]
-     * @param shop [Shop] to delete
+     * Deletes [Shop] matching [shopId]
+     * @param shopId id fo the [Shop] to delete
+     * @param force whether to force delete on dangerous delete
+     * @return [DeleteResult] with the result
      */
-    suspend fun delete(shop: Shop)
+    suspend fun delete(
+        shopId: Long,
+        force: Boolean
+    ): DeleteResult
 
     // Read
 
