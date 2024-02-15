@@ -31,9 +31,11 @@ fun AddProductRoute(
             .collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                // TODO don't check for null, check if not error once implemented error type
-                val result = viewModel.addProduct()
-                if (result != null) navigateBack()
+                if (viewModel.addProduct()
+                        .isNotError()
+                ) {
+                    navigateBack()
+                }
             }
         },
         onCategoryAddButtonClick = navigateCategoryAdd,

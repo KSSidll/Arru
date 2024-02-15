@@ -1,10 +1,15 @@
 package com.kssidll.arrugarq.ui.screen.modify.product.editproduct
 
 
+import android.util.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.MergeResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.UpdateResult
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -36,8 +41,51 @@ class EditProductViewModel @Inject constructor(
     suspend fun updateProduct(productId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
 
-        return@async true
-        // TODO add use case
+        val result = productRepository.update(
+            productId = productId,
+            name = screenState.name.value.data.orEmpty(),
+            categoryId = screenState.selectedProductCategory.value.data?.id
+                ?: Product.INVALID_CATEGORY_ID,
+            producerId = screenState.selectedProductProducer.value.data?.id
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                UpdateResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to update product with invalid product id in EditProductViewModel"
+                    )
+                    return@async UpdateResult.Success
+                }
+
+                UpdateResult.InvalidName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                UpdateResult.DuplicateName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.DuplicateValueError)
+                    }
+                }
+
+                UpdateResult.InvalidCategoryId -> {
+                    screenState.selectedProductCategory.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                UpdateResult.InvalidProducerId -> {
+                    screenState.selectedProductProducer.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 
@@ -47,8 +95,28 @@ class EditProductViewModel @Inject constructor(
      * @return resulting [DeleteResult]
      */
     suspend fun deleteProduct(productId: Long) = viewModelScope.async {
-        return@async true
-        // TODO add use case
+        val result = productRepository.delete(
+            productId,
+            screenState.deleteWarningConfirmed.value
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                DeleteResult.InvalidId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to delete product with invalid product id in EditProductViewModel"
+                    )
+                    return@async DeleteResult.Success
+                }
+
+                DeleteResult.DangerousDelete -> {
+                    screenState.showDeleteWarning.value = true
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 
@@ -57,8 +125,40 @@ class EditProductViewModel @Inject constructor(
      * @return resulting [MergeResult]
      */
     suspend fun mergeWith(mergeCandidate: Product) = viewModelScope.async {
-        return@async true
-        // TODO add use case
+        if (mProduct == null) {
+            Log.e(
+                "InvalidId",
+                "Tried to merge product without the product being set in EditProductViewModel"
+            )
+            return@async MergeResult.Success
+        }
+
+        val result = productRepository.merge(
+            mProduct!!,
+            mergeCandidate
+        )
+
+        if (result.isError()) {
+            when (result.error!!) {
+                MergeResult.InvalidProduct -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to merge product without the product being set in EditProductViewModel"
+                    )
+                    return@async MergeResult.Success
+                }
+
+                MergeResult.InvalidMergingInto -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to merge product without the product being set in EditProductViewModel"
+                    )
+                    return@async MergeResult.Success
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 }

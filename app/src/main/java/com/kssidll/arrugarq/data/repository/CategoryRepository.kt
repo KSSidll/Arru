@@ -102,18 +102,18 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         categoryId: Long,
         name: String
     ): AltUpdateResult {
-        if (dao.get(categoryId) == null) {
+        if (dao.getAltName(alternativeNameId) == null) {
             return AltUpdateResult.Error(AltUpdateResult.InvalidId)
         }
 
-        if (dao.getAltName(alternativeNameId) == null) {
+        if (dao.get(categoryId) == null) {
             return AltUpdateResult.Error(AltUpdateResult.InvalidCategoryId)
         }
 
         val alternativeName = ProductCategoryAltName(
             id = alternativeNameId,
             productCategoryId = categoryId,
-            name = name,
+            name = name.trim(),
         )
 
         if (alternativeName.validName()
@@ -122,7 +122,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             return AltUpdateResult.Error(AltUpdateResult.InvalidName)
         }
 
-        val others = dao.altNames(alternativeName.productCategoryId)
+        val others = dao.altNames(categoryId)
 
         if (alternativeName.name in others.map { it.name }) {
             if (alternativeName.id in others.map { it.id }) {

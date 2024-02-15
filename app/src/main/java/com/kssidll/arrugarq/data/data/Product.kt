@@ -44,10 +44,13 @@ data class Product(
         0,
         categoryId,
         producerId,
-        name
+        name.trim()
     )
 
     companion object {
+        @Ignore
+        const val INVALID_CATEGORY_ID: Long = Long.MIN_VALUE
+
         @Ignore
         fun generate(productId: Long = 0): Product {
             return Product(
@@ -73,6 +76,14 @@ data class Product(
             listOf(name)
         ).score
     }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
+    }
 }
 
 @Entity(
@@ -97,6 +108,15 @@ data class ProductAltName(
     @ColumnInfo(index = true) val productId: Long,
     val name: String,
 ) {
+    constructor(
+        product: Product,
+        name: String
+    ): this(
+        id = 0,
+        productId = product.id,
+        name = name.trim()
+    )
+
     companion object {
         @Ignore
         fun generate(productWithAltNameId: Long = 0): ProductAltName {
@@ -113,6 +133,14 @@ data class ProductAltName(
                 generate(it.toLong())
             }
         }
+    }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
     }
 }
 

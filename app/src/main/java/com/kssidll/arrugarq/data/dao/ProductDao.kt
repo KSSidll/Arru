@@ -30,19 +30,23 @@ interface ProductDao {
     @Delete
     suspend fun deleteAltName(alternativeName: ProductAltName)
 
+    @Delete
+    suspend fun deleteAltName(alternativeNames: List<ProductAltName>)
+
+
     // Helper
 
     @Query("SELECT * FROM shop WHERE shop.id = :shopId")
     suspend fun shopById(shopId: Long): Shop
 
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducer
+    suspend fun producerById(producerId: Long): ProductProducer?
 
     @Query("SELECT * FROM productvariant WHERE productvariant.id = :variantId")
-    suspend fun variantById(variantId: Long): ProductVariant
+    suspend fun variantById(variantId: Long): ProductVariant?
 
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
-    suspend fun categoryById(categoryId: Long): ProductCategory
+    suspend fun categoryById(categoryId: Long): ProductCategory?
 
     @Query(
         """
@@ -73,13 +77,55 @@ interface ProductDao {
         offset: Int
     ): List<Item>
 
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId = :productId")
+    suspend fun variants(productId: Long): List<ProductVariant>
+
     @Query("SELECT productaltname.* FROM productaltname WHERE productaltname.productId = :productId")
     suspend fun altNames(productId: Long): List<ProductAltName>
+
+    @Query(
+        """
+        SELECT item.*
+        FROM item
+        JOIN product ON product.id = item.productId
+        WHERE product.id = :productId
+    """
+    )
+    suspend fun getItems(productId: Long): List<Item>
+
+    @Query(
+        """
+        SELECT transactionbasketitem.*
+        FROM transactionbasketitem
+        JOIN item ON item.id = transactionbasketitem.itemId
+        JOIN product ON product.id = item.productId
+        WHERE product.id = :productId
+    """
+    )
+    suspend fun getTransactionBasketItems(productId: Long): List<TransactionBasketItem>
+
+    @Delete
+    suspend fun deleteItems(items: List<Item>)
+
+    @Delete
+    suspend fun deleteVariants(variants: List<ProductVariant>)
+
+    @Delete
+    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
+
+    @Update
+    suspend fun updateItems(items: List<Item>)
 
     // Read
 
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
     suspend fun get(productId: Long): Product?
+
+    @Query("SELECT productaltname.* FROM productaltname WHERE productaltname.id = :altNameId")
+    suspend fun getAltName(altNameId: Long): ProductAltName?
+
+    @Query("SELECT product.* FROM product WHERE product.name = :name")
+    suspend fun byName(name: String): Product?
 
     @Query(
         """
@@ -242,7 +288,7 @@ interface ProductDao {
         return items.map { item ->
             val transactionBasket = transactionBasketByItemId(item.id)
             val variant = item.variantId?.let { variantById(it) }
-            val category = categoryById(product.categoryId)
+            val category = categoryById(product.categoryId)!!
             val producer = product.producerId?.let { producerById(it) }
             val shop = transactionBasket.shopId?.let { shopById(it) }
 

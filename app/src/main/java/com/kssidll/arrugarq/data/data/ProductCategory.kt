@@ -57,7 +57,6 @@ data class ProductCategory(
     fun validName(): Boolean {
         return name.isNotBlank()
     }
-
 }
 
 @Entity(
