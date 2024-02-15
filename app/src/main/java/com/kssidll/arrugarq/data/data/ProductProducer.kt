@@ -15,7 +15,7 @@ import me.xdrop.fuzzywuzzy.*
 )
 data class ProductProducer(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    val name: String,
+    var name: String,
 ): FuzzySearchSource, NameSource {
     companion object {
         @Ignore
@@ -39,7 +39,7 @@ data class ProductProducer(
         name: String,
     ): this(
         0,
-        name
+        name.trim()
     )
 
     @Ignore
@@ -53,6 +53,14 @@ data class ProductProducer(
     @Ignore
     override fun name(): String {
         return name
+    }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
     }
 
 }

@@ -2,49 +2,115 @@ package com.kssidll.arrugarq.data.repository
 
 import androidx.paging.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.CategoryRepositorySource.Companion.MergeResult
 import kotlinx.coroutines.flow.*
 
 interface ProducerRepositorySource {
+    companion object {
+        sealed class InsertResult(
+            val id: Long? = null,
+            val error: Errors? = null
+        ) {
+            class Success(id: Long): InsertResult(id)
+            class Error(error: Errors): InsertResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class UpdateResult(
+            val error: Errors? = null
+        ) {
+            data object Success: UpdateResult()
+            class Error(error: Errors): UpdateResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object InvalidName: Errors()
+            data object DuplicateName: Errors()
+        }
+
+        sealed class MergeResult(
+            val error: Errors? = null
+        ) {
+            data object Success: MergeResult()
+            class Error(error: Errors): MergeResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidProducer: Errors()
+            data object InvalidMergingInto: Errors()
+        }
+
+        sealed class DeleteResult(
+            val error: Errors? = null
+        ) {
+            data object Success: DeleteResult()
+            class Error(error: Errors): DeleteResult(error = error)
+
+            fun isError(): Boolean = this is Error
+            fun isNotError(): Boolean = isError().not()
+
+            sealed class Errors
+            data object InvalidId: Errors()
+            data object DangerousDelete: Errors()
+        }
+    }
+
     // Create
 
     /**
      * Inserts [ProductProducer]
-     * @param producer [ProductProducer] to insert
-     * @return id of newly inserted [ProductProducer]
+     * @param name name of the [ProductProducer]
+     * @return [InsertResult] with id of the newly inserted [ProductProducer] or an error if any
      */
-    suspend fun insert(producer: ProductProducer): Long
+    suspend fun insert(name: String): InsertResult
 
     // Update
 
     /**
-     * Updates matching [ProductProducer] to provided [producer]
-     *
-     * Matches by id
-     * @param producer [ProductProducer] to update
+     * Updates [ProductProducer] with [producerId] to provided [name]
+     * @param producerId id to match [ProductProducer]
+     * @param name name to update the matching [ProductProducer] to
+     * @return [UpdateResult] with the result
      */
-    suspend fun update(producer: ProductProducer)
+    suspend fun update(
+        producerId: Long,
+        name: String
+    ): UpdateResult
 
     /**
-     * Updates all matching [ProductProducer] to provided [producers]
-     *
-     * Matches by id
-     * @param producers list of [ProductProducer] to update
+     * Merges [producer] into [mergingInto]
+     * @param producer [ProductCategory] to merge
+     * @param mergingInto [ProductCategory] to merge the [category] into
+     * @return [MergeResult] with the result
      */
-    suspend fun update(producers: List<ProductProducer>)
+    suspend fun merge(
+        producer: ProductProducer,
+        mergingInto: ProductProducer,
+    ): MergeResult
 
     // Delete
 
     /**
      * Deletes [ProductProducer]
-     * @param producer [ProductProducer] to delete
+     * @param producerid id of the [ProductProducer] to delete
+     * @param force whether to force delete on dangerous delete
+     * @return [DeleteResult] with the result
      */
-    suspend fun delete(producer: ProductProducer)
-
-    /**
-     * Deletes [ProductProducer]
-     * @param producers list of [ProductProducer] to delete
-     */
-    suspend fun delete(producers: List<ProductProducer>)
+    suspend fun delete(
+        producerid: Long,
+        force: Boolean
+    ): DeleteResult
 
     // Read
 

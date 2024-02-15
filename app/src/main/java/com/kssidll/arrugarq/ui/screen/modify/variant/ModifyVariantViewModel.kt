@@ -2,7 +2,6 @@ package com.kssidll.arrugarq.ui.screen.modify.variant
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.*
@@ -41,4 +40,4 @@ abstract class ModifyVariantViewModel: ViewModel() {
  */
 data class ModifyVariantScreenState(
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-): ModifyScreenState<ProductVariant>()
+): ModifyScreenState()

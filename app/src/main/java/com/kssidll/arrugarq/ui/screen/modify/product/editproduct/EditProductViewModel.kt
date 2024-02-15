@@ -15,8 +15,6 @@ class EditProductViewModel @Inject constructor(
     override val productRepository: ProductRepositorySource,
     override val producerRepository: ProducerRepositorySource,
     override val categoryRepository: CategoryRepositorySource,
-    private val variantRepository: VariantRepositorySource,
-    private val itemRepository: ItemRepositorySource,
 ): ModifyProductViewModel() {
     private val mMergeMessageProductName: MutableState<String> = mutableStateOf(String())
     val mergeMessageProductName get() = mMergeMessageProductName.value
@@ -33,37 +31,11 @@ class EditProductViewModel @Inject constructor(
 
     /**
      * Tries to update product with provided [productId] with current screen state data
-     * @return Whether the update was successful
+     * @return resulting [UpdateResult]
      */
     suspend fun updateProduct(productId: Long) = viewModelScope.async {
-        //        screenState.attemptedToSubmit.value = true
-        //        screenState.validate()
-        //
-        //        val product = screenState.extractDataOrNull(productId) ?: return@async false
-        //        val other = productRepository.byNameAndProducerId(
-        //            product.name,
-        //            product.producerId
-        //        )
-        //
-        //        if (other != null) {
-        //            if (other.id == productId) return@async true
-        //
-        //            screenState.name.apply {
-        //                value = value.toError(FieldError.DuplicateValueError)
-        //            }
-        //
-        //            screenState.selectedProductProducer.apply {
-        //                value = value.toError(FieldError.DuplicateValueError)
-        //            }
-        //
-        //            chosenMergeCandidate.value = other
-        //            showMergeConfirmDialog.value = true
-        //
-        //            return@async false
-        //        } else {
-        //            productRepository.update(product)
-        //            return@async true
-        //        }
+        screenState.attemptedToSubmit.value = true
+
         return@async true
         // TODO add use case
     }
@@ -72,50 +44,19 @@ class EditProductViewModel @Inject constructor(
     /**
      * Tries to delete product with provided [productId], sets showDeleteWarning flag in state if operation would require deleting foreign constrained data,
      * state deleteWarningConfirmed flag needs to be set to start foreign constrained data deletion
-     * @return True if operation started, false otherwise
+     * @return resulting [DeleteResult]
      */
     suspend fun deleteProduct(productId: Long) = viewModelScope.async {
-        // return true if no such product exists
-        //        val product = productRepository.get(productId) ?: return@async true
-        //
-        //        val items = itemRepository.byProduct(product)
-        //        val variants = variantRepository.byProduct(product)
-        //
-        //        if ((items.isNotEmpty() || variants.isNotEmpty()) && !screenState.deleteWarningConfirmed.value) {
-        //            screenState.showDeleteWarning.value = true
-        //            return@async false
-        //        } else {
-        //            itemRepository.delete(items)
-        //            variantRepository.delete(variants)
-        //            productRepository.delete(product)
-        //            return@async true
-        //        }
         return@async true
         // TODO add use case
     }
         .await()
 
     /**
-     * Tries to delete merge category into provided [mergeCandidate]
-     * @return True if operation succeded, false otherwise
+     * Tries to delete merge product into provided [mergeCandidate]
+     * @return resulting [MergeResult]
      */
     suspend fun mergeWith(mergeCandidate: Product) = viewModelScope.async {
-        //        val items = mProduct?.let { itemRepository.byProduct(it) } ?: return@async false
-        //        val variants = mProduct?.let { variantRepository.byProduct(it) } ?: return@async false
-        //
-        //        if (items.isNotEmpty()) {
-        //            items.forEach { it.productId = mergeCandidate.id }
-        //            itemRepository.update(items)
-        //        }
-        //
-        //        if (variants.isNotEmpty()) {
-        //            variants.forEach { it.productId = mergeCandidate.id }
-        //            variantRepository.update(variants)
-        //        }
-        //
-        //        mProduct?.let { productRepository.delete(it) }
-        //
-        //        return@async true
         return@async true
         // TODO add use case
     }

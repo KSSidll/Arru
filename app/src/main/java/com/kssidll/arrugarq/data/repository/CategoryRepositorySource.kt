@@ -146,7 +146,8 @@ interface CategoryRepositorySource {
     /**
      * Merges [category] into [mergingInto]
      * @param category [ProductCategory] to merge
-     * @param category [ProductCategory] to merge the [category] into
+     * @param mergingInto [ProductCategory] to merge the [category] into
+     * @return [MergeResult] with the result
      */
     suspend fun merge(
         category: ProductCategory,

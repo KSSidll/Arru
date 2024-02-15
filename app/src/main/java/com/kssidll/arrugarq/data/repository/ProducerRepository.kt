@@ -4,33 +4,111 @@ import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.paging.*
+import com.kssidll.arrugarq.data.repository.ProducerRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.ProducerRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.data.repository.ProducerRepositorySource.Companion.MergeResult
+import com.kssidll.arrugarq.data.repository.ProducerRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
 class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
     // Create
 
-    override suspend fun insert(producer: ProductProducer): Long {
-        return dao.insert(producer)
+    override suspend fun insert(name: String): InsertResult {
+        val producer = ProductProducer(name.trim())
+
+        if (producer.validName()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidName)
+        }
+
+        val other = dao.byName(producer.name)
+
+        if (other != null) {
+            return InsertResult.Error(InsertResult.DuplicateName)
+        }
+
+        return InsertResult.Success(dao.insert(producer))
     }
 
     // Update
 
-    override suspend fun update(producer: ProductProducer) {
+    override suspend fun update(
+        producerId: Long,
+        name: String
+    ): UpdateResult {
+        val producer = dao.get(producerId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+
+        producer.name = name
+
+        if (producer.validName()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidName)
+        }
+
+        val other = dao.byName(producer.name)
+
+        if (other != null) {
+            if (other.id == producer.id) {
+                return UpdateResult.Success
+            }
+
+            return UpdateResult.Error(UpdateResult.DuplicateName)
+        }
+
         dao.update(producer)
+
+        return UpdateResult.Success
     }
 
-    override suspend fun update(producers: List<ProductProducer>) {
-        dao.update(producers)
+    override suspend fun merge(
+        producer: ProductProducer,
+        mergingInto: ProductProducer
+    ): MergeResult {
+        if (dao.get(producer.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidProducer)
+        }
+
+        if (dao.get(mergingInto.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidMergingInto)
+        }
+
+        val products = dao.getProducts(producer.id)
+        products.forEach { it.producerId = mergingInto.id }
+        dao.updateProducts(products)
+
+        dao.delete(producer)
+
+        return MergeResult.Success
     }
 
     // Delete
 
-    override suspend fun delete(producer: ProductProducer) {
-        dao.delete(producer)
-    }
+    override suspend fun delete(
+        producerid: Long,
+        force: Boolean
+    ): DeleteResult {
+        val producer = dao.get(producerid) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-    override suspend fun delete(producers: List<ProductProducer>) {
-        dao.delete(producers)
+        val products = dao.getProducts(producerid)
+        val productVariants = dao.getProductsVariants(producerid)
+        val productAltNames = dao.getProductsAltNames(producerid)
+        val items = dao.getItems(producerid)
+        val transactionBasketItems = dao.getTransactionBasketItems(producerid)
+
+        if (!force && (products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
+            return DeleteResult.Error(DeleteResult.DangerousDelete)
+        } else {
+            dao.deleteTransactionBasketItems(transactionBasketItems)
+            dao.deleteItems(items)
+            dao.deleteProductAltNames(productAltNames)
+            dao.deleteProductVariants(productVariants)
+            dao.deleteProducts(products)
+            dao.delete(producer)
+        }
+
+        return DeleteResult.Success
     }
 
     // Read

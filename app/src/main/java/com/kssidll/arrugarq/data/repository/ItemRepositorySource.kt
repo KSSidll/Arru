@@ -94,7 +94,7 @@ interface ItemRepositorySource {
     /**
      * Deletes [Item]
      * @param itemId id of the [Item] to delete
-     * @return [Item] with the result
+     * @return [DeleteResult] with the result
      */
     suspend fun delete(itemId: Long): DeleteResult
 

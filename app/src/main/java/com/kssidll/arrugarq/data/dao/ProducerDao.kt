@@ -70,10 +70,86 @@ interface ProducerDao {
         offset: Int
     ): List<Item>
 
+    @Query(
+        """
+        SELECT product.*
+        FROM product
+        JOIN productproducer ON productproducer.id = product.producerId
+        WHERE productproducer.id = :producerId
+    """
+    )
+    suspend fun getProducts(producerId: Long): List<Product>
+
+    @Query(
+        """
+        SELECT productvariant.*
+        FROM productvariant
+        JOIN product ON product.id = productvariant.productId
+        JOIN productproducer ON productproducer.id = product.producerId
+        WHERE productproducer.id = :producerId
+    """
+    )
+    suspend fun getProductsVariants(producerId: Long): List<ProductVariant>
+
+    @Query(
+        """
+        SELECT productaltname.*
+        FROM productaltname
+        JOIN product ON product.id = productaltname.productId
+        JOIN productproducer ON productproducer.id = product.producerId
+        WHERE productproducer.id = :producerId
+    """
+    )
+    suspend fun getProductsAltNames(producerId: Long): List<ProductAltName>
+
+    @Query(
+        """
+        SELECT item.*
+        FROM item
+        JOIN product ON product.id = item.productId
+        JOIN productproducer ON productproducer.id = product.producerId
+        WHERE productproducer.id = :producerId
+    """
+    )
+    suspend fun getItems(producerId: Long): List<Item>
+
+    @Query(
+        """
+        SELECT transactionbasketitem.*
+        FROM transactionbasketitem
+        JOIN item ON item.id = transactionbasketitem.itemId
+        JOIN product ON product.id = item.productId
+        JOIN productproducer ON productproducer.id = product.producerId
+        WHERE productproducer.id = :producerId
+    """
+    )
+    suspend fun getTransactionBasketItems(producerId: Long): List<TransactionBasketItem>
+
+    @Delete
+    suspend fun deleteProducts(products: List<Product>)
+
+    @Delete
+    suspend fun deleteProductVariants(productVariants: List<ProductVariant>)
+
+    @Delete
+    suspend fun deleteProductAltNames(productAltNames: List<ProductAltName>)
+
+    @Delete
+    suspend fun deleteItems(items: List<Item>)
+
+    @Delete
+    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
+
+    @Update
+    suspend fun updateProducts(products: List<Product>)
+
     // Read
 
     @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun get(producerId: Long): ProductProducer?
+
+    @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.name = :name")
+    suspend fun byName(name: String): ProductProducer?
 
     @Query(
         """

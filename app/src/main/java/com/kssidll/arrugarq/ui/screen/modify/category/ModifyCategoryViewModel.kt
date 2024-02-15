@@ -50,4 +50,4 @@ abstract class ModifyCategoryViewModel: ViewModel() {
  */
 data class ModifyCategoryScreenState(
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String())),
-): ModifyScreenState<ProductCategory>()
+): ModifyScreenState()

@@ -84,7 +84,6 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
 
         val other = dao.byName(category.name)
 
-
         if (other != null) {
             if (other.id == category.id) {
                 return UpdateResult.Success

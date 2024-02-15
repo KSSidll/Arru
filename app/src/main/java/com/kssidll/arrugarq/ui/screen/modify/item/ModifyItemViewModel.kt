@@ -152,7 +152,7 @@ data class ModifyItemScreenState(
     var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-): ModifyScreenState<Item>() {
+): ModifyScreenState() {
 
     /**
      * Sets all fields to Loading status

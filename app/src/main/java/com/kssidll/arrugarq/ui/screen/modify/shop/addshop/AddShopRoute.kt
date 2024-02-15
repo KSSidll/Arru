@@ -23,6 +23,7 @@ fun AddShopRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
+                // TODO don't check for null, check if not error once implemented error type
                 val result = viewModel.addShop()
                 if (result != null) navigateBack()
             }

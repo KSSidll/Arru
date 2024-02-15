@@ -19,10 +19,7 @@ import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
-/**
- * @param T Type of data which the inheriting screen state represents
- */
-abstract class ModifyScreenState<T>(
+abstract class ModifyScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
     val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
     val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),

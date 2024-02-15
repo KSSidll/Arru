@@ -23,7 +23,9 @@ fun AddProducerRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.addProducer() != null) {
+                if (viewModel.addProducer()
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }

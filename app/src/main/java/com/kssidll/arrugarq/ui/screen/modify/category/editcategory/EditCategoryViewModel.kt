@@ -33,7 +33,7 @@ class EditCategoryViewModel @Inject constructor(
     }
 
     /**
-     * Tries to update product with provided [categoryId] with current screen state data
+     * Tries to update category with provided [categoryId] with current screen state data
      * @return resulting [UpdateResult]
      */
     suspend fun updateCategory(categoryId: Long) = viewModelScope.async {
@@ -105,7 +105,7 @@ class EditCategoryViewModel @Inject constructor(
 
     /**
      * Tries to delete merge category into provided [mergeCandidate]
-     * @return True if operation succeded, false otherwise
+     * @return resulting [MergeResult]
      */
     suspend fun mergeWith(mergeCandidate: ProductCategory) = viewModelScope.async {
         if (mCategory == null) {

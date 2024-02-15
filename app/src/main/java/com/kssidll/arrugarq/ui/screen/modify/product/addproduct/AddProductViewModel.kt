@@ -16,28 +16,10 @@ class AddProductViewModel @Inject constructor(
 
     /**
      * Tries to add a product to the repository
-     * @return Id of newly inserted row, null if operation failed
+     * @return resulting [InsertResult]
      */
     suspend fun addProduct(): Long? = viewModelScope.async {
-        //        screenState.attemptedToSubmit.value = true
-        //        screenState.validate()
-        //
-        //        val product = screenState.extractDataOrNull() ?: return@async null
-        //        val other = productRepository.byNameAndProducerId(
-        //            product.name,
-        //            product.producerId
-        //        )
-        //
-        //        if (other != null) {
-        //            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
-        //            screenState.selectedProductProducer.apply {
-        //                value = value.toError(FieldError.DuplicateValueError)
-        //            }
-        //
-        //            return@async null
-        //        } else {
-        //            return@async productRepository.insert(product)
-        //        }
+        screenState.attemptedToSubmit.value = true
         return@async 1L
         // TODO add use case
     }

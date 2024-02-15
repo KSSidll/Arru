@@ -29,21 +29,27 @@ fun EditProducerRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateProducer(producerId)) {
+                if (viewModel.updateProducer(producerId)
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteProducer(producerId)) {
+                if (viewModel.deleteProducer(producerId)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it)) {
+                if (viewModel.mergeWith(it)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }

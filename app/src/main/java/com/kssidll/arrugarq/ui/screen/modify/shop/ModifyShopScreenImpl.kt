@@ -75,7 +75,6 @@ fun ModifyShopScreenImpl(
             value = state.name.value.data ?: String(),
             onValueChange = {
                 state.name.value = Field.Loaded(it)
-                state.validateName()
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
