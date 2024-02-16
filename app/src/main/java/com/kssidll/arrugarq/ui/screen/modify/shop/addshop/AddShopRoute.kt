@@ -23,8 +23,11 @@ fun AddShopRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                val result = viewModel.addShop()
-                if (result != null) navigateBack()
+                if (viewModel.addShop()
+                        .isNotError()
+                ) {
+                    navigateBack()
+                }
             }
         },
     )

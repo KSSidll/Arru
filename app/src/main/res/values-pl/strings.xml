@@ -28,6 +28,12 @@
     <string name="item_quantity_increment_by_one">Zwiększ ilość o 1</string>
     <string name="item_quantity_decrement_by_one">Zmniejsz ilość o 1</string>
 
+    <string name="transaction">Transakcja</string>
+    <string name="transaction_add">Dodaj Transakcje</string>
+    <string name="transaction_edit">Edytuj Transakcje</string>
+    <string name="transaction_delete_warning_text">Ta akcja usunie wszystkie przedmiotu skojarzone z tą transakcją</string>
+    <string name="transaction_items_toggle">Przełącz widoczność przedmiotów transakcji</string>
+
     <string name="item">Przedmiot</string>
     <string name="item_add">Dodaj Przedmiot</string>
     <string name="item_edit">Edytuj Przedmiot</string>

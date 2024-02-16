@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.ui.screen.modify.shop.addshop
 
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.ShopRepositorySource.Companion.InsertResult
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
@@ -15,22 +16,30 @@ class AddShopViewModel @Inject constructor(
 
     /**
      * Tries to add a shop to the repository
-     * @return Id of newly inserted row, null if operation failed
+     * @return resulting [InsertResult]
      */
-    suspend fun addShop(): Long? = viewModelScope.async {
+    suspend fun addShop() = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        screenState.validate()
 
-        val shop = screenState.extractDataOrNull() ?: return@async null
-        val other = shopRepository.getByName(shop.name)
+        val result = shopRepository.insert(screenState.name.value.data.orEmpty())
 
-        if (other != null) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        if (result.isError()) {
+            when (result.error!!) {
+                InsertResult.InvalidName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
 
-            return@async null
-        } else {
-            return@async shopRepository.insert(shop)
+                InsertResult.DuplicateName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.DuplicateValueError)
+                    }
+                }
+            }
         }
+
+        return@async result
     }
         .await()
 }

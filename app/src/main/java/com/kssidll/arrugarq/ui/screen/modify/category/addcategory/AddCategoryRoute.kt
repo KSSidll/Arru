@@ -23,7 +23,9 @@ fun AddCategoryRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.addCategory() != null) {
+                if (viewModel.addCategory()
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }

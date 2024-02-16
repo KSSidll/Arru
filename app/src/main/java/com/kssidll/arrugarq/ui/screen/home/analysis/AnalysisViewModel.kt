@@ -13,7 +13,8 @@ import javax.inject.*
 
 @HiltViewModel
 class AnalysisViewModel @Inject constructor(
-    private val itemRepository: ItemRepositorySource
+    private val categoryRepository: CategoryRepositorySource,
+    private val shopRepository: ShopRepositorySource,
 ): ViewModel() {
     private val mYear: MutableState<Int> = mutableStateOf(
         Calendar.getInstance()
@@ -64,38 +65,34 @@ class AnalysisViewModel @Inject constructor(
 
         mSetCategorySpendingJob?.cancel()
         mSetCategorySpendingJob = viewModelScope.launch {
-            mSetCategorySpending.value = itemRepository.getCategoryTotalSpentFlowByMonth(
+            mSetCategorySpending.value = categoryRepository.totalSpentByCategoryByMonthFlow(
                 year,
-                month,
+                month
             )
-                .cancellable()
         }
 
         mCompareCategorySpendingJob?.cancel()
         mCompareCategorySpendingJob = viewModelScope.launch {
-            mCompareCategorySpending.value = itemRepository.getCategoryTotalSpentFlowByMonth(
+            mCompareCategorySpending.value = categoryRepository.totalSpentByCategoryByMonthFlow(
                 compareYear,
-                compareMonth,
+                compareMonth
             )
-                .cancellable()
         }
 
         mSetShopSpendingJob?.cancel()
         mSetShopSpendingJob = viewModelScope.launch {
-            mSetShopSpending.value = itemRepository.getShopTotalSpentFlowByMonth(
+            mSetShopSpending.value = shopRepository.totalSpentByShopByMonthFlow(
                 year,
-                month,
+                month
             )
-                .cancellable()
         }
 
         mCompareShopSpendingJob?.cancel()
         mCompareShopSpendingJob = viewModelScope.launch {
-            mCompareShopSpending.value = itemRepository.getShopTotalSpentFlowByMonth(
+            mCompareShopSpending.value = shopRepository.totalSpentByShopByMonthFlow(
                 compareYear,
-                compareMonth,
+                compareMonth
             )
-                .cancellable()
         }
     }
 

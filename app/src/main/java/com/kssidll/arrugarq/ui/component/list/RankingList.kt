@@ -14,8 +14,8 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 
@@ -272,12 +272,7 @@ fun RankingListPreview() {
     ArrugarqTheme {
         Surface {
             RankingList(
-                items = generateRandomItemSpentByShopList(
-                    shopNameLengthFrom = 10,
-                    shopNameLengthUntil = 100,
-                    valueFrom = 100000000000,
-                    valueUntil = 10000000000000,
-                ),
+                items = ItemSpentByShop.generateList(),
             )
         }
     }

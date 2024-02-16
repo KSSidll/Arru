@@ -1,6 +1,6 @@
 <h1 align="center">Arrugarq</h1>
 
-</br>
+<br />
 
 <p align="center">
   <img alt="API" src="https://img.shields.io/badge/Api%2021+-50f270?logo=android&logoColor=black&style=for-the-badge"/>
@@ -40,7 +40,7 @@
 
 # Tech Stack & Libraries
 
-- Developed in Android Studio Iguana (currently on version `Beta 2`)
+- Developed in Android Studio Iguana (currently on version `RC 2`)
 
 - [Kotlin](https://kotlinlang.org/) based
 

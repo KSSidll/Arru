@@ -24,8 +24,11 @@ fun AddVariantRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                val result = viewModel.addVariant(productId)
-                if (result != null) navigateBack()
+                if (viewModel.addVariant(productId)
+                        .isNotError()
+                ) {
+                    navigateBack()
+                }
             }
         }
     )

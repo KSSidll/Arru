@@ -22,6 +22,6 @@ class ShopListViewModel @Inject constructor(
      * Fetches new data to screen state
      */
     private fun fillStateItems() {
-        screenState.items.value = shopRepository.getAllFlow()
+        screenState.items.value = shopRepository.allFlow()
     }
 }

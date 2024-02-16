@@ -19,30 +19,13 @@ import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.flow.*
 
-/**
- * @param T Type of data which the inheriting screen state represents
- */
-abstract class ModifyScreenState<T>(
+abstract class ModifyScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
     val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
     val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
 
     val showMergeMessage: MutableState<Boolean> = mutableStateOf(false),
-) {
-
-    /**
-     * Validates state fields and updates field states
-     * @return true if all fields are of correct value, false otherwise
-     */
-    abstract fun validate(): Boolean
-
-    /**
-     * performs data validation and tries to extract embedded data
-     * @return Null if validation fails, extracted data otherwise
-     * @param id id to set the embedded data to if appropriate
-     */
-    abstract fun extractDataOrNull(id: Long = 0): T?
-}
+)
 
 /**
  * @param T Type of item, doesn't matter if doesn't support merging

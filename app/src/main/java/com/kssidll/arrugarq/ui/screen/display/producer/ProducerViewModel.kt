@@ -2,31 +2,20 @@ package com.kssidll.arrugarq.ui.screen.display.producer
 
 
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.lifecycle.*
+import androidx.paging.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.*
-import com.kssidll.arrugarq.ui.screen.display.shop.fullItemFetchCount
+import com.kssidll.arrugarq.domain.data.*
 import com.patrykandpatrick.vico.core.entry.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
 
-/**
- * Page fetch size
- */
-internal const val fullItemFetchCount = 8
-
-/**
- * Maximum prefetched items
- */
-internal const val fullItemMaxPrefetchCount = fullItemFetchCount * 6
-
 @HiltViewModel
 class ProducerViewModel @Inject constructor(
-    private val itemRepository: ItemRepositorySource,
     private val producerRepository: ProducerRepositorySource,
 ): ViewModel() {
     private val mProducer: MutableState<ProductProducer?> = mutableStateOf(null)
@@ -34,28 +23,26 @@ class ProducerViewModel @Inject constructor(
 
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private val mTransactionItems: SnapshotStateList<FullItem> = mutableStateListOf()
-    val transactionItems get() = mTransactionItems.toList()
-
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
-
-    private var mFullItemsDataQuery: Job? = null
-    private var mFullItemOffset: Int = 0
-
-    private var mNewFullItemFlowJob: Job? = null
-    private var mNewFullItemFlow: (Flow<Item>)? = null
+    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun producerTotalSpent(): Flow<Float>? {
         if (producer == null) return null
 
-        return itemRepository.getTotalSpentByProducerFlow(producer!!.id)
+        return producerRepository.totalSpentFlow(producer!!)
             .map {
                 it.toFloat()
-                    .div(Item.QUANTITY_DIVISOR * Item.PRICE_DIVISOR)
+                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
             }
-            .distinctUntilChanged()
+    }
+
+    /**
+     * @return paging data of full item for current producer as flow
+     */
+    fun transactions(): Flow<PagingData<FullItem>> {
+        if (producer == null) return emptyFlow()
+        return producerRepository.fullItemsPagedFlow(producer!!)
     }
 
     /**
@@ -82,61 +69,20 @@ class ProducerViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             dayFlow = {
-                itemRepository.getTotalSpentByProducerByDayFlow(producerId)
+                producerRepository.totalSpentByDayFlow(producer)
             },
             weekFlow = {
-                itemRepository.getTotalSpentByProducerByWeekFlow(producerId)
+                producerRepository.totalSpentByWeekFlow(producer)
             },
             monthFlow = {
-                itemRepository.getTotalSpentByProducerByMonthFlow(producerId)
+                producerRepository.totalSpentByMonthFlow(producer)
             },
             yearFlow = {
-                itemRepository.getTotalSpentByProducerByYearFlow(producerId)
+                producerRepository.totalSpentByYearFlow(producer)
             },
         )
-
-        mNewFullItemFlowJob?.cancel()
-        mNewFullItemFlowJob = launch {
-            mNewFullItemFlow = itemRepository.getLastFlow()
-                .cancellable()
-
-            mNewFullItemFlow?.collect {
-                mFullItemOffset = 0
-                mTransactionItems.clear()
-                mFullItemsDataQuery?.cancel()
-                mFullItemsDataQuery = performFullItemsQuery()
-                mFullItemOffset += fullItemFetchCount
-            }
-        }
 
         return@async true
     }
         .await()
-
-    /**
-     * Requests a query of [fullItemFetchCount] items to be appended to transactions list
-     */
-    fun queryMoreFullItems() {
-        if (producer == null || mFullItemsDataQuery == null) return
-
-        if (mFullItemsDataQuery!!.isCompleted) {
-            mFullItemsDataQuery = performFullItemsQuery(mFullItemOffset)
-            mFullItemOffset += fullItemFetchCount
-        }
-    }
-
-    /**
-     * Requires producer to be a non null value
-     *
-     * Doesn't check it itself as it doesn't update the offset
-     */
-    private fun performFullItemsQuery(queryOffset: Int = 0) = viewModelScope.launch {
-        mTransactionItems.addAll(
-            itemRepository.getFullItemsByProducer(
-                offset = queryOffset,
-                count = fullItemFetchCount,
-                producerId = producer!!.id,
-            )
-        )
-    }
 }

@@ -11,21 +11,23 @@ import javax.inject.*
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val itemRepository: ItemRepositorySource,
+    private val transactionRepository: TransactionBasketRepositorySource,
+    private val categoryRepository: CategoryRepositorySource,
+    private val shopRepository: ShopRepositorySource,
 ): ViewModel() {
     private val mTimePeriodFlowHandler: TimePeriodFlowHandler = TimePeriodFlowHandler(
         scope = viewModelScope,
         dayFlow = {
-            itemRepository.getTotalSpentByDayFlow()
+            transactionRepository.totalSpentByDayFlow()
         },
         weekFlow = {
-            itemRepository.getTotalSpentByWeekFlow()
+            transactionRepository.totalSpentByWeekFlow()
         },
         monthFlow = {
-            itemRepository.getTotalSpentByMonthFlow()
+            transactionRepository.totalSpentByMonthFlow()
         },
         yearFlow = {
-            itemRepository.getTotalSpentByYearFlow()
+            transactionRepository.totalSpentByYearFlow()
         },
     )
 
@@ -48,30 +50,27 @@ class DashboardViewModel @Inject constructor(
     }
 
     /**
-     * @return Number representing total [Item] spending as flow
+     * @return Number representing total transaction spending as flow
      */
     fun getTotalSpent(): Flow<Float> {
-        return itemRepository.getTotalSpentFlow()
+        return transactionRepository.totalSpentFlow()
             .map {
                 it.toFloat()
-                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                    .div(TransactionBasket.COST_DIVISOR)
             }
-            .distinctUntilChanged()
     }
 
     /**
      * @return List of items representing [Shop] spending in time as flow
      */
     fun getSpentByShop(): Flow<List<ItemSpentByShop>> {
-        return itemRepository.getShopTotalSpentFlow()
-            .distinctUntilChanged()
+        return shopRepository.totalSpentByShopFlow()
     }
 
     /**
      * @return List of items representing [ProductCategory] spending in time as flow
      */
     fun getSpentByCategory(): Flow<List<ItemSpentByCategory>> {
-        return itemRepository.getCategoryTotalSpentFlow()
-            .distinctUntilChanged()
+        return categoryRepository.totalSpentByCategoryFlow()
     }
 }

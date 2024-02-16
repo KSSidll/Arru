@@ -22,6 +22,6 @@ class CategoryListViewModel @Inject constructor(
      * Fetches new data to screen state
      */
     private fun fillStateItems() {
-        screenState.items.value = categoryRepository.getAllWithAltNamesFlow()
+        screenState.items.value = categoryRepository.allWithAltNamesFlow()
     }
 }

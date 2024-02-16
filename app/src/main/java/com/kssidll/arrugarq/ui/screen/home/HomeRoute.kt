@@ -27,7 +27,9 @@ fun HomeRoute(
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
-    navigateItemAdd: () -> Unit,
+    navigateItemAdd: (transactionId: Long) -> Unit,
+    navigateTransactionAdd: () -> Unit,
+    navigateTransactionEdit: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
@@ -50,7 +52,7 @@ fun HomeRoute(
                         pagerState.animateScrollToPage(it.ordinal)
                     }
                 },
-                onActionButtonClick = navigateItemAdd,
+                onActionButtonClick = navigateTransactionAdd,
             )
         }
     ) {
@@ -83,7 +85,9 @@ fun HomeRoute(
                             navigateCategory = navigateCategory,
                             navigateProducer = navigateProducer,
                             navigateShop = navigateShop,
+                            navigateItemAdd = navigateItemAdd,
                             navigateItemEdit = navigateItemEdit,
+                            navigateTransactionEdit = navigateTransactionEdit,
                         )
                     }
                 }

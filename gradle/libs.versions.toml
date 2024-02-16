@@ -1,20 +1,20 @@
 [versions]
 ## Libraries
 # AndroidX
-activity-compose = "1.8.1"
+activity-compose = "1.8.2"
 core-splashscreen = "1.0.1"
 appcompat = "1.7.0-alpha03"
-datastore-preferences = "1.1.0-alpha07"
-lifecycle-viewmodel-compose = "2.6.2"
+datastore-preferences = "1.1.0-beta01"
+lifecycle-viewmodel-compose = "2.7.0"
 accompanist-systemuicontroller = "0.32.0"
 
 # Navigation
 reimagined = "1.5.0"
 
 # Compose
-compose-ui = "1.6.0-beta02"
-material3 = "1.2.0-alpha12"
-material = "1.6.0-beta02"
+compose-ui = "1.6.1"
+material3 = "1.2.0"
+material = "1.6.1"
 
 # DI
 hilt = "2.48"
@@ -22,15 +22,18 @@ hilt = "2.48"
 # Room
 room = "2.6.1"
 
+# Paging
+paging = "3.2.1"
+
 # Other
 fuzzywuzzy = "1.4.0"
 vico-compose = "1.13.1"
 
 ## Plugins
-agp = "8.3.0-beta02"
-kotlin = "1.9.20"
+agp = "8.3.0-rc02"
+kotlin = "1.9.22"
 # hilt plugin has same version as hilt library so it is declared in the library section
-ksp = "1.9.20-1.0.14"
+ksp = "1.9.22-1.0.17"
 
 [libraries]
 # AndroidX
@@ -61,6 +64,10 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 # Room
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Paging
+paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 
 # Other
 fuzzywuzzy = { group = "me.xdrop", name = "fuzzywuzzy", version.ref = "fuzzywuzzy" }

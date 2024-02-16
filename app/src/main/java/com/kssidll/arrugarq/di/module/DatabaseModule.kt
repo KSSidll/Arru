@@ -84,6 +84,16 @@ class DatabaseModule {
     }
 
     @Provides
+    fun provideTransactionBasketDao(appDatabase: AppDatabase): TransactionBasketDao {
+        return appDatabase.getTransactionBasketDao()
+    }
+
+    @Provides
+    fun provideTransactionBasketRepository(transactionBasketDao: TransactionBasketDao): TransactionBasketRepositorySource {
+        return TransactionBasketRepository(transactionBasketDao)
+    }
+
+    @Provides
     fun provideItemDao(appDatabase: AppDatabase): ItemDao {
         return appDatabase.getItemDao()
     }

@@ -37,21 +37,27 @@ fun EditProductRoute(
             .collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateProduct(productId)) {
+                if (viewModel.updateProduct(productId)
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteProduct(productId)) {
+                if (viewModel.deleteProduct(productId)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it)) {
+                if (viewModel.mergeWith(it)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }

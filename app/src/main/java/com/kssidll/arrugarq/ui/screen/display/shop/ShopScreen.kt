@@ -10,15 +10,17 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import androidx.paging.*
+import androidx.paging.compose.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.*
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.*
 import com.kssidll.arrugarq.ui.component.list.*
@@ -26,14 +28,14 @@ import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
 import com.patrykandpatrick.vico.core.entry.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.text.*
 import java.util.*
 
 /**
  * @param onBack Called to request a back navigation
  * @param shop Shop for which the data is displayed
- * @param transactionItems List of transaction items of [shop]
- * @param requestMoreTransactionItems Called to request more transaction items to be added to [transactionItems]
+ * @param transactionItems Transaction items of [shop]
  * @param spentByTimeData Data list representing [shop] spending for current [spentByTimePeriod]
  * @param totalSpentData Value representing total [shop] spending
  * @param spentByTimePeriod Time period to get the [spentByTimeData] by
@@ -50,9 +52,8 @@ import java.util.*
 internal fun ShopScreen(
     onBack: () -> Unit,
     shop: Shop?,
-    transactionItems: List<FullItem>,
-    requestMoreTransactionItems: () -> Unit,
-    spentByTimeData: List<ItemSpentByTime>,
+    transactionItems: LazyPagingItems<FullItem>,
+    spentByTimeData: List<ChartSource>,
     totalSpentData: Float,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
@@ -64,8 +65,6 @@ internal fun ShopScreen(
     onEditAction: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
-        remember { mutableStateListOf() }
 
     val listState = rememberLazyListState()
     val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
@@ -90,21 +89,6 @@ internal fun ShopScreen(
             returnActionButtonVisible = false
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         }
-
-        if (firstVisibleItemIndex + fullItemMaxPrefetchCount > transactionItems.size) {
-            requestMoreTransactionItems()
-        }
-    }
-
-    LaunchedEffect(transactionItems.size) {
-        if (transactionItems.isEmpty()) {
-            listState.scrollToItem(0)
-        }
-        grouppedItems.clear()
-        grouppedItems.addAll(
-            transactionItems.groupBy { it.embeddedItem.item.date / 86400000 }
-                .toList()
-                .sortedByDescending { it.first })
     }
 
     Scaffold(
@@ -128,7 +112,7 @@ internal fun ShopScreen(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(27.dp),
+                            modifier = Modifier.size(27.dp)
                         )
                     }
                 },
@@ -196,45 +180,51 @@ internal fun ShopScreen(
                 }
             }
 
-            grouppedItems.forEach { group ->
-                item {
-                    Column(
-                        modifier = Modifier.fillParentMaxWidth()
-                    ) {
-                        Surface(
-                            modifier = Modifier.fillParentMaxWidth(),
-                            shape = RoundedCornerShape(
-                                topStart = 24.dp,
-                                topEnd = 24.dp
-                            ),
-                            color = MaterialTheme.colorScheme.surfaceContainer,
+            items(
+                transactionItems.itemCount,
+                key = transactionItems.itemKey { it.id }
+            ) { index ->
+                val item = transactionItems[index]
+
+                if (item != null) {
+                    //... yeah
+                    if (index == 0 || (transactionItems[index - 1] != null && item.date / 86400000 != transactionItems[index - 1]!!.date / 86400000)) {
+                        Column(
+                            modifier = Modifier.fillParentMaxWidth()
                         ) {
-                            Box(
-                                Modifier
-                                    .fillParentMaxWidth()
-                                    .padding(vertical = 8.dp)
+                            Surface(
+                                modifier = Modifier.fillParentMaxWidth(),
+                                shape = RoundedCornerShape(
+                                    topStart = 24.dp,
+                                    topEnd = 24.dp
+                                ),
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                             ) {
-                                Text(
-                                    modifier = Modifier.align(Alignment.Center),
-                                    text = SimpleDateFormat(
-                                        "MMM d, yyyy",
-                                        Locale.getDefault()
-                                    ).format(group.first * 86400000),
-                                    style = Typography.headlineMedium,
-                                )
+                                Box(
+                                    Modifier
+                                        .fillParentMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        modifier = Modifier.align(Alignment.Center),
+                                        text = SimpleDateFormat(
+                                            "MMM d, yyyy",
+                                            Locale.getDefault()
+                                        ).format(item.date),
+                                        style = Typography.headlineMedium,
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                items(group.second) { item ->
                     FullItemCard(
-                        fullItem = item,
+                        item = item,
                         onItemClick = {
-                            onItemClick(it.embeddedProduct.product.id)
+                            onItemClick(it.product.id)
                         },
                         onItemLongClick = {
-                            onItemLongClick(it.embeddedItem.item.id)
+                            onItemLongClick(it.id)
                         },
                         onCategoryClick = {
                             onItemCategoryClick(it.id)
@@ -242,8 +232,6 @@ internal fun ShopScreen(
                         onProducerClick = {
                             onItemProducerClick(it.id)
                         },
-                        onShopClick = {},
-                        showShop = false,
                     )
                 }
             }
@@ -270,9 +258,8 @@ fun ShopScreenPreview() {
             ShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = generateRandomFullItemList(),
-                requestMoreTransactionItems = {},
-                spentByTimeData = generateRandomItemSpentByTimeList(),
+                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},

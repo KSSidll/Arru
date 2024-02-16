@@ -54,21 +54,21 @@ abstract class ModifyProductViewModel: ViewModel() {
      * @return List of all categories
      */
     fun allCategories(): Flow<List<ProductCategoryWithAltNames>> {
-        return categoryRepository.getAllWithAltNamesFlow()
+        return categoryRepository.allWithAltNamesFlow()
     }
 
     /**
      * @return List of all producers
      */
     fun allProducers(): Flow<List<ProductProducer>> {
-        return producerRepository.getAllFlow()
+        return producerRepository.allFlow()
     }
 
     /**
      * @return list of merge candidates as flow
      */
     fun allMergeCandidates(productId: Long): Flow<List<Product>> {
-        return productRepository.getAllFlow()
+        return productRepository.allFlow()
             .onEach { it.filter { item -> item.id != productId } }
             .distinctUntilChanged()
     }
@@ -84,52 +84,4 @@ data class ModifyProductScreenState(
 
     val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-): ModifyScreenState<Product>() {
-
-    /**
-     * Validates selectedProductCategory field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateSelectedProductCategory(): Boolean {
-        selectedProductCategory.apply {
-            if (value.data == null) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
-    /**
-     * Validates name field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateName(): Boolean {
-        name.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
-    override fun validate(): Boolean {
-        val category = validateSelectedProductCategory()
-        val name = validateName()
-
-        return category && name
-    }
-
-    override fun extractDataOrNull(id: Long): Product? {
-        if (!validate()) return null
-
-        return Product(
-            id = id,
-            categoryId = selectedProductCategory.value.data?.id ?: return null,
-            producerId = selectedProductProducer.value.data?.id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
-
-}
+): ModifyScreenState()

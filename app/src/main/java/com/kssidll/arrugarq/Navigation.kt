@@ -9,6 +9,7 @@ import com.kssidll.arrugarq.ui.screen.display.category.*
 import com.kssidll.arrugarq.ui.screen.display.producer.*
 import com.kssidll.arrugarq.ui.screen.display.product.*
 import com.kssidll.arrugarq.ui.screen.display.shop.*
+import com.kssidll.arrugarq.ui.screen.display.transaction.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.modify.category.addcategory.*
 import com.kssidll.arrugarq.ui.screen.modify.category.editcategory.*
@@ -20,6 +21,8 @@ import com.kssidll.arrugarq.ui.screen.modify.product.addproduct.*
 import com.kssidll.arrugarq.ui.screen.modify.product.editproduct.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.addshop.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.editshop.*
+import com.kssidll.arrugarq.ui.screen.modify.transaction.addtransaction.*
+import com.kssidll.arrugarq.ui.screen.modify.transaction.edittransaction.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.addvariant.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.editvariant.*
 import com.kssidll.arrugarq.ui.screen.ranking.categoryranking.*
@@ -38,12 +41,14 @@ sealed class Screen: Parcelable {
     data object Settings: Screen()
     data object Search: Screen()
 
+    data class Transaction(val transactionId: Long): Screen()
     data class Product(val productId: Long): Screen()
     data class Category(val categoryId: Long): Screen()
     data class Producer(val producerId: Long): Screen()
     data class Shop(val shopId: Long): Screen()
 
-    data object ItemAdd: Screen()
+    data object TransactionAdd: Screen()
+    data class ItemAdd(val transactionId: Long): Screen()
     data class ProductAdd(val defaultName: String? = null): Screen()
     data class VariantAdd(
         val productId: Long,
@@ -54,6 +59,7 @@ sealed class Screen: Parcelable {
     data class ProducerAdd(val defaultName: String? = null): Screen()
     data class ShopAdd(val defaultName: String? = null): Screen()
 
+    data class TransactionEdit(val transactionId: Long): Screen()
     data class ItemEdit(val itemId: Long): Screen()
     data class ProductEdit(val productId: Long): Screen()
     data class VariantEdit(val variantId: Long): Screen()
@@ -211,6 +217,12 @@ fun Navigation(
         }
     }
 
+    val navigateBackDeleteTransaction: (transactionId: Long) -> Unit = { transactionId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.TransactionEdit(transactionId) && it != Screen.Transaction(transactionId)
+        }
+    }
+
     val navigateSettings: () -> Unit = {
         navController.navigate(Screen.Settings)
     }
@@ -219,6 +231,10 @@ fun Navigation(
         navController.navigate(Screen.Search)
     }
 
+
+    val navigateTransaction: (transactionId: Long) -> Unit = {
+        navController.navigate(Screen.Transaction(it))
+    }
 
     val navigateProduct: (productId: Long) -> Unit = {
         navController.navigate(Screen.Product(it))
@@ -237,8 +253,12 @@ fun Navigation(
     }
 
 
-    val navigateItemAdd: () -> Unit = {
-        navController.navigate(Screen.ItemAdd)
+    val navigateTransactionAdd: () -> Unit = {
+        navController.navigate(Screen.TransactionAdd)
+    }
+
+    val navigateItemAdd: (transactionId: Long) -> Unit = {
+        navController.navigate(Screen.ItemAdd(it))
     }
 
     val navigateProductAdd: (query: String?) -> Unit = {
@@ -266,6 +286,10 @@ fun Navigation(
         navController.navigate(Screen.ShopAdd(it))
     }
 
+
+    val navigateTransactionEdit: (transactionId: Long) -> Unit = {
+        navController.navigate(Screen.TransactionEdit(it))
+    }
 
     val navigateItemEdit: (itemId: Long) -> Unit = {
         navController.navigate(Screen.ItemEdit(it))
@@ -339,7 +363,12 @@ fun Navigation(
                     navigateCategory = navigateCategory,
                     navigateProducer = navigateProducer,
                     navigateShop = navigateShop,
-                    navigateItemAdd = navigateItemAdd,
+                    navigateTransactionAdd = navigateTransactionAdd,
+                    navigateTransactionEdit = navigateTransactionEdit,
+                    navigateItemAdd = {
+                        navigateTransaction(it)
+                        navigateItemAdd(it)
+                    },
                     navigateItemEdit = navigateItemEdit,
                     navigateCategoryRanking = navigateCategoryRanking,
                     navigateShopRanking = navigateShopRanking,
@@ -350,13 +379,12 @@ fun Navigation(
 
             is Screen.ItemAdd -> {
                 AddItemRoute(
+                    transactionId = screen.transactionId,
                     navigateBack = navigateBack,
                     navigateProductAdd = navigateProductAdd,
                     navigateVariantAdd = navigateVariantAdd,
-                    navigateShopAdd = navigateShopAdd,
                     navigateProductEdit = navigateProductEdit,
                     navigateVariantEdit = navigateVariantEdit,
-                    navigateShopEdit = navigateShopEdit,
                 )
             }
 
@@ -539,10 +567,8 @@ fun Navigation(
                     },
                     navigateProductAdd = navigateProductAdd,
                     navigateVariantAdd = navigateVariantAdd,
-                    navigateShopAdd = navigateShopAdd,
                     navigateProductEdit = navigateProductEdit,
                     navigateVariantEdit = navigateVariantEdit,
-                    navigateShopEdit = navigateShopEdit,
                 )
             }
 
@@ -579,6 +605,39 @@ fun Navigation(
                     navigateBack = navigateBack,
                     year = screen.year,
                     month = screen.month,
+                )
+            }
+
+            is Screen.TransactionAdd -> {
+                AddTransactionRoute(
+                    navigateBack = navigateBack,
+                    navigateTransaction = navigateTransaction,
+                    navigateShopAdd = navigateShopAdd,
+                    navigateShopEdit = navigateShopEdit,
+                )
+            }
+
+            is Screen.TransactionEdit -> {
+                EditTransactionRoute(
+                    transactionId = screen.transactionId,
+                    navigateBack = navigateBack,
+                    navigateBackDelete = navigateBackDeleteTransaction,
+                    navigateShopAdd = navigateShopAdd,
+                    navigateShopEdit = navigateShopEdit
+                )
+            }
+
+            is Screen.Transaction -> {
+                TransactionRoute(
+                    transactionId = screen.transactionId,
+                    navigateBack = navigateBack,
+                    navigateTransactionEdit = navigateTransactionEdit,
+                    navigateItemAdd = navigateItemAdd,
+                    navigateProduct = navigateProduct,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
                 )
             }
         }

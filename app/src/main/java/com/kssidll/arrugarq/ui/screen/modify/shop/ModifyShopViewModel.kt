@@ -40,7 +40,7 @@ abstract class ModifyShopViewModel: ViewModel() {
      * @return list of merge candidates as flow
      */
     fun allMergeCandidates(shopId: Long): Flow<List<Shop>> {
-        return shopRepository.getAllFlow()
+        return shopRepository.allFlow()
             .onEach { it.filter { item -> item.id != shopId } }
             .distinctUntilChanged()
     }
@@ -51,32 +51,4 @@ abstract class ModifyShopViewModel: ViewModel() {
  */
 data class ModifyShopScreenState(
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-): ModifyScreenState<Shop>() {
-    /**
-     * Validates name field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateName(): Boolean {
-        name.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return name.value.isNotError()
-        }
-    }
-
-    override fun validate(): Boolean {
-        return validateName()
-    }
-
-    override fun extractDataOrNull(id: Long): Shop? {
-        if (!validate()) return null
-
-        return Shop(
-            id = id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
-
-}
+): ModifyScreenState()

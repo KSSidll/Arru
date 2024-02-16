@@ -2,14 +2,18 @@ package com.kssidll.arrugarq.data.database
 
 import android.content.*
 import androidx.room.*
+import androidx.room.migration.*
+import androidx.sqlite.db.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.di.module.*
 import java.io.*
 
 @Database(
-    version = 2,
+    version = 5,
     entities = [
+        TransactionBasket::class,
+        TransactionBasketItem::class,
         Item::class,
         Product::class,
         ProductAltName::class,
@@ -24,9 +28,19 @@ import java.io.*
             from = 1,
             to = 2
         ),
+        AutoMigration(
+            from = 2,
+            to = 3
+        ),
+        AutoMigration(
+            from = 4,
+            to = 5,
+            spec = MIGRATION_4_5_SPEC::class
+        ),
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
+    abstract fun getTransactionBasketDao(): TransactionBasketDao
     abstract fun getItemDao(): ItemDao
     abstract fun getProductDao(): ProductDao
     abstract fun getVariantDao(): VariantDao
@@ -49,6 +63,7 @@ abstract class AppDatabase: RoomDatabase() {
                 AppDatabase::class.java,
                 name
             )
+                .addMigrations(MIGRATION_3_4)
         }
 
         /**
@@ -141,3 +156,46 @@ abstract class AppDatabase: RoomDatabase() {
         }
     }
 }
+
+val MIGRATION_3_4 = object: Migration(
+    3,
+    4
+) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            INSERT INTO transactionbasket(date, shopId, totalCost)
+            SELECT date, COALESCE(shopId, 0) as shopId, SUM(price * quantity) / 1000 as totalCost
+            FROM item
+            GROUP BY shopId, date
+            ORDER BY date ASC
+        """.trimIndent()
+        )
+
+        val basketCount = db.query("SELECT * FROM transactionbasket").count
+
+        for (basketId in 1..basketCount) {
+            db.execSQL(
+                """
+                INSERT INTO transactionbasketitem(transactionbasketid, itemid)
+                SELECT transactionbasket.id, item.id
+                FROM transactionbasket
+                JOIN item ON item.date = transactionbasket.date AND item.shopId = transactionbasket.shopId
+                WHERE transactionbasket.id = ?
+            """.trimIndent(),
+                arrayOf(basketId)
+            )
+        }
+    }
+}
+
+@Suppress("ClassName")
+@DeleteColumn(
+    "Item",
+    "shopId"
+)
+@DeleteColumn(
+    "Item",
+    "date"
+)
+class MIGRATION_4_5_SPEC: AutoMigrationSpec

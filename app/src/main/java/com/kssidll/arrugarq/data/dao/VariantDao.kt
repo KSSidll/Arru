@@ -6,48 +6,37 @@ import kotlinx.coroutines.flow.*
 
 @Dao
 interface VariantDao {
-    @Query("SELECT * FROM productvariant ORDER BY id ASC")
-    suspend fun getAll(): List<ProductVariant>
-
-    @Query("SELECT * FROM productvariant ORDER BY id ASC")
-    fun getAllFlow(): Flow<List<ProductVariant>>
-
-    @Query("SELECT * FROM productvariant WHERE id == :id")
-    suspend fun get(id: Long): ProductVariant?
-
-    @Query("SELECT * FROM productvariant WHERE id == :id")
-    fun getFlow(id: Long): Flow<ProductVariant>
-
-    @Query("SELECT * FROM productvariant WHERE productId == :productId AND name == :name")
-    suspend fun getByProductIdAndName(
-        productId: Long,
-        name: String
-    ): ProductVariant?
-
-    @Query("SELECT * FROM productvariant WHERE productId == :productId")
-    suspend fun getByProductId(productId: Long): List<ProductVariant>
-
-    @Query("SELECT * FROM productvariant WHERE productId == :productId")
-    fun getByProductIdFlow(productId: Long): Flow<List<ProductVariant>>
-
-    @Query("SELECT * FROM productvariant WHERE name == :name")
-    suspend fun getByName(name: String): List<ProductVariant>
-
-    @Query("SELECT * FROM productvariant WHERE name == :name")
-    fun getByNameFlow(name: String): Flow<List<ProductVariant>>
+    // Create
 
     @Insert
     suspend fun insert(variant: ProductVariant): Long
 
+    // Update
+
     @Update
     suspend fun update(variant: ProductVariant)
 
-    @Update
-    suspend fun update(variants: List<ProductVariant>)
+    // Delete
 
     @Delete
     suspend fun delete(variant: ProductVariant)
 
-    @Delete
-    suspend fun delete(variants: List<ProductVariant>)
+    // Helper
+
+    @Query("SELECT product.* FROM product WHERE product.id = :productId")
+    suspend fun getProduct(productId: Long): Product?
+
+    // Read
+
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
+    suspend fun get(variantId: Long): ProductVariant?
+
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId = :productId AND productvariant.name = :name")
+    suspend fun byProductAndName(
+        productId: Long,
+        name: String
+    ): ProductVariant?
+
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId == :productId")
+    fun byProductFlow(productId: Long): Flow<List<ProductVariant>>
 }

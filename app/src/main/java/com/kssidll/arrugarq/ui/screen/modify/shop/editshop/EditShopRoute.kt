@@ -29,21 +29,27 @@ fun EditShopRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateShop(shopId)) {
+                if (viewModel.updateShop(shopId)
+                        .isNotError()
+                ) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteShop(shopId)) {
+                if (viewModel.deleteShop(shopId)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it)) {
+                if (viewModel.mergeWith(it)
+                        .isNotError()
+                ) {
                     navigateBackDelete()
                 }
             }

@@ -40,7 +40,7 @@ abstract class ModifyProducerViewModel: ViewModel() {
      * @return list of merge candidates as flow
      */
     fun allMergeCandidates(producerId: Long): Flow<List<ProductProducer>> {
-        return producerRepository.getAllFlow()
+        return producerRepository.allFlow()
             .onEach { it.filter { item -> item.id != producerId } }
             .distinctUntilChanged()
     }
@@ -51,33 +51,4 @@ abstract class ModifyProducerViewModel: ViewModel() {
  */
 data class ModifyProducerScreenState(
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded())
-): ModifyScreenState<ProductProducer>() {
-
-    /**
-     * Validates name field and updates its error flag
-     * @return true if field is of correct value, false otherwise
-     */
-    fun validateName(): Boolean {
-        name.apply {
-            if (value.data.isNullOrBlank()) {
-                value = value.toError(FieldError.NoValueError)
-            }
-
-            return value.isNotError()
-        }
-    }
-
-    override fun validate(): Boolean {
-        return validateName()
-    }
-
-    override fun extractDataOrNull(id: Long): ProductProducer? {
-        if (!validate()) return null
-
-        return ProductProducer(
-            id = id,
-            name = name.value.data?.trim() ?: return null,
-        )
-    }
-
-}
+): ModifyScreenState()

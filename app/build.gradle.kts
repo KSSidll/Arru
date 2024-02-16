@@ -29,8 +29,8 @@ android {
         applicationId = "com.kssidll.arrugarq"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -69,7 +69,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -119,6 +119,10 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    // Paging
+    implementation(libs.paging)
+    implementation(libs.paging.compose)
 
     // Other
     implementation(libs.fuzzywuzzy)

@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.ui.screen.home.transactions
 
 
 import androidx.compose.runtime.*
+import androidx.paging.compose.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -11,16 +12,18 @@ internal fun TransactionsRoute(
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
+    navigateItemAdd: (transactionId: Long) -> Unit,
+    navigateTransactionEdit: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
 ) {
     val viewModel: TransactionsViewModel = hiltViewModel()
 
     TransactionsScreen(
-        requestMoreItems = {
-            viewModel.queryMoreFullItems()
-        },
-        items = viewModel.fullItemsData,
+        transactions = viewModel.transactions()
+            .collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
+        onTransactionLongClick = navigateTransactionEdit,
+        onItemAddClick = navigateItemAdd,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,
         onItemCategoryClick = navigateCategory,

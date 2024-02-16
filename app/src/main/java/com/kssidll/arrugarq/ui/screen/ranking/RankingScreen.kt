@@ -9,8 +9,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.domain.data.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.component.other.*
 import com.kssidll.arrugarq.ui.theme.*
@@ -89,7 +89,7 @@ fun RankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = generateRandomItemSpentByCategoryList(),
+                data = ItemSpentByCategory.generateList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},

@@ -1,7 +1,9 @@
 package com.kssidll.arrugarq.ui.screen.modify.variant.addvariant
 
+import android.util.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.*
 import dagger.hilt.android.lifecycle.*
@@ -16,27 +18,42 @@ class AddVariantViewModel @Inject constructor(
     /**
      * Tries to add a product variant to the repository
      * @param productId: Id of the product that the variant is being created for
-     * @return Id of newly inserted row, null if operation failed
+     * @return resulting [InsertResult]
      */
-    suspend fun addVariant(productId: Long): Long? = viewModelScope.async {
+    suspend fun addVariant(productId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        screenState.validate()
 
-        screenState.productId = productId
-
-        val variant = screenState.extractDataOrNull() ?: return@async null
-        val other = variantRepository.getByProductIdAndName(
+        val result = variantRepository.insert(
             productId,
-            variant.name
+            screenState.name.value.data.orEmpty()
         )
 
-        if (other != null) {
-            screenState.name.apply { value = value.toError(FieldError.DuplicateValueError) }
+        if (result.isError()) {
+            when (result.error!!) {
+                is InsertResult.InvalidName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
 
-            return@async null
-        } else {
-            return@async variantRepository.insert(variant)
+                is InsertResult.DuplicateName -> {
+                    screenState.name.apply {
+                        value = value.toError(FieldError.DuplicateValueError)
+                    }
+                }
+
+                is InsertResult.InvalidProductId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried to insert variant with invalid productId in AddVariantViewModel"
+                    )
+
+                    return@async InsertResult.Success(0)
+                }
+            }
         }
+
+        return@async result
     }
         .await()
 }

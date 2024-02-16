@@ -6,33 +6,30 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import androidx.paging.*
+import androidx.paging.compose.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
-import com.kssidll.arrugarq.helper.*
 import com.kssidll.arrugarq.ui.component.list.*
 import com.kssidll.arrugarq.ui.theme.*
 import kotlinx.coroutines.*
-import java.sql.Date
-import java.text.*
-import java.util.*
+import kotlinx.coroutines.flow.*
 
 /**
- * @param requestMoreItems Callback called as request to append more items to [items]
- * @param items List of items to display in the transactions list
+ * @param transactions Transactions to display in the transactions list
  * @param onSearchAction Callback called when the 'search' action is triggered
+ * @param onTransactionLongClick Callback called when the transaction is long clicked/pressed. Provides transaction id as parameter
+ * @param onItemAddClick Callback called when the transaction item add button is clicked. Provides transaction id as parameter
  * @param onItemClick Callback called when the transaction item is clicked. Provides product id as parameter
  * @param onItemLongClick Callback called when the transaction item is long clicked/pressed. Provides item id as parameter
  * @param onItemCategoryClick Callback called when the transaction item category label is clicked. Provides category id as parameter
@@ -42,9 +39,10 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionsScreen(
-    requestMoreItems: () -> Unit,
-    items: List<FullItem>,
+    transactions: LazyPagingItems<TransactionBasketWithItems>,
     onSearchAction: () -> Unit,
+    onTransactionLongClick: (transactionId: Long) -> Unit,
+    onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onItemLongClick: (itemId: Long) -> Unit,
     onItemCategoryClick: (categoryId: Long) -> Unit,
@@ -52,8 +50,6 @@ internal fun TransactionsScreen(
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val grouppedItems: SnapshotStateList<Pair<Long, List<FullItem>>> =
-        remember { mutableStateListOf() }
 
     val listState = rememberLazyListState()
     val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
@@ -78,21 +74,6 @@ internal fun TransactionsScreen(
             returnActionButtonVisible = false
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         }
-
-        if (firstVisibleItemIndex + fullItemMaxPrefetchCount > items.size) {
-            requestMoreItems()
-        }
-    }
-
-    LaunchedEffect(items.size) {
-        if (items.isEmpty()) {
-            listState.scrollToItem(0)
-        }
-        grouppedItems.clear()
-        grouppedItems.addAll(
-            items.groupBy { it.embeddedItem.item.date / 86400000 }
-                .toList()
-                .sortedByDescending { it.first })
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -161,60 +142,25 @@ internal fun TransactionsScreen(
             state = listState,
             modifier = Modifier
                 .nestedScroll(scrollConnection)
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .padding(top = 12.dp),
         ) {
-            grouppedItems.forEachIndexed { index, group ->
-                item {
-                    Column(
-                        modifier = Modifier.fillParentMaxWidth()
-                    ) {
-                        val shape = if (index != 0) RoundedCornerShape(
-                            topStart = 24.dp,
-                            topEnd = 24.dp
-                        )
-                        else RectangleShape
+            items(
+                transactions.itemCount,
+                key = transactions.itemKey { it.id }
+            ) { index ->
+                val transaction = transactions[index]
 
-                        Surface(
-                            modifier = Modifier.fillParentMaxWidth(),
-                            shape = shape,
-                            color = MaterialTheme.colorScheme.surfaceContainer,
-                        ) {
-                            Box(
-                                Modifier
-                                    .fillParentMaxWidth()
-                                    .padding(vertical = 8.dp)
-                            ) {
-                                Text(
-                                    modifier = Modifier.align(Alignment.Center),
-                                    text = SimpleDateFormat(
-                                        "d MMMM, yyyy",
-                                        Locale.getDefault()
-                                    ).format(group.first * 86400000),
-                                    style = Typography.headlineMedium,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                items(group.second) { item ->
-                    FullItemCard(
-                        fullItem = item,
-                        onItemClick = {
-                            onItemClick(it.embeddedProduct.product.id)
-                        },
-                        onItemLongClick = {
-                            onItemLongClick(it.embeddedItem.item.id)
-                        },
-                        onCategoryClick = {
-                            onItemCategoryClick(it.id)
-                        },
-                        onProducerClick = {
-                            onItemProducerClick(it.id)
-                        },
-                        onShopClick = {
-                            onItemShopClick(it.id)
-                        },
+                if (transaction != null) {
+                    TransactionBasketCard(
+                        transaction = transaction,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onItemAddClick = onItemAddClick,
+                        onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
+                        onItemCategoryClick = onItemCategoryClick,
+                        onItemProducerClick = onItemProducerClick,
+                        onItemShopClick = onItemShopClick,
                     )
                 }
             }
@@ -239,11 +185,9 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
-                requestMoreItems = {},
-                items = generateRandomFullItemList(
-                    itemDateTimeFrom = Date.valueOf("2022-06-01").time,
-                    itemDateTimeUntil = Date.valueOf("2022-06-04").time,
-                ),
+                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).collectAsLazyPagingItems(),
+                onTransactionLongClick = {},
+                onItemAddClick = {},
                 onItemLongClick = {},
                 onItemProducerClick = {},
                 onItemCategoryClick = {},

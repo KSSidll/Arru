@@ -111,7 +111,6 @@ fun ModifyProductScreenImpl(
                 items = categories,
                 onItemClick = {
                     state.selectedProductCategory.value = Field.Loaded(it?.category)
-                    state.validateSelectedProductCategory()
                     state.isCategorySearchDialogExpanded.value = false
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
@@ -131,7 +130,6 @@ fun ModifyProductScreenImpl(
                 value = state.name.value.data ?: String(),
                 onValueChange = {
                     state.name.value = Field.Loaded(it)
-                    state.validateName()
                 },
                 label = {
                     Text(

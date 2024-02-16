@@ -2,69 +2,141 @@ package com.kssidll.arrugarq.data.repository
 
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
-    override suspend fun getAll(): List<ProductVariant> {
-        return dao.getAll()
-    }
+    // Create
 
-    override fun getAllFlow(): Flow<List<ProductVariant>> {
-        return dao.getAllFlow()
-    }
-
-    override suspend fun get(id: Long): ProductVariant? {
-        return dao.get(id)
-    }
-
-    override fun getFlow(id: Long): Flow<ProductVariant> {
-        return dao.getFlow(id)
-    }
-
-    override suspend fun getByProductIdAndName(
+    override suspend fun insert(
         productId: Long,
         name: String
-    ): ProductVariant? {
-        return dao.getByProductIdAndName(
+    ): InsertResult {
+        val variant = ProductVariant(
             productId,
             name
         )
+
+        if (dao.getProduct(productId) == null) {
+            return InsertResult.Error(InsertResult.InvalidProductId)
+        }
+
+        if (variant.validName()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidName)
+        }
+
+        val other = dao.byProductAndName(
+            productId,
+            name
+        )
+
+        if (other != null) {
+            return InsertResult.Error(InsertResult.DuplicateName)
+        }
+
+        return InsertResult.Success(dao.insert(variant))
     }
 
-    override suspend fun getByProductId(productId: Long): List<ProductVariant> {
-        return dao.getByProductId(productId)
-    }
+    // Update
 
-    override fun getByProductIdFlow(productId: Long): Flow<List<ProductVariant>> {
-        return dao.getByProductIdFlow(productId)
-    }
+    override suspend fun update(
+        variantId: Long,
+        name: String
+    ): UpdateResult {
+        val variant = dao.get(variantId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
-    override suspend fun getByName(name: String): List<ProductVariant> {
-        return dao.getByName(name)
-    }
+        variant.name = name.trim()
 
-    override fun getByNameFlow(name: String): Flow<List<ProductVariant>> {
-        return dao.getByNameFlow(name)
-    }
+        if (variant.validName()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidName)
+        }
 
-    override suspend fun insert(variant: ProductVariant): Long {
-        return dao.insert(variant)
-    }
+        val other = dao.byProductAndName(
+            variant.productId,
+            name
+        )
 
-    override suspend fun update(variant: ProductVariant) {
+        if (other != null) {
+            if (other.id == variant.id) {
+                return UpdateResult.Success
+            }
+
+            return UpdateResult.Error(UpdateResult.DuplicateName)
+        }
+
         dao.update(variant)
+
+        return UpdateResult.Success
     }
 
-    override suspend fun update(variants: List<ProductVariant>) {
-        dao.update(variants)
+    override suspend fun update(
+        variantId: Long,
+        productId: Long,
+        name: String
+    ): UpdateResult {
+        if (dao.get(variantId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidId)
+        }
+
+        if (dao.getProduct(productId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidProductId)
+        }
+
+        val variant = ProductVariant(
+            id = variantId,
+            productId = productId,
+            name = name.trim(),
+        )
+
+        if (variant.validName()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidName)
+        }
+
+        val other = dao.byProductAndName(
+            productId,
+            name
+        )
+
+        if (other != null) {
+            if (other.id == variant.id) {
+                return UpdateResult.Success
+            }
+
+            return UpdateResult.Error(UpdateResult.DuplicateName)
+        }
+
+        dao.update(variant)
+
+        return UpdateResult.Success
     }
 
-    override suspend fun delete(variant: ProductVariant) {
+    // Delete
+
+    override suspend fun delete(variantId: Long): DeleteResult {
+        val variant = dao.get(variantId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+
         dao.delete(variant)
+
+        return DeleteResult.Success
     }
 
-    override suspend fun delete(variants: List<ProductVariant>) {
-        dao.delete(variants)
+    // Read
+
+    override suspend fun get(variantId: Long): ProductVariant? {
+        return dao.get(variantId)
     }
 
+    override fun byProductFlow(product: Product): Flow<List<ProductVariant>> {
+        return dao.byProductFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
 }

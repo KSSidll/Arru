@@ -1,105 +1,303 @@
 package com.kssidll.arrugarq.data.repository
 
+import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
+import com.kssidll.arrugarq.data.paging.*
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.AltInsertResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.AltUpdateResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.MergeResult
+import com.kssidll.arrugarq.data.repository.ProductRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
 class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
-    override suspend fun getAll(): List<Product> {
-        return dao.getAll()
-    }
+    // Create
 
-    override fun getAllFlow(): Flow<List<Product>> {
-        return dao.getAllFlow()
-    }
-
-    override suspend fun get(id: Long): Product? {
-        return dao.get(id)
-    }
-
-    override fun getFlow(id: Long): Flow<Product> {
-        return dao.getFlow(id)
-    }
-
-    override suspend fun getByCategoryId(categoryId: Long): List<Product> {
-        return dao.getByCategoryId(categoryId)
-    }
-
-    override fun getByCategoryIdFlow(categoryId: Long): Flow<List<Product>> {
-        return dao.getByCategoryIdFlow(categoryId)
-    }
-
-    override suspend fun getByProducerId(producerId: Long): List<Product> {
-        return dao.getByProducerId(producerId)
-    }
-
-    override fun getByProducerIdFlow(producerId: Long): Flow<List<Product>> {
-        return dao.getByProducerIdFlow(producerId)
-    }
-
-    override suspend fun getByName(name: String): Product? {
-        return dao.getByName(name)
-    }
-
-    override fun getByNameFlow(name: String): Flow<Product> {
-        return dao.getByNameFlow(name)
-    }
-
-    override suspend fun getByNameAndProducerId(
+    override suspend fun insert(
         name: String,
+        categoryId: Long,
         producerId: Long?
-    ): Product? {
-        return dao.getByNameAndProducerId(
-            name,
-            producerId
+    ): InsertResult {
+        val product = Product(
+            categoryId,
+            producerId,
+            name
         )
+
+        if (categoryId == Product.INVALID_CATEGORY_ID || dao.categoryById(categoryId) == null) {
+            return InsertResult.Error(InsertResult.InvalidCategoryId)
+        }
+
+        if (producerId != null && dao.producerById(producerId) == null) {
+            return InsertResult.Error(InsertResult.InvalidProducerId)
+        }
+
+        if (product.validName()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidName)
+        }
+
+        val other = dao.byName(product.name)
+
+        if (other != null) {
+            return InsertResult.Error(InsertResult.DuplicateName)
+        }
+
+        return InsertResult.Success(dao.insert(product))
     }
 
-    override suspend fun findLike(name: String): List<Product> {
-        return dao.findLike(name)
+    override suspend fun insertAltName(
+        product: Product,
+        alternativeName: String
+    ): AltInsertResult {
+        if (dao.get(product.id) != product) {
+            return AltInsertResult.Error(AltInsertResult.InvalidId)
+        }
+
+        val productAltName = ProductAltName(
+            product = product,
+            name = alternativeName,
+        )
+
+        if (productAltName.validName()
+                .not()
+        ) {
+            return AltInsertResult.Error(AltInsertResult.InvalidName)
+        }
+
+        val others = dao.altNames(product.id)
+
+        if (productAltName.name in others.map { it.name }) {
+            return AltInsertResult.Error(AltInsertResult.DuplicateName)
+        }
+
+        return AltInsertResult.Success(dao.insertAltName(productAltName))
     }
 
-    override fun findLikeFlow(name: String): Flow<List<Product>> {
-        return dao.findLikeFlow(name)
-    }
+    // Update
 
-    override suspend fun getAllWithAltNames(): List<ProductWithAltNames> {
-        return dao.getAllWithAltNames()
-    }
+    override suspend fun update(
+        productId: Long,
+        name: String,
+        categoryId: Long,
+        producerId: Long?
+    ): UpdateResult {
+        if (dao.get(productId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidId)
+        }
 
-    override fun getAllWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
-        return dao.getAllWithAltNamesFlow()
-    }
+        if (dao.categoryById(categoryId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidCategoryId)
+        }
 
-    override suspend fun insert(product: Product): Long {
-        return dao.insert(product)
-    }
+        if (producerId != null && dao.producerById(producerId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidProducerId)
+        }
 
-    override suspend fun addAltName(alternativeName: ProductAltName): Long {
-        return dao.addAltName(alternativeName)
-    }
+        val product = Product(
+            id = productId,
+            name = name.trim(),
+            categoryId = categoryId,
+            producerId = producerId
+        )
 
-    override suspend fun update(product: Product) {
+        if (product.validName()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidName)
+        }
+
+        val other = dao.byName(product.name)
+
+        if (other != null) {
+            if (other.id == product.id) {
+                return UpdateResult.Success
+            }
+
+            return UpdateResult.Error(UpdateResult.DuplicateName)
+        }
+
         dao.update(product)
+
+        return UpdateResult.Success
     }
 
-    override suspend fun update(products: List<Product>) {
-        dao.update(products)
-    }
+    override suspend fun updateAltName(
+        alternativeNameId: Long,
+        productId: Long,
+        name: String
+    ): AltUpdateResult {
+        if (dao.getAltName(alternativeNameId) == null) {
+            return AltUpdateResult.Error(AltUpdateResult.InvalidId)
+        }
 
-    override suspend fun updateAltName(alternativeName: ProductAltName) {
+        if (dao.get(productId) == null) {
+            return AltUpdateResult.Error(AltUpdateResult.InvalidProductId)
+        }
+
+        val alternativeName = ProductAltName(
+            id = alternativeNameId,
+            productId = productId,
+            name = name.trim()
+        )
+
+        if (alternativeName.validName()
+                .not()
+        ) {
+            return AltUpdateResult.Error(AltUpdateResult.InvalidName)
+        }
+
+        val others = dao.altNames(productId)
+
+        if (alternativeName.name in others.map { it.name }) {
+            if (alternativeName.id in others.map { it.id }) {
+                return AltUpdateResult.Success
+            }
+
+            return AltUpdateResult.Error(AltUpdateResult.DuplicateName)
+        }
+
         dao.updateAltName(alternativeName)
+
+        return AltUpdateResult.Success
     }
 
-    override suspend fun delete(product: Product) {
+    override suspend fun merge(
+        product: Product,
+        mergingInto: Product
+    ): MergeResult {
+        if (dao.get(product.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidProduct)
+        }
+
+        if (dao.get(mergingInto.id) == null) {
+            return MergeResult.Error(MergeResult.InvalidMergingInto)
+        }
+
+        val items = dao.getItems(product.id)
+        items.forEach { it.productId = mergingInto.id }
+        dao.updateItems(items)
+
+        dao.deleteAltName(dao.altNames(product.id))
         dao.delete(product)
+
+        return MergeResult.Success
     }
 
-    override suspend fun delete(products: List<Product>) {
-        dao.delete(products)
+    // Delete
+
+    override suspend fun delete(
+        productId: Long,
+        force: Boolean
+    ): DeleteResult {
+        val product = dao.get(productId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+
+        val variants = dao.variants(productId)
+        val altNames = dao.altNames(productId)
+        val items = dao.getItems(productId)
+        val transactionBasketItems = dao.getTransactionBasketItems(productId)
+
+        if (!force && (variants.isNotEmpty() || altNames.isNotEmpty() || items.isNotEmpty())) {
+            return DeleteResult.Error(DeleteResult.DangerousDelete)
+        } else {
+            dao.deleteTransactionBasketItems(transactionBasketItems)
+            dao.deleteItems(items)
+            dao.deleteAltName(altNames)
+            dao.deleteVariants(variants)
+            dao.delete(product)
+        }
+
+        return DeleteResult.Success
     }
 
-    override suspend fun deleteAltName(alternativeName: ProductAltName) {
-        dao.deleteAltName(alternativeName)
+    override suspend fun deleteAltName(alternativeNameId: Long): DeleteResult {
+        val altName =
+            dao.getAltName(alternativeNameId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+
+        dao.deleteAltName(altName)
+
+        return DeleteResult.Success
+    }
+
+    // Read
+
+    override suspend fun get(productId: Long): Product? {
+        return dao.get(productId)
+    }
+
+    override fun totalSpentFlow(product: Product): Flow<Long> {
+        return dao.totalSpentFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun totalSpentByDayFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        return dao.totalSpentByDayFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun totalSpentByWeekFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        return dao.totalSpentByWeekFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun totalSpentByMonthFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        return dao.totalSpentByMonthFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun totalSpentByYearFlow(product: Product): Flow<List<ItemSpentByTime>> {
+        return dao.totalSpentByYearFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                FullItemPagingSource(
+                    query = { start, loadSize ->
+                        dao.fullItems(
+                            product.id,
+                            loadSize,
+                            start
+                        )
+                    }
+                )
+            }
+        )
+            .flow
+    }
+
+    override suspend fun newestItem(product: Product): Item? {
+        return dao.newestItem(product.id)
+    }
+
+    override fun allWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
+        return dao.allWithAltNamesFlow()
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<List<ProductPriceByShopByTime>> {
+        return dao.averagePriceByVariantByShopByMonthFlow(product.id)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
+    override fun allFlow(): Flow<List<Product>> {
+        return dao.allFlow()
+            .cancellable()
+            .distinctUntilChanged()
     }
 }

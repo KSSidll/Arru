@@ -2,6 +2,7 @@ package com.kssidll.arrugarq.data.data
 
 import androidx.room.*
 import com.kssidll.arrugarq.domain.data.*
+import com.kssidll.arrugarq.helper.*
 import me.xdrop.fuzzywuzzy.*
 
 @Entity(
@@ -21,14 +22,40 @@ data class ProductCategory(
         name: String,
     ): this(
         0,
-        name
+        name.trim()
     )
 
+    companion object {
+        @Ignore
+        fun generate(categoryId: Long = 0): ProductCategory {
+            return ProductCategory(
+                id = categoryId,
+                name = generateRandomStringValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<ProductCategory> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
+    @Ignore
     override fun fuzzyScore(query: String): Int {
         return FuzzySearch.extractOne(
             query,
             listOf(name)
         ).score
+    }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
     }
 }
 
@@ -54,24 +81,73 @@ data class ProductCategoryAltName(
     @ColumnInfo(index = true) val productCategoryId: Long,
     val name: String,
 ) {
-    @Ignore
     constructor(
-        productCategoryId: Long,
-        name: String,
+        categoryId: Long,
+        name: String
     ): this(
         0,
-        productCategoryId,
+        categoryId,
         name
     )
+
+    constructor(
+        category: ProductCategory,
+        name: String
+    ): this(
+        category.id,
+        name.trim()
+    )
+
+    companion object {
+        @Ignore
+        fun generate(categoryAltNameId: Long = 0): ProductCategoryAltName {
+            return ProductCategoryAltName(
+                id = categoryAltNameId,
+                productCategoryId = generateRandomLongValue(),
+                name = generateRandomStringValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<ProductCategoryAltName> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
+    /**
+     * @return true if name is valid, false otherwise
+     */
+    @Ignore
+    fun validName(): Boolean {
+        return name.isNotBlank()
+    }
 }
 
 data class ProductCategoryWithAltNames(
     @Embedded val category: ProductCategory,
     @Relation(
         parentColumn = "id",
-        entityColumn = "productId"
-    ) val alternativeNames: List<ProductAltName>
+        entityColumn = "productCategoryId"
+    ) val alternativeNames: List<ProductCategoryAltName>
 ): FuzzySearchSource, NameSource {
+    companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
+        fun generate(categoryId: Long = 0): ProductCategoryWithAltNames {
+            return ProductCategoryWithAltNames(
+                category = ProductCategory.generate(categoryId),
+                alternativeNames = ProductCategoryAltName.generateList(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<ProductCategoryWithAltNames> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
+    }
+
     override fun fuzzyScore(query: String): Int {
         val productNameScore = FuzzySearch.extractOne(
             query,
@@ -92,5 +168,4 @@ data class ProductCategoryWithAltNames(
     override fun name(): String {
         return category.name
     }
-
 }

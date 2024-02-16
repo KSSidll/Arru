@@ -1,7 +1,11 @@
 package com.kssidll.arrugarq.ui.screen.modify.item.additem
 
+import android.util.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
+import com.kssidll.arrugarq.data.repository.ItemRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.item.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
@@ -12,7 +16,6 @@ class AddItemViewModel @Inject constructor(
     override val itemRepository: ItemRepositorySource,
     override val productRepository: ProductRepositorySource,
     override val variantsRepository: VariantRepositorySource,
-    override val shopRepository: ShopRepositorySource,
 ): ModifyItemViewModel() {
 
     init {
@@ -20,16 +23,60 @@ class AddItemViewModel @Inject constructor(
     }
 
     /**
-     * Tries to add item to the repository
-     * @return Id of newly inserted row, null if operation failed
+     * Tries to add an item to the repository
+     * @param transactionId id of the [TransactionBasket] to add the item to
+     * @return resulting [InsertResult]
      */
-    suspend fun addItem(): Long? = viewModelScope.async {
+    suspend fun addItem(transactionId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
-        screenState.validate()
 
-        val item = screenState.extractDataOrNull() ?: return@async null
+        val result = itemRepository.insert(
+            transactionId = transactionId,
+            productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
+            variantId = screenState.selectedVariant.value.data?.id,
+            quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
+                ?: Item.INVALID_QUANTITY,
+            price = screenState.price.value.data?.let { Item.priceFromString(it) }
+                ?: Item.INVALID_PRICE,
+        )
 
-        return@async itemRepository.insert(item)
+        if (result.isError()) {
+            when (result.error!!) {
+                is InsertResult.InvalidTransactionId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried inserting an item to a transaction that doesn't exist in AddItemViewModel"
+                    )
+                    return@async InsertResult.Success(-1)
+                }
+
+                is InsertResult.InvalidProductId -> {
+                    screenState.selectedProduct.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                is InsertResult.InvalidVariantId -> {
+                    screenState.selectedVariant.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                is InsertResult.InvalidQuantity -> {
+                    screenState.quantity.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+
+                is InsertResult.InvalidPrice -> {
+                    screenState.price.apply {
+                        value = value.toError(FieldError.InvalidValueError)
+                    }
+                }
+            }
+        }
+
+        return@async result
     }
         .await()
 }
