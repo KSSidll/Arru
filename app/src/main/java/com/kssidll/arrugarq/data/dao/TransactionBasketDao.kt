@@ -47,8 +47,11 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer?
 
-    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId")
+    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId ORDER BY id DESC")
     suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
+
+    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    fun itemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<Item>>
 
     @Transaction
     suspend fun fullItemsByTransactionBasketId(transactionBasketId: Long): List<FullItem> {
@@ -79,6 +82,34 @@ interface TransactionBasketDao {
         }
     }
 
+    fun fullItemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<FullItem>> {
+        val itemsFlow = itemsByTransactionBasketIdFlow(transactionBasketId)
+
+        return itemsFlow.map { items ->
+            val transactionBasket = get(transactionBasketId) ?: return@map emptyList()
+
+            items.map { item ->
+                val product = productById(item.productId)!!
+                val variant = item.variantId?.let { variantById(it) }
+                val category = categoryById(product.categoryId)!!
+                val producer = product.producerId?.let { producerById(it) }
+                val shop = transactionBasket.shopId?.let { shopById(it) }
+
+                FullItem(
+                    id = item.id,
+                    quantity = item.quantity,
+                    price = item.price,
+                    product = product,
+                    variant = variant,
+                    category = category,
+                    producer = producer,
+                    date = transactionBasket.date,
+                    shop = shop,
+                )
+            }
+        }
+    }
+
     @Query("SELECT * FROM transactionbasketitem WHERE transactionBasketId = :transactionBasketId")
     suspend fun transactionBasketItems(transactionBasketId: Long): List<TransactionBasketItem>
 
@@ -92,6 +123,9 @@ interface TransactionBasketDao {
 
     @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
     suspend fun get(transactionBasketId: Long): TransactionBasket?
+
+    @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
+    fun getFlow(transactionBasketId: Long): Flow<TransactionBasket>
 
     @Query("SELECT SUM(transactionbasket.totalCost) FROM transactionbasket")
     fun totalSpentFlow(): Flow<Long>
@@ -210,6 +244,21 @@ interface TransactionBasketDao {
             startPosition,
             count
         ).map { basket ->
+            val shop = basket.shopId?.let { shopById(it) }
+            val items = fullItemsByTransactionBasketId(basket.id)
+
+            TransactionBasketWithItems(
+                id = basket.id,
+                date = basket.date,
+                shop = shop,
+                totalCost = basket.totalCost,
+                items = items,
+            )
+        }
+    }
+
+    fun transactionBasketWithItems(transactionBasketId: Long): Flow<TransactionBasketWithItems> {
+        return getFlow(transactionBasketId).map { basket ->
             val shop = basket.shopId?.let { shopById(it) }
             val items = fullItemsByTransactionBasketId(basket.id)
 

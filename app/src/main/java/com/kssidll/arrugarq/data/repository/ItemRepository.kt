@@ -11,6 +11,7 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     // Create
 
     override suspend fun insert(
+        transactionId: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
@@ -22,6 +23,10 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
             quantity = quantity,
             price = price
         )
+
+        if (dao.getTransactionBasket(transactionId) == null) {
+            return InsertResult.Error(InsertResult.InvalidTransactionId)
+        }
 
         if (dao.getProduct(productId) == null) {
             return InsertResult.Error(InsertResult.InvalidProductId)
@@ -43,7 +48,16 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
             return InsertResult.Error(InsertResult.InvalidPrice)
         }
 
-        return InsertResult.Success(dao.insert(item))
+        val itemId = dao.insert(item)
+
+        val transactionItem = TransactionBasketItem(
+            transactionBasketId = transactionId,
+            itemId = itemId
+        )
+
+        dao.insertTransactionItem(transactionItem)
+
+        return InsertResult.Success(itemId)
     }
 
     // Update

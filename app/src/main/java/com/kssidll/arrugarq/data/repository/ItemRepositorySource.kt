@@ -16,6 +16,7 @@ interface ItemRepositorySource {
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
+            data object InvalidTransactionId: Errors()
             data object InvalidProductId: Errors()
             data object InvalidVariantId: Errors()
             data object InvalidQuantity: Errors()
@@ -57,6 +58,7 @@ interface ItemRepositorySource {
 
     /**
      * Inserts [Item]
+     * @param transactionId id of the [TransactionBasket] to add the [Item] to
      * @param productId id of the [Product] in the [Item]
      * @param variantId id of the [ProductVariant] in the [Item]
      * @param quantity quantity of the [Item]
@@ -64,6 +66,7 @@ interface ItemRepositorySource {
      * @return [InsertResult] with id of the newly inserted [Item] or an error if any
      */
     suspend fun insert(
+        transactionId: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,

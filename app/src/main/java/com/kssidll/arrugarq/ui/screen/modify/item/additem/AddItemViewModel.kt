@@ -1,5 +1,6 @@
 package com.kssidll.arrugarq.ui.screen.modify.item.additem
 
+import android.util.*
 import androidx.lifecycle.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
@@ -23,12 +24,14 @@ class AddItemViewModel @Inject constructor(
 
     /**
      * Tries to add an item to the repository
+     * @param transactionId id of the [TransactionBasket] to add the item to
      * @return resulting [InsertResult]
      */
-    suspend fun addItem() = viewModelScope.async {
+    suspend fun addItem(transactionId: Long) = viewModelScope.async {
         screenState.attemptedToSubmit.value = true
 
         val result = itemRepository.insert(
+            transactionId = transactionId,
             productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
             quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
@@ -39,6 +42,14 @@ class AddItemViewModel @Inject constructor(
 
         if (result.isError()) {
             when (result.error!!) {
+                is InsertResult.InvalidTransactionId -> {
+                    Log.e(
+                        "InvalidId",
+                        "Tried inserting an item to a transaction that doesn't exist in AddItemViewModel"
+                    )
+                    return@async InsertResult.Success(-1)
+                }
+
                 is InsertResult.InvalidProductId -> {
                     screenState.selectedProduct.apply {
                         value = value.toError(FieldError.InvalidValueError)

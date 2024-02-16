@@ -1,9 +1,11 @@
 package com.kssidll.arrugarq.ui.component.list
 
+import android.content.res.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -12,6 +14,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.*
+import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arrugarq.R
 import com.kssidll.arrugarq.data.data.*
@@ -24,7 +27,9 @@ import java.util.*
 @Composable
 fun TransactionBasketCard(
     transaction: TransactionBasketWithItems,
-    onTransactionLongClick: (transactionId: Long) -> Unit,
+    transactionClickable: Boolean = true,
+    onTransactionLongClick: ((transactionId: Long) -> Unit)? = null,
+    onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onItemLongClick: (itemId: Long) -> Unit,
     onItemCategoryClick: (categoryId: Long) -> Unit,
@@ -32,24 +37,28 @@ fun TransactionBasketCard(
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
     var itemsVisible by remember {
-        mutableStateOf(false)
+        mutableStateOf(!transactionClickable)
     }
 
-    val transactionModifier = Modifier.combinedClickable(
-        role = Role.Button,
-        onClick = {
-            itemsVisible = !itemsVisible
-        },
-        onClickLabel = stringResource(id = R.string.transaction_items_toggle),
-        onLongClick = {
-            onTransactionLongClick(transaction.id)
-        },
-        onLongClickLabel = stringResource(id = R.string.edit)
-    )
+    val transactionModifier =
+        if (!transactionClickable)
+            Modifier
+        else
+            Modifier.combinedClickable(
+                role = Role.Button,
+                onClick = {
+                    itemsVisible = !itemsVisible
+                },
+                onClickLabel = stringResource(id = R.string.transaction_items_toggle),
+                onLongClick = {
+                    onTransactionLongClick?.invoke(transaction.id)
+                },
+                onLongClickLabel = stringResource(id = R.string.edit)
+            )
 
     Column(
         modifier = transactionModifier
-            .padding(bottom = 12.dp)
+            .padding(vertical = 12.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -139,6 +148,30 @@ fun TransactionBasketCard(
                 shape = ShapeDefaults.Medium
             ) {
                 Column {
+                    OutlinedIconButton(
+                        onClick = {
+                            onItemAddClick(transaction.id)
+                        },
+                        shape = ShapeDefaults.Medium,
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.tertiary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp)
+                            .padding(
+                                horizontal = 4.dp,
+                                vertical = 8.dp
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
+                    }
+
                     transaction.items.forEach { item ->
                         FullItemCard(
                             item = item,
@@ -158,6 +191,36 @@ fun TransactionBasketCard(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview(
+    group = "Transaction Basket Card",
+    name = "Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Preview(
+    group = "Transaction Basket Card",
+    name = "Light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Composable
+fun TransactionBasketCardPreview() {
+    ArrugarqTheme {
+        Surface(Modifier.fillMaxWidth()) {
+            TransactionBasketCard(
+                transaction = TransactionBasketWithItems.generate(),
+                onTransactionLongClick = {},
+                onItemAddClick = {},
+                onItemClick = {},
+                onItemLongClick = {},
+                onItemCategoryClick = {},
+                onItemProducerClick = {},
+                onItemShopClick = {},
+            )
         }
     }
 }

@@ -59,7 +59,7 @@ class ShopViewModel @Inject constructor(
     suspend fun performDataUpdate(shopId: Long) = viewModelScope.async {
         val shop = shopRepository.get(shopId) ?: return@async false
 
-        // We ignore the possiblity of changing category while one is already loaded
+        // We ignore the possiblity of changing shop while one is already loaded
         // as not doing that would increase complexity too much
         // and if it happens somehow, it would be considered a bug
         if (mShop.value != null || shopId == mShop.value?.id) return@async true

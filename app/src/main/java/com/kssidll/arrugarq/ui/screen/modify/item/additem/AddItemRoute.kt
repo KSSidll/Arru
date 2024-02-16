@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 
 @Composable
 fun AddItemRoute(
+    transactionId: Long,
     navigateBack: () -> Unit,
     navigateProductAdd: (query: String?) -> Unit,
     navigateVariantAdd: (productId: Long, query: String?) -> Unit,
@@ -24,7 +25,7 @@ fun AddItemRoute(
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                if (viewModel.addItem()
+                if (viewModel.addItem(transactionId)
                         .isNotError()
                 ) {
                     navigateBack()

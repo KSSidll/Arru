@@ -12,6 +12,7 @@ internal fun TransactionsRoute(
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
+    navigateItemAdd: (transactionId: Long) -> Unit,
     navigateTransactionEdit: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
 ) {
@@ -22,6 +23,7 @@ internal fun TransactionsRoute(
             .collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
         onTransactionLongClick = navigateTransactionEdit,
+        onItemAddClick = navigateItemAdd,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,
         onItemCategoryClick = navigateCategory,

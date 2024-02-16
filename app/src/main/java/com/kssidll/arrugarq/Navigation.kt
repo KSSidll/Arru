@@ -9,6 +9,7 @@ import com.kssidll.arrugarq.ui.screen.display.category.*
 import com.kssidll.arrugarq.ui.screen.display.producer.*
 import com.kssidll.arrugarq.ui.screen.display.product.*
 import com.kssidll.arrugarq.ui.screen.display.shop.*
+import com.kssidll.arrugarq.ui.screen.display.transaction.*
 import com.kssidll.arrugarq.ui.screen.home.*
 import com.kssidll.arrugarq.ui.screen.modify.category.addcategory.*
 import com.kssidll.arrugarq.ui.screen.modify.category.editcategory.*
@@ -40,13 +41,14 @@ sealed class Screen: Parcelable {
     data object Settings: Screen()
     data object Search: Screen()
 
+    data class Transaction(val transactionId: Long): Screen()
     data class Product(val productId: Long): Screen()
     data class Category(val categoryId: Long): Screen()
     data class Producer(val producerId: Long): Screen()
     data class Shop(val shopId: Long): Screen()
 
     data object TransactionAdd: Screen()
-    data object ItemAdd: Screen()
+    data class ItemAdd(val transactionId: Long): Screen()
     data class ProductAdd(val defaultName: String? = null): Screen()
     data class VariantAdd(
         val productId: Long,
@@ -217,7 +219,7 @@ fun Navigation(
 
     val navigateBackDeleteTransaction: (transactionId: Long) -> Unit = { transactionId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.TransactionEdit(transactionId)
+            it != Screen.TransactionEdit(transactionId) && it != Screen.Transaction(transactionId)
         }
     }
 
@@ -229,6 +231,10 @@ fun Navigation(
         navController.navigate(Screen.Search)
     }
 
+
+    val navigateTransaction: (transactionId: Long) -> Unit = {
+        navController.navigate(Screen.Transaction(it))
+    }
 
     val navigateProduct: (productId: Long) -> Unit = {
         navController.navigate(Screen.Product(it))
@@ -248,12 +254,11 @@ fun Navigation(
 
 
     val navigateTransactionAdd: () -> Unit = {
-        // TODO add navigation to transaction add screen once implemented
-        //        navController.navigate(Screen.TransactionAdd)
+        navController.navigate(Screen.TransactionAdd)
     }
 
-    val navigateItemAdd: () -> Unit = {
-        navController.navigate(Screen.ItemAdd)
+    val navigateItemAdd: (transactionId: Long) -> Unit = {
+        navController.navigate(Screen.ItemAdd(it))
     }
 
     val navigateProductAdd: (query: String?) -> Unit = {
@@ -360,6 +365,10 @@ fun Navigation(
                     navigateShop = navigateShop,
                     navigateTransactionAdd = navigateTransactionAdd,
                     navigateTransactionEdit = navigateTransactionEdit,
+                    navigateItemAdd = {
+                        navigateTransaction(it)
+                        navigateItemAdd(it)
+                    },
                     navigateItemEdit = navigateItemEdit,
                     navigateCategoryRanking = navigateCategoryRanking,
                     navigateShopRanking = navigateShopRanking,
@@ -370,6 +379,7 @@ fun Navigation(
 
             is Screen.ItemAdd -> {
                 AddItemRoute(
+                    transactionId = screen.transactionId,
                     navigateBack = navigateBack,
                     navigateProductAdd = navigateProductAdd,
                     navigateVariantAdd = navigateVariantAdd,
@@ -601,6 +611,7 @@ fun Navigation(
             is Screen.TransactionAdd -> {
                 AddTransactionRoute(
                     navigateBack = navigateBack,
+                    navigateTransaction = navigateTransaction,
                     navigateShopAdd = navigateShopAdd,
                     navigateShopEdit = navigateShopEdit,
                 )
@@ -613,6 +624,20 @@ fun Navigation(
                     navigateBackDelete = navigateBackDeleteTransaction,
                     navigateShopAdd = navigateShopAdd,
                     navigateShopEdit = navigateShopEdit
+                )
+            }
+
+            is Screen.Transaction -> {
+                TransactionRoute(
+                    transactionId = screen.transactionId,
+                    navigateBack = navigateBack,
+                    navigateTransactionEdit = navigateTransactionEdit,
+                    navigateItemAdd = navigateItemAdd,
+                    navigateProduct = navigateProduct,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
                 )
             }
         }

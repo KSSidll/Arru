@@ -172,4 +172,10 @@ interface TransactionBasketRepositorySource {
      * @return [TransactionBasketWithItems] as [PagingData] as [Flow]
      */
     fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>>
+
+    /**
+     * @param transactionId id to match [TransactionBasketWithItems] with
+     * @return [TransactionBasketWithItems] matching [transactionId] as flow
+     */
+    fun transactionBasketWithItemsFlow(transactionId: Long): Flow<TransactionBasketWithItems>
 }

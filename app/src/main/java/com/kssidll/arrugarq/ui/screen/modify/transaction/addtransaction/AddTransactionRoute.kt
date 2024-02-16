@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 @Composable
 fun AddTransactionRoute(
     navigateBack: () -> Unit,
+    navigateTransaction: (transactionId: Long) -> Unit,
     navigateShopAdd: (query: String?) -> Unit,
     navigateShopEdit: (shopId: Long) -> Unit,
 ) {
@@ -21,10 +22,10 @@ fun AddTransactionRoute(
             .collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                if (viewModel.addTransaction()
-                        .isNotError()
-                ) {
+                val result = viewModel.addTransaction()
+                if (result.isNotError() && result.id != null) {
                     navigateBack()
+                    navigateTransaction(result.id)
                 }
             }
         },

@@ -112,7 +112,7 @@ internal fun ShopScreen(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(27.dp),
+                            modifier = Modifier.size(27.dp)
                         )
                     }
                 },

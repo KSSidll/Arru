@@ -3,7 +3,6 @@ package com.kssidll.arrugarq.ui.component.list
 import android.content.res.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
@@ -278,18 +277,14 @@ fun FullItemCard(
 fun FullItemCardPreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
-            LazyColumn {
-                item {
-                    FullItemCard(
-                        item = FullItem.generate(),
-                        onItemClick = {},
-                        onItemLongClick = {},
-                        onCategoryClick = {},
-                        onProducerClick = {},
-                        onShopClick = {},
-                    )
-                }
-            }
+            FullItemCard(
+                item = FullItem.generate(),
+                onItemClick = {},
+                onItemLongClick = {},
+                onCategoryClick = {},
+                onProducerClick = {},
+                onShopClick = {},
+            )
         }
     }
 }

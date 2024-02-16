@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.*
  * @param transactions Transactions to display in the transactions list
  * @param onSearchAction Callback called when the 'search' action is triggered
  * @param onTransactionLongClick Callback called when the transaction is long clicked/pressed. Provides transaction id as parameter
+ * @param onItemAddClick Callback called when the transaction item add button is clicked. Provides transaction id as parameter
  * @param onItemClick Callback called when the transaction item is clicked. Provides product id as parameter
  * @param onItemLongClick Callback called when the transaction item is long clicked/pressed. Provides item id as parameter
  * @param onItemCategoryClick Callback called when the transaction item category label is clicked. Provides category id as parameter
@@ -41,6 +42,7 @@ internal fun TransactionsScreen(
     transactions: LazyPagingItems<TransactionBasketWithItems>,
     onSearchAction: () -> Unit,
     onTransactionLongClick: (transactionId: Long) -> Unit,
+    onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onItemLongClick: (itemId: Long) -> Unit,
     onItemCategoryClick: (categoryId: Long) -> Unit,
@@ -153,6 +155,7 @@ internal fun TransactionsScreen(
                     TransactionBasketCard(
                         transaction = transaction,
                         onTransactionLongClick = onTransactionLongClick,
+                        onItemAddClick = onItemAddClick,
                         onItemClick = onItemClick,
                         onItemLongClick = onItemLongClick,
                         onItemCategoryClick = onItemCategoryClick,
@@ -184,6 +187,7 @@ fun TransactionsScreenPreview() {
             TransactionsScreen(
                 transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
+                onItemAddClick = {},
                 onItemLongClick = {},
                 onItemProducerClick = {},
                 onItemCategoryClick = {},
