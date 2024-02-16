@@ -20,6 +20,8 @@ import com.kssidll.arrugarq.ui.screen.modify.product.addproduct.*
 import com.kssidll.arrugarq.ui.screen.modify.product.editproduct.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.addshop.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.editshop.*
+import com.kssidll.arrugarq.ui.screen.modify.transaction.addtransaction.*
+import com.kssidll.arrugarq.ui.screen.modify.transaction.edittransaction.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.addvariant.*
 import com.kssidll.arrugarq.ui.screen.modify.variant.editvariant.*
 import com.kssidll.arrugarq.ui.screen.ranking.categoryranking.*
@@ -43,6 +45,7 @@ sealed class Screen: Parcelable {
     data class Producer(val producerId: Long): Screen()
     data class Shop(val shopId: Long): Screen()
 
+    data object TransactionAdd: Screen()
     data object ItemAdd: Screen()
     data class ProductAdd(val defaultName: String? = null): Screen()
     data class VariantAdd(
@@ -54,6 +57,7 @@ sealed class Screen: Parcelable {
     data class ProducerAdd(val defaultName: String? = null): Screen()
     data class ShopAdd(val defaultName: String? = null): Screen()
 
+    data class TransactionEdit(val transactionId: Long): Screen()
     data class ItemEdit(val itemId: Long): Screen()
     data class ProductEdit(val productId: Long): Screen()
     data class VariantEdit(val variantId: Long): Screen()
@@ -211,6 +215,12 @@ fun Navigation(
         }
     }
 
+    val navigateBackDeleteTransaction: (transactionId: Long) -> Unit = { transactionId ->
+        navController.replaceAllFilter(NavAction.Pop) {
+            it != Screen.TransactionEdit(transactionId)
+        }
+    }
+
     val navigateSettings: () -> Unit = {
         navController.navigate(Screen.Settings)
     }
@@ -271,6 +281,10 @@ fun Navigation(
         navController.navigate(Screen.ShopAdd(it))
     }
 
+
+    val navigateTransactionEdit: (transactionId: Long) -> Unit = {
+        navController.navigate(Screen.TransactionEdit(it))
+    }
 
     val navigateItemEdit: (itemId: Long) -> Unit = {
         navController.navigate(Screen.ItemEdit(it))
@@ -345,6 +359,7 @@ fun Navigation(
                     navigateProducer = navigateProducer,
                     navigateShop = navigateShop,
                     navigateTransactionAdd = navigateTransactionAdd,
+                    navigateTransactionEdit = navigateTransactionEdit,
                     navigateItemEdit = navigateItemEdit,
                     navigateCategoryRanking = navigateCategoryRanking,
                     navigateShopRanking = navigateShopRanking,
@@ -580,6 +595,24 @@ fun Navigation(
                     navigateBack = navigateBack,
                     year = screen.year,
                     month = screen.month,
+                )
+            }
+
+            is Screen.TransactionAdd -> {
+                AddTransactionRoute(
+                    navigateBack = navigateBack,
+                    navigateShopAdd = navigateShopAdd,
+                    navigateShopEdit = navigateShopEdit,
+                )
+            }
+
+            is Screen.TransactionEdit -> {
+                EditTransactionRoute(
+                    transactionId = screen.transactionId,
+                    navigateBack = navigateBack,
+                    navigateBackDelete = navigateBackDeleteTransaction,
+                    navigateShopAdd = navigateShopAdd,
+                    navigateShopEdit = navigateShopEdit
                 )
             }
         }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "6715727aee28564c91ce35a8fd975b70",
+    "identityHash": "1a15285b42bfb2d75c2ba39d500fc13f",
     "entities": [
       {
         "tableName": "TransactionBasket",
@@ -75,7 +75,7 @@
       },
       {
         "tableName": "TransactionBasketItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionBasketId` INTEGER NOT NULL, `itemId` INTEGER, FOREIGN KEY(`transactionBasketId`) REFERENCES `TransactionBasket`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`itemId`) REFERENCES `Item`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionBasketId` INTEGER NOT NULL, `itemId` INTEGER NOT NULL, FOREIGN KEY(`transactionBasketId`) REFERENCES `TransactionBasket`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`itemId`) REFERENCES `Item`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -93,7 +93,7 @@
             "fieldPath": "itemId",
             "columnName": "itemId",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -615,7 +615,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6715727aee28564c91ce35a8fd975b70')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1a15285b42bfb2d75c2ba39d500fc13f')"
     ]
   }
 }

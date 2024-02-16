@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Arrugarq</string>
 
     <string name="navigate_to_previous_screen">Return to previous screen</string>
@@ -27,6 +27,12 @@
     <string name="item_price_decrement_by_half">Decrement price by 0.5</string>
     <string name="item_quantity_increment_by_one">Increment quantity by 1</string>
     <string name="item_quantity_decrement_by_one">Decrement quantity by 1</string>
+
+    <string name="transaction">Transaction</string>
+    <string name="transaction_add">Add Transaction</string>
+    <string name="transaction_edit">Edit Transaction</string>
+    <string name="transaction_delete_warning_text">This action will delete all items associated with this transaction</string>
+    <string name="transaction_items_toggle">Toggle transaction items visibility</string>
 
     <string name="item">Item</string>
     <string name="item_add">Add Item</string>
@@ -93,6 +99,6 @@
     <string name="merge_action_confirm">Confirm</string>
     <string name="merge_action_cancel">Cancel</string>
     <string name="merge_action">Merge</string>
-    <string name="merge_action_message_template">This action will merge all {value_1} into {value_2}\nAs a result, all transactions under {value_1} will be under {value_2}\nAre you sure you want to continue?</string>
+    <string name="merge_action_message_template" tools:ignore="Typos">This action will merge all {value_1} into {value_2}\nAs a result, all transactions under {value_1} will be under {value_2}\nAre you sure you want to continue?</string>
     <string name="merge_action_chose_candidate">Choose this as the candidate for merge operation</string>
 </resources>

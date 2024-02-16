@@ -25,7 +25,7 @@ import com.kssidll.arrugarq.ui.theme.*
     ExperimentalFoundationApi::class
 )
 @Composable
-fun LazyItemScope.FullItemCard(
+fun FullItemCard(
     item: FullItem,
     onItemClick: ((item: FullItem) -> Unit)? = null,
     onItemLongClick: ((item: FullItem) -> Unit)? = null,
@@ -51,7 +51,6 @@ fun LazyItemScope.FullItemCard(
     Column(
         modifier = itemModifier
             .heightIn(min = 60.dp)
-            .fillParentMaxWidth()
             .padding(
                 vertical = 6.dp,
                 horizontal = 16.dp

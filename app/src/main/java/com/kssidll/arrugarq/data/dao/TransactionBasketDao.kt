@@ -30,19 +30,22 @@ interface TransactionBasketDao {
     // Helper
 
     @Query("SELECT * FROM shop WHERE shop.id = :shopId")
-    suspend fun shopById(shopId: Long): Shop
+    suspend fun shopById(shopId: Long): Shop?
+
+    @Query("SELECT * FROM item WHERE item.id = :itemId")
+    suspend fun itemById(itemId: Long): Item?
 
     @Query("SELECT * FROM product WHERE product.id = :productId")
-    suspend fun productById(productId: Long): Product
+    suspend fun productById(productId: Long): Product?
 
     @Query("SELECT * FROM productvariant WHERE productvariant.id = :variantId")
-    suspend fun variantById(variantId: Long): ProductVariant
+    suspend fun variantById(variantId: Long): ProductVariant?
 
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
-    suspend fun categoryById(categoryId: Long): ProductCategory
+    suspend fun categoryById(categoryId: Long): ProductCategory?
 
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducer
+    suspend fun producerById(producerId: Long): ProductProducer?
 
     @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId")
     suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
@@ -56,9 +59,9 @@ interface TransactionBasketDao {
         if (items.isEmpty()) return emptyList()
 
         return items.map { item ->
-            val product = productById(item.productId)
+            val product = productById(item.productId)!!
             val variant = item.variantId?.let { variantById(it) }
-            val category = categoryById(product.categoryId)
+            val category = categoryById(product.categoryId)!!
             val producer = product.producerId?.let { producerById(it) }
             val shop = transactionBasket.shopId?.let { shopById(it) }
 
@@ -75,6 +78,15 @@ interface TransactionBasketDao {
             )
         }
     }
+
+    @Query("SELECT * FROM transactionbasketitem WHERE transactionBasketId = :transactionBasketId")
+    suspend fun transactionBasketItems(transactionBasketId: Long): List<TransactionBasketItem>
+
+    @Delete
+    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
+
+    @Delete
+    suspend fun deleteItems(items: List<Item>)
 
     // Read
 

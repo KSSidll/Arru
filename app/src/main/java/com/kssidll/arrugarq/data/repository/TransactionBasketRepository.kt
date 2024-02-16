@@ -4,33 +4,122 @@ import androidx.paging.*
 import com.kssidll.arrugarq.data.dao.*
 import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.paging.*
+import com.kssidll.arrugarq.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
+import com.kssidll.arrugarq.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
+import com.kssidll.arrugarq.data.repository.TransactionBasketRepositorySource.Companion.ItemInsertResult
+import com.kssidll.arrugarq.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.*
 
 class TransactionBasketRepository(private val dao: TransactionBasketDao): TransactionBasketRepositorySource {
     // Create
 
-    override suspend fun insert(transactionBasket: TransactionBasket): Long {
-        return dao.insert(transactionBasket)
+    override suspend fun insert(
+        date: Long,
+        totalCost: Long,
+        shopId: Long?
+    ): InsertResult {
+        val transaction = TransactionBasket(
+            date = date,
+            totalCost = totalCost,
+            shopId = shopId
+        )
+
+        if (transaction.validDate()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidDate)
+        }
+
+        if (transaction.validTotalCost()
+                .not()
+        ) {
+            return InsertResult.Error(InsertResult.InvalidTotalCost)
+        }
+
+        if (shopId != null && dao.shopById(shopId) == null) {
+            return InsertResult.Error(InsertResult.InvalidShopId)
+        }
+
+        return InsertResult.Success(dao.insert(transaction))
     }
 
-    override suspend fun insertTransactionItem(transactionBasketItem: TransactionBasketItem): Long {
-        return dao.insertTransactionBasketItem(transactionBasketItem)
+    override suspend fun insertTransactionItem(
+        transactionBasketId: Long,
+        itemId: Long
+    ): ItemInsertResult {
+        val transactionItem = TransactionBasketItem(
+            transactionBasketId = transactionBasketId,
+            itemId = itemId,
+        )
+
+        if (dao.get(transactionBasketId) == null) {
+            return ItemInsertResult.Error(ItemInsertResult.InvalidTransactionId)
+        }
+
+        if (dao.itemById(itemId) == null) {
+            return ItemInsertResult.Error(ItemInsertResult.InvalidItemId)
+        }
+
+        return ItemInsertResult.Success(dao.insertTransactionBasketItem(transactionItem))
     }
 
     // Update
 
-    override suspend fun update(transactionBasket: TransactionBasket) {
-        dao.update(transactionBasket)
+    override suspend fun update(
+        transactionId: Long,
+        date: Long,
+        totalCost: Long,
+        shopId: Long?
+    ): UpdateResult {
+        val transaction =
+            dao.get(transactionId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+
+        transaction.date = date
+        transaction.totalCost = totalCost
+        transaction.shopId = shopId
+
+        if (transaction.validDate()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidDate)
+        }
+
+        if (transaction.validTotalCost()
+                .not()
+        ) {
+            return UpdateResult.Error(UpdateResult.InvalidTotalCost)
+        }
+
+        if (shopId != null && dao.shopById(shopId) == null) {
+            return UpdateResult.Error(UpdateResult.InvalidShopId)
+        }
+
+        dao.update(transaction)
+
+        return UpdateResult.Success
     }
 
     // Delete
 
-    override suspend fun delete(transactionBasket: TransactionBasket) {
-        dao.delete(transactionBasket)
-    }
+    override suspend fun delete(
+        transactionId: Long,
+        force: Boolean
+    ): DeleteResult {
+        val transaction =
+            dao.get(transactionId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-    override suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem) {
-        dao.deleteTransactionBasketItem(transactionBasketItem)
+        val transactionBasketItems = dao.transactionBasketItems(transactionId)
+        val items = dao.itemsByTransactionBasketId(transactionId)
+
+        if (!force && (items.isNotEmpty())) {
+            return DeleteResult.Error(DeleteResult.DangerousDelete)
+        } else {
+            dao.deleteTransactionBasketItems(transactionBasketItems)
+            dao.deleteItems(items)
+            dao.delete(transaction)
+        }
+
+        return DeleteResult.Success
     }
 
     // Read

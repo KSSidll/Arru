@@ -17,10 +17,10 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         price: Long
     ): InsertResult {
         val item = Item(
-            productId,
-            variantId,
-            quantity,
-            price
+            productId = productId,
+            variantId = variantId,
+            quantity = quantity,
+            price = price
         )
 
         if (dao.getProduct(productId) == null) {

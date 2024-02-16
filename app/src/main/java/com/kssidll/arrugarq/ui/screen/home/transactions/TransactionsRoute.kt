@@ -12,6 +12,7 @@ internal fun TransactionsRoute(
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
+    navigateTransactionEdit: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
 ) {
     val viewModel: TransactionsViewModel = hiltViewModel()
@@ -20,6 +21,7 @@ internal fun TransactionsRoute(
         transactions = viewModel.transactions()
             .collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
+        onTransactionLongClick = navigateTransactionEdit,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,
         onItemCategoryClick = navigateCategory,

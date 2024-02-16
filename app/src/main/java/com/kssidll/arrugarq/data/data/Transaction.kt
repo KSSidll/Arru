@@ -5,6 +5,7 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.domain.utils.*
 import com.kssidll.arrugarq.helper.*
 import com.patrykandpatrick.vico.core.entry.*
+import kotlin.math.*
 
 @Entity(
     foreignKeys = [
@@ -19,13 +20,61 @@ import com.patrykandpatrick.vico.core.entry.*
 )
 data class TransactionBasket(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val date: Long,
+    @ColumnInfo(index = true) var date: Long,
     @ColumnInfo(index = true) var shopId: Long?,
-    val totalCost: Long,
+    var totalCost: Long,
 ) {
+    @Ignore
+    constructor(
+        date: Long,
+        totalCost: Long,
+        shopId: Long?
+    ): this(
+        0,
+        date,
+        shopId,
+        totalCost
+    )
+
+    @Ignore
+    fun actualTotalCost(): Double {
+        return totalCost.toDouble()
+            .div(COST_DIVISOR)
+    }
+
     companion object {
         @Ignore
         const val COST_DIVISOR: Long = 100
+
+        @Ignore
+        const val INVALID_DATE: Long = Long.MIN_VALUE
+
+        @Ignore
+        const val INVALID_TOTAL_COST: Long = Long.MIN_VALUE
+
+        @Ignore
+        fun totalCostFromString(string: String): Long? {
+            val rFactor = log10(COST_DIVISOR.toFloat()).toInt()
+
+            if (!RegexHelper.isFloat(
+                    string,
+                    rFactor
+                )
+            ) {
+                return null
+            }
+
+            val factor = rFactor - string.dropWhile { it.isDigit() }
+                .drop(1).length
+
+            val remainder = "".padEnd(
+                factor,
+                '0'
+            )
+            return string.filter { it.isDigit() }
+                .plus(remainder)
+                .toLongOrNull()
+        }
 
         @Ignore
         fun generate(transactionId: Long = 0): TransactionBasket {
@@ -43,6 +92,22 @@ data class TransactionBasket(
                 generate(it.toLong())
             }
         }
+    }
+
+    /**
+     * @return true if date is valid, false otherwise
+     */
+    @Ignore
+    fun validDate(): Boolean {
+        return date != INVALID_DATE && date > 0
+    }
+
+    /**
+     * @return true if total cost is valid, false otherwise
+     */
+    @Ignore
+    fun validTotalCost(): Boolean {
+        return totalCost != INVALID_TOTAL_COST
     }
 }
 
@@ -67,8 +132,18 @@ data class TransactionBasket(
 data class TransactionBasketItem(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val transactionBasketId: Long,
-    @ColumnInfo(index = true) val itemId: Long?,
+    @ColumnInfo(index = true) val itemId: Long,
 ) {
+    @Ignore
+    constructor(
+        transactionBasketId: Long,
+        itemId: Long
+    ): this(
+        0,
+        transactionBasketId,
+        itemId
+    )
+
     companion object {
         @Ignore
         fun generate(transactionBasketItemId: Long = 0): TransactionBasketItem {

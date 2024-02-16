@@ -39,7 +39,6 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides product id as parameter
  * @param onItemVariantLongClick Callback called when the item variant label is long clicked/pressed. Provides variant id as parameter
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,

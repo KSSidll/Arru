@@ -28,6 +28,7 @@ fun HomeRoute(
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
     navigateTransactionAdd: () -> Unit,
+    navigateTransactionEdit: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
@@ -84,6 +85,7 @@ fun HomeRoute(
                             navigateProducer = navigateProducer,
                             navigateShop = navigateShop,
                             navigateItemEdit = navigateItemEdit,
+                            navigateTransactionEdit = navigateTransactionEdit,
                         )
                     }
                 }
