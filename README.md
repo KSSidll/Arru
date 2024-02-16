@@ -13,16 +13,15 @@
 <h4 align="center">Arrugarq is an app for expenditure tracking/analysis</h4>
 
 <p align="middle">
-    <img src="images/dashboard.jpg" width="30%"/>
-    <img src="images/analysis.jpg" width="30%"/>
-    <img src="images/transactions.jpg" width="30%"/>
-    <img src="images/product_top.jpg" width="24%"/>
-    <img src="images/product_bottom.jpg" width="24%"/>
-    <img src="images/categories_ranking.jpg" width="24%"/>
-    <img src="images/merge.jpg" width="24%"/>
-    <img src="images/transaction_add_item.jpg" width="30%"/>
-    <img src="images/transaction_add_select.jpg" width="30%"/>
-    <img src="images/transaction_add_product.jpg" width="30%"/>
+    <img src="images/dashboard.png" width="30%"/>
+    <img src="images/analysis.png" width="30%"/>
+    <img src="images/transactions.png" width="30%"/>
+    <img src="images/product_top.png" width="30%"/>
+    <img src="images/categories_ranking.png" width="30%"/>
+    <img src="images/merge.png" width="30%"/>
+    <img src="images/transaction_add_item.png" width="30%"/>
+    <img src="images/transaction_add_select.png" width="30%"/>
+    <img src="images/transaction_add.png" width="30%"/>
 </p>
 
 # Features
