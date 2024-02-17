@@ -23,7 +23,7 @@ fun AddItemRoute(
         providedProductId,
         providedVariantId
     ) {
-        viewModel.setSelectedProduct(
+        viewModel.setSelectedProductToProvided(
             providedProductId,
             providedVariantId
         )
@@ -35,6 +35,14 @@ fun AddItemRoute(
         products = viewModel.allProducts()
             .collectAsState(initial = emptyList()).value,
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
+        onNewProductSelected = {
+            scope.launch {
+                viewModel.onNewProductSelected(it)
+            }
+        },
+        onNewVariantSelected = {
+            viewModel.onNewVariantSelected(it)
+        },
         onSubmit = {
             scope.launch {
                 if (viewModel.addItem(transactionId)
@@ -43,9 +51,6 @@ fun AddItemRoute(
                     navigateBack()
                 }
             }
-        },
-        onProductChange = {
-            viewModel.onProductChange()
         },
         onProductAddButtonClick = navigateProductAdd,
         onVariantAddButtonClick = navigateVariantAdd,

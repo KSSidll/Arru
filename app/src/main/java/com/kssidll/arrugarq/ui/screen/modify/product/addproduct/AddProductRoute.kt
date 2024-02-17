@@ -41,6 +41,12 @@ fun AddProductRoute(
             .collectAsState(initial = emptyList()).value,
         producers = viewModel.allProducers()
             .collectAsState(initial = emptyList()).value,
+        onNewProducerSelected = {
+            viewModel.onNewProducerSelected(it)
+        },
+        onNewCategorySelected = {
+            viewModel.onNewCategorySelected(it)
+        },
         onSubmit = {
             scope.launch {
                 val result = viewModel.addProduct()

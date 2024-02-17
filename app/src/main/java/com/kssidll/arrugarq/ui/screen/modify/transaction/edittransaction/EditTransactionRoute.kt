@@ -26,7 +26,7 @@ fun EditTransactionRoute(
     }
 
     LaunchedEffect(providedShopId) {
-        viewModel.setSelectedShop(providedShopId)
+        viewModel.setSelectedShopToProvided(providedShopId)
     }
 
     ModifyTransactionScreenImpl(
@@ -34,6 +34,9 @@ fun EditTransactionRoute(
         state = viewModel.screenState,
         shops = viewModel.allShops()
             .collectAsState(initial = emptyList()).value,
+        onNewShopSelected = {
+            viewModel.onNewShopSelected(it)
+        },
         onSubmit = {
             scope.launch {
                 if (viewModel.updateTransaction(transactionId)

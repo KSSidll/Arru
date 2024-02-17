@@ -21,6 +21,8 @@ class ShopViewModel @Inject constructor(
     private val mShop: MutableState<Shop?> = mutableStateOf(null)
     val shop: Shop? by mShop
 
+    private var mShopListener: Job? = null
+
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
@@ -63,6 +65,14 @@ class ShopViewModel @Inject constructor(
         // as not doing that would increase complexity too much
         // and if it happens somehow, it would be considered a bug
         if (mShop.value != null || shopId == mShop.value?.id) return@async true
+
+        mShopListener?.cancel()
+        mShopListener = viewModelScope.launch {
+            shopRepository.getFlow(shopId)
+                .collectLatest {
+                    mShop.value = it
+                }
+        }
 
         mShop.value = shop
 

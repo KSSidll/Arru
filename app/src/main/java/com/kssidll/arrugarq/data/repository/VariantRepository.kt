@@ -134,6 +134,12 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         return dao.get(variantId)
     }
 
+    override fun getFlow(variantId: Long): Flow<ProductVariant?> {
+        return dao.getFlow(variantId)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
     override fun byProductFlow(product: Product): Flow<List<ProductVariant>> {
         return dao.byProductFlow(product.id)
             .cancellable()

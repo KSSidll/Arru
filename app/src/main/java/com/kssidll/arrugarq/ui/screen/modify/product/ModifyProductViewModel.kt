@@ -6,6 +6,7 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 /**
@@ -18,20 +19,47 @@ abstract class ModifyProductViewModel: ViewModel() {
     protected abstract val categoryRepository: CategoryRepositorySource
     internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 
+    private var mProducerListener: Job? = null
+    private var mCategoryListener: Job? = null
+
     suspend fun setSelectedProducer(providedProducerId: Long?) {
         if (providedProducerId != null) {
             screenState.selectedProductProducer.apply { value = value.toLoading() }
-            screenState.selectedProductProducer.apply {
-                value = Field.Loaded(producerRepository.get(providedProducerId))
-            }
+            onNewProducerSelected(producerRepository.get(providedProducerId))
         }
     }
 
     suspend fun setSelectedCategory(providedCategoryId: Long?) {
         if (providedCategoryId != null) {
             screenState.selectedProductCategory.apply { value = value.toLoading() }
-            screenState.selectedProductCategory.apply {
-                value = Field.Loaded(categoryRepository.get(providedCategoryId))
+            onNewCategorySelected(categoryRepository.get(providedCategoryId))
+        }
+    }
+
+    fun onNewProducerSelected(producer: ProductProducer?) {
+        screenState.selectedProductProducer.value = Field.Loaded(producer)
+
+        mProducerListener?.cancel()
+        if (producer != null) {
+            mProducerListener = viewModelScope.launch {
+                producerRepository.getFlow(producer.id)
+                    .collectLatest {
+                        screenState.selectedProductProducer.value = Field.Loaded(it)
+                    }
+            }
+        }
+    }
+
+    fun onNewCategorySelected(category: ProductCategory?) {
+        screenState.selectedProductCategory.value = Field.Loaded(category)
+
+        mCategoryListener?.cancel()
+        if (category != null) {
+            mCategoryListener = viewModelScope.launch {
+                categoryRepository.getFlow(category.id)
+                    .collectLatest {
+                        screenState.selectedProductCategory.value = Field.Loaded(it)
+                    }
             }
         }
     }

@@ -121,6 +121,12 @@ interface ProducerRepositorySource {
     suspend fun get(producerId: Long): ProductProducer?
 
     /**
+     * @param producerId id of the [ProductProducer]
+     * @return [ProductProducer] matching [producerId] id or null if none match, as flow
+     */
+    fun getFlow(producerId: Long): Flow<ProductProducer?>
+
+    /**
      * @param producer [ProductProducer] to get the total spending from
      * @return long representing total spending for the [producer] as flow
      */

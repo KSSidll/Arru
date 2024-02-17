@@ -17,7 +17,7 @@ fun AddTransactionRoute(
     val viewModel: AddTransactionViewModel = hiltViewModel()
 
     LaunchedEffect(providedShopId) {
-        viewModel.setSelectedShop(providedShopId)
+        viewModel.setSelectedShopToProvided(providedShopId)
     }
 
     ModifyTransactionScreenImpl(
@@ -25,6 +25,9 @@ fun AddTransactionRoute(
         state = viewModel.screenState,
         shops = viewModel.allShops()
             .collectAsState(initial = emptyList()).value,
+        onNewShopSelected = {
+            viewModel.onNewShopSelected(it)
+        },
         onSubmit = {
             scope.launch {
                 val result = viewModel.addTransaction()

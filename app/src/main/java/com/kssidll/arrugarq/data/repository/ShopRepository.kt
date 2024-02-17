@@ -118,6 +118,12 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         return dao.get(shopId)
     }
 
+    override fun getFlow(shopId: Long): Flow<Shop?> {
+        return dao.getFlow(shopId)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
     override fun totalSpentFlow(shop: Shop): Flow<Long> {
         return dao.totalSpentFlow(shop.id)
             .cancellable()

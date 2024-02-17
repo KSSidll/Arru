@@ -120,6 +120,12 @@ interface ShopRepositorySource {
     suspend fun get(shopId: Long): Shop?
 
     /**
+     * @param shopId id of the [Shop]
+     * @return [Shop] matching [shopId] id or null if none match, as flow
+     */
+    fun getFlow(shopId: Long): Flow<Shop?>
+
+    /**
      * @param shop [Shop] to get the total spending from
      * @return long representing total spending for the [shop] as flow
      */

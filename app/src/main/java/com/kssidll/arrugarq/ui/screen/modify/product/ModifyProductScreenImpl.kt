@@ -27,6 +27,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param state [ModifyProductScreenState] instance representing the screen state
  * @param categories Categories that can be set for the product
  * @param producers Producers that can be set for current product
+ * @param onNewProducerSelected Callback called when a new producer is selected. Provides newly selected producer as parameter
+ * @param onNewCategorySelected Callback called when a new category is selected. Provides newly selected category as parameter
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param onMerge Callback called when the merge action is triggered. Provides merge candidate as parameter. Setting to null will hide merge action
@@ -48,6 +50,8 @@ fun ModifyProductScreenImpl(
     state: ModifyProductScreenState,
     categories: List<ProductCategoryWithAltNames>,
     producers: List<ProductProducer>,
+    onNewProducerSelected: (producer: ProductProducer?) -> Unit,
+    onNewCategorySelected: (category: ProductCategory?) -> Unit,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: Product) -> Unit)? = null,
@@ -89,7 +93,7 @@ fun ModifyProductScreenImpl(
                 items = producers,
                 itemText = { it.name },
                 onItemClick = {
-                    state.selectedProductProducer.value = Field.Loaded(it)
+                    onNewProducerSelected(it)
                     state.isProducerSearchDialogExpanded.value = false
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
@@ -110,7 +114,7 @@ fun ModifyProductScreenImpl(
                 },
                 items = categories,
                 onItemClick = {
-                    state.selectedProductCategory.value = Field.Loaded(it?.category)
+                    onNewCategorySelected(it?.category)
                     state.isCategorySearchDialogExpanded.value = false
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
@@ -226,6 +230,8 @@ fun ModifyProductScreenImplPreview() {
                 state = ModifyProductScreenState(),
                 categories = emptyList(),
                 producers = emptyList(),
+                onNewProducerSelected = {},
+                onNewCategorySelected = {},
                 onSubmit = {},
                 onProducerAddButtonClick = {},
                 onItemProducerLongClick = {},

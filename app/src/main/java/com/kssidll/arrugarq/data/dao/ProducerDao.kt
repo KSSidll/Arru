@@ -142,6 +142,9 @@ interface ProducerDao {
     @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun get(producerId: Long): ProductProducer?
 
+    @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.id = :producerId")
+    fun getFlow(producerId: Long): Flow<ProductProducer?>
+
     @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.name = :name")
     suspend fun byName(name: String): ProductProducer?
 

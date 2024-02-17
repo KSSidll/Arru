@@ -181,5 +181,7 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
 
     override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<TransactionBasketWithItems> {
         return dao.transactionBasketWithItems(transactionId)
+            .cancellable()
+            .distinctUntilChanged()
     }
 }

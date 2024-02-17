@@ -121,6 +121,9 @@ interface ProductDao {
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
     suspend fun get(productId: Long): Product?
 
+    @Query("SELECT product.* FROM product WHERE product.id = :productId")
+    fun getFlow(productId: Long): Flow<Product?>
+
     @Query("SELECT productaltname.* FROM productaltname WHERE productaltname.id = :altNameId")
     suspend fun getAltName(altNameId: Long): ProductAltName?
 

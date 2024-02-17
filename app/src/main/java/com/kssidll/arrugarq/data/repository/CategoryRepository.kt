@@ -205,6 +205,12 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         return dao.get(categoryId)
     }
 
+    override fun getFlow(categoryId: Long): Flow<ProductCategory?> {
+        return dao.getFlow(categoryId)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
     override fun totalSpentFlow(category: ProductCategory): Flow<Long> {
         return dao.totalSpentFlow(category.id)
             .cancellable()

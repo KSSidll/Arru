@@ -117,6 +117,12 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         return dao.get(producerId)
     }
 
+    override fun getFlow(producerId: Long): Flow<ProductProducer?> {
+        return dao.getFlow(producerId)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
     override fun totalSpentFlow(producer: ProductProducer): Flow<Long> {
         return dao.totalSpentFlow(producer.id)
             .cancellable()

@@ -183,6 +183,12 @@ interface CategoryRepositorySource {
     suspend fun get(categoryId: Long): ProductCategory?
 
     /**
+     * @param categoryId id of the [ProductCategory]
+     * @return [ProductCategory] matching [categoryId] id or null if none match, as flow
+     */
+    fun getFlow(categoryId: Long): Flow<ProductCategory?>
+
+    /**
      * @param category [ProductCategory] to get the total spending from
      * @return long representing total spending for the [category] as flow
      */

@@ -489,6 +489,7 @@ fun Navigation(
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsProductId) {
                             previousDestination.providedProductId.value = it
+                            previousDestination.providedVariantId.value = null
                         }
                         navigateBack()
                     },

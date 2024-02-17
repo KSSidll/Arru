@@ -198,6 +198,12 @@ interface ProductRepositorySource {
     suspend fun get(productId: Long): Product?
 
     /**
+     * @param productId id of the [Product]
+     * @return [Product] matching [productId] id or null if none match, as flow
+     */
+    fun getFlow(productId: Long): Flow<Product?>
+
+    /**
      * @param product [Product] to get the total spending from
      * @return long representing total spending for the [product] as flow
      */

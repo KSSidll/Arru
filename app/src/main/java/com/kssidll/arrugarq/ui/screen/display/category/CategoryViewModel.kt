@@ -21,6 +21,8 @@ class CategoryViewModel @Inject constructor(
     private val mCategory: MutableState<ProductCategory?> = mutableStateOf(null)
     val category: ProductCategory? by mCategory
 
+    private var mCategoryListener: Job? = null
+
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
@@ -63,6 +65,14 @@ class CategoryViewModel @Inject constructor(
         // as not doing that would increase complexity too much
         // and if it happens somehow, it would be considered a bug
         if (mCategory.value != null || categoryId == mCategory.value?.id) return@async true
+
+        mCategoryListener?.cancel()
+        mCategoryListener = viewModelScope.launch {
+            categoryRepository.getFlow(categoryId)
+                .collectLatest {
+                    mCategory.value = it
+                }
+        }
 
         mCategory.value = category
 

@@ -30,9 +30,10 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param state [ModifyItemScreenState] instance representing the screen state
  * @param products Products that can be set for the item
  * @param variants Variants that can be set for current item
+ * @param onNewProductSelected Callback called when a new product is selected. Provides newly selected product as parameter
+ * @param onNewVariantSelected Callback called when a new variant is selected. Provides newly selected variant as parameter
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered
- * @param onProductChange Callback called when the product representation in state is changed
  * @param submitButtonText Text displayed in the submit button, defaults to product add string resource
  * @param onProductAddButtonClick Callback called when the product add button is clicked. Provides search value or null as parameter
  * @param onVariantAddButtonClick Callback called when the variant add button is clicked. Provides product id and potentially a search value as parameters
@@ -45,9 +46,10 @@ fun ModifyItemScreenImpl(
     state: ModifyItemScreenState,
     products: List<ProductWithAltNames>,
     variants: List<ProductVariant>,
+    onNewProductSelected: (product: Product?) -> Unit,
+    onNewVariantSelected: (variant: ProductVariant?) -> Unit,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
-    onProductChange: () -> Unit,
     submitButtonText: String = stringResource(id = R.string.item_add),
     onProductAddButtonClick: (query: String?) -> Unit,
     onVariantAddButtonClick: (productId: Long, query: String?) -> Unit,
@@ -68,9 +70,8 @@ fun ModifyItemScreenImpl(
                 },
                 items = products,
                 onItemClick = {
-                    state.selectedProduct.value = Field.Loaded(it?.product)
                     state.isProductSearchDialogExpanded.value = false
-                    onProductChange()
+                    onNewProductSelected(it?.product)
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
@@ -91,7 +92,7 @@ fun ModifyItemScreenImpl(
                 itemText = { it.name },
                 onItemClick = {
                     state.isVariantSearchDialogExpanded.value = false
-                    state.selectedVariant.value = Field.Loaded(it)
+                    onNewVariantSelected(it)
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
@@ -412,12 +413,13 @@ fun ModifyItemScreenImplPreview() {
                 state = ModifyItemScreenState(),
                 products = emptyList(),
                 variants = emptyList(),
+                onNewProductSelected = {},
+                onNewVariantSelected = {},
                 onSubmit = {},
                 onProductAddButtonClick = {},
                 onItemLongClick = {},
                 onVariantAddButtonClick = { _, _ -> },
                 onItemVariantLongClick = {},
-                onProductChange = {},
             )
         }
     }

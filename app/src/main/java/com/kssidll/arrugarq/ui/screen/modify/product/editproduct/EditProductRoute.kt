@@ -45,6 +45,12 @@ fun EditProductRoute(
             .collectAsState(initial = emptyList()).value,
         producers = viewModel.allProducers()
             .collectAsState(initial = emptyList()).value,
+        onNewProducerSelected = {
+            viewModel.onNewProducerSelected(it)
+        },
+        onNewCategorySelected = {
+            viewModel.onNewCategorySelected(it)
+        },
         onSubmit = {
             scope.launch {
                 if (viewModel.updateProduct(productId)

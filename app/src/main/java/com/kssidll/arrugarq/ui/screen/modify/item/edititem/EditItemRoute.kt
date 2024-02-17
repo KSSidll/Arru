@@ -34,7 +34,7 @@ fun EditItemRoute(
         providedProductId,
         providedVariantId
     ) {
-        viewModel.setSelectedProduct(
+        viewModel.setSelectedProductToProvided(
             providedProductId,
             providedVariantId
         )
@@ -46,6 +46,14 @@ fun EditItemRoute(
         products = viewModel.allProducts()
             .collectAsState(initial = emptyList()).value,
         variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
+        onNewProductSelected = {
+            scope.launch {
+                viewModel.onNewProductSelected(it)
+            }
+        },
+        onNewVariantSelected = {
+            viewModel.onNewVariantSelected(it)
+        },
         onSubmit = {
             scope.launch {
                 if (viewModel.updateItem(itemId)
@@ -63,9 +71,6 @@ fun EditItemRoute(
                     navigateBackDelete()
                 }
             }
-        },
-        onProductChange = {
-            viewModel.onProductChange()
         },
         submitButtonText = stringResource(id = R.string.item_edit),
         onProductAddButtonClick = navigateProductAdd,

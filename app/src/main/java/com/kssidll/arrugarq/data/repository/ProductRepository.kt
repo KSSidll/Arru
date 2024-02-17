@@ -228,6 +228,12 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         return dao.get(productId)
     }
 
+    override fun getFlow(productId: Long): Flow<Product?> {
+        return dao.getFlow(productId)
+            .cancellable()
+            .distinctUntilChanged()
+    }
+
     override fun totalSpentFlow(product: Product): Flow<Long> {
         return dao.totalSpentFlow(product.id)
             .cancellable()

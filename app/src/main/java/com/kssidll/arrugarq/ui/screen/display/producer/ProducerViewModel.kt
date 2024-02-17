@@ -21,6 +21,8 @@ class ProducerViewModel @Inject constructor(
     private val mProducer: MutableState<ProductProducer?> = mutableStateOf(null)
     val producer: ProductProducer? by mProducer
 
+    private var mProducerListener: Job? = null
+
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
@@ -63,6 +65,14 @@ class ProducerViewModel @Inject constructor(
         // as not doing that would increase complexity too much
         // and if it happens somehow, it would be considered a bug
         if (mProducer.value != null || producerId == mProducer.value?.id) return@async true
+
+        mProducerListener?.cancel()
+        mProducerListener = viewModelScope.launch {
+            producerRepository.getFlow(producerId)
+                .collectLatest {
+                    mProducer.value = it
+                }
+        }
 
         mProducer.value = producer
 

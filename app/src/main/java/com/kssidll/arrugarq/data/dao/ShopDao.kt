@@ -98,6 +98,9 @@ interface ShopDao {
     @Query("SELECT shop.* FROM shop WHERE shop.id = :shopId")
     suspend fun get(shopId: Long): Shop?
 
+    @Query("SELECT shop.* FROM shop WHERE shop.id = :shopId")
+    fun getFlow(shopId: Long): Flow<Shop?>
+
     @Query("SELECT shop.* FROM shop WHERE shop.name = :name")
     suspend fun byName(name: String): Shop?
 

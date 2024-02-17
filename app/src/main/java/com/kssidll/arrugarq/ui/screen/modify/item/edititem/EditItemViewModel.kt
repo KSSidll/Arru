@@ -19,6 +19,25 @@ class EditItemViewModel @Inject constructor(
     override val productRepository: ProductRepositorySource,
     override val variantsRepository: VariantRepositorySource,
 ): ModifyItemViewModel() {
+    private var mItem: Item? = null
+
+    /**
+     * Updates data in the screen state
+     * @return true if provided [itemId] was valid, false otherwise
+     */
+    suspend fun updateState(itemId: Long) = viewModelScope.async {
+        // skip state update for repeating itemId
+        if (itemId == mItem?.id) return@async true
+
+        screenState.allToLoading()
+
+        mItem = itemRepository.get(itemId)
+
+        updateStateForItem(mItem)
+
+        return@async mItem != null
+    }
+        .await()
 
     /**
      * Tries to update item with provided [itemId] with current screen state data

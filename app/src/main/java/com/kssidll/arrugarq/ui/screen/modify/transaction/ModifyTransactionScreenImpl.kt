@@ -32,6 +32,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyProducerScreenState] instance representing the screen state
  * @param shops Shops that can be set for the transaction
+ * @param onNewShopSelected Callback called when a new shop is selected. Provides newly selected shop as parameter
  * @param onSubmit Callback called when the submit action is triggered
  * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
  * @param submitButtonText Text displayed in the submit button, defaults to transaction add string resource
@@ -44,6 +45,7 @@ fun ModifyTransactionScreenImpl(
     onBack: () -> Unit,
     state: ModifyTransactionScreenState,
     shops: List<Shop>,
+    onNewShopSelected: (shop: Shop?) -> Unit,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.transaction_add),
@@ -97,7 +99,7 @@ fun ModifyTransactionScreenImpl(
                 itemText = { it.name },
                 onItemClick = {
                     state.isShopSearchDialogExpanded.value = false
-                    state.selectedShop.value = Field.Loaded(it)
+                    onNewShopSelected(it)
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
@@ -290,6 +292,7 @@ fun ModifyTransactionScreenImplPreview() {
                 onBack = {},
                 state = ModifyTransactionScreenState(),
                 shops = emptyList(),
+                onNewShopSelected = {},
                 onSubmit = {},
                 onShopAddButtonClick = {},
                 onTransactionShopLongClick = {},

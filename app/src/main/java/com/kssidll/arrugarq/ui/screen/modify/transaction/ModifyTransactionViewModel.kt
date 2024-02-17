@@ -6,11 +6,14 @@ import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 abstract class ModifyTransactionViewModel: ViewModel() {
     protected abstract val shopRepository: ShopRepositorySource
     internal val screenState: ModifyTransactionScreenState = ModifyTransactionScreenState()
+
+    private var mShopListener: Job? = null
 
     /**
      * @return List of all shops
@@ -19,11 +22,23 @@ abstract class ModifyTransactionViewModel: ViewModel() {
         return shopRepository.allFlow()
     }
 
-    suspend fun setSelectedShop(providedShopId: Long?) {
+    suspend fun setSelectedShopToProvided(providedShopId: Long?) {
         if (providedShopId != null) {
             screenState.selectedShop.apply { value = value.toLoading() }
-            screenState.selectedShop.apply {
-                value = Field.Loaded(shopRepository.get(providedShopId))
+            onNewShopSelected(shopRepository.get(providedShopId))
+        }
+    }
+
+    fun onNewShopSelected(shop: Shop?) {
+        screenState.selectedShop.value = Field.Loaded(shop)
+
+        mShopListener?.cancel()
+        if (shop != null) {
+            mShopListener = viewModelScope.launch {
+                shopRepository.getFlow(shop.id)
+                    .collectLatest {
+                        screenState.selectedShop.value = Field.Loaded(it)
+                    }
             }
         }
     }

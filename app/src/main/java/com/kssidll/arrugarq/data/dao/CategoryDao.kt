@@ -163,6 +163,9 @@ interface CategoryDao {
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun get(categoryId: Long): ProductCategory?
 
+    @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
+    fun getFlow(categoryId: Long): Flow<ProductCategory?>
+
     @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.id = :altNameId")
     suspend fun getAltName(altNameId: Long): ProductCategoryAltName?
 
