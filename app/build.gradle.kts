@@ -22,15 +22,15 @@ android {
             keyAlias = properties.getProperty("keyAlias")
         }
     }
-    namespace = "com.kssidll.arrugarq"
+    namespace = "com.kssidll.arru"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.kssidll.arrugarq"
+        applicationId = "com.kssidll.arru"
         minSdk = 21
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.2.0"
+        versionCode = 6
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -67,6 +67,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"

@@ -1,4 +1,5 @@
-<h1 align="center">Arrugarq</h1>
+<h1 align="center">Arru</h1>
+<h2 align="center">Your expenses tracker</h2>
 
 <br />
 
@@ -10,7 +11,7 @@
 
 </p>
 
-<h4 align="center">Arrugarq is an app for expenditure tracking/analysis</h4>
+<h4 align="center">Arru is an app for expenditure tracking/analysis</h4>
 
 <p align="middle">
     <img src="images/dashboard.png" width="30%"/>
