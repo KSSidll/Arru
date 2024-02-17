@@ -13,23 +13,48 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.category.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
     override val categoryRepository: CategoryRepositorySource,
 ): ModifyCategoryViewModel() {
+    private var mCategory: ProductCategory? = null
+
     private val mMergeMessageCategoryName: MutableState<String> = mutableStateOf(String())
     val mergeMessageCategoryName get() = mMergeMessageCategoryName.value
 
     val chosenMergeCandidate: MutableState<ProductCategory?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    override suspend fun updateState(categoryId: Long): Boolean {
-        return super.updateState(categoryId)
-            .also {
-                mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
-            }
+    /**
+     * Updates data in the screen state
+     * @return true if provided [categoryId] was valid, false otherwise
+     */
+    suspend fun updateState(categoryId: Long) = viewModelScope.async {
+        // skip state update for repeating categoryId
+        if (categoryId == mCategory?.id) return@async true
+
+        screenState.name.value = screenState.name.value.toLoading()
+
+        mCategory = categoryRepository.get(categoryId)
+        mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
+
+        screenState.name.apply {
+            value = mCategory?.let { Field.Loaded(it.name) } ?: value.toLoadedOrError()
+        }
+
+        return@async mCategory != null
+    }
+        .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(categoryId: Long): Flow<List<ProductCategory>> {
+        return categoryRepository.allFlow()
+            .onEach { it.filter { item -> item.id != categoryId } }
     }
 
     /**

@@ -17,11 +17,54 @@ import kotlinx.coroutines.flow.*
  * @property onProductChange Updates the screen state representation property values related to product to represent the product that is currently selected, should be called after the selected product changes
  */
 abstract class ModifyItemViewModel: ViewModel() {
+    private var mItem: Item? = null
+    private var mProvidedProductId: Long? = null
+
     protected abstract val itemRepository: ItemRepositorySource
     protected abstract val productRepository: ProductRepositorySource
     protected abstract val variantsRepository: VariantRepositorySource
 
     internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
+
+    suspend fun setSelectedProduct(
+        providedProductId: Long?,
+        providedVariantId: Long?
+    ) {
+        if (providedProductId != null) {
+
+            // Variant and product depend on each other, so we provide both at the same time to
+            // avoid incompatible data
+            // to ensure data wipeout only on product change, we remember the provided product
+            // furthermore to avoid data wipe on variant change on product changed through selection
+            // we set the remembered product to current one in onProductChange()
+            if (mProvidedProductId != providedProductId) {
+                screenState.selectedProduct.apply { value = value.toLoading() }
+                screenState.price.apply { value = Field.Loaded() }
+                screenState.quantity.apply { value = Field.Loaded() }
+                screenState.selectedProduct.apply {
+                    value = Field.Loaded(productRepository.get(providedProductId))
+                }
+                updateProductVariants()
+
+                mProvidedProductId = providedProductId
+            }
+
+            if (providedVariantId != null) {
+                screenState.selectedVariant.apply { value = value.toLoading() }
+                val variant = variantsRepository.get(providedVariantId)
+
+                if (variant?.productId == providedProductId) {
+                    screenState.selectedVariant.apply {
+                        value = Field.Loaded(variant)
+                    }
+                } else {
+                    screenState.selectedVariant.apply {
+                        value = Field.Loaded()
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Fetches start data to state
@@ -45,6 +88,10 @@ abstract class ModifyItemViewModel: ViewModel() {
         val lastItemByProduct: Item? = screenState.selectedProduct.value.data?.let {
             productRepository.newestItem(it)
         }
+
+        // set remembered provided product id to changed product to avoid screen state wipe
+        // on variant add operation after changing product through selection operation
+        mProvidedProductId = screenState.selectedProduct.value.data?.id
 
         updateStateForItem(
             item = lastItemByProduct,
@@ -83,13 +130,16 @@ abstract class ModifyItemViewModel: ViewModel() {
      * @return true if provided [itemId] was valid, false otherwise
      */
     suspend fun updateState(itemId: Long) = viewModelScope.async {
+        // skip state update for repeating itemId
+        if (itemId == mItem?.id) return@async true
+
         screenState.allToLoading()
 
-        val item: Item? = itemRepository.get(itemId)
+        mItem = itemRepository.get(itemId)
 
-        updateStateForItem(item)
+        updateStateForItem(mItem)
 
-        return@async item != null
+        return@async mItem != null
     }
         .await()
 

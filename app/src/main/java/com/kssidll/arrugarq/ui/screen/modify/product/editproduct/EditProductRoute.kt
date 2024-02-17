@@ -17,6 +17,8 @@ fun EditProductRoute(
     navigateProducerAdd: (query: String?) -> Unit,
     navigateCategoryEdit: (categoryId: Long) -> Unit,
     navigateProducerEdit: (producerId: Long) -> Unit,
+    providedProducerId: Long?,
+    providedCategoryId: Long?,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -26,6 +28,14 @@ fun EditProductRoute(
         if (!viewModel.updateState(productId)) {
             navigateBack()
         }
+    }
+
+    LaunchedEffect(providedProducerId) {
+        viewModel.setSelectedProducer(providedProducerId)
+    }
+
+    LaunchedEffect(providedCategoryId) {
+        viewModel.setSelectedCategory(providedCategoryId)
     }
 
     ModifyProductScreenImpl(

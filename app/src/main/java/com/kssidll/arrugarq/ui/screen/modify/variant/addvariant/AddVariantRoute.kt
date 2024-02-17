@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
 fun AddVariantRoute(
     productId: Long,
     defaultName: String?,
-    navigateBack: () -> Unit,
+    navigateBack: (variantId: Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddVariantViewModel = hiltViewModel()
@@ -20,14 +20,15 @@ fun AddVariantRoute(
     }
 
     ModifyVariantScreenImpl(
-        onBack = navigateBack,
+        onBack = {
+            navigateBack(null)
+        },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.addVariant(productId)
-                        .isNotError()
-                ) {
-                    navigateBack()
+                val result = viewModel.addVariant(productId)
+                if (result.isNotError()) {
+                    navigateBack(result.id)
                 }
             }
         }

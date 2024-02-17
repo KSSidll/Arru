@@ -13,9 +13,21 @@ fun AddItemRoute(
     navigateVariantAdd: (productId: Long, query: String?) -> Unit,
     navigateProductEdit: (productId: Long) -> Unit,
     navigateVariantEdit: (variantId: Long) -> Unit,
+    providedProductId: Long?,
+    providedVariantId: Long?,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddItemViewModel = hiltViewModel()
+
+    LaunchedEffect(
+        providedProductId,
+        providedVariantId
+    ) {
+        viewModel.setSelectedProduct(
+            providedProductId,
+            providedVariantId
+        )
+    }
 
     ModifyItemScreenImpl(
         onBack = navigateBack,

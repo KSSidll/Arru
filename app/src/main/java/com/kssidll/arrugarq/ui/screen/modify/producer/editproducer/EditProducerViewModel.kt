@@ -13,23 +13,49 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.producer.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 @HiltViewModel
 class EditProducerViewModel @Inject constructor(
     override val producerRepository: ProducerRepositorySource,
 ): ModifyProducerViewModel() {
+    private var mProducer: ProductProducer? = null
+
     private val mMergeMessageProducerName: MutableState<String> = mutableStateOf(String())
     val mergeMessageProducerName get() = mMergeMessageProducerName.value
 
     val chosenMergeCandidate: MutableState<ProductProducer?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    override suspend fun updateState(producerId: Long): Boolean {
-        return super.updateState(producerId)
-            .also {
-                mMergeMessageProducerName.value = mProducer?.name.orEmpty()
-            }
+    /**
+     * Updates data in the screen state
+     * @return true if provided [producerId] was valid, false otherwise
+     */
+    suspend fun updateState(producerId: Long) = viewModelScope.async {
+        // skip state update for repeating producerId
+        if (producerId == mProducer?.id) return@async true
+
+        screenState.name.apply { value = value.toLoading() }
+
+        mProducer = producerRepository.get(producerId)
+        mMergeMessageProducerName.value = mProducer?.name.orEmpty()
+
+        screenState.name.apply {
+            value = mProducer?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+        }
+
+        return@async mProducer != null
+    }
+        .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(producerId: Long): Flow<List<ProductProducer>> {
+        return producerRepository.allFlow()
+            .onEach { it.filter { item -> item.id != producerId } }
+            .distinctUntilChanged()
     }
 
     /**

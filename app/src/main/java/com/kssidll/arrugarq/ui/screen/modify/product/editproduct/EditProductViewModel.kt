@@ -13,6 +13,7 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.product.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 @HiltViewModel
@@ -21,17 +22,55 @@ class EditProductViewModel @Inject constructor(
     override val producerRepository: ProducerRepositorySource,
     override val categoryRepository: CategoryRepositorySource,
 ): ModifyProductViewModel() {
+    private var mProduct: Product? = null
+
     private val mMergeMessageProductName: MutableState<String> = mutableStateOf(String())
     val mergeMessageProductName get() = mMergeMessageProductName.value
 
     val chosenMergeCandidate: MutableState<Product?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    override suspend fun updateState(productId: Long): Boolean {
-        return super.updateState(productId)
-            .also {
-                mMergeMessageProductName.value = mProduct?.name.orEmpty()
-            }
+    /**
+     * Updates data in the screen state
+     * @return true if provided [productId] was valid, false otherwise
+     */
+    suspend fun updateState(productId: Long) = viewModelScope.async {
+        // skip state update for repeating productId
+        if (productId == mProduct?.id) return@async true
+
+        screenState.name.apply { value = value.toLoading() }
+        screenState.selectedProductProducer.apply { value = value.toLoading() }
+        screenState.selectedProductCategory.apply { value = value.toLoading() }
+
+        mProduct = productRepository.get(productId)
+        mMergeMessageProductName.value = mProduct?.name.orEmpty()
+
+        val producer: ProductProducer? = mProduct?.producerId?.let { producerRepository.get(it) }
+        val category = mProduct?.categoryId?.let { categoryRepository.get(it) }
+
+        screenState.name.apply {
+            value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+        }
+
+        screenState.selectedProductProducer.apply {
+            value = producer?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+        }
+
+        screenState.selectedProductCategory.apply {
+            value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+        }
+
+        return@async mProduct != null
+    }
+        .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(productId: Long): Flow<List<Product>> {
+        return productRepository.allFlow()
+            .onEach { it.filter { item -> item.id != productId } }
+            .distinctUntilChanged()
     }
 
     /**

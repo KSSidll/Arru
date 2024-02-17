@@ -13,23 +13,50 @@ import com.kssidll.arrugarq.domain.data.*
 import com.kssidll.arrugarq.ui.screen.modify.shop.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 @HiltViewModel
 class EditShopViewModel @Inject constructor(
     override val shopRepository: ShopRepositorySource,
 ): ModifyShopViewModel() {
+    private var mShop: Shop? = null
+
     private val mMergeMessageShopName: MutableState<String> = mutableStateOf(String())
     val mergeMessageShopName get() = mMergeMessageShopName.value
 
     val chosenMergeCandidate: MutableState<Shop?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    override suspend fun updateState(shopId: Long): Boolean {
-        return super.updateState(shopId)
-            .also {
-                mMergeMessageShopName.value = mShop?.name.orEmpty()
-            }
+    /**
+     * Updates data in the screen state
+     * @return true if provided [shopId] was valid, false otherwise
+     */
+    suspend fun updateState(shopId: Long) = viewModelScope.async {
+        // skip state update for repeating shopId
+        if (shopId == mShop?.id) return@async true
+
+        screenState.name.apply { value = value.toLoading() }
+
+        mShop = shopRepository.get(shopId)
+        mMergeMessageShopName.value = mShop?.name.orEmpty()
+
+        screenState.name.apply {
+            value = mShop?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+        }
+
+
+        return@async mShop != null
+    }
+        .await()
+
+    /**
+     * @return list of merge candidates as flow
+     */
+    fun allMergeCandidates(shopId: Long): Flow<List<Shop>> {
+        return shopRepository.allFlow()
+            .onEach { it.filter { item -> item.id != shopId } }
+            .distinctUntilChanged()
     }
 
     /**

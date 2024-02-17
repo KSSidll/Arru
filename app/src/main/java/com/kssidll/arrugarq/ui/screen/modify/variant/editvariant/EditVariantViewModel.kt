@@ -3,6 +3,7 @@ package com.kssidll.arrugarq.ui.screen.modify.variant.editvariant
 
 import android.util.*
 import androidx.lifecycle.*
+import com.kssidll.arrugarq.data.data.*
 import com.kssidll.arrugarq.data.repository.*
 import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arrugarq.data.repository.VariantRepositorySource.Companion.UpdateResult
@@ -16,6 +17,27 @@ import javax.inject.*
 class EditVariantViewModel @Inject constructor(
     override val variantRepository: VariantRepositorySource,
 ): ModifyVariantViewModel() {
+    private var mVariant: ProductVariant? = null
+
+    /**
+     * Updates data in the screen state
+     * @return true if provided [variantId] was valid, false otherwise
+     */
+    suspend fun updateState(variantId: Long) = viewModelScope.async {
+        // skip state update for repeating variantId
+        if (variantId == mVariant?.id) return@async true
+
+        screenState.name.apply { value = value.toLoading() }
+
+        val variant = variantRepository.get(variantId)
+
+        screenState.name.apply {
+            value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+        }
+
+        return@async variant != null
+    }
+        .await()
 
     /**
      * Tries to update variant with provided [variantId] with current screen state data

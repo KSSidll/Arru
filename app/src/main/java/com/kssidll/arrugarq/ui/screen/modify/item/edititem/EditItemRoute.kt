@@ -17,6 +17,8 @@ fun EditItemRoute(
     navigateVariantAdd: (productId: Long, query: String?) -> Unit,
     navigateProductEdit: (productId: Long) -> Unit,
     navigateVariantEdit: (variantId: Long) -> Unit,
+    providedProductId: Long?,
+    providedVariantId: Long?,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -26,6 +28,16 @@ fun EditItemRoute(
         if (!viewModel.updateState(itemId)) {
             navigateBack()
         }
+    }
+
+    LaunchedEffect(
+        providedProductId,
+        providedVariantId
+    ) {
+        viewModel.setSelectedProduct(
+            providedProductId,
+            providedVariantId
+        )
     }
 
     ModifyItemScreenImpl(

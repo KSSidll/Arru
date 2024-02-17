@@ -9,11 +9,13 @@ import kotlinx.coroutines.*
 @Composable
 fun AddProductRoute(
     defaultName: String?,
-    navigateBack: () -> Unit,
+    navigateBack: (productId: Long?) -> Unit,
     navigateCategoryAdd: (query: String?) -> Unit,
     navigateProducerAdd: (query: String?) -> Unit,
     navigateCategoryEdit: (categoryId: Long) -> Unit,
     navigateProducerEdit: (producerId: Long) -> Unit,
+    providedProducerId: Long?,
+    providedCategoryId: Long?,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddProductViewModel = hiltViewModel()
@@ -22,8 +24,18 @@ fun AddProductRoute(
         viewModel.screenState.name.value = Field.Loaded(defaultName)
     }
 
+    LaunchedEffect(providedProducerId) {
+        viewModel.setSelectedProducer(providedProducerId)
+    }
+
+    LaunchedEffect(providedCategoryId) {
+        viewModel.setSelectedCategory(providedCategoryId)
+    }
+
     ModifyProductScreenImpl(
-        onBack = navigateBack,
+        onBack = {
+            navigateBack(null)
+        },
         state = viewModel.screenState,
         categories = viewModel.allCategories()
             .collectAsState(initial = emptyList()).value,
@@ -31,10 +43,9 @@ fun AddProductRoute(
             .collectAsState(initial = emptyList()).value,
         onSubmit = {
             scope.launch {
-                if (viewModel.addProduct()
-                        .isNotError()
-                ) {
-                    navigateBack()
+                val result = viewModel.addProduct()
+                if (result.isNotError()) {
+                    navigateBack(result.id)
                 }
             }
         },

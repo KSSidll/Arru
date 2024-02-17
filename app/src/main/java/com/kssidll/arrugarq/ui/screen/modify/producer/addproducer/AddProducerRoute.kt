@@ -9,7 +9,7 @@ import kotlinx.coroutines.*
 @Composable
 fun AddProducerRoute(
     defaultName: String?,
-    navigateBack: () -> Unit,
+    navigateBack: (producerId: Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddProducerViewModel = hiltViewModel()
@@ -19,14 +19,15 @@ fun AddProducerRoute(
     }
 
     ModifyProducerScreenImpl(
-        onBack = navigateBack,
+        onBack = {
+            navigateBack(null)
+        },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.addProducer()
-                        .isNotError()
-                ) {
-                    navigateBack()
+                val result = viewModel.addProducer()
+                if (result.isNotError()) {
+                    navigateBack(result.id)
                 }
             }
         }
