@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Arrugarq"
+rootProject.name = "Arru"
 include(":app")

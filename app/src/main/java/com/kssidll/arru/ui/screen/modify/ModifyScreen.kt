@@ -23,8 +23,6 @@ abstract class ModifyScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
     val showDeleteWarning: MutableState<Boolean> = mutableStateOf(false),
     val deleteWarningConfirmed: MutableState<Boolean> = mutableStateOf(false),
-
-    val showMergeMessage: MutableState<Boolean> = mutableStateOf(false),
 )
 
 /**
@@ -37,7 +35,6 @@ abstract class ModifyScreenState(
  * @param mergeCandidates List of candidates for merge operation as flow
  * @param mergeCandidatesTextTransformation Transformation used to determine what to display on the merge candidate item card
  * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
- *
  * @param submitButtonText Text displayed in the submit button
  * @param showDeleteWarning Mutable flag that exposes whether a delete warning dialog is shown, optional as it is handled internally by the component, but exposed for state dependent actions
  * @param deleteWarningConfirmed Mutable flag that exposes whether user confirmed the action of deletion in the warning dialog, exposed for state dependant actions
