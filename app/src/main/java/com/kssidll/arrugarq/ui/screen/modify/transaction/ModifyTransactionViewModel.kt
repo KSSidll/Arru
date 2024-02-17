@@ -18,6 +18,15 @@ abstract class ModifyTransactionViewModel: ViewModel() {
     fun allShops(): Flow<List<Shop>> {
         return shopRepository.allFlow()
     }
+
+    suspend fun setSelectedShop(providedShopId: Long?) {
+        if (providedShopId != null) {
+            screenState.selectedShop.apply { value = value.toLoading() }
+            screenState.selectedShop.apply {
+                value = Field.Loaded(shopRepository.get(providedShopId))
+            }
+        }
+    }
 }
 
 data class ModifyTransactionScreenState(

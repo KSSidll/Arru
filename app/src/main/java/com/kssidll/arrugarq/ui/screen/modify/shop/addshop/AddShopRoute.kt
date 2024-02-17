@@ -9,7 +9,7 @@ import kotlinx.coroutines.*
 @Composable
 fun AddShopRoute(
     defaultName: String?,
-    navigateBack: () -> Unit,
+    navigateBack: (shopId: Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddShopViewModel = hiltViewModel()
@@ -19,14 +19,15 @@ fun AddShopRoute(
     }
 
     ModifyShopScreenImpl(
-        onBack = navigateBack,
+        onBack = {
+            navigateBack(null)
+        },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.addShop()
-                        .isNotError()
-                ) {
-                    navigateBack()
+                val result = viewModel.addShop()
+                if (result.isNotError()) {
+                    navigateBack(result.id)
                 }
             }
         },

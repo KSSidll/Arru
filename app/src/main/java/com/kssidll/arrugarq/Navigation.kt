@@ -34,51 +34,119 @@ import com.kssidll.arrugarq.ui.screen.spendingcomparison.shopspendingcomparison.
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
+// TODO autoload product in ItemAdd
+// TODO autoload variant in ItemAdd
+// TODO autoload producer in ProductAdd
+// TODO autoload category in ProductAdd
+
+private interface AcceptsShopId {
+    val providedShopId: MutableState<Long?>
+}
+
 @Parcelize
 sealed class Screen: Parcelable {
+    @Immutable
     data object Home: Screen()
 
+    @Immutable
     data object Settings: Screen()
+
+    @Immutable
     data object Search: Screen()
 
+    @Stable
     data class Transaction(val transactionId: Long): Screen()
+
+    @Stable
     data class Product(val productId: Long): Screen()
+
+    @Stable
     data class Category(val categoryId: Long): Screen()
+
+    @Stable
     data class Producer(val producerId: Long): Screen()
+
+    @Stable
     data class Shop(val shopId: Long): Screen()
 
-    data object TransactionAdd: Screen()
+    @Stable
+    data class TransactionAdd(
+        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
+    ): Screen(), AcceptsShopId
+
+    @Stable
     data class ItemAdd(val transactionId: Long): Screen()
+
+    @Stable
     data class ProductAdd(val defaultName: String? = null): Screen()
+
+    @Stable
     data class VariantAdd(
         val productId: Long,
         val defaultName: String? = null
     ): Screen()
 
+    @Stable
     data class CategoryAdd(val defaultName: String? = null): Screen()
+
+    @Stable
     data class ProducerAdd(val defaultName: String? = null): Screen()
+
+    @Stable
     data class ShopAdd(val defaultName: String? = null): Screen()
 
-    data class TransactionEdit(val transactionId: Long): Screen()
+    @Stable
+    data class TransactionEdit(
+        val transactionId: Long,
+        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
+    ): Screen(), AcceptsShopId
+
+    @Stable
     data class ItemEdit(val itemId: Long): Screen()
+
+    @Stable
     data class ProductEdit(val productId: Long): Screen()
+
+    @Stable
     data class VariantEdit(val variantId: Long): Screen()
+
+    @Stable
     data class CategoryEdit(val categoryId: Long): Screen()
+
+    @Stable
     data class ProducerEdit(val producerId: Long): Screen()
+
+    @Stable
     data class ShopEdit(val shopId: Long): Screen()
 
+    @Immutable
     data object CategoryRanking: Screen()
+
+    @Immutable
     data object ShopRanking: Screen()
 
+    @Stable
     data class CategorySpendingComparison(
         val year: Int,
         val month: Int
     ): Screen()
 
+    @Stable
     data class ShopSpendingComparison(
         val year: Int,
         val month: Int
     ): Screen()
+}
+
+/**
+ * @return previous destination from the backstack, null if none exists
+ */
+fun <T> NavController<T>.previousDestination(): T? {
+    if (backstack.entries.size == 1) return null
+
+    return backstack.entries.let {
+        it[it.lastIndex - 1].destination
+    }
 }
 
 /**
@@ -254,7 +322,7 @@ fun Navigation(
 
 
     val navigateTransactionAdd: () -> Unit = {
-        navController.navigate(Screen.TransactionAdd)
+        navController.navigate(Screen.TransactionAdd())
     }
 
     val navigateItemAdd: (transactionId: Long) -> Unit = {
@@ -424,7 +492,13 @@ fun Navigation(
             is Screen.ShopAdd -> {
                 AddShopRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = navigateBack,
+                    navigateBack = {
+                        val previousDestination = navController.previousDestination()
+                        if (previousDestination != null && previousDestination is AcceptsShopId) {
+                            previousDestination.providedShopId.value = it
+                        }
+                        navigateBack()
+                    },
                 )
             }
 
@@ -614,6 +688,7 @@ fun Navigation(
                     navigateTransaction = navigateTransaction,
                     navigateShopAdd = navigateShopAdd,
                     navigateShopEdit = navigateShopEdit,
+                    providedShopId = screen.providedShopId.value,
                 )
             }
 
@@ -623,7 +698,8 @@ fun Navigation(
                     navigateBack = navigateBack,
                     navigateBackDelete = navigateBackDeleteTransaction,
                     navigateShopAdd = navigateShopAdd,
-                    navigateShopEdit = navigateShopEdit
+                    navigateShopEdit = navigateShopEdit,
+                    providedShopId = screen.providedShopId.value,
                 )
             }
 

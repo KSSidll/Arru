@@ -11,9 +11,14 @@ fun AddTransactionRoute(
     navigateTransaction: (transactionId: Long) -> Unit,
     navigateShopAdd: (query: String?) -> Unit,
     navigateShopEdit: (shopId: Long) -> Unit,
+    providedShopId: Long?,
 ) {
     val scope = rememberCoroutineScope()
     val viewModel: AddTransactionViewModel = hiltViewModel()
+
+    LaunchedEffect(providedShopId) {
+        viewModel.setSelectedShop(providedShopId)
+    }
 
     ModifyTransactionScreenImpl(
         onBack = navigateBack,

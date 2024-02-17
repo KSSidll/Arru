@@ -17,19 +17,23 @@ class EditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
+    private var mTransaction: TransactionBasket? = null
 
     /**
      * Updates data in the screen state
      * @return true if provided [transactionId] was valid, false otherwise
      */
     suspend fun updateState(transactionId: Long) = viewModelScope.async {
+        // skip state update for repeating transactionId
+        if (transactionId == mTransaction?.id) return@async true
+
         screenState.allToLoading()
 
-        val transaction: TransactionBasket? = transactionRepository.get(transactionId)
+        mTransaction = transactionRepository.get(transactionId)
 
-        updateStateForTransaction(transaction)
+        updateStateForTransaction(mTransaction)
 
-        return@async transaction != null
+        return@async mTransaction != null
     }
         .await()
 
