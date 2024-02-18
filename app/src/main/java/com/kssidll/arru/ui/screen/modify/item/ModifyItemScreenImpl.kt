@@ -12,6 +12,7 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
@@ -55,7 +56,6 @@ fun ModifyItemScreenImpl(
     onItemLongClick: (productId: Long) -> Unit,
     onItemVariantLongClick: (variantId: Long) -> Unit,
 ) {
-    // TODO add adaptive layout handling
     ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item),
@@ -114,285 +114,293 @@ fun ModifyItemScreenImpl(
             )
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding.times(2))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.widthIn(max = 500.dp)
         ) {
-            StyledOutlinedTextField(
-                singleLine = true,
-                enabled = state.price.value.isEnabled(),
-                value = state.price.value.data ?: String(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                ),
-                onValueChange = { newValue ->
-                    state.price.apply {
-                        if (newValue.isBlank()) {
-                            value = Field.Loaded(String())
-                        } else if (RegexHelper.isFloat(
-                                newValue,
-                                2
-                            )
-                        ) {
-                            value = Field.Loaded(newValue)
-                        }
-                    }
-                },
-                label = {
-                    Text(
-                        text = stringResource(R.string.item_price),
-                        fontSize = 16.sp,
-                    )
-                },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.price.value.error?.errorText()
-                    }
-                },
-                isError = if (state.attemptedToSubmit.value) state.price.value.isError() else false,
-                modifier = Modifier.weight(1f)
-            )
-
-            Column(
-                modifier = Modifier.fillMaxHeight()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = ItemHorizontalPadding.times(2))
             ) {
-                IconButton(
+                StyledOutlinedTextField(
+                    singleLine = true,
                     enabled = state.price.value.isEnabled(),
-                    onClick = {
-                        if (state.price.value.data.isNullOrBlank()) {
-                            state.price.value = Field.Loaded("%.2f".format(0f))
-                        } else {
-                            val value =
-                                state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
-
-                            if (value != null) {
-                                state.price.value = Field.Loaded("%.2f".format(value.plus(0.5f)))
-                            }
-                        }
-                    },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                    value = state.price.value.data ?: String(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
                     ),
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowUp,
-                        contentDescription = stringResource(id = R.string.item_price_increment_by_half),
-                    )
-                }
-
-                IconButton(
-                    enabled = state.price.value.isEnabled(),
-                    onClick = {
-                        if (state.price.value.data.isNullOrBlank()) {
-                            state.price.value = Field.Loaded("%.2f".format(0f))
-                        } else {
-                            val value =
-                                state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
-
-                            if (value != null) {
-                                state.price.value = Field.Loaded(
-                                    "%.2f".format(
-                                        if (value > 0.5f) value.minus(0.5f) else {
-                                            0f
-                                        }
-                                    )
+                    onValueChange = { newValue ->
+                        state.price.apply {
+                            if (newValue.isBlank()) {
+                                value = Field.Loaded(String())
+                            } else if (RegexHelper.isFloat(
+                                    newValue,
+                                    2
                                 )
+                            ) {
+                                value = Field.Loaded(newValue)
                             }
                         }
                     },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
-                    ),
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
+                    label = {
+                        Text(
+                            text = stringResource(R.string.item_price),
+                            fontSize = 16.sp,
+                        )
+                    },
+                    supportingText = {
+                        if (state.attemptedToSubmit.value) {
+                            state.price.value.error?.errorText()
+                        }
+                    },
+                    isError = if (state.attemptedToSubmit.value) state.price.value.isError() else false,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxHeight()
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowDown,
-                        contentDescription = stringResource(id = R.string.item_price_decrement_by_half),
-                    )
+                    IconButton(
+                        enabled = state.price.value.isEnabled(),
+                        onClick = {
+                            if (state.price.value.data.isNullOrBlank()) {
+                                state.price.value = Field.Loaded("%.2f".format(0f))
+                            } else {
+                                val value =
+                                    state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                                if (value != null) {
+                                    state.price.value =
+                                        Field.Loaded("%.2f".format(value.plus(0.5f)))
+                                }
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        ),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowUp,
+                            contentDescription = stringResource(id = R.string.item_price_increment_by_half),
+                        )
+                    }
+
+                    IconButton(
+                        enabled = state.price.value.isEnabled(),
+                        onClick = {
+                            if (state.price.value.data.isNullOrBlank()) {
+                                state.price.value = Field.Loaded("%.2f".format(0f))
+                            } else {
+                                val value =
+                                    state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                                if (value != null) {
+                                    state.price.value = Field.Loaded(
+                                        "%.2f".format(
+                                            if (value > 0.5f) value.minus(0.5f) else {
+                                                0f
+                                            }
+                                        )
+                                    )
+                                }
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        ),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = stringResource(id = R.string.item_price_decrement_by_half),
+                        )
+                    }
                 }
+
             }
 
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding.times(2))
-        ) {
-            StyledOutlinedTextField(
-                singleLine = true,
-                enabled = state.quantity.value.isEnabled(),
-                value = state.quantity.value.data ?: String(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                ),
-                onValueChange = { newValue ->
-                    state.quantity.apply {
-                        if (newValue.isBlank()) {
-                            value = Field.Loaded(String())
-                        } else if (RegexHelper.isFloat(
-                                newValue,
-                                3
-                            )
-                        ) {
-                            value = Field.Loaded(newValue)
-                        }
-                    }
-                },
-                label = {
-                    Text(
-                        text = if (state.selectedVariant.value.data == null)
-                            stringResource(R.string.item_product_variant_default_value)
-                        else
-                            stringResource(R.string.item_quantity),
-                        fontSize = 16.sp,
-                    )
-                },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.quantity.value.error?.errorText()
-                    }
-                },
-                isError = if (state.attemptedToSubmit.value) state.quantity.value.isError() else false,
-                modifier = Modifier.weight(1f)
-            )
-
-            Column(
-                modifier = Modifier.fillMaxHeight()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = ItemHorizontalPadding.times(2))
             ) {
-                IconButton(
+                StyledOutlinedTextField(
+                    singleLine = true,
                     enabled = state.quantity.value.isEnabled(),
-                    onClick = {
-                        if (state.quantity.value.data.isNullOrBlank()) {
-                            state.quantity.value = Field.Loaded("%.3f".format(0f))
-                        } else {
-                            val value =
-                                state.quantity.value.data!!.let { StringHelper.toDoubleOrNull(it) }
-
-                            if (value != null) {
-                                state.quantity.value = Field.Loaded("%.3f".format(value.plus(0.5f)))
-                            }
-                        }
-                    },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                    value = state.quantity.value.data ?: String(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
                     ),
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowUp,
-                        contentDescription = stringResource(id = R.string.item_quantity_increment_by_one),
-                    )
-                }
-
-                IconButton(
-                    enabled = state.quantity.value.isEnabled(),
-                    onClick = {
-                        if (state.quantity.value.data.isNullOrBlank()) {
-                            state.quantity.value = Field.Loaded("%.3f".format(0f))
-                        } else {
-                            val value =
-                                state.quantity.value.data!!.let { StringHelper.toDoubleOrNull(it) }
-
-                            if (value != null) {
-                                state.quantity.value = Field.Loaded(
-                                    "%.3f".format(
-                                        if (value > 0.5f) value.minus(0.5f) else {
-                                            0f
-                                        }
-                                    )
+                    onValueChange = { newValue ->
+                        state.quantity.apply {
+                            if (newValue.isBlank()) {
+                                value = Field.Loaded(String())
+                            } else if (RegexHelper.isFloat(
+                                    newValue,
+                                    3
                                 )
+                            ) {
+                                value = Field.Loaded(newValue)
                             }
                         }
                     },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
-                    ),
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
+                    label = {
+                        Text(
+                            text = if (state.selectedVariant.value.data == null)
+                                stringResource(R.string.item_product_variant_default_value)
+                            else
+                                stringResource(R.string.item_quantity),
+                            fontSize = 16.sp,
+                        )
+                    },
+                    supportingText = {
+                        if (state.attemptedToSubmit.value) {
+                            state.quantity.value.error?.errorText()
+                        }
+                    },
+                    isError = if (state.attemptedToSubmit.value) state.quantity.value.isError() else false,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxHeight()
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowDown,
-                        contentDescription = stringResource(id = R.string.item_quantity_decrement_by_one),
-                    )
+                    IconButton(
+                        enabled = state.quantity.value.isEnabled(),
+                        onClick = {
+                            if (state.quantity.value.data.isNullOrBlank()) {
+                                state.quantity.value = Field.Loaded("%.3f".format(0f))
+                            } else {
+                                val value =
+                                    state.quantity.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                                if (value != null) {
+                                    state.quantity.value =
+                                        Field.Loaded("%.3f".format(value.plus(0.5f)))
+                                }
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        ),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowUp,
+                            contentDescription = stringResource(id = R.string.item_quantity_increment_by_one),
+                        )
+                    }
+
+                    IconButton(
+                        enabled = state.quantity.value.isEnabled(),
+                        onClick = {
+                            if (state.quantity.value.data.isNullOrBlank()) {
+                                state.quantity.value = Field.Loaded("%.3f".format(0f))
+                            } else {
+                                val value =
+                                    state.quantity.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                                if (value != null) {
+                                    state.quantity.value = Field.Loaded(
+                                        "%.3f".format(
+                                            if (value > 0.5f) value.minus(0.5f) else {
+                                                0f
+                                            }
+                                        )
+                                    )
+                                }
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        ),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = stringResource(id = R.string.item_quantity_decrement_by_one),
+                        )
+                    }
                 }
+
             }
 
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SearchField(
+                enabled = state.selectedProduct.value.isEnabled(),
+                value = state.selectedProduct.value.data?.name ?: String(),
+                onClick = {
+                    state.isProductSearchDialogExpanded.value = true
+                },
+                onLongClick = {
+                    state.selectedProduct.value.data?.let {
+                        onItemLongClick(it.id)
+                    }
+                },
+                label = stringResource(R.string.item_product),
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.selectedProduct.value.error?.errorText()
+                    }
+                },
+                error = if (state.attemptedToSubmit.value) state.selectedProduct.value.isError() else false,
+                onAddButtonClick = {
+                    onProductAddButtonClick(null)
+                },
+                addButtonDescription = stringResource(R.string.item_product_add_description),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = ItemHorizontalPadding)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SearchField(
+                enabled = state.selectedProduct.value.data != null && state.selectedVariant.value.isEnabled(),
+                value = state.selectedVariant.value.data?.name
+                    ?: stringResource(R.string.item_product_variant_default_value),
+                onClick = {
+                    state.isVariantSearchDialogExpanded.value = true
+                },
+                onLongClick = {
+                    state.selectedVariant.value.data?.let {
+                        onItemVariantLongClick(it.id)
+                    }
+                },
+                label = stringResource(R.string.item_product_variant),
+                onAddButtonClick = {
+                    state.selectedProduct.value.data?.let {
+                        onVariantAddButtonClick(
+                            it.id,
+                            null
+                        )
+                    }
+                },
+                addButtonDescription = stringResource(R.string.item_product_variant_add_description),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = ItemHorizontalPadding)
+            )
         }
-
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(12.dp))
-
-        SearchField(
-            enabled = state.selectedProduct.value.isEnabled(),
-            value = state.selectedProduct.value.data?.name ?: String(),
-            onClick = {
-                state.isProductSearchDialogExpanded.value = true
-            },
-            onLongClick = {
-                state.selectedProduct.value.data?.let {
-                    onItemLongClick(it.id)
-                }
-            },
-            label = stringResource(R.string.item_product),
-            supportingText = {
-                if (state.attemptedToSubmit.value) {
-                    state.selectedProduct.value.error?.errorText()
-                }
-            },
-            error = if (state.attemptedToSubmit.value) state.selectedProduct.value.isError() else false,
-            onAddButtonClick = {
-                onProductAddButtonClick(null)
-            },
-            addButtonDescription = stringResource(R.string.item_product_add_description),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        SearchField(
-            enabled = state.selectedProduct.value.data != null && state.selectedVariant.value.isEnabled(),
-            value = state.selectedVariant.value.data?.name
-                ?: stringResource(R.string.item_product_variant_default_value),
-            onClick = {
-                state.isVariantSearchDialogExpanded.value = true
-            },
-            onLongClick = {
-                state.selectedVariant.value.data?.let {
-                    onItemVariantLongClick(it.id)
-                }
-            },
-            label = stringResource(R.string.item_product_variant),
-            onAddButtonClick = {
-                state.selectedProduct.value.data?.let {
-                    onVariantAddButtonClick(
-                        it.id,
-                        null
-                    )
-                }
-            },
-            addButtonDescription = stringResource(R.string.item_product_variant_add_description),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding)
-        )
     }
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun ModifyItemScreenImplPreview() {
     ArrugarqTheme {

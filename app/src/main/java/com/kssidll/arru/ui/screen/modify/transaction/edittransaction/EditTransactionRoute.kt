@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 
 @Composable
 fun EditTransactionRoute(
+    isExpandedScreen: Boolean,
     transactionId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: (transactionId: Long) -> Unit,
@@ -30,6 +31,7 @@ fun EditTransactionRoute(
     }
 
     ModifyTransactionScreenImpl(
+        isExpandedScreen = isExpandedScreen,
         onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops()

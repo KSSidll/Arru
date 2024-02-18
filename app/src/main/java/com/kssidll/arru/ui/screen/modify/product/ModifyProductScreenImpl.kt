@@ -8,6 +8,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
@@ -66,7 +67,6 @@ fun ModifyProductScreenImpl(
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onItemCategoryLongClick: (categoryId: Long) -> Unit,
 ) {
-    // TODO add adaptive layout handling
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
@@ -128,88 +128,94 @@ fun ModifyProductScreenImpl(
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
             )
         } else {
-            StyledOutlinedTextField(
-                enabled = state.name.value.isEnabled(),
-                singleLine = true,
-                value = state.name.value.data ?: String(),
-                onValueChange = {
-                    state.name.value = Field.Loaded(it)
-                },
-                label = {
-                    Text(
-                        text = stringResource(R.string.item_product)
-                    )
-                },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.name.value.error?.errorText()
-                    }
-                },
-                isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = ItemHorizontalPadding.times(2))
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.widthIn(max = 500.dp)
+            ) {
+                StyledOutlinedTextField(
+                    enabled = state.name.value.isEnabled(),
+                    singleLine = true,
+                    value = state.name.value.data ?: String(),
+                    onValueChange = {
+                        state.name.value = Field.Loaded(it)
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.item_product)
+                        )
+                    },
+                    supportingText = {
+                        if (state.attemptedToSubmit.value) {
+                            state.name.value.error?.errorText()
+                        }
+                    },
+                    isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = ItemHorizontalPadding.times(2))
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(12.dp))
 
-            SearchField(
-                enabled = state.selectedProductProducer.value.isEnabled(),
-                value = state.selectedProductProducer.value.data?.name ?: String(),
-                onClick = {
-                    state.isProducerSearchDialogExpanded.value = true
-                },
-                onLongClick = {
-                    state.selectedProductProducer.value.data?.let {
-                        onItemProducerLongClick(it.id)
-                    }
-                },
-                label = stringResource(R.string.item_product_producer),
-                onAddButtonClick = {
-                    onProducerAddButtonClick(null)
-                },
-                addButtonDescription = stringResource(R.string.item_product_producer_add_description),
-                optional = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = ItemHorizontalPadding)
-            )
+                SearchField(
+                    enabled = state.selectedProductProducer.value.isEnabled(),
+                    value = state.selectedProductProducer.value.data?.name ?: String(),
+                    onClick = {
+                        state.isProducerSearchDialogExpanded.value = true
+                    },
+                    onLongClick = {
+                        state.selectedProductProducer.value.data?.let {
+                            onItemProducerLongClick(it.id)
+                        }
+                    },
+                    label = stringResource(R.string.item_product_producer),
+                    onAddButtonClick = {
+                        onProducerAddButtonClick(null)
+                    },
+                    addButtonDescription = stringResource(R.string.item_product_producer_add_description),
+                    optional = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = ItemHorizontalPadding)
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            SearchField(
-                enabled = state.selectedProductCategory.value.isEnabled(),
-                value = state.selectedProductCategory.value.data?.name ?: String(),
-                onClick = {
-                    state.isCategorySearchDialogExpanded.value = true
-                },
-                onLongClick = {
-                    state.selectedProductCategory.value.data?.let {
-                        onItemCategoryLongClick(it.id)
-                    }
-                },
-                label = stringResource(R.string.item_product_category),
-                onAddButtonClick = {
-                    onCategoryAddButtonClick(null)
-                },
-                addButtonDescription = stringResource(R.string.item_product_category_add_description),
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.selectedProductCategory.value.error?.errorText()
-                    }
-                },
-                error = if (state.attemptedToSubmit.value) state.selectedProductCategory.value.isError() else false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = ItemHorizontalPadding)
-            )
+                SearchField(
+                    enabled = state.selectedProductCategory.value.isEnabled(),
+                    value = state.selectedProductCategory.value.data?.name ?: String(),
+                    onClick = {
+                        state.isCategorySearchDialogExpanded.value = true
+                    },
+                    onLongClick = {
+                        state.selectedProductCategory.value.data?.let {
+                            onItemCategoryLongClick(it.id)
+                        }
+                    },
+                    label = stringResource(R.string.item_product_category),
+                    onAddButtonClick = {
+                        onCategoryAddButtonClick(null)
+                    },
+                    addButtonDescription = stringResource(R.string.item_product_category_add_description),
+                    supportingText = {
+                        if (state.attemptedToSubmit.value) {
+                            state.selectedProductCategory.value.error?.errorText()
+                        }
+                    },
+                    error = if (state.attemptedToSubmit.value) state.selectedProductCategory.value.isError() else false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = ItemHorizontalPadding)
+                )
+            }
         }
     }
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun ModifyProductScreenImplPreview() {
     ArrugarqTheme {

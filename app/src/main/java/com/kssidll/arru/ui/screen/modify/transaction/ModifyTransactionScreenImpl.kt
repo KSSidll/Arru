@@ -12,6 +12,7 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
@@ -41,6 +42,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModifyTransactionScreenImpl(
+    isExpandedScreen: Boolean,
     onBack: () -> Unit,
     state: ModifyTransactionScreenState,
     shops: List<Shop>,
@@ -51,7 +53,6 @@ fun ModifyTransactionScreenImpl(
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
-    // TODO add adaptive layout handling
     val datePickerState = rememberDatePickerState()
 
     ModifyScreen<FuzzySearchSource>(
@@ -114,6 +115,32 @@ fun ModifyTransactionScreenImpl(
             )
         }
 
+        if (isExpandedScreen) {
+            ExpandedModifyTransactionScreenContent(
+                state = state,
+                onShopAddButtonClick = onShopAddButtonClick,
+                onTransactionShopLongClick = onTransactionShopLongClick,
+            )
+        } else {
+            ModifyTransactionScreenContent(
+                state = state,
+                onShopAddButtonClick = onShopAddButtonClick,
+                onTransactionShopLongClick = onTransactionShopLongClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ModifyTransactionScreenContent(
+    state: ModifyTransactionScreenState,
+    onShopAddButtonClick: (query: String?) -> Unit,
+    onTransactionShopLongClick: (shopId: Long) -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.widthIn(max = 650.dp)
+    ) {
         val date = state.date.value.data
         SearchField(
             enabled = state.date.value.isEnabled(),
@@ -268,16 +295,206 @@ fun ModifyTransactionScreenImpl(
                 .fillMaxWidth()
                 .padding(horizontal = ItemHorizontalPadding)
         )
-
     }
 }
 
+@Composable
+private fun ExpandedModifyTransactionScreenContent(
+    state: ModifyTransactionScreenState,
+    onShopAddButtonClick: (query: String?) -> Unit,
+    onTransactionShopLongClick: (shopId: Long) -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.widthIn(max = 650.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val date = state.date.value.data
+            SearchField(
+                enabled = state.date.value.isEnabled(),
+                value = if (date != null) SimpleDateFormat(
+                    "MMM d, yyyy",
+                    Locale.getDefault()
+                ).format(date) else String(),
+                showAddButton = false,
+                label = stringResource(R.string.item_date),
+                onClick = {
+                    state.isDatePickerDialogExpanded.value = true
+                },
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.date.value.error?.errorText()
+                    }
+                },
+                error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(
+                        start = ItemHorizontalPadding.times(2),
+                        end = ItemHorizontalPadding.div(2)
+                    )
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = ItemHorizontalPadding.div(2))
+            ) {
+                StyledOutlinedTextField(
+                    singleLine = true,
+                    enabled = state.totalCost.value.isEnabled(),
+                    value = state.totalCost.value.data ?: String(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    onValueChange = { newValue ->
+                        state.totalCost.apply {
+                            if (newValue.isBlank()) {
+                                value = Field.Loaded(String())
+                            } else if (RegexHelper.isFloat(
+                                    newValue,
+                                    2
+                                )
+                            ) {
+                                value = Field.Loaded(newValue)
+                            }
+                        }
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.item_price),
+                            fontSize = 16.sp,
+                        )
+                    },
+                    supportingText = {
+                        if (state.attemptedToSubmit.value) {
+                            state.totalCost.value.error?.errorText()
+                        }
+                    },
+                    isError = if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    IconButton(
+                        enabled = state.totalCost.value.isEnabled(),
+                        onClick = {
+                            if (state.totalCost.value.data.isNullOrBlank()) {
+                                state.totalCost.value = Field.Loaded("%.2f".format(0f))
+                            } else {
+                                val value =
+                                    state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                                if (value != null) {
+                                    state.totalCost.value =
+                                        Field.Loaded("%.2f".format(value.plus(0.5f)))
+                                }
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        ),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowUp,
+                            contentDescription = stringResource(id = R.string.item_price_increment_by_half),
+                        )
+                    }
+
+                    IconButton(
+                        enabled = state.totalCost.value.isEnabled(),
+                        onClick = {
+                            if (state.totalCost.value.data.isNullOrBlank()) {
+                                state.totalCost.value = Field.Loaded("%.2f".format(0f))
+                            } else {
+                                val value =
+                                    state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+
+                                if (value != null) {
+                                    state.totalCost.value = Field.Loaded(
+                                        "%.2f".format(
+                                            if (value > 0.5f) value.minus(0.5f) else {
+                                                0f
+                                            }
+                                        )
+                                    )
+                                }
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        ),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = stringResource(id = R.string.item_price_decrement_by_half),
+                        )
+                    }
+                }
+            }
+        }
+
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SearchField(
+            enabled = state.selectedShop.value.isEnabled(),
+            optional = true,
+            value = state.selectedShop.value.data?.name ?: String(),
+            onClick = {
+                state.isShopSearchDialogExpanded.value = true
+            },
+            onLongClick = {
+                state.selectedShop.value.data?.let {
+                    onTransactionShopLongClick(it.id)
+                }
+            },
+            label = stringResource(R.string.item_shop),
+            onAddButtonClick = {
+                onShopAddButtonClick(null)
+            },
+            addButtonDescription = stringResource(R.string.item_shop_add_description),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = ItemHorizontalPadding)
+        )
+    }
+}
 @PreviewLightDark
 @Composable
 fun ModifyTransactionScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(
+                isExpandedScreen = false,
+                onBack = {},
+                state = ModifyTransactionScreenState(),
+                shops = emptyList(),
+                onNewShopSelected = {},
+                onSubmit = {},
+                onShopAddButtonClick = {},
+                onTransactionShopLongClick = {},
+            )
+        }
+    }
+}
+
+@PreviewExpanded
+@Composable
+fun ExpandedModifyTransactionScreenImplPreview() {
+    ArrugarqTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            ModifyTransactionScreenImpl(
+                isExpandedScreen = true,
                 onBack = {},
                 state = ModifyTransactionScreenState(),
                 shops = emptyList(),

@@ -10,6 +10,7 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
@@ -35,7 +36,6 @@ fun ModifyVariantScreenImpl(
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
-    // TODO add adaptive layout handling
     ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
@@ -46,40 +46,46 @@ fun ModifyVariantScreenImpl(
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.item_product_variant_delete_warning_text),
     ) {
-        StyledOutlinedTextField(
-            enabled = state.name.value.isEnabled(),
-            singleLine = true,
-            value = state.name.value.data ?: String(),
-            onValueChange = {
-                state.name.value = Field.Loaded(it)
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    onSubmit()
-                }
-            ),
-            label = {
-                Text(
-                    text = stringResource(R.string.item_product_variant),
-                )
-            },
-            supportingText = {
-                if (state.attemptedToSubmit.value) {
-                    state.name.value.error?.errorText()
-                }
-            },
-            isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.widthIn(max = 500.dp)
+        ) {
+            StyledOutlinedTextField(
+                enabled = state.name.value.isEnabled(),
+                singleLine = true,
+                value = state.name.value.data ?: String(),
+                onValueChange = {
+                    state.name.value = Field.Loaded(it)
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        onSubmit()
+                    }
+                ),
+                label = {
+                    Text(
+                        text = stringResource(R.string.item_product_variant),
+                    )
+                },
+                supportingText = {
+                    if (state.attemptedToSubmit.value) {
+                        state.name.value.error?.errorText()
+                    }
+                },
+                isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = ItemHorizontalPadding)
+            )
+        }
     }
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun ModifyVariantScreenImplPreview() {
     ArrugarqTheme {

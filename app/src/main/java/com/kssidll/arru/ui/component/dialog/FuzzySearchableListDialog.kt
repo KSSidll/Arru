@@ -67,13 +67,12 @@ fun <T> FuzzySearchableListDialog(
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             modifier = Modifier
-                .requiredWidth(360.dp)
-                .heightIn(max = 568.dp),
+                .width(400.dp)
+                .height(600.dp),
             shape = shape,
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 1.dp,
         ) {
-
             Column {
                 LazyColumn(
                     modifier = Modifier.weight(1f),

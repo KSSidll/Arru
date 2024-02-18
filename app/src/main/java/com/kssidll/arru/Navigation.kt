@@ -801,6 +801,7 @@ fun Navigation(
 
             is Screen.TransactionAdd -> {
                 AddTransactionRoute(
+                    isExpandedScreen = isExpandedScreen,
                     navigateBack = navigateBack,
                     navigateTransaction = navigateTransaction,
                     navigateShopAdd = navigateShopAdd,
@@ -811,6 +812,7 @@ fun Navigation(
 
             is Screen.TransactionEdit -> {
                 EditTransactionRoute(
+                    isExpandedScreen = isExpandedScreen,
                     transactionId = screen.transactionId,
                     navigateBack = navigateBack,
                     navigateBackDelete = navigateBackDeleteTransaction,
