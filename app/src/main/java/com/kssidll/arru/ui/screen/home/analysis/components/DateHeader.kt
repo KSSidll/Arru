@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.home.analysis.components
 
-import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
@@ -74,26 +73,17 @@ fun DateHeader(
     }
 }
 
-@Preview(
-    group = "DateHeader",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "DateHeader",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun DateHeaderPreview() {
     ArrugarqTheme {
-        DateHeader(
-            year = 2021,
-            month = 12,
-            onMonthIncrement = {},
-            onMonthDecrement = {},
-        )
+        Surface {
+            DateHeader(
+                year = 2021,
+                month = 12,
+                onMonthIncrement = {},
+                onMonthDecrement = {},
+            )
+        }
     }
 }

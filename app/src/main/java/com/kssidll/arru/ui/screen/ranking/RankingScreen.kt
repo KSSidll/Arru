@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.ranking
 
-import android.content.res.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -70,18 +69,7 @@ fun <T> RankingScreen(
     }
 }
 
-@Preview(
-    group = "Ranking Screen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Ranking Screen",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun RankingScreenPreview() {
     ArrugarqTheme {

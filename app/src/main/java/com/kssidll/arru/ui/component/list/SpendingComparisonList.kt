@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.component.list
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -179,18 +178,7 @@ fun <T> SpendingComparisonList(
     }
 }
 
-@Preview(
-    group = "SpendingComparisonList",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "SpendingComparisonList",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun SpendingComparisonListPreview() {
     ArrugarqTheme {

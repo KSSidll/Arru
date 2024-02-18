@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeRoute(
+    isExpandedScreen: Boolean,
     navigateSettings: () -> Unit,
     navigateSearch: () -> Unit,
     navigateProduct: (productId: Long) -> Unit,
@@ -43,9 +44,9 @@ fun HomeRoute(
         pageCount = { HomeRouteLocations.entries.size },
     )
 
-    Scaffold(
-        bottomBar = {
-            HomeBottomNavBar(
+    if (isExpandedScreen) {
+        Row {
+            HomeRailNavBar(
                 currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
                 onLocationChange = {
                     scope.launch {
@@ -53,44 +54,116 @@ fun HomeRoute(
                     }
                 },
                 onActionButtonClick = navigateTransactionAdd,
+                onSettingsAction = navigateSettings,
+            )
+
+            HomeRouteContent(
+                isExpandedScreen = true,
+                pagerState = pagerState,
+                navigateSettings = navigateSettings,
+                navigateSearch = navigateSearch,
+                navigateProduct = navigateProduct,
+                navigateCategory = navigateCategory,
+                navigateProducer = navigateProducer,
+                navigateShop = navigateShop,
+                navigateItemAdd = navigateItemAdd,
+                navigateTransactionEdit = navigateTransactionEdit,
+                navigateItemEdit = navigateItemEdit,
+                navigateCategoryRanking = navigateCategoryRanking,
+                navigateShopRanking = navigateShopRanking,
+                navigateCategorySpendingComparison = navigateCategorySpendingComparison,
+                navigateShopSpendingComparison = navigateShopSpendingComparison,
             )
         }
-    ) {
-        Box(modifier = Modifier.padding(it)) {
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-                beyondBoundsPageCount = HomeRouteLocations.entries.size,
-            ) { location ->
-                when (HomeRouteLocations.getByOrdinal(location)!!) {
-                    HomeRouteLocations.Dashboard -> {
-                        DashboardRoute(
-                            navigateSettings = navigateSettings,
-                            navigateCategoryRanking = navigateCategoryRanking,
-                            navigateShopRanking = navigateShopRanking,
-                        )
-                    }
+    } else {
+        Scaffold(
+            bottomBar = {
+                HomeBottomNavBar(
+                    currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
+                    onLocationChange = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(it.ordinal)
+                        }
+                    },
+                    onActionButtonClick = navigateTransactionAdd,
+                )
+            }
+        ) {
+            Box(modifier = Modifier.padding(it)) {
+                HomeRouteContent(
+                    isExpandedScreen = false,
+                    pagerState = pagerState,
+                    navigateSettings = navigateSettings,
+                    navigateSearch = navigateSearch,
+                    navigateProduct = navigateProduct,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
+                    navigateItemAdd = navigateItemAdd,
+                    navigateTransactionEdit = navigateTransactionEdit,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateCategoryRanking = navigateCategoryRanking,
+                    navigateShopRanking = navigateShopRanking,
+                    navigateCategorySpendingComparison = navigateCategorySpendingComparison,
+                    navigateShopSpendingComparison = navigateShopSpendingComparison,
+                )
+            }
+        }
+    }
+}
 
-                    HomeRouteLocations.Analysis -> {
-                        AnalysisRoute(
-                            navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                            navigateShopSpendingComparison = navigateShopSpendingComparison,
-                        )
-                    }
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun HomeRouteContent(
+    isExpandedScreen: Boolean,
+    pagerState: PagerState,
+    navigateSettings: () -> Unit,
+    navigateSearch: () -> Unit,
+    navigateProduct: (productId: Long) -> Unit,
+    navigateCategory: (categoryId: Long) -> Unit,
+    navigateProducer: (producerId: Long) -> Unit,
+    navigateShop: (shopId: Long) -> Unit,
+    navigateItemAdd: (transactionId: Long) -> Unit,
+    navigateTransactionEdit: (transactionId: Long) -> Unit,
+    navigateItemEdit: (itemId: Long) -> Unit,
+    navigateCategoryRanking: () -> Unit,
+    navigateShopRanking: () -> Unit,
+    navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
+    navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
+) {
+    HorizontalPager(
+        state = pagerState,
+        userScrollEnabled = false,
+        beyondBoundsPageCount = HomeRouteLocations.entries.size,
+    ) { location ->
+        when (HomeRouteLocations.getByOrdinal(location)!!) {
+            HomeRouteLocations.Dashboard -> {
+                DashboardRoute(
+                    isExpandedScreen = isExpandedScreen,
+                    navigateSettings = navigateSettings,
+                    navigateCategoryRanking = navigateCategoryRanking,
+                    navigateShopRanking = navigateShopRanking,
+                )
+            }
 
-                    HomeRouteLocations.Transactions -> {
-                        TransactionsRoute(
-                            navigateSearch = navigateSearch,
-                            navigateProduct = navigateProduct,
-                            navigateCategory = navigateCategory,
-                            navigateProducer = navigateProducer,
-                            navigateShop = navigateShop,
-                            navigateItemAdd = navigateItemAdd,
-                            navigateItemEdit = navigateItemEdit,
-                            navigateTransactionEdit = navigateTransactionEdit,
-                        )
-                    }
-                }
+            HomeRouteLocations.Analysis -> {
+                AnalysisRoute(
+                    navigateCategorySpendingComparison = navigateCategorySpendingComparison,
+                    navigateShopSpendingComparison = navigateShopSpendingComparison,
+                )
+            }
+
+            HomeRouteLocations.Transactions -> {
+                TransactionsRoute(
+                    navigateSearch = navigateSearch,
+                    navigateProduct = navigateProduct,
+                    navigateCategory = navigateCategory,
+                    navigateProducer = navigateProducer,
+                    navigateShop = navigateShop,
+                    navigateItemAdd = navigateItemAdd,
+                    navigateItemEdit = navigateItemEdit,
+                    navigateTransactionEdit = navigateTransactionEdit,
+                )
             }
         }
     }

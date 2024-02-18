@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.product
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -67,6 +66,7 @@ fun ModifyProductScreenImpl(
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onItemCategoryLongClick: (categoryId: Long) -> Unit,
 ) {
+    // TODO add adaptive layout handling
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product),
@@ -209,18 +209,7 @@ fun ModifyProductScreenImpl(
     }
 }
 
-@Preview(
-    group = "ModifyProductScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyProductScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyProductScreenImplPreview() {
     ArrugarqTheme {

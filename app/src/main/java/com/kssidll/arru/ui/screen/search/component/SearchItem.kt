@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.search.component
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -58,18 +57,7 @@ internal fun SearchItem(
     }
 }
 
-@Preview(
-    group = "SearchItem",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "SearchItem",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun SearchItemPreview() {
     ArrugarqTheme {

@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.search.shared
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
@@ -122,18 +121,7 @@ internal data class ListScreenState<T>(
     val items: MutableState<Flow<List<T>>> = mutableStateOf(flowOf()),
 ) where T: FuzzySearchSource, T: NameSource
 
-@Preview(
-    group = "ListScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ListScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun ListScreenPreview() {
     ArrugarqTheme {

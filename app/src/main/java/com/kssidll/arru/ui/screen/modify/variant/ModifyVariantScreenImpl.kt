@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.variant
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
@@ -36,6 +35,7 @@ fun ModifyVariantScreenImpl(
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
+    // TODO add adaptive layout handling
     ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
@@ -79,18 +79,7 @@ fun ModifyVariantScreenImpl(
     }
 }
 
-@Preview(
-    group = "ModifyVariantScreenImpl",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyVariantScreenImpl",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyVariantScreenImplPreview() {
     ArrugarqTheme {

@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.settings.component
 
 
-import android.content.res.Configuration.*
 import androidx.appcompat.app.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.shape.*
@@ -111,18 +110,7 @@ fun LanguageExposedDropdown(
     }
 }
 
-@Preview(
-    group = "LanguageExposedDropdown",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "LanguageExposedDropdown",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun LanguageExposedDropdownPreview() {
     ArrugarqTheme {

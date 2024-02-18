@@ -6,6 +6,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 internal fun DashboardRoute(
+    isExpandedScreen: Boolean,
     navigateSettings: () -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
@@ -13,6 +14,7 @@ internal fun DashboardRoute(
     val viewModel: DashboardViewModel = hiltViewModel()
 
     DashboardScreen(
+        isExpandedScreen = isExpandedScreen,
         onSettingsAction = navigateSettings,
         onCategoryRankingCardClick = navigateCategoryRanking,
         onShopRankingCardClick = navigateShopRanking,

@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.home.dashboard
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -14,6 +13,7 @@ import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.*
@@ -36,9 +36,48 @@ private val TileInnerPadding: Dp = 12.dp
  * @param spentByTimePeriod Current [totalSpentData] time period
  * @param onSpentByTimePeriodUpdate Callback called as a request to update the [totalSpentData] time period, Provides new time period as parameter
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DashboardScreen(
+    isExpandedScreen: Boolean,
+    onSettingsAction: () -> Unit,
+    onCategoryRankingCardClick: () -> Unit,
+    onShopRankingCardClick: () -> Unit,
+    totalSpentData: Float,
+    spentByShopData: List<TransactionTotalSpentByShop>,
+    spentByCategoryData: List<ItemSpentByCategory>,
+    spentByTimeData: List<ChartSource>,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodUpdate: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
+) {
+    if (isExpandedScreen) {
+        ExpandedDashboardScreenContent(
+            onCategoryRankingCardClick = onCategoryRankingCardClick,
+            onShopRankingCardClick = onShopRankingCardClick,
+            totalSpentData = totalSpentData,
+            spentByShopData = spentByShopData,
+            spentByCategoryData = spentByCategoryData,
+            spentByTimeData = spentByTimeData,
+            spentByTimePeriod = spentByTimePeriod,
+            onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
+        )
+    } else {
+        DashboardScreenContent(
+            onSettingsAction = onSettingsAction,
+            onCategoryRankingCardClick = onCategoryRankingCardClick,
+            onShopRankingCardClick = onShopRankingCardClick,
+            totalSpentData = totalSpentData,
+            spentByShopData = spentByShopData,
+            spentByCategoryData = spentByCategoryData,
+            spentByTimeData = spentByTimeData,
+            spentByTimePeriod = spentByTimePeriod,
+            onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DashboardScreenContent(
     onSettingsAction: () -> Unit,
     onCategoryRankingCardClick: () -> Unit,
     onShopRankingCardClick: () -> Unit,
@@ -103,69 +142,175 @@ internal fun DashboardScreen(
 
             Spacer(Modifier.height(4.dp))
 
-            AnimatedVisibility(visible = spentByCategoryData.isNotEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    modifier = Modifier
-                        .padding(TileOuterPadding)
-                        .fillMaxWidth()
-                ) {
-                    RankingList(
-                        innerItemPadding = PaddingValues(TileInnerPadding),
-                        items = spentByCategoryData,
+            Column {
+                AnimatedVisibility(visible = spentByCategoryData.isNotEmpty()) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
                         modifier = Modifier
-                            .heightIn(min = 144.dp)
-                            .clickable {
-                                onCategoryRankingCardClick()
-                            }
-                    )
+                            .padding(TileOuterPadding)
+                            .fillMaxWidth()
+                    ) {
+                        RankingList(
+                            innerItemPadding = PaddingValues(TileInnerPadding),
+                            items = spentByCategoryData,
+                            modifier = Modifier
+                                .heightIn(min = 144.dp)
+                                .clickable {
+                                    onCategoryRankingCardClick()
+                                }
+                        )
+                    }
+                }
+
+                AnimatedVisibility(visible = spentByShopData.isNotEmpty()) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        modifier = Modifier
+                            .padding(TileOuterPadding)
+                            .fillMaxWidth()
+                    ) {
+                        RankingList(
+                            innerItemPadding = PaddingValues(TileInnerPadding),
+                            items = spentByShopData,
+                            modifier = Modifier
+                                .heightIn(min = 144.dp)
+                                .clickable {
+                                    onShopRankingCardClick()
+                                }
+                        )
+                    }
                 }
             }
-
-            AnimatedVisibility(visible = spentByShopData.isNotEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    modifier = Modifier
-                        .padding(TileOuterPadding)
-                        .fillMaxWidth()
-                ) {
-                    RankingList(
-                        innerItemPadding = PaddingValues(TileInnerPadding),
-                        items = spentByShopData,
-                        modifier = Modifier
-                            .heightIn(min = 144.dp)
-                            .clickable {
-                                onShopRankingCardClick()
-                            }
-                    )
-                }
-            }
-
         }
     }
 }
 
-@Preview(
-    group = "DashboardScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "DashboardScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@Composable
+private fun ExpandedDashboardScreenContent(
+    onCategoryRankingCardClick: () -> Unit,
+    onShopRankingCardClick: () -> Unit,
+    totalSpentData: Float,
+    spentByShopData: List<TransactionTotalSpentByShop>,
+    spentByCategoryData: List<ItemSpentByCategory>,
+    spentByTimeData: List<ChartSource>,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods,
+    onSpentByTimePeriodUpdate: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
+) {
+    val scrollState = rememberScrollState()
+
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(state = scrollState)
+        ) {
+            Spacer(Modifier.height(6.dp))
+
+            TotalAverageAndMedianSpendingComponent(
+                spentByTimeData = spentByTimeData,
+                totalSpentData = totalSpentData,
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                SpendingSummaryComponent(
+                    spentByTimeData = spentByTimeData,
+                    spentByTimePeriod = spentByTimePeriod,
+                    onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
+                    modifier = Modifier
+                        .animateContentSize()
+                        .fillMaxWidth()
+                )
+            }
+
+            Spacer(Modifier.height(4.dp))
+
+            Row {
+                AnimatedVisibility(
+                    visible = spentByCategoryData.isNotEmpty(),
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        modifier = Modifier
+                            .padding(TileOuterPadding)
+                    ) {
+                        RankingList(
+                            innerItemPadding = PaddingValues(TileInnerPadding),
+                            items = spentByCategoryData,
+                            modifier = Modifier
+                                .heightIn(min = 144.dp)
+                                .clickable {
+                                    onCategoryRankingCardClick()
+                                }
+                        )
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = spentByShopData.isNotEmpty(),
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        modifier = Modifier
+                            .padding(TileOuterPadding)
+                    ) {
+                        RankingList(
+                            innerItemPadding = PaddingValues(TileInnerPadding),
+                            items = spentByShopData,
+                            modifier = Modifier
+                                .heightIn(min = 144.dp)
+                                .clickable {
+                                    onShopRankingCardClick()
+                                }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@PreviewLightDark
 @Composable
 fun DashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(
+                isExpandedScreen = false,
+                onSettingsAction = {},
+                onCategoryRankingCardClick = {},
+                onShopRankingCardClick = {},
+                totalSpentData = 16832.18F,
+                spentByShopData = TransactionTotalSpentByShop.generateList(),
+                spentByCategoryData = ItemSpentByCategory.generateList(),
+                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
+                onSpentByTimePeriodUpdate = {},
+            )
+        }
+    }
+}
+
+@PreviewExpanded
+@Composable
+fun ExpandedDashboardScreenPreview() {
+    ArrugarqTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            DashboardScreen(
+                isExpandedScreen = true,
                 onSettingsAction = {},
                 onCategoryRankingCardClick = {},
                 onShopRankingCardClick = {},

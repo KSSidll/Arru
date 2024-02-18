@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component
 
-import android.content.res.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -102,18 +101,7 @@ fun TotalAverageAndMedianSpendingComponent(
     }
 }
 
-@Preview(
-    group = "Total Average And Median Spending Component",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Total Average And Median Spending Component",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun TotalAverageAndMedianSpendingComponentPreview() {
     ArrugarqTheme {

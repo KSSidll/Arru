@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.display.producer
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -65,6 +64,7 @@ internal fun ProducerScreen(
     onItemLongClick: (itemId: Long) -> Unit,
     onEditAction: () -> Unit,
 ) {
+    // TODO add adaptive layout handling
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -240,19 +240,7 @@ internal fun ProducerScreen(
     }
 }
 
-
-@Preview(
-    group = "ProducerScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ProducerScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ProducerScreenPreview() {
     ArrugarqTheme {

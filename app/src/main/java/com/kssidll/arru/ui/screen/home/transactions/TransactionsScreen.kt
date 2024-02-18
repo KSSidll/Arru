@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.home.transactions
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -49,6 +48,7 @@ internal fun TransactionsScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
+    // TODO add adaptive layout handling
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -168,18 +168,7 @@ internal fun TransactionsScreen(
     }
 }
 
-@Preview(
-    group = "TransactionsScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "TransactionsScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun TransactionsScreenPreview() {
     ArrugarqTheme {

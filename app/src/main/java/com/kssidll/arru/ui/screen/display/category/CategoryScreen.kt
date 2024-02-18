@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.display.category
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -65,6 +64,7 @@ internal fun CategoryScreen(
     onItemLongClick: (itemId: Long) -> Unit,
     onEditAction: () -> Unit,
 ) {
+    // TODO add adaptive layout handling
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -240,18 +240,7 @@ internal fun CategoryScreen(
     }
 }
 
-@Preview(
-    group = "CategoryScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "CategoryScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun CategoryScreenPreview() {
     ArrugarqTheme {

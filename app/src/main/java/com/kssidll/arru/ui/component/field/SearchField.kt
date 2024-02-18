@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.field
 
-import android.content.res.*
 import android.view.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
@@ -167,19 +166,7 @@ fun SearchField(
     }
 }
 
-
-@Preview(
-    group = "Search Field",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Search Field",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun SearchFieldPreview() {
     ArrugarqTheme {
@@ -195,18 +182,7 @@ fun SearchFieldPreview() {
     }
 }
 
-@Preview(
-    group = "Search Field",
-    name = "Optional Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Search Field",
-    name = "Optional Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun OptionalSearchFieldPreview() {
     ArrugarqTheme {
@@ -223,18 +199,7 @@ fun OptionalSearchFieldPreview() {
     }
 }
 
-@Preview(
-    group = "Search Field",
-    name = "Disabled Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Search Field",
-    name = "Disabled Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun DisabledSearchFieldPreview() {
     ArrugarqTheme {
@@ -251,18 +216,7 @@ fun DisabledSearchFieldPreview() {
     }
 }
 
-@Preview(
-    group = "Search Field",
-    name = "Error Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Search Field",
-    name = "Error Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ErrorSearchFieldPreview() {
     ArrugarqTheme {

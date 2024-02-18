@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
@@ -253,18 +252,7 @@ private fun EditScreenContent(
     }
 }
 
-@Preview(
-    group = "EditScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "EditScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun EditScreenPreview() {
     ArrugarqTheme {
@@ -283,18 +271,7 @@ fun EditScreenPreview() {
     }
 }
 
-@Preview(
-    group = "ModifyScreen",
-    name = "Dark No Delete",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyScreen",
-    name = "Light No Delete",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyScreenNoDeletePreview() {
     ArrugarqTheme {

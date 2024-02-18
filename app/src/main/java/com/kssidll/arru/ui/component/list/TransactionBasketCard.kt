@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.list
 
-import android.content.res.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -195,18 +194,7 @@ fun TransactionBasketCard(
     }
 }
 
-@Preview(
-    group = "Transaction Basket Card",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Transaction Basket Card",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun TransactionBasketCardPreview() {
     ArrugarqTheme {

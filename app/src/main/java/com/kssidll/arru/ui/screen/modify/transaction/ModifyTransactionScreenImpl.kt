@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.transaction
 
-import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material.icons.*
@@ -52,6 +51,7 @@ fun ModifyTransactionScreenImpl(
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
+    // TODO add adaptive layout handling
     val datePickerState = rememberDatePickerState()
 
     ModifyScreen<FuzzySearchSource>(
@@ -272,18 +272,7 @@ fun ModifyTransactionScreenImpl(
     }
 }
 
-@Preview(
-    group = "ModifyTransactionScreenImpl",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyTransactionScreenImpl",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyTransactionScreenImplPreview() {
     ArrugarqTheme {

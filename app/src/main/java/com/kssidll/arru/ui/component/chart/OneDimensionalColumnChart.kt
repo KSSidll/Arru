@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.chart
 
-import android.content.res.*
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -89,18 +88,7 @@ fun OneDimensionalColumnChart(
     }
 }
 
-@Preview(
-    group = "One Dimensional Column Chart",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "One Dimensional Column Chart",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun OneDimesionalColumnChartPreview() {
     ArrugarqTheme {

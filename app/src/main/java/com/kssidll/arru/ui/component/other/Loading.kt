@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.other
 
-import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,18 +23,7 @@ fun Loading() {
     }
 }
 
-@Preview(
-    group = "Loading",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
-@Preview(
-    group = "Loading",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
+@PreviewLightDark
 @Composable
 fun LoadingPreview() {
     ArrugarqTheme {

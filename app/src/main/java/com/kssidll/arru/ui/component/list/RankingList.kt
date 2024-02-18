@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.list
 
-import android.content.res.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -255,18 +254,7 @@ fun <T> RankingList(
     }
 }
 
-@Preview(
-    group = "Ranking List",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Ranking List",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun RankingListPreview() {
     ArrugarqTheme {

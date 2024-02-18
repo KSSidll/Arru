@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.shop
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
@@ -51,6 +50,7 @@ fun ModifyShopScreenImpl(
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_shop_add),
 ) {
+    // TODO add adaptive layout handling
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_shop),
@@ -103,18 +103,7 @@ fun ModifyShopScreenImpl(
 
 }
 
-@Preview(
-    group = "ModifyShopScreenImpl",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyShopScreenImpl",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyShopScreenImplPreview() {
     ArrugarqTheme {

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component
 
-import android.content.res.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
@@ -24,6 +23,7 @@ fun SpendingSummaryComponent(
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
     modifier: Modifier = Modifier,
+    buttonsModifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
     autoScrollSpec: AnimationSpec<Float> = tween(1200),
     scrollState: ChartScrollState = rememberChartScrollState(),
@@ -32,8 +32,12 @@ fun SpendingSummaryComponent(
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
         PeriodButtons(
+            modifier = buttonsModifier,
             spentByTimePeriod = spentByTimePeriod,
             onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
         )
@@ -57,12 +61,12 @@ fun SpendingSummaryComponent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PeriodButtons(
+    modifier: Modifier,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(
                 start = 10.dp,
                 end = 10.dp
@@ -106,18 +110,7 @@ private fun PeriodButtons(
     }
 }
 
-@Preview(
-    group = "Spending Summary Component",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Spending Summary Component",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun SpendingSummaryComponentPreview() {
     ArrugarqTheme {

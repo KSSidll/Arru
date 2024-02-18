@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.home.analysis
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -43,6 +42,7 @@ internal fun AnalysisScreen(
     onCategorySpendingComparisonCardClick: () -> Unit,
     onShopSpendingComparisonCardClick: () -> Unit,
 ) {
+    // TODO add adaptive layout handling
     Scaffold(
         bottomBar = {
             Box(modifier = Modifier.padding(vertical = 12.dp)) {
@@ -125,18 +125,7 @@ internal fun AnalysisScreen(
     }
 }
 
-@Preview(
-    group = "AnalysisScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "AnalysisScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun AnalysisScreenPreview() {
     ArrugarqTheme {

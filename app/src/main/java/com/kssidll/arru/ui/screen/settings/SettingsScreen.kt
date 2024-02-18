@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.settings
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -51,18 +50,7 @@ internal fun SettingsScreen(
     }
 }
 
-@Preview(
-    group = "SettingsScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "SettingsScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun SettingsScreenPreview() {
     ArrugarqTheme {

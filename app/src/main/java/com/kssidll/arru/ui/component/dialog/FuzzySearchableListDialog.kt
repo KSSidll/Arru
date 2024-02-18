@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.dialog
 
-import android.content.res.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -157,18 +156,7 @@ fun <T> FuzzySearchableListDialog(
     }
 }
 
-@Preview(
-    group = "Fuzzy Searchable List Dialog",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Fuzzy Searchable List Dialog",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun FuzzySearchableListDialogPreview() {
     ArrugarqTheme {

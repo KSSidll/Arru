@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.search
 
 
-import android.content.res.Configuration.*
 import android.os.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -168,18 +167,7 @@ internal data class SearchScreenState(
     val navController: NavController<SearchDestinations> = navController(startDestination = SearchDestinations.Start)
 )
 
-@Preview(
-    group = "SearchScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "SearchScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun SearchScreenPreview() {
     ArrugarqTheme {

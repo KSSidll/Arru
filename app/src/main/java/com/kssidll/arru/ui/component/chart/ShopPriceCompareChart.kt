@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.component.chart
 
 
-import android.content.res.Configuration.*
 import android.graphics.*
 import android.text.*
 import android.text.style.*
@@ -163,18 +162,7 @@ fun ShopPriceCompareChart(
     }
 }
 
-@Preview(
-    group = "ShopPriceCompareChart",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ShopPriceCompareChart",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ShopPriceCompareChartPreview() {
     ArrugarqTheme {

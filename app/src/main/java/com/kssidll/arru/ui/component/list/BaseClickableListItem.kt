@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.list
 
-import android.content.res.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -51,18 +50,7 @@ fun BaseClickableListItem(
     }
 }
 
-@Preview(
-    group = "Base Clickable List Item",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Base Clickable List Item",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun BaseClickableListItemPreview() {
     ArrugarqTheme {

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.other
 
-import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.rounded.*
@@ -50,18 +49,7 @@ fun SecondaryAppBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(
-    group = "Secondary App Bar",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
-@Preview(
-    group = "Secondary App Bar",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
+@PreviewLightDark
 @Composable
 fun SecondaryAppBarPreview() {
     ArrugarqTheme {

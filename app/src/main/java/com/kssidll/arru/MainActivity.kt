@@ -1,12 +1,11 @@
 package com.kssidll.arru
 
-import android.annotation.*
-import android.content.pm.*
 import android.os.*
 import androidx.activity.compose.*
 import androidx.appcompat.app.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.*
 import androidx.compose.ui.*
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.*
@@ -21,14 +20,11 @@ class MainActivity: AppCompatActivity() {
     @Inject
     lateinit var preferences: Preferences
 
-    @SuppressLint("SourceLockedOrientationActivity")
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
-
-        //!! Lock orientation to portrait
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         runBlocking {
             preferences.setNullToDefault(applicationContext)
@@ -36,8 +32,11 @@ class MainActivity: AppCompatActivity() {
 
         setContent {
             ArrugarqTheme {
+                val isExpandedScreen =
+                    calculateWindowSizeClass(activity = this).widthSizeClass == WindowWidthSizeClass.Expanded
+
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Navigation()
+                    Navigation(isExpandedScreen)
                 }
             }
         }

@@ -174,6 +174,13 @@ fun <T> NavController<T>.previousDestination(): T? {
 }
 
 /**
+ * @return current destination from the backstack, null if none exists
+ */
+fun <T> NavController<T>.currentDestination(): T? {
+    return backstack.entries.last().destination
+}
+
+/**
  * Replaces the backstack with itself after filtering it to contain only destinations matching the given [predicate].
  */
 fun <T> NavController<T>.replaceAllFilter(
@@ -263,6 +270,7 @@ fun defaultPopContentTransformation(
 
 @Composable
 fun Navigation(
+    isExpandedScreen: Boolean,
     navController: NavController<Screen> = rememberNavController(startDestination = Screen.Home)
 ) {
     NavBackHandler(controller = navController)
@@ -316,122 +324,172 @@ fun Navigation(
     }
 
     val navigateSettings: () -> Unit = {
-        navController.navigate(Screen.Settings)
+        if (navController.currentDestination() !is Screen.Settings) {
+            navController.navigate(Screen.Settings)
+        }
     }
 
     val navigateSearch: () -> Unit = {
-        navController.navigate(Screen.Search)
+        if (navController.currentDestination() !is Screen.Search) {
+            navController.navigate(Screen.Search)
+        }
     }
 
 
     val navigateTransaction: (transactionId: Long) -> Unit = {
-        navController.navigate(Screen.Transaction(it))
+        if (navController.currentDestination() !is Screen.Transaction) {
+            navController.navigate(Screen.Transaction(it))
+        }
     }
 
     val navigateProduct: (productId: Long) -> Unit = {
-        navController.navigate(Screen.Product(it))
+        if (navController.currentDestination() !is Screen.Product) {
+            navController.navigate(Screen.Product(it))
+        }
     }
 
     val navigateCategory: (categoryId: Long) -> Unit = {
-        navController.navigate(Screen.Category(it))
+        if (navController.currentDestination() !is Screen.Category) {
+            navController.navigate(Screen.Category(it))
+        }
     }
 
     val navigateProducer: (producerId: Long) -> Unit = {
-        navController.navigate(Screen.Producer(it))
+        if (navController.currentDestination() !is Screen.Producer) {
+            navController.navigate(Screen.Producer(it))
+        }
     }
 
     val navigateShop: (shopId: Long) -> Unit = {
-        navController.navigate(Screen.Shop(it))
+        if (navController.currentDestination() !is Screen.Shop) {
+            navController.navigate(Screen.Shop(it))
+        }
     }
 
 
     val navigateTransactionAdd: () -> Unit = {
-        navController.navigate(Screen.TransactionAdd())
+        if (navController.currentDestination() !is Screen.TransactionAdd) {
+            navController.navigate(Screen.TransactionAdd())
+        }
     }
 
     val navigateItemAdd: (transactionId: Long) -> Unit = {
-        navController.navigate(Screen.ItemAdd(it))
+        if (navController.currentDestination() !is Screen.ItemAdd) {
+            navController.navigate(Screen.ItemAdd(it))
+        }
     }
 
     val navigateProductAdd: (query: String?) -> Unit = {
-        navController.navigate(Screen.ProductAdd(it))
+        if (navController.currentDestination() !is Screen.ProductAdd) {
+            navController.navigate(Screen.ProductAdd(it))
+        }
     }
 
     val navigateVariantAdd: (productId: Long, query: String?) -> Unit = { productId, query ->
-        navController.navigate(
-            Screen.VariantAdd(
-                productId,
-                query
+        if (navController.currentDestination() !is Screen.VariantAdd) {
+            navController.navigate(
+                Screen.VariantAdd(
+                    productId,
+                    query
+                )
             )
-        )
+        }
     }
 
     val navigateCategoryAdd: (query: String?) -> Unit = {
-        navController.navigate(Screen.CategoryAdd(it))
+        if (navController.currentDestination() !is Screen.CategoryAdd) {
+            navController.navigate(Screen.CategoryAdd(it))
+        }
     }
 
     val navigateProducerAdd: (query: String?) -> Unit = {
-        navController.navigate(Screen.ProducerAdd(it))
+        if (navController.currentDestination() !is Screen.ProducerAdd) {
+            navController.navigate(Screen.ProducerAdd(it))
+        }
     }
 
     val navigateShopAdd: (query: String?) -> Unit = {
-        navController.navigate(Screen.ShopAdd(it))
+        if (navController.currentDestination() !is Screen.ShopAdd) {
+            navController.navigate(Screen.ShopAdd(it))
+        }
     }
 
 
     val navigateTransactionEdit: (transactionId: Long) -> Unit = {
-        navController.navigate(Screen.TransactionEdit(it))
+        if (navController.currentDestination() !is Screen.TransactionEdit) {
+            navController.navigate(Screen.TransactionEdit(it))
+        }
     }
 
     val navigateItemEdit: (itemId: Long) -> Unit = {
-        navController.navigate(Screen.ItemEdit(it))
+        if (navController.currentDestination() !is Screen.ItemEdit) {
+            navController.navigate(Screen.ItemEdit(it))
+        }
     }
 
     val navigateProductEdit: (productId: Long) -> Unit = {
-        navController.navigate(Screen.ProductEdit(it))
+        if (navController.currentDestination() !is Screen.ProductEdit) {
+            navController.navigate(Screen.ProductEdit(it))
+        }
     }
 
     val navigateVariantEdit: (variantId: Long) -> Unit = {
-        navController.navigate(Screen.VariantEdit(it))
+        if (navController.currentDestination() !is Screen.VariantEdit) {
+            navController.navigate(Screen.VariantEdit(it))
+        }
     }
 
     val navigateCategoryEdit: (categoryId: Long) -> Unit = {
-        navController.navigate(Screen.CategoryEdit(it))
+        if (navController.currentDestination() !is Screen.CategoryEdit) {
+            navController.navigate(Screen.CategoryEdit(it))
+        }
     }
 
     val navigateProducerEdit: (producerId: Long) -> Unit = {
-        navController.navigate(Screen.ProducerEdit(it))
+        if (navController.currentDestination() !is Screen.ProducerEdit) {
+            navController.navigate(Screen.ProducerEdit(it))
+        }
     }
 
     val navigateShopEdit: (shopId: Long) -> Unit = {
-        navController.navigate(Screen.ShopEdit(it))
+        if (navController.currentDestination() !is Screen.ShopEdit) {
+            navController.navigate(Screen.ShopEdit(it))
+        }
     }
 
 
     val navigateCategoryRanking: () -> Unit = {
-        navController.navigate(Screen.CategoryRanking)
+        if (navController.currentDestination() !is Screen.CategoryRanking) {
+            navController.navigate(Screen.CategoryRanking)
+        }
     }
 
     val navigateShopRanking: () -> Unit = {
-        navController.navigate(Screen.ShopRanking)
+        if (navController.currentDestination() !is Screen.ShopRanking) {
+            navController.navigate(Screen.ShopRanking)
+        }
     }
 
     val navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit = { year, month ->
-        navController.navigate(
-            Screen.CategorySpendingComparison(
-                year,
-                month
+        if (navController.currentDestination() !is Screen.CategorySpendingComparison) {
+            navController.navigate(
+                Screen.CategorySpendingComparison(
+                    year,
+                    month
+                )
             )
-        )
+        }
     }
 
     val navigateShopSpendingComparison: (year: Int, month: Int) -> Unit = { year, month ->
-        navController.navigate(
-            Screen.ShopSpendingComparison(
-                year,
-                month
+        if (navController.currentDestination() !is Screen.ShopSpendingComparison) {
+            navController.navigate(
+                Screen.ShopSpendingComparison(
+                    year,
+                    month
+                )
             )
-        )
+        }
     }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
@@ -449,6 +507,7 @@ fun Navigation(
         when (screen) {
             is Screen.Home -> {
                 HomeRoute(
+                    isExpandedScreen = isExpandedScreen,
                     navigateSettings = navigateSettings,
                     navigateSearch = navigateSearch,
                     navigateProduct = navigateProduct,

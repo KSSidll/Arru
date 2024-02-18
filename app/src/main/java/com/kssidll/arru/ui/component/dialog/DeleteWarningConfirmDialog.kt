@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.dialog
 
-import android.content.res.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
@@ -126,18 +125,7 @@ fun DeleteWarningConfirmDialog(
     }
 }
 
-@Preview(
-    group = "DeleteWarningConfirmDialog",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "DeleteWarningConfirmDialog",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun DeleteWarningConfirmDialogPreview() {
     ArrugarqTheme {

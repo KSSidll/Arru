@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.category
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
@@ -51,6 +50,7 @@ fun ModifyCategoryScreenImpl(
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_category_add),
 ) {
+    // TODO add adaptive layout handling
     ModifyScreen(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_category),
@@ -102,18 +102,7 @@ fun ModifyCategoryScreenImpl(
     }
 }
 
-@Preview(
-    group = "ModifyCategoryScreenImpl",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyCategoryScreenImpl",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyCategoryScreenImplPreview() {
     ArrugarqTheme {

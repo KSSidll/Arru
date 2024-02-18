@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.dialog
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -75,18 +74,7 @@ fun MergeConfirmDialog(
     )
 }
 
-@Preview(
-    group = "MergeConfirmDialog",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "MergeConfirmDialog",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun MergeConfirmDialogPreview() {
     ArrugarqTheme {

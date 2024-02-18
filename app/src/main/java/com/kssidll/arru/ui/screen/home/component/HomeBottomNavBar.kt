@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.home.component
 
-import android.content.res.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
@@ -21,8 +20,8 @@ import com.kssidll.arru.ui.theme.*
 @Composable
 internal fun HomeBottomNavBar(
     currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
-    onLocationChange: ((HomeRouteLocations) -> Unit)? = null,
-    onActionButtonClick: (() -> Unit)? = null,
+    onLocationChange: (HomeRouteLocations) -> Unit,
+    onActionButtonClick: () -> Unit,
 ) {
     BottomAppBar(
         actions = {
@@ -30,7 +29,7 @@ internal fun HomeBottomNavBar(
                 NavigationBarItem(
                     selected = currentLocation == it,
                     onClick = {
-                        onLocationChange?.invoke(it)
+                        onLocationChange(it)
                     },
                     icon = {
                         Icon(
@@ -54,7 +53,7 @@ internal fun HomeBottomNavBar(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onActionButtonClick?.invoke()
+                    onActionButtonClick()
                 },
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
             ) {
@@ -70,24 +69,15 @@ internal fun HomeBottomNavBar(
     )
 }
 
-@Preview(
-    group = "Home Bottom Nav Bar",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Home Bottom Nav Bar",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun HomeBottomNavBarPreview() {
     ArrugarqTheme {
         Surface {
             HomeBottomNavBar(
                 currentLocation = HomeRouteLocations.Dashboard,
+                onLocationChange = {},
+                onActionButtonClick = {},
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.display.transaction
 
-import android.content.res.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
@@ -30,6 +29,7 @@ internal fun TransactionScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
+    // TODO add adaptive layout handling
     Scaffold(
         topBar = {
             SecondaryAppBar(
@@ -74,18 +74,7 @@ internal fun TransactionScreen(
     }
 }
 
-@Preview(
-    group = "Transaction Screen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "Transaction Screen",
-    name = "Light",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun TransactionScreenPreview() {
     ArrugarqTheme {

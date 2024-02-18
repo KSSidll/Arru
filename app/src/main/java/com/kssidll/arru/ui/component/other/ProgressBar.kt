@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.component.other
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -45,18 +44,7 @@ fun ProgressBar(
 }
 
 
-@Preview(
-    group = "ProgressBar",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ProgressBar",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 private fun ProgressBarPreview() {
     ArrugarqTheme {

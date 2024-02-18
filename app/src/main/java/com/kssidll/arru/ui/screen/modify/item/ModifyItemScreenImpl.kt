@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.item
 
 
-import android.content.res.Configuration.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material.icons.*
@@ -56,6 +55,7 @@ fun ModifyItemScreenImpl(
     onItemLongClick: (productId: Long) -> Unit,
     onItemVariantLongClick: (variantId: Long) -> Unit,
 ) {
+    // TODO add adaptive layout handling
     ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item),
@@ -392,18 +392,7 @@ fun ModifyItemScreenImpl(
     }
 }
 
-@Preview(
-    group = "ModifyItemScreenImpl",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ModifyItemScreenImpl",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ModifyItemScreenImplPreview() {
     ArrugarqTheme {

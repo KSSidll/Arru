@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.display.product
 
 
-import android.content.res.Configuration.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -68,6 +67,7 @@ internal fun ProductScreen(
     onItemLongClick: (itemId: Long) -> Unit,
     onEditAction: () -> Unit,
 ) {
+    // TODO add adaptive layout handling
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -249,18 +249,7 @@ internal fun ProductScreen(
     }
 }
 
-@Preview(
-    group = "ProductScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "ProductScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@PreviewLightDark
 @Composable
 fun ProductScreenPreview() {
     ArrugarqTheme {
