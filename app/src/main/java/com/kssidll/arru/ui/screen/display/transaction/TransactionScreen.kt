@@ -10,6 +10,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.ui.component.list.*
@@ -29,7 +30,6 @@ internal fun TransactionScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
-    // TODO add adaptive layout handling
     Scaffold(
         topBar = {
             SecondaryAppBar(
@@ -56,18 +56,23 @@ internal fun TransactionScreen(
         Box(modifier = Modifier.padding(paddingValues)) {
             if (transaction != null) {
                 Column(
-                    modifier = Modifier.verticalScroll(state = rememberScrollState())
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(state = rememberScrollState())
                 ) {
-                    TransactionBasketCard(
-                        transaction = transaction,
-                        transactionClickable = false,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick
-                    )
+                    Box(modifier = Modifier.widthIn(max = 600.dp)) {
+                        TransactionBasketCard(
+                            transaction = transaction,
+                            transactionClickable = false,
+                            onItemAddClick = onItemAddClick,
+                            onItemClick = onItemClick,
+                            onItemLongClick = onItemLongClick,
+                            onItemCategoryClick = onItemCategoryClick,
+                            onItemProducerClick = onItemProducerClick,
+                            onItemShopClick = onItemShopClick
+                        )
+                    }
                 }
             }
         }
@@ -75,6 +80,7 @@ internal fun TransactionScreen(
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun TransactionScreenPreview() {
     ArrugarqTheme {

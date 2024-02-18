@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import androidx.paging.*
 import androidx.paging.compose.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.*
@@ -63,7 +64,6 @@ internal fun ShopScreen(
     onItemLongClick: (itemId: Long) -> Unit,
     onEditAction: () -> Unit,
 ) {
-    // TODO add adaptive layout handling
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -155,10 +155,13 @@ internal fun ShopScreen(
     ) { paddingValues ->
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
         ) {
             item {
-                Column {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
                     TotalAverageAndMedianSpendingComponent(
@@ -187,52 +190,52 @@ internal fun ShopScreen(
                 val item = transactionItems[index]
 
                 if (item != null) {
-                    //... yeah
-                    if (index == 0 || (transactionItems[index - 1] != null && item.date / 86400000 != transactionItems[index - 1]!!.date / 86400000)) {
-                        Column(
-                            modifier = Modifier.fillParentMaxWidth()
-                        ) {
-                            Surface(
-                                modifier = Modifier.fillParentMaxWidth(),
-                                shape = RoundedCornerShape(
-                                    topStart = 24.dp,
-                                    topEnd = 24.dp
-                                ),
-                                color = MaterialTheme.colorScheme.surfaceContainer,
-                            ) {
-                                Box(
-                                    Modifier
-                                        .fillParentMaxWidth()
-                                        .padding(vertical = 8.dp)
+                    Column(modifier = Modifier.widthIn(max = 600.dp)) {
+                        //... yeah
+                        if (index == 0 || (transactionItems[index - 1] != null && item.date / 86400000 != transactionItems[index - 1]!!.date / 86400000)) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Surface(
+                                    shape = RoundedCornerShape(
+                                        topStart = 24.dp,
+                                        topEnd = 24.dp
+                                    ),
+                                    color = MaterialTheme.colorScheme.surfaceContainer,
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text(
-                                        modifier = Modifier.align(Alignment.Center),
-                                        text = SimpleDateFormat(
-                                            "MMM d, yyyy",
-                                            Locale.getDefault()
-                                        ).format(item.date),
-                                        style = Typography.headlineMedium,
-                                    )
+                                    Box(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp)
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.align(Alignment.Center),
+                                            text = SimpleDateFormat(
+                                                "MMM d, yyyy",
+                                                Locale.getDefault()
+                                            ).format(item.date),
+                                            style = Typography.headlineMedium,
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    FullItemCard(
-                        item = item,
-                        onItemClick = {
-                            onItemClick(it.product.id)
-                        },
-                        onItemLongClick = {
-                            onItemLongClick(it.id)
-                        },
-                        onCategoryClick = {
-                            onItemCategoryClick(it.id)
-                        },
-                        onProducerClick = {
-                            onItemProducerClick(it.id)
-                        },
-                    )
+                        FullItemCard(
+                            item = item,
+                            onItemClick = {
+                                onItemClick(it.product.id)
+                            },
+                            onItemLongClick = {
+                                onItemLongClick(it.id)
+                            },
+                            onCategoryClick = {
+                                onItemCategoryClick(it.id)
+                            },
+                            onProducerClick = {
+                                onItemProducerClick(it.id)
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -240,6 +243,7 @@ internal fun ShopScreen(
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun ShopScreenPreview() {
     ArrugarqTheme {

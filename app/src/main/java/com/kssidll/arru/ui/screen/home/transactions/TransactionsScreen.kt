@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import androidx.paging.*
 import androidx.paging.compose.*
+import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.ui.component.list.*
@@ -48,7 +49,6 @@ internal fun TransactionsScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
-    // TODO add adaptive layout handling
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -140,7 +140,9 @@ internal fun TransactionsScreen(
     ) { paddingValues ->
         LazyColumn(
             state = listState,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .fillMaxWidth()
                 .nestedScroll(scrollConnection)
                 .padding(paddingValues)
                 .padding(top = 12.dp),
@@ -152,16 +154,18 @@ internal fun TransactionsScreen(
                 val transaction = transactions[index]
 
                 if (transaction != null) {
-                    TransactionBasketCard(
-                        transaction = transaction,
-                        onTransactionLongClick = onTransactionLongClick,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
-                    )
+                    Box(modifier = Modifier.widthIn(max = 600.dp)) {
+                        TransactionBasketCard(
+                            transaction = transaction,
+                            onTransactionLongClick = onTransactionLongClick,
+                            onItemAddClick = onItemAddClick,
+                            onItemClick = onItemClick,
+                            onItemLongClick = onItemLongClick,
+                            onItemCategoryClick = onItemCategoryClick,
+                            onItemProducerClick = onItemProducerClick,
+                            onItemShopClick = onItemShopClick,
+                        )
+                    }
                 }
             }
         }
@@ -169,6 +173,7 @@ internal fun TransactionsScreen(
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun TransactionsScreenPreview() {
     ArrugarqTheme {
