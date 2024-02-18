@@ -168,6 +168,7 @@ internal data class SearchScreenState(
 )
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun SearchScreenPreview() {
     ArrugarqTheme {

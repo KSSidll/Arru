@@ -6,12 +6,14 @@ import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 fun AnalysisRoute(
+    isExpandedScreen: Boolean,
     navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
     navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
 ) {
     val viewModel: AnalysisViewModel = hiltViewModel()
 
     AnalysisScreen(
+        isExpandedScreen = isExpandedScreen,
         year = viewModel.year,
         month = viewModel.month,
         onMonthDecrement = {

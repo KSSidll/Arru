@@ -18,6 +18,7 @@ private val HEADER_HEIGHT: Dp = 24.dp
 private val DIFF_PERCENT_STRING_BOTTOM_PADDING: Dp = 16.dp
 
 /**
+ * @param listHeader String displayed as the list header
  * @param leftSideItems List of items represented on the left side
  * @param leftSideHeader String displayed as [leftSideItems] header
  * @param rightSideItems List of items represented on the right side, these are compared to [leftSideItems] and take sorting priority
@@ -27,6 +28,7 @@ private val DIFF_PERCENT_STRING_BOTTOM_PADDING: Dp = 16.dp
  */
 @Composable
 fun <T> SpendingComparisonList(
+    listHeader: String,
     leftSideItems: List<T>,
     leftSideHeader: String,
     rightSideItems: List<T>,
@@ -56,7 +58,17 @@ fun <T> SpendingComparisonList(
             }
 
             Column(modifier = Modifier.width(IntrinsicSize.Min)) {
-                Spacer(modifier = Modifier.height(HEADER_HEIGHT))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(HEADER_HEIGHT)
+                ) {
+                    Text(
+                        text = listHeader,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
 
                 names.forEachIndexed { index, it ->
                     Box(modifier = Modifier.height(ITEM_HEIGHT)) {
@@ -184,6 +196,7 @@ private fun SpendingComparisonListPreview() {
     ArrugarqTheme {
         Surface {
             SpendingComparisonList(
+                listHeader = "test",
                 leftSideItems = ItemSpentByCategory.generateList(4),
                 leftSideHeader = "left",
                 rightSideItems = ItemSpentByCategory.generateList(4),

@@ -8,6 +8,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.list.*
@@ -53,23 +54,31 @@ fun <T> RankingScreen(
         Box(
             modifier = Modifier
                 .padding(it)
+                .fillMaxWidth()
                 .verticalScroll(state = rememberScrollState())
         ) {
-            RankingList(
-                innerItemPadding = PaddingValues(horizontal = 16.dp),
-                items = data,
-                displayCount = 0,
-                scaleByRank = false,
-                onItemClick = onItemClick,
-                onItemClickLabel = onItemClickLabel,
-                onItemLongClick = onItemLongClick,
-                onItemLongClickLabel = onItemLongClickLabel,
-            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .widthIn(max = 600.dp)
+            ) {
+                RankingList(
+                    innerItemPadding = PaddingValues(horizontal = 16.dp),
+                    items = data,
+                    displayCount = 0,
+                    scaleByRank = false,
+                    onItemClick = onItemClick,
+                    onItemClickLabel = onItemClickLabel,
+                    onItemLongClick = onItemLongClick,
+                    onItemLongClickLabel = onItemLongClickLabel,
+                )
+            }
         }
     }
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 fun RankingScreenPreview() {
     ArrugarqTheme {

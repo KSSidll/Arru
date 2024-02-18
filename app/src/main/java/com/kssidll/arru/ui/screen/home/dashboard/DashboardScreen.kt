@@ -233,15 +233,13 @@ private fun ExpandedDashboardScreenContent(
             Row {
                 AnimatedVisibility(
                     visible = spentByCategoryData.isNotEmpty(),
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         ),
-                        modifier = Modifier
-                            .padding(TileOuterPadding)
+                        modifier = Modifier.padding(TileOuterPadding)
                     ) {
                         RankingList(
                             innerItemPadding = PaddingValues(TileInnerPadding),
@@ -257,15 +255,13 @@ private fun ExpandedDashboardScreenContent(
 
                 AnimatedVisibility(
                     visible = spentByShopData.isNotEmpty(),
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         ),
-                        modifier = Modifier
-                            .padding(TileOuterPadding)
+                        modifier = Modifier.padding(TileOuterPadding)
                     ) {
                         RankingList(
                             innerItemPadding = PaddingValues(TileInnerPadding),

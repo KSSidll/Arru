@@ -148,6 +148,7 @@ private fun HomeRouteContent(
 
             HomeRouteLocations.Analysis -> {
                 AnalysisRoute(
+                    isExpandedScreen = isExpandedScreen,
                     navigateCategorySpendingComparison = navigateCategorySpendingComparison,
                     navigateShopSpendingComparison = navigateShopSpendingComparison,
                 )

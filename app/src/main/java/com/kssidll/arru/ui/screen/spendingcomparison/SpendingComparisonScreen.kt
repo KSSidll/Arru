@@ -9,6 +9,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import com.kssidll.arru.*
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.list.*
@@ -40,16 +41,21 @@ fun <T> SpendingComparisonScreen(
             )
         }
     ) {
-        Column {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Spacer(modifier = Modifier.height(24.dp))
 
             SpendingComparisonList(
+                listHeader = String(),
                 leftSideItems = leftSideItems,
                 leftSideHeader = leftSideHeader,
                 rightSideItems = rightSideItems,
                 rightSideHeader = rightSideHeader,
                 modifier = modifier
                     .padding(it)
+                    .widthIn(max = 688.dp)
                     .verticalScroll(state = rememberScrollState())
             )
         }
@@ -57,6 +63,7 @@ fun <T> SpendingComparisonScreen(
 }
 
 @PreviewLightDark
+@PreviewExpanded
 @Composable
 private fun SpendingComparisonScreenPreview() {
     ArrugarqTheme {
