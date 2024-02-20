@@ -171,15 +171,28 @@ internal fun ShopScreen(
 
                     Spacer(Modifier.height(28.dp))
 
-                    SpendingSummaryComponent(
-                        modifier = Modifier.animateContentSize(),
-                        spentByTimeData = spentByTimeData,
-                        spentByTimePeriod = spentByTimePeriod,
-                        onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                        columnChartEntryModelProducer = chartEntryModelProducer,
-                    )
+                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                        SpendingSummaryComponent(
+                            spentByTimeData = spentByTimeData,
+                            spentByTimePeriod = spentByTimePeriod,
+                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
+                            columnChartEntryModelProducer = chartEntryModelProducer,
+                        )
 
-                    Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(12.dp))
+                    }
+
+                    AnimatedVisibility(visible = transactionItems.itemCount == 0) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.no_data_to_display_text),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
                 }
             }
 

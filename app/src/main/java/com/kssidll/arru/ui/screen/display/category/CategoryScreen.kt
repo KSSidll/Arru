@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.display.category
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.*
@@ -48,7 +49,10 @@ import java.util.*
  * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as parameter
  * @param onEditAction Callback called when the 'edit' action is triggered
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 internal fun CategoryScreen(
     onBack: () -> Unit,
@@ -161,7 +165,7 @@ internal fun CategoryScreen(
                 .fillMaxWidth()
                 .padding(paddingValues)
         ) {
-            item {
+            stickyHeader {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
@@ -172,17 +176,31 @@ internal fun CategoryScreen(
 
                     Spacer(Modifier.height(28.dp))
 
-                    SpendingSummaryComponent(
-                        modifier = Modifier.animateContentSize(),
-                        spentByTimeData = spentByTimeData,
-                        spentByTimePeriod = spentByTimePeriod,
-                        onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                        columnChartEntryModelProducer = chartEntryModelProducer,
-                    )
+                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                        SpendingSummaryComponent(
+                            spentByTimeData = spentByTimeData,
+                            spentByTimePeriod = spentByTimePeriod,
+                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
+                            columnChartEntryModelProducer = chartEntryModelProducer,
+                        )
 
-                    Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(12.dp))
+                    }
+
+                    AnimatedVisibility(visible = transactionItems.itemCount == 0) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.no_data_to_display_text),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
                 }
             }
+
 
             items(
                 transactionItems.itemCount,

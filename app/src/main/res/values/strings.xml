@@ -101,4 +101,5 @@
     <string name="merge_action">Merge</string>
     <string name="merge_action_message_template" tools:ignore="Typos">This action will merge all {value_1} into {value_2}\nAs a result, all transactions under {value_1} will be under {value_2}\nAre you sure you want to continue?</string>
     <string name="merge_action_chose_candidate">Choose this as the candidate for merge operation</string>
+    <string name="no_data_to_display_text">There is nothing to display yet :(</string>
 </resources>

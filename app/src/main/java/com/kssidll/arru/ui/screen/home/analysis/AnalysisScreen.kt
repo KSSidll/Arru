@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arru.*
@@ -89,7 +90,19 @@ private fun AnalysisScreenContent(
     ) {
     Scaffold(
         bottomBar = {
-            Box(modifier = Modifier.padding(vertical = 12.dp)) {
+            Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                AnimatedVisibility(visible = compareCategorySpending.isEmpty() && setCategorySpending.isEmpty() && compareShopSpending.isEmpty() && setShopSpending.isEmpty()) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.no_data_to_display_text),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+
                 DateHeader(
                     year = year,
                     month = month,
@@ -200,6 +213,18 @@ private fun ExpandedAnalysisScreenContent(
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(6.dp))
+
+            AnimatedVisibility(visible = compareCategorySpending.isEmpty() && setCategorySpending.isEmpty() && compareShopSpending.isEmpty() && setShopSpending.isEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.no_data_to_display_text),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
 
             Row {
                 AnimatedVisibility(

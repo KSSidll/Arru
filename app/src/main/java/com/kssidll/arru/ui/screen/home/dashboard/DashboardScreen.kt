@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.res.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arru.*
@@ -131,6 +132,18 @@ private fun DashboardScreenContent(
 
             Spacer(Modifier.height(28.dp))
 
+            AnimatedVisibility(visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.no_data_to_display_text),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+
             AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
                 SpendingSummaryComponent(
                     modifier = Modifier.animateContentSize(),
@@ -216,6 +229,18 @@ private fun ExpandedDashboardScreenContent(
             )
 
             Spacer(Modifier.height(28.dp))
+
+            AnimatedVisibility(visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.no_data_to_display_text),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
 
             AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
                 SpendingSummaryComponent(

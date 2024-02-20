@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.home.transactions
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.res.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import androidx.paging.*
@@ -36,7 +38,10 @@ import kotlinx.coroutines.flow.*
  * @param onItemProducerClick Callback called when the transaction item producer label is clicked. Provides producer id as parameter
  * @param onItemShopClick Callback called when the transaction item shop label is clicked. Provides shop id as parameter
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 internal fun TransactionsScreen(
     transactions: LazyPagingItems<TransactionBasketWithItems>,
@@ -142,19 +147,38 @@ internal fun TransactionsScreen(
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .nestedScroll(scrollConnection)
                 .padding(paddingValues)
-                .padding(top = 12.dp),
         ) {
+            if (transactions.itemCount == 0) {
+                item {
+                    AnimatedVisibility(visible = transactions.itemCount == 0) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.no_data_to_display_text),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+                }
+            }
+
             items(
                 transactions.itemCount,
-                key = transactions.itemKey { it.id }
+                key = transactions.itemKey { it.id },
             ) { index ->
                 val transaction = transactions[index]
 
+                val boxModifier = if (index == 0) {
+                    Modifier.padding(top = 12.dp)
+                } else Modifier
+
                 if (transaction != null) {
-                    Box(modifier = Modifier.widthIn(max = 600.dp)) {
+                    Box(modifier = boxModifier.widthIn(max = 600.dp)) {
                         TransactionBasketCard(
                             transaction = transaction,
                             onTransactionLongClick = onTransactionLongClick,
