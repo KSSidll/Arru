@@ -53,39 +53,37 @@ fun OneDimensionalColumnChart(
         chartEntryModelProducer.setEntries(data.mapIndexed { index, iChartable -> iChartable.chartEntry(index) })
     }
 
-    if (chartEntryModelProducer.getModel()?.entries?.isNotEmpty() == true) {
-        com.patrykandpatrick.vico.compose.chart.Chart(
-            modifier = modifier,
-            chartScrollState = scrollState,
-            chartScrollSpec = rememberChartScrollSpec(
-                isScrollEnabled = true,
-                initialScroll = InitialScroll.End,
-                autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased,
-                autoScrollAnimationSpec = autoScrollSpec,
-            ),
-            diffAnimationSpec = diffAnimationSpec,
-            chart = chart,
-            chartModelProducer = chartEntryModelProducer,
-            topAxis = rememberTopAxis(
-                valueFormatter = { value, _ ->
-                    data.getOrNull(value.toInt())
-                        ?.topAxisLabel()
-                        .orEmpty()
-                },
-            ),
-            bottomAxis = rememberBottomAxis(
-                valueFormatter = { value, _ ->
-                    data.getOrNull(value.toInt())
-                        ?.bottomAxisLabel()
-                        .orEmpty()
-                },
-            ),
-            runInitialAnimation = runInitialAnimation,
-            fadingEdges = fadingEdges,
-            isZoomEnabled = isZoomEnabled,
-            autoScaleUp = AutoScaleUp.None,
-        )
-    }
+    com.patrykandpatrick.vico.compose.chart.Chart(
+        modifier = modifier,
+        chartScrollState = scrollState,
+        chartScrollSpec = rememberChartScrollSpec(
+            isScrollEnabled = true,
+            initialScroll = InitialScroll.End,
+            autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased,
+            autoScrollAnimationSpec = autoScrollSpec,
+        ),
+        diffAnimationSpec = diffAnimationSpec,
+        chart = chart,
+        chartModelProducer = chartEntryModelProducer,
+        topAxis = rememberTopAxis(
+            valueFormatter = { value, _ ->
+                data.getOrNull(value.toInt())
+                    ?.topAxisLabel()
+                    .orEmpty()
+            },
+        ),
+        bottomAxis = rememberBottomAxis(
+            valueFormatter = { value, _ ->
+                data.getOrNull(value.toInt())
+                    ?.bottomAxisLabel()
+                    .orEmpty()
+            },
+        ),
+        runInitialAnimation = runInitialAnimation,
+        fadingEdges = fadingEdges,
+        isZoomEnabled = isZoomEnabled,
+        autoScaleUp = AutoScaleUp.None,
+    )
 }
 
 @PreviewLightDark
