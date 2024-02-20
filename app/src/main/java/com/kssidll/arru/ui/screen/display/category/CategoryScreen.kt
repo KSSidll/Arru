@@ -6,7 +6,6 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -31,8 +30,6 @@ import com.kssidll.arru.ui.theme.*
 import com.patrykandpatrick.vico.core.entry.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import java.text.*
-import java.util.*
 
 /**
  * @param onBack Called to request a back navigation
@@ -201,62 +198,21 @@ internal fun CategoryScreen(
                 }
             }
 
-
-            items(
-                transactionItems.itemCount,
-                key = transactionItems.itemKey { it.id }
-            ) { index ->
-                val item = transactionItems[index]
-
-                if (item != null) {
-                    Column(modifier = Modifier.widthIn(max = 600.dp)) {
-                        //... yeah
-                        if (index == 0 || (transactionItems[index - 1] != null && item.date / DAY_IN_MILIS != transactionItems[index - 1]!!.date / DAY_IN_MILIS)) {
-                            Column(modifier = Modifier.fillMaxWidth()) {
-                                Surface(
-                                    shape = RoundedCornerShape(
-                                        topStart = 24.dp,
-                                        topEnd = 24.dp
-                                    ),
-                                    color = MaterialTheme.colorScheme.surfaceContainer,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Box(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp)
-                                    ) {
-                                        Text(
-                                            modifier = Modifier.align(Alignment.Center),
-                                            text = SimpleDateFormat(
-                                                "MMM d, yyyy",
-                                                Locale.getDefault()
-                                            ).format(item.date),
-                                            style = Typography.headlineMedium,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        FullItemCard(
-                            item = item,
-                            onItemClick = {
-                                onItemClick(it.product.id)
-                            },
-                            onItemLongClick = {
-                                onItemLongClick(it.id)
-                            },
-                            onProducerClick = {
-                                onItemProducerClick(it.id)
-                            },
-                            onShopClick = {
-                                onItemShopClick(it.id)
-                            }
-                        )
-                    }
+            fullItemListContent(
+                transactionItems = transactionItems,
+                onItemClick = {
+                    onItemClick(it.product.id)
+                },
+                onItemLongClick = {
+                    onItemLongClick(it.id)
+                },
+                onProducerClick = {
+                    onItemProducerClick(it.id)
+                },
+                onShopClick = {
+                    onItemShopClick(it.id)
                 }
-            }
+            )
         }
     }
 }
