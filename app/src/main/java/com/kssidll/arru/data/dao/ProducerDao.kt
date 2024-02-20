@@ -137,6 +137,32 @@ interface ProducerDao {
     @Update
     suspend fun updateProducts(products: List<Product>)
 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM item
+        JOIN product ON product.id = item.productId
+        WHERE item.id < :itemId AND product.producerId = :producerId
+    """
+    )
+    suspend fun countItemsBefore(
+        itemId: Long,
+        producerId: Long
+    ): Int
+
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM item
+        JOIN product ON product.id = item.productId
+        WHERE item.id > :itemId AND product.producerId = :producerId
+    """
+    )
+    suspend fun countItemsAfter(
+        itemId: Long,
+        producerId: Long
+    ): Int
+
     // Read
 
     @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.id = :producerId")

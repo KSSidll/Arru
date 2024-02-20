@@ -133,6 +133,23 @@ interface TransactionBasketRepositorySource {
     suspend fun get(transactionBasketId: Long): TransactionBasket?
 
     /**
+     * @return value representing the count of [TransactionBasket]
+     */
+    suspend fun count(): Int
+
+    /**
+     * @param [transactionBasketId] id of the [TransactionBasket] that acts as the breakpoint before which the transactions are counted
+     * @return value representing the count of [TransactionBasket] added before (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
+     */
+    suspend fun countBefore(transactionBasketId: Long): Int
+
+    /**
+     * @param [transactionBasketId] id of the [TransactionBasket] that acts as the breakpoint after which the transactions are counted
+     * @return value representing the count of [TransactionBasket] added after (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
+     */
+    suspend fun countAfter(transactionBasketId: Long): Int
+
+    /**
      * @return long representing total spending for the [category] as flow
      */
     fun totalSpentFlow(): Flow<Long>
@@ -169,7 +186,7 @@ interface TransactionBasketRepositorySource {
 
 
     /**
-     * @return [TransactionBasketWithItems] as [PagingData] as [Flow]
+     * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for placeholder values
      */
     fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>>
 

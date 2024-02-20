@@ -128,6 +128,18 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         return dao.get(transactionBasketId)
     }
 
+    override suspend fun count(): Int {
+        return dao.count()
+    }
+
+    override suspend fun countBefore(transactionBasketId: Long): Int {
+        return dao.countBefore(transactionBasketId)
+    }
+
+    override suspend fun countAfter(transactionBasketId: Long): Int {
+        return dao.countAfter(transactionBasketId)
+    }
+
     override fun totalSpentFlow(): Flow<Long> {
         return dao.totalSpentFlow()
             .cancellable()
@@ -170,10 +182,8 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
 
     override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {
         return Pager(
-            config = PagingConfig(
-                pageSize = 8,
-                enablePlaceholders = false
-            ),
+            config = PagingConfig(pageSize = 3),
+            initialKey = 0,
             pagingSourceFactory = { TransactionBasketWithItemsPagingSource(this) }
         )
             .flow

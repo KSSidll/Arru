@@ -93,6 +93,32 @@ interface ShopDao {
     @Delete
     suspend fun deleteItems(items: List<Item>)
 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM transactionbasket
+        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
+        WHERE transactionbasketitem.itemId < :itemId AND transactionbasket.shopId = :shopId
+    """
+    )
+    suspend fun countItemsBefore(
+        itemId: Long,
+        shopId: Long
+    ): Int
+
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM transactionbasket
+        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
+        WHERE transactionbasketitem.itemId > :itemId AND transactionbasket.shopId = :shopId
+    """
+    )
+    suspend fun countItemsAfter(
+        itemId: Long,
+        shopId: Long
+    ): Int
+
     // Read
 
     @Query("SELECT shop.* FROM shop WHERE shop.id = :shopId")

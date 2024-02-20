@@ -124,6 +124,15 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
     suspend fun get(transactionBasketId: Long): TransactionBasket?
 
+    @Query("SELECT COUNT(*) FROM transactionbasket")
+    suspend fun count(): Int
+
+    @Query("SELECT COUNT(*) FROM transactionbasket WHERE id < :transactionBasketId")
+    suspend fun countBefore(transactionBasketId: Long): Int
+
+    @Query("SELECT COUNT(*) FROM transactionbasket WHERE id > :transactionBasketId")
+    suspend fun countAfter(transactionBasketId: Long): Int
+
     @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
     fun getFlow(transactionBasketId: Long): Flow<TransactionBasket>
 

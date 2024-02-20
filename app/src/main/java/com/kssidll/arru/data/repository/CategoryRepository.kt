@@ -243,10 +243,8 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
 
     override fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<FullItem>> {
         return Pager(
-            config = PagingConfig(
-                pageSize = 8,
-                enablePlaceholders = false
-            ),
+            config = PagingConfig(pageSize = 3),
+            initialKey = 0,
             pagingSourceFactory = {
                 FullItemPagingSource(
                     query = { start, loadSize ->
@@ -255,7 +253,19 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
                             loadSize,
                             start
                         )
-                    }
+                    },
+                    itemsBefore = {
+                        dao.countItemsBefore(
+                            it,
+                            category.id
+                        )
+                    },
+                    itemsAfter = {
+                        dao.countItemsAfter(
+                            it,
+                            category.id
+                        )
+                    },
                 )
             }
         )

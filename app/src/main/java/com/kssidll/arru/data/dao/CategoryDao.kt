@@ -158,6 +158,32 @@ interface CategoryDao {
     @Update
     suspend fun updateProducts(products: List<Product>)
 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM item
+        JOIN product ON product.id = item.productId
+        WHERE item.id < :itemId AND product.categoryId = :categoryId
+    """
+    )
+    suspend fun countItemsBefore(
+        itemId: Long,
+        categoryId: Long
+    ): Int
+
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM item
+        JOIN product ON product.id = item.productId
+        WHERE item.id > :itemId AND product.categoryId = :categoryId
+    """
+    )
+    suspend fun countItemsAfter(
+        itemId: Long,
+        categoryId: Long
+    ): Int
+
     // Read
 
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")

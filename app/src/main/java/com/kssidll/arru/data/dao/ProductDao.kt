@@ -116,6 +116,30 @@ interface ProductDao {
     @Update
     suspend fun updateItems(items: List<Item>)
 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM item
+        WHERE item.id < :itemId AND item.productId = :productId
+    """
+    )
+    suspend fun countItemsBefore(
+        itemId: Long,
+        productId: Long
+    ): Int
+
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM item
+        WHERE item.id > :itemId AND item.productId = :productId
+    """
+    )
+    suspend fun countItemsAfter(
+        itemId: Long,
+        productId: Long
+    ): Int
+
     // Read
 
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
