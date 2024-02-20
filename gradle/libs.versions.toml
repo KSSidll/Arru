@@ -27,7 +27,7 @@ paging = "3.2.1"
 
 # Other
 fuzzywuzzy = "1.4.0"
-vico-compose = "1.13.1"
+vico-compose = "1.14.0"
 
 ## Plugins
 agp = "8.3.0-rc02"
