@@ -205,7 +205,7 @@ internal fun ShopScreen(
                 if (item != null) {
                     Column(modifier = Modifier.widthIn(max = 600.dp)) {
                         //... yeah
-                        if (index == 0 || (transactionItems[index - 1] != null && item.date / 86400000 != transactionItems[index - 1]!!.date / 86400000)) {
+                        if (index == 0 || (transactionItems[index - 1] != null && item.date / DAY_IN_MILIS != transactionItems[index - 1]!!.date / DAY_IN_MILIS)) {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Surface(
                                     shape = RoundedCornerShape(

@@ -24,6 +24,8 @@ class Arru: Application() {
     }
 }
 
+const val DAY_IN_MILIS: Long = 86400000
+
 @Preview(
     group = "Expanded",
     name = "Dark",
