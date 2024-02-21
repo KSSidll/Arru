@@ -98,7 +98,7 @@ sealed class Field<T>(
  */
 sealed class FieldError {
     @Composable
-    fun errorText() {
+    fun ErrorText() {
         Text(
             text = errorString(),
             style = Typography.bodySmall,

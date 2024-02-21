@@ -16,13 +16,13 @@ class AnalysisViewModel @Inject constructor(
     private val categoryRepository: CategoryRepositorySource,
     private val shopRepository: ShopRepositorySource,
 ): ViewModel() {
-    private val mYear: MutableState<Int> = mutableStateOf(
+    private val mYear: MutableState<Int> = mutableIntStateOf(
         Calendar.getInstance()
             .get(Calendar.YEAR)
     )
     val year: Int get() = mYear.value
 
-    private val mMonth: MutableState<Int> = mutableStateOf(
+    private val mMonth: MutableState<Int> = mutableIntStateOf(
         Calendar.getInstance()
             .get(Calendar.MONTH) + 1
     )

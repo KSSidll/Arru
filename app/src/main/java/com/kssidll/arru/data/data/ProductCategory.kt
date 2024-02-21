@@ -133,7 +133,6 @@ data class ProductCategoryWithAltNames(
     ) val alternativeNames: List<ProductCategoryAltName>
 ): FuzzySearchSource, NameSource {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(categoryId: Long = 0): ProductCategoryWithAltNames {
             return ProductCategoryWithAltNames(
                 category = ProductCategory.generate(categoryId),

@@ -218,7 +218,6 @@ data class ItemSpentByTime(
     val total: Long,
 ): ChartSource {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(): ItemSpentByTime {
             return ItemSpentByTime(
                 time = generateRandomDateString(),
@@ -271,7 +270,6 @@ data class TransactionTotalSpentByTime(
     val total: Long,
 ): ChartSource {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(): ItemSpentByTime {
             return ItemSpentByTime(
                 time = generateRandomDateString(),
@@ -324,7 +322,6 @@ data class TransactionTotalSpentByShop(
     val total: Long,
 ): RankSource {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(shopId: Long = 0): TransactionTotalSpentByShop {
             return TransactionTotalSpentByShop(
                 shop = Shop.generate(shopId),
@@ -366,7 +363,6 @@ data class ItemSpentByCategory(
     val total: Long,
 ): RankSource {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(categoryId: Long = 0): ItemSpentByCategory {
             return ItemSpentByCategory(
                 category = ProductCategory.generate(categoryId),
@@ -413,7 +409,6 @@ data class ProductPriceByShopByTime(
     val time: String,
 ) {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(productId: Long = 0): ProductPriceByShopByTime {
             return ProductPriceByShopByTime(
                 product = Product.generate(productId),

@@ -171,7 +171,6 @@ data class TransactionBasketWithItems(
     val items: List<FullItem>,
 ) {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(transactionBasketWithItemsId: Long = 0): TransactionBasketWithItems {
             return TransactionBasketWithItems(
                 id = transactionBasketWithItemsId,
@@ -195,7 +194,6 @@ data class TransactionSpentByTime(
     val total: Long,
 ): ChartSource {
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun generate(): ItemSpentByTime {
             return ItemSpentByTime(
                 time = generateRandomDateString(),
