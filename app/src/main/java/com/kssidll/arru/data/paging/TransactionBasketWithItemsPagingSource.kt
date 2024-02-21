@@ -8,7 +8,7 @@ class TransactionBasketWithItemsPagingSource(
     private val transactionRepository: TransactionBasketRepositorySource
 ): PagingSource<Int, TransactionBasketWithItems>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TransactionBasketWithItems> {
-        val pageIndex = checkNotNull(params.key) { "key should not be null" }
+        val pageIndex = params.key ?: 0
 
         val page = transactionRepository.transactionBasketsWithItems(
             pageIndex,

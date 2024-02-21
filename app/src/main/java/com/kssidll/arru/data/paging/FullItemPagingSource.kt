@@ -9,7 +9,7 @@ class FullItemPagingSource(
     private val itemsAfter: suspend (id: Long) -> Int,
 ): PagingSource<Int, FullItem>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FullItem> {
-        val pageIndex = checkNotNull(params.key) { "key should not be null" }
+        val pageIndex = params.key ?: 0
 
         val page = query(
             pageIndex,
