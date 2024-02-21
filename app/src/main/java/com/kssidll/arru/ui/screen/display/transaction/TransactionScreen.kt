@@ -1,7 +1,7 @@
 package com.kssidll.arru.ui.screen.display.transaction
 
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -30,6 +30,8 @@ internal fun TransactionScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
+    val headerColor = MaterialTheme.colorScheme.background
+
     Scaffold(
         topBar = {
             SecondaryAppBar(
@@ -53,27 +55,25 @@ internal fun TransactionScreen(
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+        ) {
             if (transaction != null) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(state = rememberScrollState())
-                ) {
-                    Box(modifier = Modifier.widthIn(max = 600.dp)) {
-                        TransactionBasketCard(
-                            transaction = transaction,
-                            transactionClickable = false,
-                            onItemAddClick = onItemAddClick,
-                            onItemClick = onItemClick,
-                            onItemLongClick = onItemLongClick,
-                            onItemCategoryClick = onItemCategoryClick,
-                            onItemProducerClick = onItemProducerClick,
-                            onItemShopClick = onItemShopClick
-                        )
-                    }
-                }
+                transactionBasketCard(
+                    transaction = transaction,
+                    itemsVisible = true,
+                    onItemAddClick = onItemAddClick,
+                    onItemClick = onItemClick,
+                    onItemLongClick = onItemLongClick,
+                    onItemCategoryClick = onItemCategoryClick,
+                    onItemProducerClick = onItemProducerClick,
+                    onItemShopClick = onItemShopClick,
+                    headerColor = headerColor,
+                    modifier = Modifier.width(600.dp)
+                )
             }
         }
     }

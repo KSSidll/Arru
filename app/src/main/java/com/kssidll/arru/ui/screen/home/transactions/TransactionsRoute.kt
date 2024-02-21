@@ -2,7 +2,9 @@ package com.kssidll.arru.ui.screen.home.transactions
 
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.*
 import androidx.paging.compose.*
+import com.kssidll.arru.R
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -23,6 +25,7 @@ internal fun TransactionsRoute(
             .collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
         onTransactionLongClick = navigateTransactionEdit,
+        onTransactionLongClickLabel = stringResource(id = R.string.edit),
         onItemAddClick = navigateItemAdd,
         onItemClick = navigateProduct,
         onItemLongClick = navigateItemEdit,

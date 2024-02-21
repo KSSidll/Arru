@@ -1,9 +1,9 @@
 package com.kssidll.arru.ui.screen.home.transactions
 
 
+import android.annotation.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
@@ -38,15 +38,13 @@ import kotlinx.coroutines.flow.*
  * @param onItemProducerClick Callback called when the transaction item producer label is clicked. Provides producer id as parameter
  * @param onItemShopClick Callback called when the transaction item shop label is clicked. Provides shop id as parameter
  */
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionsScreen(
-    transactions: LazyPagingItems<TransactionBasketWithItems>,
+    transactions: LazyPagingItems<TransactionBasketDisplayData>,
     onSearchAction: () -> Unit,
     onTransactionLongClick: (transactionId: Long) -> Unit,
+    onTransactionLongClickLabel: String,
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onItemLongClick: (itemId: Long) -> Unit,
@@ -54,6 +52,9 @@ internal fun TransactionsScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
+    val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
+    val headerColor = MaterialTheme.colorScheme.background
+
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
@@ -167,35 +168,44 @@ internal fun TransactionsScreen(
                 }
             }
 
-            items(
-                transactions.itemCount,
-                key = transactions.itemKey { it.id },
-            ) { index ->
+            val transactionCount = transactions.itemCount
+
+            // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
+            for (index in 0 until transactionCount) {
                 val transaction = transactions[index]
 
-                val boxModifier = if (index == 0) {
-                    Modifier.padding(top = 12.dp)
-                } else Modifier
-
                 if (transaction != null) {
-                    Box(modifier = boxModifier.widthIn(max = 600.dp)) {
-                        TransactionBasketCard(
-                            transaction = transaction,
-                            onTransactionLongClick = onTransactionLongClick,
-                            onItemAddClick = onItemAddClick,
-                            onItemClick = onItemClick,
-                            onItemLongClick = onItemLongClick,
-                            onItemCategoryClick = onItemCategoryClick,
-                            onItemProducerClick = onItemProducerClick,
-                            onItemShopClick = onItemShopClick,
-                        )
-                    }
+                    transactionBasketCard(
+                        transaction = transaction.basket,
+                        itemsVisible = transaction.itemsVisible.value,
+                        onTransactionClick = {
+                            transaction.itemsVisible.value = !transaction.itemsVisible.value
+                            scope.launch {
+                                // the transaction basket card has 2 separate lazy list scope DSL calls
+                                if (listState.firstVisibleItemIndex > index.times(2)) {
+                                    listState.animateScrollToItem(index.times(2))
+                                }
+                            }
+                        },
+                        onTransactionClickLabel = onTransactionClickLabel,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onTransactionLongClickLabel = onTransactionLongClickLabel,
+                        onItemAddClick = onItemAddClick,
+                        onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
+                        onItemCategoryClick = onItemCategoryClick,
+                        onItemProducerClick = onItemProducerClick,
+                        onItemShopClick = onItemShopClick,
+                        headerColor = headerColor,
+                        modifier = Modifier.width(600.dp)
+                    )
                 }
             }
         }
     }
 }
 
+@SuppressLint("FlowOperatorInvokedInComposition")
 @PreviewLightDark
 @PreviewExpanded
 @Composable
@@ -203,8 +213,10 @@ fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
-                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).collectAsLazyPagingItems(),
+                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).toDisplayData()
+                    .collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
+                onTransactionLongClickLabel = String(),
                 onItemAddClick = {},
                 onItemLongClick = {},
                 onItemProducerClick = {},
