@@ -68,10 +68,7 @@ fun LazyListScope.transactionBasketCard(
             ) {
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceContainer,
-                    shape = RoundedCornerShape(
-                        bottomStart = 12.dp,
-                        bottomEnd = 12.dp
-                    ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Column {
                         transaction.items.forEach { item ->
@@ -232,42 +229,36 @@ fun LazyListScope.transactionBasketCardHeader(
                 exit = fadeOut(),
                 modifier = Modifier.padding(horizontal = 6.dp)
             ) {
-                Surface(color = headerColor) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainer,
-                        shape = if (transaction.items.isEmpty()) {
-                            RoundedCornerShape(12.dp)
-                        } else {
-                            RoundedCornerShape(
-                                topStart = 12.dp,
-                                topEnd = 12.dp,
-                            )
-                        },
-                    ) {
-                        Column {
-                            OutlinedIconButton(
-                                onClick = {
-                                    onItemAddClick(transaction.id)
-                                },
-                                shape = ShapeDefaults.Medium,
-                                border = BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.tertiary
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(80.dp)
-                                    .padding(
-                                        horizontal = 4.dp,
-                                        vertical = 8.dp
-                                    )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary,
+                Surface(
+                    color = headerColor,
+                    shape = RoundedCornerShape(
+                        bottomStart = 12.dp,
+                        bottomEnd = 12.dp
+                    ),
+                ) {
+                    Column {
+                        OutlinedIconButton(
+                            onClick = {
+                                onItemAddClick(transaction.id)
+                            },
+                            shape = ShapeDefaults.Medium,
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.tertiary
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .padding(
+                                    horizontal = 4.dp,
+                                    vertical = 8.dp
                                 )
-                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
                         }
                     }
                 }

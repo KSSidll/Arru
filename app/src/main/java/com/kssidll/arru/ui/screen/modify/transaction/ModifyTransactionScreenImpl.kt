@@ -155,7 +155,7 @@ private fun ModifyTransactionScreenContent(
             },
             supportingText = {
                 if (state.attemptedToSubmit.value) {
-                    state.date.value.error?.errorText()
+                    state.date.value.error?.ErrorText()
                 }
             },
             error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
@@ -198,7 +198,7 @@ private fun ModifyTransactionScreenContent(
                 },
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
-                        state.totalCost.value.error?.errorText()
+                        state.totalCost.value.error?.ErrorText()
                     }
                 },
                 isError = if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,
@@ -323,7 +323,7 @@ private fun ExpandedModifyTransactionScreenContent(
                 },
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
-                        state.date.value.error?.errorText()
+                        state.date.value.error?.ErrorText()
                     }
                 },
                 error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
@@ -369,7 +369,7 @@ private fun ExpandedModifyTransactionScreenContent(
                     },
                     supportingText = {
                         if (state.attemptedToSubmit.value) {
-                            state.totalCost.value.error?.errorText()
+                            state.totalCost.value.error?.ErrorText()
                         }
                     },
                     isError = if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,

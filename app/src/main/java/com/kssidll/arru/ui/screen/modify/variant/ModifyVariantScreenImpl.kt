@@ -72,7 +72,7 @@ fun ModifyVariantScreenImpl(
                 },
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
-                        state.name.value.error?.errorText()
+                        state.name.value.error?.ErrorText()
                     }
                 },
                 isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,

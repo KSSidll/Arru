@@ -152,7 +152,7 @@ fun ModifyItemScreenImpl(
                     },
                     supportingText = {
                         if (state.attemptedToSubmit.value) {
-                            state.price.value.error?.errorText()
+                            state.price.value.error?.ErrorText()
                         }
                     },
                     isError = if (state.attemptedToSubmit.value) state.price.value.isError() else false,
@@ -263,7 +263,7 @@ fun ModifyItemScreenImpl(
                     },
                     supportingText = {
                         if (state.attemptedToSubmit.value) {
-                            state.quantity.value.error?.errorText()
+                            state.quantity.value.error?.ErrorText()
                         }
                     },
                     isError = if (state.attemptedToSubmit.value) state.quantity.value.isError() else false,
@@ -354,7 +354,7 @@ fun ModifyItemScreenImpl(
                 label = stringResource(R.string.item_product),
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
-                        state.selectedProduct.value.error?.errorText()
+                        state.selectedProduct.value.error?.ErrorText()
                     }
                 },
                 error = if (state.attemptedToSubmit.value) state.selectedProduct.value.isError() else false,

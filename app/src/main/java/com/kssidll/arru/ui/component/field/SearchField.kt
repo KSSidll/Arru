@@ -225,7 +225,7 @@ fun ErrorSearchFieldPreview() {
                 value = "Test",
                 error = true,
                 supportingText = {
-                    FieldError.NoValueError.errorText()
+                    FieldError.NoValueError.ErrorText()
                 },
                 label = "test",
             )

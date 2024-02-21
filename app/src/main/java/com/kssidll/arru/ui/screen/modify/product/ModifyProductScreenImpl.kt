@@ -146,7 +146,7 @@ fun ModifyProductScreenImpl(
                     },
                     supportingText = {
                         if (state.attemptedToSubmit.value) {
-                            state.name.value.error?.errorText()
+                            state.name.value.error?.ErrorText()
                         }
                     },
                     isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
@@ -201,7 +201,7 @@ fun ModifyProductScreenImpl(
                     addButtonDescription = stringResource(R.string.item_product_category_add_description),
                     supportingText = {
                         if (state.attemptedToSubmit.value) {
-                            state.selectedProductCategory.value.error?.errorText()
+                            state.selectedProductCategory.value.error?.ErrorText()
                         }
                     },
                     error = if (state.attemptedToSubmit.value) state.selectedProductCategory.value.isError() else false,
