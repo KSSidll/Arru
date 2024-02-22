@@ -172,15 +172,17 @@ internal fun TransactionsScreen(
 
             // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
             for (index in 0 until transactionCount) {
-                val transaction = transactions.peek(index)
+                val etherealTransaction = transactions.peek(index)
 
-                if (transaction == null) {
+                if (etherealTransaction == null) {
                     transactionBasketCardHeaderPlaceholder(modifier = Modifier.widthIn(max = 600.dp))
                 }
 
-                if (transaction != null) {
+                if (etherealTransaction != null) {
+                    val transaction = transactions[index]!!
+
                     transactionBasketCard(
-                        transaction = transactions[index]!!.basket,
+                        transaction = transaction.basket,
                         itemsVisible = transaction.itemsVisible.value,
                         onTransactionClick = {
                             transaction.itemsVisible.value = !transaction.itemsVisible.value
