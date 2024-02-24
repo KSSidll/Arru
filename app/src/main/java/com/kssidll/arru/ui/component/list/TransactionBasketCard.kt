@@ -54,7 +54,12 @@ fun LazyListScope.transactionBasketCard(
         headerColor = headerColor,
     )
 
-    item {
+    item(
+        // ensure no reuse because each item has different size and elements
+        // without this, scrolling up on a list may reuse the expanded item on a hidden item
+        // creating a gap in the list
+        contentType = transaction.id
+    ) {
         Column(
             modifier = modifier
                 .animateContentSize()
@@ -108,7 +113,10 @@ fun LazyListScope.transactionBasketCardHeader(
     onItemShopClick: (shopId: Long) -> Unit,
     headerColor: Color,
 ) {
-    stickyHeader {
+    stickyHeader(
+        key = transaction.id,
+        contentType = TransactionBasketWithItems
+    ) {
         Column(
             modifier = modifier
                 .animateContentSize()
