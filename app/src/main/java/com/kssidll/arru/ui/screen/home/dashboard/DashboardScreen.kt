@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.res.*
-import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arru.*
@@ -21,6 +20,7 @@ import com.kssidll.arru.domain.*
 import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.*
 import com.kssidll.arru.ui.component.list.*
+import com.kssidll.arru.ui.screen.home.component.*
 import com.kssidll.arru.ui.theme.*
 
 private val TileOuterPadding: Dp = 8.dp
@@ -117,84 +117,83 @@ private fun DashboardScreenContent(
             )
         },
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .nestedScroll(nestedScrollConnection)
-                .verticalScroll(state = scrollState)
-        ) {
-            Spacer(Modifier.height(16.dp))
+        Box(modifier = Modifier.padding(paddingValues)) {
 
-            TotalAverageAndMedianSpendingComponent(
-                spentByTimeData = spentByTimeData,
-                totalSpentData = totalSpentData,
-            )
+            AnimatedVisibility(
+                visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                HomeScreenNothingToDisplayOverlay()
+            }
 
-            Spacer(Modifier.height(28.dp))
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .nestedScroll(nestedScrollConnection)
+                    .verticalScroll(state = scrollState)
+            ) {
+                Spacer(Modifier.height(16.dp))
 
-            AnimatedVisibility(visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty()) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.no_data_to_display_text),
-                        textAlign = TextAlign.Center,
+                TotalAverageAndMedianSpendingComponent(
+                    spentByTimeData = spentByTimeData,
+                    totalSpentData = totalSpentData,
+                )
+
+                Spacer(Modifier.height(28.dp))
+
+                AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                    SpendingSummaryComponent(
+                        modifier = Modifier.animateContentSize(),
+                        spentByTimeData = spentByTimeData,
+                        spentByTimePeriod = spentByTimePeriod,
+                        onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
                     )
                 }
-            }
 
-            AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
-                SpendingSummaryComponent(
-                    modifier = Modifier.animateContentSize(),
-                    spentByTimeData = spentByTimeData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
-                )
-            }
+                Spacer(Modifier.height(4.dp))
 
-            Spacer(Modifier.height(4.dp))
-
-            Column {
-                AnimatedVisibility(visible = spentByCategoryData.isNotEmpty()) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier
-                            .padding(TileOuterPadding)
-                            .fillMaxWidth()
-                    ) {
-                        RankingList(
-                            innerItemPadding = PaddingValues(TileInnerPadding),
-                            items = spentByCategoryData,
+                Column {
+                    AnimatedVisibility(visible = spentByCategoryData.isNotEmpty()) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
                             modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
-                                    onCategoryRankingCardClick()
-                                }
-                        )
+                                .padding(TileOuterPadding)
+                                .fillMaxWidth()
+                        ) {
+                            RankingList(
+                                innerItemPadding = PaddingValues(TileInnerPadding),
+                                items = spentByCategoryData,
+                                modifier = Modifier
+                                    .heightIn(min = 144.dp)
+                                    .clickable {
+                                        onCategoryRankingCardClick()
+                                    }
+                            )
+                        }
                     }
-                }
 
-                AnimatedVisibility(visible = spentByShopData.isNotEmpty()) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier
-                            .padding(TileOuterPadding)
-                            .fillMaxWidth()
-                    ) {
-                        RankingList(
-                            innerItemPadding = PaddingValues(TileInnerPadding),
-                            items = spentByShopData,
+                    AnimatedVisibility(visible = spentByShopData.isNotEmpty()) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
                             modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
-                                    onShopRankingCardClick()
-                                }
-                        )
+                                .padding(TileOuterPadding)
+                                .fillMaxWidth()
+                        ) {
+                            RankingList(
+                                innerItemPadding = PaddingValues(TileInnerPadding),
+                                items = spentByShopData,
+                                modifier = Modifier
+                                    .heightIn(min = 144.dp)
+                                    .clickable {
+                                        onShopRankingCardClick()
+                                    }
+                            )
+                        }
                     }
                 }
             }
@@ -213,34 +212,31 @@ private fun ExpandedDashboardScreenContent(
     spentByTimePeriod: TimePeriodFlowHandler.Periods,
     onSpentByTimePeriodUpdate: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
+    Box {
+        // overlay displayed when there is no data available
+        Box(modifier = Modifier.fillMaxSize()) {
+            AnimatedVisibility(
+                visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                ExpandedHomeScreenNothingToDisplayOverlay()
+            }
+        }
 
-    Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .verticalScroll(state = scrollState)
-        ) {
-            Spacer(Modifier.height(6.dp))
+        val scrollState = rememberScrollState()
 
-            TotalAverageAndMedianSpendingComponent(
-                spentByTimeData = spentByTimeData,
-                totalSpentData = totalSpentData,
-            )
+        Column(modifier = Modifier.verticalScroll(state = scrollState)) {
+            Spacer(Modifier.height(12.dp))
+
+            AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                TotalAverageAndMedianSpendingComponent(
+                    spentByTimeData = spentByTimeData,
+                    totalSpentData = totalSpentData,
+                )
+            }
 
             Spacer(Modifier.height(28.dp))
-
-            AnimatedVisibility(visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty()) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.no_data_to_display_text),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
 
             AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
                 SpendingSummaryComponent(
@@ -325,6 +321,27 @@ fun DashboardScreenPreview() {
     }
 }
 
+@PreviewLightDark
+@Composable
+fun EmptyDashboardScreenPreview() {
+    ArrugarqTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            DashboardScreen(
+                isExpandedScreen = false,
+                onSettingsAction = {},
+                onCategoryRankingCardClick = {},
+                onShopRankingCardClick = {},
+                totalSpentData = 16832.18F,
+                spentByShopData = emptyList(),
+                spentByCategoryData = emptyList(),
+                spentByTimeData = emptyList(),
+                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
+                onSpentByTimePeriodUpdate = {},
+            )
+        }
+    }
+}
+
 @PreviewExpanded
 @Composable
 fun ExpandedDashboardScreenPreview() {
@@ -339,6 +356,27 @@ fun ExpandedDashboardScreenPreview() {
                 spentByShopData = TransactionTotalSpentByShop.generateList(),
                 spentByCategoryData = ItemSpentByCategory.generateList(),
                 spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
+                onSpentByTimePeriodUpdate = {},
+            )
+        }
+    }
+}
+
+@PreviewExpanded
+@Composable
+fun EmptyExpandedDashboardScreenPreview() {
+    ArrugarqTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            DashboardScreen(
+                isExpandedScreen = true,
+                onSettingsAction = {},
+                onCategoryRankingCardClick = {},
+                onShopRankingCardClick = {},
+                totalSpentData = 16832.18F,
+                spentByShopData = emptyList(),
+                spentByCategoryData = emptyList(),
+                spentByTimeData = emptyList(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodUpdate = {},
             )

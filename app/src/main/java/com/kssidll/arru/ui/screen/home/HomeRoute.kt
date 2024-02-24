@@ -45,18 +45,16 @@ fun HomeRoute(
     )
 
     if (isExpandedScreen) {
-        Row {
-            HomeRailNavBar(
-                currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
-                onLocationChange = {
-                    scope.launch {
-                        pagerState.animateScrollToPage(it.ordinal)
-                    }
-                },
-                onActionButtonClick = navigateTransactionAdd,
-                onSettingsAction = navigateSettings,
-            )
-
+        ExpandedHomeRouteNavigation(
+            currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
+            onLocationChange = {
+                scope.launch {
+                    pagerState.animateScrollToPage(it.ordinal)
+                }
+            },
+            navigateSettings = navigateSettings,
+            navigateTransactionAdd = navigateTransactionAdd,
+        ) {
             HomeRouteContent(
                 isExpandedScreen = true,
                 pagerState = pagerState,
@@ -76,38 +74,74 @@ fun HomeRoute(
             )
         }
     } else {
-        Scaffold(
-            bottomBar = {
-                HomeBottomNavBar(
-                    currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
-                    onLocationChange = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(it.ordinal)
-                        }
-                    },
-                    onActionButtonClick = navigateTransactionAdd,
-                )
-            }
+        HomeRouteNavigation(
+            currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
+            onLocationChange = {
+                scope.launch {
+                    pagerState.animateScrollToPage(it.ordinal)
+                }
+            },
+            navigateTransactionAdd = navigateTransactionAdd
         ) {
-            Box(modifier = Modifier.padding(it)) {
-                HomeRouteContent(
-                    isExpandedScreen = false,
-                    pagerState = pagerState,
-                    navigateSettings = navigateSettings,
-                    navigateSearch = navigateSearch,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
-                    navigateItemAdd = navigateItemAdd,
-                    navigateTransactionEdit = navigateTransactionEdit,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateCategoryRanking = navigateCategoryRanking,
-                    navigateShopRanking = navigateShopRanking,
-                    navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                    navigateShopSpendingComparison = navigateShopSpendingComparison,
-                )
-            }
+            HomeRouteContent(
+                isExpandedScreen = false,
+                pagerState = pagerState,
+                navigateSettings = navigateSettings,
+                navigateSearch = navigateSearch,
+                navigateProduct = navigateProduct,
+                navigateCategory = navigateCategory,
+                navigateProducer = navigateProducer,
+                navigateShop = navigateShop,
+                navigateItemAdd = navigateItemAdd,
+                navigateTransactionEdit = navigateTransactionEdit,
+                navigateItemEdit = navigateItemEdit,
+                navigateCategoryRanking = navigateCategoryRanking,
+                navigateShopRanking = navigateShopRanking,
+                navigateCategorySpendingComparison = navigateCategorySpendingComparison,
+                navigateShopSpendingComparison = navigateShopSpendingComparison,
+            )
+        }
+    }
+}
+
+@Composable
+fun ExpandedHomeRouteNavigation(
+    currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
+    onLocationChange: (HomeRouteLocations) -> Unit,
+    navigateSettings: () -> Unit,
+    navigateTransactionAdd: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Row {
+        HomeRailNavBar(
+            currentLocation = currentLocation,
+            onLocationChange = onLocationChange,
+            onActionButtonClick = navigateTransactionAdd,
+            onSettingsAction = navigateSettings,
+        )
+
+        content()
+    }
+}
+
+@Composable
+fun HomeRouteNavigation(
+    currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
+    onLocationChange: (HomeRouteLocations) -> Unit,
+    navigateTransactionAdd: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Scaffold(
+        bottomBar = {
+            HomeBottomNavBar(
+                currentLocation = currentLocation,
+                onLocationChange = onLocationChange,
+                onActionButtonClick = navigateTransactionAdd,
+            )
+        }
+    ) {
+        Box(modifier = Modifier.padding(it)) {
+            content()
         }
     }
 }
@@ -156,6 +190,7 @@ private fun HomeRouteContent(
 
             HomeRouteLocations.Transactions -> {
                 TransactionsRoute(
+                    isExpandedScreen = isExpandedScreen,
                     navigateSearch = navigateSearch,
                     navigateProduct = navigateProduct,
                     navigateCategory = navigateCategory,
@@ -170,7 +205,7 @@ private fun HomeRouteContent(
     }
 }
 
-internal enum class HomeRouteLocations(
+enum class HomeRouteLocations(
     val initial: Boolean = false,
 ) {
     Dashboard(initial = true),

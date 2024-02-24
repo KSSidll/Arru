@@ -9,6 +9,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
 internal fun TransactionsRoute(
+    isExpandedScreen: Boolean,
     navigateSearch: () -> Unit,
     navigateProduct: (productId: Long) -> Unit,
     navigateCategory: (categoryId: Long) -> Unit,
@@ -21,6 +22,7 @@ internal fun TransactionsRoute(
     val viewModel: TransactionsViewModel = hiltViewModel()
 
     TransactionsScreen(
+        isExpandedScreen = isExpandedScreen,
         transactions = viewModel.transactions()
             .collectAsLazyPagingItems(),
         onSearchAction = navigateSearch,
