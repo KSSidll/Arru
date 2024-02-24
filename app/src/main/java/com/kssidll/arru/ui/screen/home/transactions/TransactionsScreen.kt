@@ -12,7 +12,6 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
@@ -69,149 +68,220 @@ internal fun TransactionsScreen(
             }
         }
 
-        val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
-        val headerColor = MaterialTheme.colorScheme.background
+        if (isExpandedScreen) {
+            Row {
+                Box(modifier = Modifier.weight(1f)) {
+                    TransactionScreenContent(
+                        transactions = transactions,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onTransactionLongClickLabel = onTransactionLongClickLabel,
+                        onItemAddClick = onItemAddClick,
+                        onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
+                        onItemCategoryClick = onItemCategoryClick,
+                        onItemProducerClick = onItemProducerClick,
+                        onItemShopClick = onItemShopClick,
+                    )
+                }
 
-        val scope = rememberCoroutineScope()
-
-        val listState = rememberLazyListState()
-        val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
-
-        var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
-
-        var returnActionButtonVisible by remember { mutableStateOf(false) }
-
-        LaunchedEffect(firstVisibleItemIndex) {
-            if (
-                previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-                firstVisibleItemIndex >= 10
-            ) {
-                // scrolling up
-                returnActionButtonVisible = true
-                previousFirstVisibleItemIndex = firstVisibleItemIndex
-            } else if (
-                previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-                firstVisibleItemIndex < 10
-            ) {
-                // scrolling down
-                returnActionButtonVisible = false
-                previousFirstVisibleItemIndex = firstVisibleItemIndex
+                Column(modifier = Modifier.fillMaxHeight()) {
+                    IconButton(
+                        onClick = {
+                            onSearchAction()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.navigate_to_search_description),
+                        )
+                    }
+                }
             }
-        }
+        } else {
+            val scaffoldState = rememberBottomSheetScaffoldState()
 
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        val scrollConnection = scrollBehavior.nestedScrollConnection
+            // For some reason the sheet sometimes hides even if it has skip hidden set to true
+            // so when it does, we want to partially expand it
+            LaunchedEffect(scaffoldState.bottomSheetState.isVisible) {
+                if (!scaffoldState.bottomSheetState.isVisible) {
+                    scaffoldState.bottomSheetState.partialExpand()
+                }
+            }
 
-        AnimatedVisibility(
-            visible = transactions.itemCount != 0,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {},
-                        actions = {
-                            // 'search' action
+            AnimatedVisibility(
+                visible = transactions.itemCount != 0,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                BottomSheetScaffold(
+                    scaffoldState = scaffoldState,
+                    sheetContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    sheetContent = {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp)
+                        ) {
                             IconButton(
                                 onClick = {
                                     onSearchAction()
-                                }
+                                },
+                                modifier = Modifier.minimumInteractiveComponentSize()
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
                                     contentDescription = stringResource(R.string.navigate_to_search_description),
                                 )
                             }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        ),
-                        scrollBehavior = scrollBehavior,
+                        }
+                    },
+                    sheetPeekHeight = 48.dp,
+                    containerColor = MaterialTheme.colorScheme.background,
+                ) { paddingValues ->
+                    TransactionScreenContent(
+                        transactions = transactions,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onTransactionLongClickLabel = onTransactionLongClickLabel,
+                        onItemAddClick = onItemAddClick,
+                        onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
+                        onItemCategoryClick = onItemCategoryClick,
+                        onItemProducerClick = onItemProducerClick,
+                        onItemShopClick = onItemShopClick,
+                        modifier = Modifier.padding(paddingValues)
                     )
-                },
-                floatingActionButton = {
-                    AnimatedVisibility(
-                        visible = returnActionButtonVisible,
-                        enter = slideInHorizontally(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseOut
-                            ),
-                            initialOffsetX = { it }
-                        ),
-                        exit = slideOutHorizontally(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseIn
-                            ),
-                            targetOffsetX = { it }
-                        )
-                    ) {
-                        FloatingActionButton(
-                            onClick = {
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TransactionScreenContent(
+    transactions: LazyPagingItems<TransactionBasketDisplayData>,
+    onTransactionLongClick: (transactionId: Long) -> Unit,
+    onTransactionLongClickLabel: String,
+    onItemAddClick: (transactionId: Long) -> Unit,
+    onItemClick: (productId: Long) -> Unit,
+    onItemLongClick: (itemId: Long) -> Unit,
+    onItemCategoryClick: (categoryId: Long) -> Unit,
+    onItemProducerClick: (producerId: Long) -> Unit,
+    onItemShopClick: (shopId: Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
+    val headerColor = MaterialTheme.colorScheme.background
+
+    val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
+    val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
+    var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
+
+    var returnActionButtonVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(firstVisibleItemIndex) {
+        if (
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
+            firstVisibleItemIndex >= 10
+        ) {
+            // scrolling up
+            returnActionButtonVisible = true
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+        } else if (
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
+            firstVisibleItemIndex < 10
+        ) {
+            // scrolling down
+            returnActionButtonVisible = false
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+        }
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = returnActionButtonVisible,
+                enter = slideInHorizontally(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = EaseOut
+                    ),
+                    initialOffsetX = { it }
+                ),
+                exit = slideOutHorizontally(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = EaseIn
+                    ),
+                    targetOffsetX = { it }
+                )
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowUpward,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
+        modifier = modifier
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            LazyColumn(
+                state = listState,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                val transactionCount = transactions.itemCount
+
+                // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
+                for (index in 0 until transactionCount) {
+                    val etherealTransaction = transactions.peek(index)
+
+                    if (etherealTransaction == null) {
+                        transactionBasketCardHeaderPlaceholder(modifier = Modifier.widthIn(max = 600.dp))
+                    }
+
+                    if (etherealTransaction != null) {
+                        val transaction = transactions[index]!!
+
+                        transactionBasketCard(
+                            transaction = transaction.basket,
+                            itemsVisible = transaction.itemsVisible.value,
+                            onTransactionClick = {
+                                transaction.itemsVisible.value = !transaction.itemsVisible.value
                                 scope.launch {
-                                    listState.animateScrollToItem(0)
+                                    // the transaction basket card has 2 separate lazy list scope DSL calls
+                                    if (listState.firstVisibleItemIndex > index.times(2)) {
+                                        listState.animateScrollToItem(index.times(2))
+                                    }
                                 }
                             },
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.ArrowUpward,
-                                contentDescription = null,
-                            )
-                        }
-                    }
-                }
-            ) { paddingValues ->
-                LazyColumn(
-                    state = listState,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .nestedScroll(scrollConnection)
-                        .padding(paddingValues)
-                ) {
-                    val transactionCount = transactions.itemCount
-
-                    // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
-                    for (index in 0 until transactionCount) {
-                        val etherealTransaction = transactions.peek(index)
-
-                        if (etherealTransaction == null) {
-                            transactionBasketCardHeaderPlaceholder(modifier = Modifier.widthIn(max = 600.dp))
-                        }
-
-                        if (etherealTransaction != null) {
-                            val transaction = transactions[index]!!
-
-                            transactionBasketCard(
-                                transaction = transaction.basket,
-                                itemsVisible = transaction.itemsVisible.value,
-                                onTransactionClick = {
-                                    transaction.itemsVisible.value = !transaction.itemsVisible.value
-                                    scope.launch {
-                                        // the transaction basket card has 2 separate lazy list scope DSL calls
-                                        if (listState.firstVisibleItemIndex > index.times(2)) {
-                                            listState.animateScrollToItem(index.times(2))
-                                        }
-                                    }
-                                },
-                                onTransactionClickLabel = onTransactionClickLabel,
-                                onTransactionLongClick = onTransactionLongClick,
-                                onTransactionLongClickLabel = onTransactionLongClickLabel,
-                                onItemAddClick = onItemAddClick,
-                                onItemClick = onItemClick,
-                                onItemLongClick = onItemLongClick,
-                                onItemCategoryClick = onItemCategoryClick,
-                                onItemProducerClick = onItemProducerClick,
-                                onItemShopClick = onItemShopClick,
-                                headerColor = headerColor,
-                                modifier = Modifier.widthIn(max = 600.dp)
-                            )
-                        }
+                            onTransactionClickLabel = onTransactionClickLabel,
+                            onTransactionLongClick = onTransactionLongClick,
+                            onTransactionLongClickLabel = onTransactionLongClickLabel,
+                            onItemAddClick = onItemAddClick,
+                            onItemClick = onItemClick,
+                            onItemLongClick = onItemLongClick,
+                            onItemCategoryClick = onItemCategoryClick,
+                            onItemProducerClick = onItemProducerClick,
+                            onItemShopClick = onItemShopClick,
+                            headerColor = headerColor,
+                            modifier = Modifier.widthIn(max = 600.dp)
+                        )
                     }
                 }
             }
