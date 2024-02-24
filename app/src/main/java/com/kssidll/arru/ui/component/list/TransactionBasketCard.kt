@@ -60,39 +60,33 @@ fun LazyListScope.transactionBasketCard(
         // creating a gap in the list
         contentType = transaction.id
     ) {
-        Column(
+        AnimatedVisibility(
+            visible = itemsVisible,
             modifier = modifier
-                .animateContentSize()
                 .fillMaxWidth()
+                .padding(horizontal = 6.dp)
         ) {
-            AnimatedVisibility(
-                visible = itemsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.padding(horizontal = 6.dp)
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                shape = RoundedCornerShape(12.dp),
             ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                    shape = RoundedCornerShape(12.dp),
-                ) {
-                    Column {
-                        transaction.items.forEach { item ->
-                            FullItemCard(
-                                item = item,
-                                onItemClick = {
-                                    onItemClick(it.product.id)
-                                },
-                                onItemLongClick = {
-                                    onItemLongClick(it.id)
-                                },
-                                onCategoryClick = {
-                                    onItemCategoryClick(it.id)
-                                },
-                                onProducerClick = {
-                                    onItemProducerClick(it.id)
-                                },
-                            )
-                        }
+                Column {
+                    transaction.items.forEach { item ->
+                        FullItemCard(
+                            item = item,
+                            onItemClick = {
+                                onItemClick(it.product.id)
+                            },
+                            onItemLongClick = {
+                                onItemLongClick(it.id)
+                            },
+                            onCategoryClick = {
+                                onItemCategoryClick(it.id)
+                            },
+                            onProducerClick = {
+                                onItemProducerClick(it.id)
+                            },
+                        )
                     }
                 }
             }
@@ -117,11 +111,7 @@ fun LazyListScope.transactionBasketCardHeader(
         key = transaction.id,
         contentType = TransactionBasketWithItems
     ) {
-        Column(
-            modifier = modifier
-                .animateContentSize()
-                .fillMaxWidth()
-        ) {
+        Column(modifier = modifier.fillMaxWidth()) {
             val transactionModifier =
                 if (onTransactionClick != null && onTransactionLongClick != null) {
                     Modifier.combinedClickable(
@@ -233,9 +223,9 @@ fun LazyListScope.transactionBasketCardHeader(
 
             AnimatedVisibility(
                 visible = itemsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.padding(horizontal = 6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp)
             ) {
                 Surface(
                     color = headerColor,
