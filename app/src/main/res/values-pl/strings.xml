@@ -102,4 +102,5 @@
     <string name="merge_action_message_template">Ta akcja połączy wszystkie {value_1} w {value_2}\nWszystkie transakcje {value_1} będą należeć do {value_2}\nCzy na pewno chcesz kontynuować?</string>
     <string name="merge_action_chose_candidate">Wybierz to jako kandydata do operacji połączenia</string>
     <string name="no_data_to_display_text">Nie ma jeszcze nic do wyświetlenia :(</string>
+    <string name="no_data_to_display_add_transaction_hint">Spróbuj dodać transakcje</string>
 </resources>

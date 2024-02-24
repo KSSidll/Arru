@@ -20,12 +20,18 @@ fun HomeScreenNothingToDisplayOverlay() {
     Column {
         Box(modifier = Modifier.weight(1f))
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_text),
+                textAlign = TextAlign.Center,
+                style = Typography.titleLarge,
+            )
+
+            Text(
+                text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_add_transaction_hint),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )
@@ -118,10 +124,16 @@ fun ExpandedHomeScreenNothingToDisplayOverlay() {
             )
         }
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
+            Text(
+                text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_add_transaction_hint),
+                textAlign = TextAlign.Center,
+                style = Typography.titleLarge,
+            )
+
             Text(
                 text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_text),
                 textAlign = TextAlign.Center,
