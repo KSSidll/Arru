@@ -32,11 +32,11 @@ internal fun HomeRailNavBar(
                 onClick = {
                     onActionButtonClick()
                 },
-                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add new item",
+                    contentDescription = stringResource(id = R.string.transaction_add_label),
                     modifier = Modifier.size(36.dp)
                 )
             }

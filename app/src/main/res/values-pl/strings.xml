@@ -10,6 +10,7 @@
 
     <string name="transactions_nav_label">Transakcje</string>
     <string name="navigate_to_transactions_description">Przejdź do listy transakcji</string>
+    <string name="transaction_add_label">Dodaj nową transakcje</string>
 
     <string name="search">Szukaj</string>
     <string name="navigate_to_search_description">Przejdź do ekranu wyszukiwania</string>

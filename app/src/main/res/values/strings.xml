@@ -11,6 +11,7 @@
 
     <string name="transactions_nav_label">Transactions</string>
     <string name="navigate_to_transactions_description">Navigate to the transactions screen</string>
+    <string name="transaction_add_label">Add new transaction</string>
 
     <string name="search">Search</string>
     <string name="navigate_to_search_description">Navigate to the search screen</string>
