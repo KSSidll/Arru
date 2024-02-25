@@ -74,7 +74,9 @@ abstract class ModifyItemViewModel: ViewModel() {
             mProductListener = viewModelScope.launch {
                 productRepository.getFlow(product.id)
                     .collectLatest {
-                        screenState.selectedProduct.value = Field.Loaded(it)
+                        if (it is Data.Loaded) {
+                            screenState.selectedProduct.value = Field.Loaded(it.data)
+                        }
                     }
             }
         }
@@ -86,7 +88,9 @@ abstract class ModifyItemViewModel: ViewModel() {
             mVariantListener = viewModelScope.launch {
                 variantsRepository.getFlow(variant.id)
                     .collectLatest {
-                        screenState.selectedVariant.value = Field.Loaded(it)
+                        if (it is Data.Loaded) {
+                            screenState.selectedVariant.value = Field.Loaded(it.data)
+                        }
                     }
             }
         }
@@ -127,13 +131,13 @@ abstract class ModifyItemViewModel: ViewModel() {
     /**
      * @return List of all products
      */
-    fun allProducts(): Flow<List<ProductWithAltNames>> {
+    fun allProducts(): Flow<Data<List<ProductWithAltNames>>> {
         return productRepository.allWithAltNamesFlow()
     }
 
-    private val mProductVariants: MutableState<Flow<List<ProductVariant>>> =
+    private val mProductVariants: MutableState<Flow<Data<List<ProductVariant>>>> =
         mutableStateOf(emptyFlow())
-    val productVariants: Flow<List<ProductVariant>> by mProductVariants
+    val productVariants: Flow<Data<List<ProductVariant>>> by mProductVariants
     private var mUpdateProductVariantsJob: Job? = null
 
     /**

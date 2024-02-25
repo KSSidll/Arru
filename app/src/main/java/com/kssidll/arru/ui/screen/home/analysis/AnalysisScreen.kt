@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.list.*
 import com.kssidll.arru.ui.screen.home.analysis.components.*
 import com.kssidll.arru.ui.theme.*
@@ -38,10 +39,10 @@ internal fun AnalysisScreen(
     month: Int,
     onMonthIncrement: () -> Unit,
     onMonthDecrement: () -> Unit,
-    setCategorySpending: List<ItemSpentByCategory>,
-    compareCategorySpending: List<ItemSpentByCategory>,
-    setShopSpending: List<TransactionTotalSpentByShop>,
-    compareShopSpending: List<TransactionTotalSpentByShop>,
+    setCategorySpending: Data<List<ItemSpentByCategory>>,
+    compareCategorySpending: Data<List<ItemSpentByCategory>>,
+    setShopSpending: Data<List<TransactionTotalSpentByShop>>,
+    compareShopSpending: Data<List<TransactionTotalSpentByShop>>,
     onCategorySpendingComparisonCardClick: () -> Unit,
     onShopSpendingComparisonCardClick: () -> Unit,
 ) {
@@ -80,10 +81,10 @@ private fun AnalysisScreenContent(
     month: Int,
     onMonthIncrement: () -> Unit,
     onMonthDecrement: () -> Unit,
-    setCategorySpending: List<ItemSpentByCategory>,
-    compareCategorySpending: List<ItemSpentByCategory>,
-    setShopSpending: List<TransactionTotalSpentByShop>,
-    compareShopSpending: List<TransactionTotalSpentByShop>,
+    setCategorySpending: Data<List<ItemSpentByCategory>>,
+    compareCategorySpending: Data<List<ItemSpentByCategory>>,
+    setShopSpending: Data<List<TransactionTotalSpentByShop>>,
+    compareShopSpending: Data<List<TransactionTotalSpentByShop>>,
     onCategorySpendingComparisonCardClick: () -> Unit,
     onShopSpendingComparisonCardClick: () -> Unit,
 
@@ -91,7 +92,7 @@ private fun AnalysisScreenContent(
     Scaffold(
         bottomBar = {
             Column(modifier = Modifier.padding(vertical = 12.dp)) {
-                AnimatedVisibility(visible = compareCategorySpending.isEmpty() && setCategorySpending.isEmpty() && compareShopSpending.isEmpty() && setShopSpending.isEmpty()) {
+                AnimatedVisibility(visible = compareCategorySpending.loadedEmpty() && setCategorySpending.loadedEmpty() && compareShopSpending.loadedEmpty() && setShopSpending.loadedEmpty()) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.fillMaxWidth()
@@ -119,62 +120,66 @@ private fun AnalysisScreenContent(
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
-            AnimatedVisibility(visible = compareCategorySpending.isNotEmpty() || setCategorySpending.isNotEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    modifier = Modifier
-                        .padding(TileOuterPadding)
-                        .fillMaxWidth()
-                ) {
-                    Box(
+            AnimatedVisibility(visible = compareCategorySpending.loadedData() || setCategorySpending.loadedData()) {
+                if (compareCategorySpending is Data.Loaded && setCategorySpending is Data.Loaded) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
                         modifier = Modifier
-                            .heightIn(min = 144.dp)
-                            .clickable {
-                                onCategorySpendingComparisonCardClick()
-                            }
+                            .padding(TileOuterPadding)
+                            .fillMaxWidth()
                     ) {
-                        SpendingComparisonList(
-                            listHeader = stringResource(id = R.string.categories),
-                            leftSideItems = compareCategorySpending,
-                            leftSideHeader = stringResource(id = R.string.previous),
-                            rightSideItems = setCategorySpending,
-                            rightSideHeader = stringResource(id = R.string.current),
-                            itemDisplayLimit = 6,
-                            modifier = Modifier.padding(TileInnerPadding)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .heightIn(min = 144.dp)
+                                .clickable {
+                                    onCategorySpendingComparisonCardClick()
+                                }
+                        ) {
+                            SpendingComparisonList(
+                                listHeader = stringResource(id = R.string.categories),
+                                leftSideItems = compareCategorySpending.data,
+                                leftSideHeader = stringResource(id = R.string.previous),
+                                rightSideItems = setCategorySpending.data,
+                                rightSideHeader = stringResource(id = R.string.current),
+                                itemDisplayLimit = 6,
+                                modifier = Modifier.padding(TileInnerPadding)
+                            )
+                        }
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            AnimatedVisibility(visible = compareShopSpending.isNotEmpty() || setShopSpending.isNotEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    modifier = Modifier
-                        .padding(TileOuterPadding)
-                        .fillMaxWidth()
-                ) {
-                    Box(
+            AnimatedVisibility(visible = compareShopSpending.loadedData() || setShopSpending.loadedData()) {
+                if (compareShopSpending is Data.Loaded && setShopSpending is Data.Loaded) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
                         modifier = Modifier
-                            .heightIn(min = 144.dp)
-                            .clickable {
-                                onShopSpendingComparisonCardClick()
-                            }
+                            .padding(TileOuterPadding)
+                            .fillMaxWidth()
                     ) {
-                        SpendingComparisonList(
-                            listHeader = stringResource(id = R.string.shops),
-                            leftSideItems = compareShopSpending,
-                            leftSideHeader = stringResource(id = R.string.previous),
-                            rightSideItems = setShopSpending,
-                            rightSideHeader = stringResource(id = R.string.current),
-                            itemDisplayLimit = 6,
-                            modifier = Modifier.padding(TileInnerPadding)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .heightIn(min = 144.dp)
+                                .clickable {
+                                    onShopSpendingComparisonCardClick()
+                                }
+                        ) {
+                            SpendingComparisonList(
+                                listHeader = stringResource(id = R.string.shops),
+                                leftSideItems = compareShopSpending.data,
+                                leftSideHeader = stringResource(id = R.string.previous),
+                                rightSideItems = setShopSpending.data,
+                                rightSideHeader = stringResource(id = R.string.current),
+                                itemDisplayLimit = 6,
+                                modifier = Modifier.padding(TileInnerPadding)
+                            )
+                        }
                     }
                 }
             }
@@ -188,10 +193,10 @@ private fun ExpandedAnalysisScreenContent(
     month: Int,
     onMonthIncrement: () -> Unit,
     onMonthDecrement: () -> Unit,
-    setCategorySpending: List<ItemSpentByCategory>,
-    compareCategorySpending: List<ItemSpentByCategory>,
-    setShopSpending: List<TransactionTotalSpentByShop>,
-    compareShopSpending: List<TransactionTotalSpentByShop>,
+    setCategorySpending: Data<List<ItemSpentByCategory>>,
+    compareCategorySpending: Data<List<ItemSpentByCategory>>,
+    setShopSpending: Data<List<TransactionTotalSpentByShop>>,
+    compareShopSpending: Data<List<TransactionTotalSpentByShop>>,
     onCategorySpendingComparisonCardClick: () -> Unit,
     onShopSpendingComparisonCardClick: () -> Unit,
 ) {
@@ -214,7 +219,7 @@ private fun ExpandedAnalysisScreenContent(
         ) {
             Spacer(modifier = Modifier.height(6.dp))
 
-            AnimatedVisibility(visible = compareCategorySpending.isEmpty() && setCategorySpending.isEmpty() && compareShopSpending.isEmpty() && setShopSpending.isEmpty()) {
+            AnimatedVisibility(visible = compareCategorySpending.loadedEmpty() && setCategorySpending.loadedEmpty() && compareShopSpending.loadedEmpty() && setShopSpending.loadedEmpty()) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -228,31 +233,33 @@ private fun ExpandedAnalysisScreenContent(
 
             Row {
                 AnimatedVisibility(
-                    visible = compareCategorySpending.isNotEmpty() || setCategorySpending.isNotEmpty(),
+                    visible = compareCategorySpending.loadedData() || setCategorySpending.loadedData(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier.padding(TileOuterPadding)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
-                                    onCategorySpendingComparisonCardClick()
-                                }
+                    if (compareCategorySpending is Data.Loaded && setCategorySpending is Data.Loaded) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            modifier = Modifier.padding(TileOuterPadding)
                         ) {
-                            SpendingComparisonList(
-                                listHeader = stringResource(id = R.string.categories),
-                                leftSideItems = compareCategorySpending,
-                                leftSideHeader = stringResource(id = R.string.previous),
-                                rightSideItems = setCategorySpending,
-                                rightSideHeader = stringResource(id = R.string.current),
-                                itemDisplayLimit = 6,
-                                modifier = Modifier.padding(TileInnerPadding)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .heightIn(min = 144.dp)
+                                    .clickable {
+                                        onCategorySpendingComparisonCardClick()
+                                    }
+                            ) {
+                                SpendingComparisonList(
+                                    listHeader = stringResource(id = R.string.categories),
+                                    leftSideItems = compareCategorySpending.data,
+                                    leftSideHeader = stringResource(id = R.string.previous),
+                                    rightSideItems = setCategorySpending.data,
+                                    rightSideHeader = stringResource(id = R.string.current),
+                                    itemDisplayLimit = 6,
+                                    modifier = Modifier.padding(TileInnerPadding)
+                                )
+                            }
                         }
                     }
                 }
@@ -260,31 +267,33 @@ private fun ExpandedAnalysisScreenContent(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 AnimatedVisibility(
-                    visible = compareShopSpending.isNotEmpty() || setShopSpending.isNotEmpty(),
+                    visible = compareShopSpending.loadedData() || setShopSpending.loadedData(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier.padding(TileOuterPadding)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
-                                    onShopSpendingComparisonCardClick()
-                                }
+                    if (compareShopSpending is Data.Loaded && setShopSpending is Data.Loaded) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            modifier = Modifier.padding(TileOuterPadding)
                         ) {
-                            SpendingComparisonList(
-                                listHeader = stringResource(id = R.string.shops),
-                                leftSideItems = compareShopSpending,
-                                leftSideHeader = stringResource(id = R.string.previous),
-                                rightSideItems = setShopSpending,
-                                rightSideHeader = stringResource(id = R.string.current),
-                                itemDisplayLimit = 6,
-                                modifier = Modifier.padding(TileInnerPadding)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .heightIn(min = 144.dp)
+                                    .clickable {
+                                        onShopSpendingComparisonCardClick()
+                                    }
+                            ) {
+                                SpendingComparisonList(
+                                    listHeader = stringResource(id = R.string.shops),
+                                    leftSideItems = compareShopSpending.data,
+                                    leftSideHeader = stringResource(id = R.string.previous),
+                                    rightSideItems = setShopSpending.data,
+                                    rightSideHeader = stringResource(id = R.string.current),
+                                    itemDisplayLimit = 6,
+                                    modifier = Modifier.padding(TileInnerPadding)
+                                )
+                            }
                         }
                     }
                 }
@@ -304,10 +313,10 @@ private fun AnalysisScreenPreview() {
                 month = 12,
                 onMonthIncrement = {},
                 onMonthDecrement = {},
-                setCategorySpending = ItemSpentByCategory.generateList(),
-                compareCategorySpending = ItemSpentByCategory.generateList(),
-                setShopSpending = TransactionTotalSpentByShop.generateList(),
-                compareShopSpending = TransactionTotalSpentByShop.generateList(),
+                setCategorySpending = Data.Loaded(ItemSpentByCategory.generateList()),
+                compareCategorySpending = Data.Loaded(ItemSpentByCategory.generateList()),
+                setShopSpending = Data.Loaded(TransactionTotalSpentByShop.generateList()),
+                compareShopSpending = Data.Loaded(TransactionTotalSpentByShop.generateList()),
                 onCategorySpendingComparisonCardClick = {},
                 onShopSpendingComparisonCardClick = {},
             )
@@ -326,10 +335,10 @@ private fun ExpandedAnalysisScreenPreview() {
                 month = 12,
                 onMonthIncrement = {},
                 onMonthDecrement = {},
-                setCategorySpending = ItemSpentByCategory.generateList(),
-                compareCategorySpending = ItemSpentByCategory.generateList(),
-                setShopSpending = TransactionTotalSpentByShop.generateList(),
-                compareShopSpending = TransactionTotalSpentByShop.generateList(),
+                setCategorySpending = Data.Loaded(ItemSpentByCategory.generateList()),
+                compareCategorySpending = Data.Loaded(ItemSpentByCategory.generateList()),
+                setShopSpending = Data.Loaded(TransactionTotalSpentByShop.generateList()),
+                compareShopSpending = Data.Loaded(TransactionTotalSpentByShop.generateList()),
                 onCategorySpendingComparisonCardClick = {},
                 onShopSpendingComparisonCardClick = {},
             )

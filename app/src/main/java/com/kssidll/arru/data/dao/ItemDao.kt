@@ -57,5 +57,5 @@ interface ItemDao {
     suspend fun newest(): Item?
 
     @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    fun newestFlow(): Flow<Item>
+    fun newestFlow(): Flow<Item?>
 }

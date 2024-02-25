@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
@@ -124,9 +125,11 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         return dao.newest()
     }
 
-    override suspend fun newestFlow(): Flow<Item> {
+    override suspend fun newestFlow(): Flow<Data<Item?>> {
         return dao.newestFlow()
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<Item>() }
     }
 }

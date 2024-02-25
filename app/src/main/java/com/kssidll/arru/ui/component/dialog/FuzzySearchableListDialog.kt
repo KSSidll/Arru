@@ -36,7 +36,7 @@ import com.kssidll.arru.ui.theme.*
 @Composable
 fun <T> FuzzySearchableListDialog(
     onDismissRequest: () -> Unit,
-    items: List<T>,
+    items: Data<List<T>>,
     itemText: (T) -> String,
     onItemClick: ((T?) -> Unit)? = null,
     onItemClickLabel: String? = null,
@@ -49,106 +49,110 @@ fun <T> FuzzySearchableListDialog(
     defaultItemText: String = String(),
     shape: Shape = ShapeDefaults.ExtraLarge,
 ) where T: FuzzySearchSource {
-    var query: String by remember {
-        mutableStateOf(String())
-    }
+    // TODO add animation on loading / info on empty
+    if (items is Data.Loaded) {
 
-    var displayedItems: List<T> by remember {
-        mutableStateOf(listOf())
-    }
+        var query: String by remember {
+            mutableStateOf(String())
+        }
 
-    LaunchedEffect(
-        items,
-        query
-    ) {
-        displayedItems = items.fuzzySearchSort(query)
-    }
+        var displayedItems: List<T> by remember {
+            mutableStateOf(listOf())
+        }
 
-    Dialog(onDismissRequest = onDismissRequest) {
-        Surface(
-            modifier = Modifier
-                .width(400.dp)
-                .height(600.dp),
-            shape = shape,
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 1.dp,
+        LaunchedEffect(
+            items,
+            query
         ) {
-            Column {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    reverseLayout = true
-                ) {
-                    items(items = displayedItems) {
+            displayedItems = items.data.fuzzySearchSort(query)
+        }
+
+        Dialog(onDismissRequest = onDismissRequest) {
+            Surface(
+                modifier = Modifier
+                    .width(400.dp)
+                    .height(600.dp),
+                shape = shape,
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 1.dp,
+            ) {
+                Column {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        reverseLayout = true
+                    ) {
+                        items(items = displayedItems) {
+                            BaseClickableListItem(
+                                text = itemText(it),
+                                onClick = {
+                                    onItemClick?.invoke(it)
+                                },
+                                onClickLabel = onItemClickLabel,
+                                onLongClick = {
+                                    onItemLongClick?.invoke(it)
+                                },
+                                onLongClickLabel = onItemLongClickLabel,
+                            )
+                            HorizontalDivider()
+                        }
+                    }
+
+
+                    if (showDefaultValueItem) {
+                        HorizontalDivider()
                         BaseClickableListItem(
-                            text = itemText(it),
                             onClick = {
-                                onItemClick?.invoke(it)
+                                onItemClick?.invoke(null)
                             },
                             onClickLabel = onItemClickLabel,
-                            onLongClick = {
-                                onItemLongClick?.invoke(it)
-                            },
-                            onLongClickLabel = onItemLongClickLabel,
+                            text = defaultItemText
                         )
-                        HorizontalDivider()
                     }
-                }
 
-
-                if (showDefaultValueItem) {
-                    HorizontalDivider()
-                    BaseClickableListItem(
-                        onClick = {
-                            onItemClick?.invoke(null)
-                        },
-                        onClickLabel = onItemClickLabel,
-                        text = defaultItemText
-                    )
-                }
-
-                Box(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                    StyledOutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp),
-                        singleLine = true,
-                        value = query,
-                        onValueChange = {
-                            query = it
-                        },
-                        textStyle = TextStyle.Default.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 16.sp
-                        ),
-                        label = {
-                            Text(
-                                text = stringResource(com.kssidll.arru.R.string.search),
-                                fontSize = 16.sp,
-                            )
-                        },
-                        colors = styledTextFieldColorDefaults(
-                            focusedIndicator = Color.Transparent,
-                            unfocusedIndicator = Color.Transparent,
-                        ),
-                        trailingIcon = {
-                            if (showAddButton) {
-                                Box(
-                                    modifier = Modifier
-                                        .clickable {
-                                            onDismissRequest()
-                                            onAddButtonClick?.invoke(query)
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = addButtonDescription,
-                                        modifier = Modifier.size(40.dp)
-                                    )
+                    Box(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                        StyledOutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 6.dp),
+                            singleLine = true,
+                            value = query,
+                            onValueChange = {
+                                query = it
+                            },
+                            textStyle = TextStyle.Default.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 16.sp
+                            ),
+                            label = {
+                                Text(
+                                    text = stringResource(com.kssidll.arru.R.string.search),
+                                    fontSize = 16.sp,
+                                )
+                            },
+                            colors = styledTextFieldColorDefaults(
+                                focusedIndicator = Color.Transparent,
+                                unfocusedIndicator = Color.Transparent,
+                            ),
+                            trailingIcon = {
+                                if (showAddButton) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clickable {
+                                                onDismissRequest()
+                                                onAddButtonClick?.invoke(query)
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = addButtonDescription,
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -162,7 +166,7 @@ fun FuzzySearchableListDialogPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             FuzzySearchableListDialog(
                 onDismissRequest = {},
-                items = listOf<ProductWithAltNames>(),
+                items = Data.Loaded(listOf<ProductWithAltNames>()),
                 itemText = { "test" },
             )
         }

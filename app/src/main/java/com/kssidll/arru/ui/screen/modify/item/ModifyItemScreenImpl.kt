@@ -44,8 +44,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
-    products: List<ProductWithAltNames>,
-    variants: List<ProductVariant>,
+    products: Data<List<ProductWithAltNames>>,
+    variants: Data<List<ProductVariant>>,
     onNewProductSelected: (product: Product?) -> Unit,
     onNewVariantSelected: (variant: ProductVariant?) -> Unit,
     onSubmit: () -> Unit,
@@ -408,8 +408,8 @@ fun ModifyItemScreenImplPreview() {
             ModifyItemScreenImpl(
                 onBack = {},
                 state = ModifyItemScreenState(),
-                products = emptyList(),
-                variants = emptyList(),
+                products = Data.Loading(),
+                variants = Data.Loading(),
                 onNewProductSelected = {},
                 onNewVariantSelected = {},
                 onSubmit = {},

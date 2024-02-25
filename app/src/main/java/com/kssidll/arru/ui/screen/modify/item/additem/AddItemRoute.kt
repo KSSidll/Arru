@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.screen.modify.item.additem
 
 import androidx.compose.runtime.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.modify.item.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -33,8 +34,8 @@ fun AddItemRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         products = viewModel.allProducts()
-            .collectAsState(initial = emptyList()).value,
-        variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
+        variants = viewModel.productVariants.collectAsState(initial = Data.Loading()).value,
         onNewProductSelected = {
             scope.launch {
                 viewModel.onNewProductSelected(it)

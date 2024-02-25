@@ -4,6 +4,7 @@ package com.kssidll.arru.ui.screen.modify.item.edititem
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.modify.item.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -44,8 +45,8 @@ fun EditItemRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         products = viewModel.allProducts()
-            .collectAsState(initial = emptyList()).value,
-        variants = viewModel.productVariants.collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
+        variants = viewModel.productVariants.collectAsState(initial = Data.Loading()).value,
         onNewProductSelected = {
             scope.launch {
                 viewModel.onNewProductSelected(it)

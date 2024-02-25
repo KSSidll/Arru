@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
@@ -134,15 +135,19 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         return dao.get(variantId)
     }
 
-    override fun getFlow(variantId: Long): Flow<ProductVariant?> {
+    override fun getFlow(variantId: Long): Flow<Data<ProductVariant?>> {
         return dao.getFlow(variantId)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<ProductVariant?>() }
     }
 
-    override fun byProductFlow(product: Product): Flow<List<ProductVariant>> {
+    override fun byProductFlow(product: Product): Flow<Data<List<ProductVariant>>> {
         return dao.byProductFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ProductVariant>>() }
     }
 }

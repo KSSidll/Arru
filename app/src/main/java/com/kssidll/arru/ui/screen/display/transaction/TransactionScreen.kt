@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.display.transaction
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.unit.*
 import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.list.*
 import com.kssidll.arru.ui.component.other.*
 import com.kssidll.arru.ui.theme.*
@@ -21,7 +23,7 @@ import com.kssidll.arru.ui.theme.*
 @Composable
 internal fun TransactionScreen(
     onBack: () -> Unit,
-    transaction: TransactionBasketWithItems?,
+    transaction: Data<TransactionBasketWithItems?>,
     onEditAction: () -> Unit,
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
@@ -55,25 +57,31 @@ internal fun TransactionScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
+        AnimatedVisibility(
+            visible = transaction is Data.Loaded && transaction.data != null,
+            enter = fadeIn(),
+            exit = fadeOut(),
         ) {
-            if (transaction != null) {
-                transactionBasketCard(
-                    transaction = transaction,
-                    itemsVisible = true,
-                    onItemAddClick = onItemAddClick,
-                    onItemClick = onItemClick,
-                    onItemLongClick = onItemLongClick,
-                    onItemCategoryClick = onItemCategoryClick,
-                    onItemProducerClick = onItemProducerClick,
-                    onItemShopClick = onItemShopClick,
-                    headerColor = headerColor,
-                    modifier = Modifier.width(600.dp)
-                )
+            if (transaction is Data.Loaded && transaction.data != null) {
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(paddingValues)
+                ) {
+                    transactionBasketCard(
+                        transaction = transaction.data,
+                        itemsVisible = true,
+                        onItemAddClick = onItemAddClick,
+                        onItemClick = onItemClick,
+                        onItemLongClick = onItemLongClick,
+                        onItemCategoryClick = onItemCategoryClick,
+                        onItemProducerClick = onItemProducerClick,
+                        onItemShopClick = onItemShopClick,
+                        headerColor = headerColor,
+                        modifier = Modifier.width(600.dp)
+                    )
+                }
             }
         }
     }
@@ -87,7 +95,7 @@ fun TransactionScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionScreen(
                 onBack = {},
-                transaction = TransactionBasketWithItems.generate(),
+                transaction = Data.Loaded(TransactionBasketWithItems.generate()),
                 onEditAction = {},
                 onItemAddClick = {},
                 onItemClick = {},

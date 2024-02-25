@@ -162,7 +162,7 @@ interface ProductDao {
         WHERE product.id = :productId
     """
     )
-    fun totalSpentFlow(productId: Long): Flow<Long>
+    fun totalSpentFlow(productId: Long): Flow<Long?>
 
     @Query(
         """

@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.display.category
 
 import androidx.compose.runtime.*
 import androidx.paging.compose.*
+import com.kssidll.arru.domain.data.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -28,10 +29,10 @@ fun CategoryRoute(
         category = viewModel.category,
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList())?.value
-            ?: emptyList(),
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
+            ?: Data.Loaded(emptyList()),
         totalSpentData = viewModel.categoryTotalSpent()
-            ?.collectAsState(initial = 0F)?.value ?: 0F,
+            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loading(),
         spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)

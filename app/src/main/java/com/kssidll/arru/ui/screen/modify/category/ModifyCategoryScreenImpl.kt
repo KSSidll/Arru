@@ -43,7 +43,7 @@ fun ModifyCategoryScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ProductCategory) -> Unit)? = null,
-    mergeCandidates: Flow<List<ProductCategory>> = flowOf(),
+    mergeCandidates: Flow<Data<List<ProductCategory>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: ProductCategory? = null,
     onChosenMergeCandidateChange: ((ProductCategory?) -> Unit)? = null,

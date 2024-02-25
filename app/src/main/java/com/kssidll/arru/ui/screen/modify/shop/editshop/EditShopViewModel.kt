@@ -53,10 +53,13 @@ class EditShopViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(shopId: Long): Flow<List<Shop>> {
+    fun allMergeCandidates(shopId: Long): Flow<Data<List<Shop>>> {
         return shopRepository.allFlow()
-            .onEach { it.filter { item -> item.id != shopId } }
-            .distinctUntilChanged()
+            .onEach {
+                if (it is Data.Loaded) {
+                    it.data.filter { item -> item.id != shopId }
+                }
+            }
     }
 
     /**

@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.home.transactions
 
 
 import android.annotation.*
+import android.util.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.paging.compose.*
 import com.kssidll.arru.*
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.list.*
 import com.kssidll.arru.ui.screen.home.component.*
 import com.kssidll.arru.ui.theme.*
@@ -55,8 +57,13 @@ internal fun TransactionsScreen(
     Box {
         // overlay displayed when there is no data available
         Box(modifier = Modifier.fillMaxSize()) {
+            Log.i(
+                "load state",
+                transactions.loadState.refresh.toString()
+            )
+
             AnimatedVisibility(
-                visible = transactions.itemCount == 0,
+                visible = transactions.loadedEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {

@@ -1,6 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 interface VariantRepositorySource {
@@ -111,11 +112,11 @@ interface VariantRepositorySource {
      * @param variantId id of the [ProductVariant]
      * @return [ProductVariant] matching [variantId] id or null if none match, as flow
      */
-    fun getFlow(variantId: Long): Flow<ProductVariant?>
+    fun getFlow(variantId: Long): Flow<Data<ProductVariant?>>
 
     /**
      * @param product [Product] to match the [ProductVariant] with
      * @return list of [ProductVariant] matching [product] as flow
      */
-    fun byProductFlow(product: Product): Flow<List<ProductVariant>>
+    fun byProductFlow(product: Product): Flow<Data<List<ProductVariant>>>
 }

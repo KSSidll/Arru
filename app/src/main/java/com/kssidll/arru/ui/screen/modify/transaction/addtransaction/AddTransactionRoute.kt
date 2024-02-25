@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.screen.modify.transaction.addtransaction
 
 import androidx.compose.runtime.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.modify.transaction.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -26,7 +27,7 @@ fun AddTransactionRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops()
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         onNewShopSelected = {
             viewModel.onNewShopSelected(it)
         },

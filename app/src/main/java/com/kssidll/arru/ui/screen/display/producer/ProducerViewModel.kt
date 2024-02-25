@@ -25,18 +25,14 @@ class ProducerViewModel @Inject constructor(
 
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<ItemSpentByTime>>>? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<Data<List<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun producerTotalSpent(): Flow<Float>? {
+    fun producerTotalSpent(): Flow<Data<Float?>>? {
         if (producer == null) return null
 
         return producerRepository.totalSpentFlow(producer!!)
-            .map {
-                it.toFloat()
-                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
-            }
     }
 
     /**
@@ -70,7 +66,11 @@ class ProducerViewModel @Inject constructor(
         mProducerListener = viewModelScope.launch {
             producerRepository.getFlow(producerId)
                 .collectLatest {
-                    mProducer.value = it
+                    if (it is Data.Loaded) {
+                        mProducer.value = it.data
+                    } else {
+                        mProducer.value = null
+                    }
                 }
         }
 

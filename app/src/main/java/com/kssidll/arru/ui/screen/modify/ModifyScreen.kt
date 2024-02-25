@@ -48,7 +48,7 @@ fun <T> ModifyScreen(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: T) -> Unit)? = null,
-    mergeCandidates: Flow<List<T>> = flowOf(),
+    mergeCandidates: Flow<Data<List<T>>> = flowOf(),
     mergeCandidatesTextTransformation: ((T) -> String)? = null,
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: T? = null,
@@ -87,7 +87,7 @@ fun <T> ModifyScreen(
                 onDismissRequest = {
                     showMergeSearchDialog = false
                 },
-                items = mergeCandidates.collectAsState(initial = emptyList()).value,
+                items = mergeCandidates.collectAsState(initial = Data.Loading()).value,
                 itemText = {
                     mergeCandidatesTextTransformation?.invoke(it)
                         .orEmpty()

@@ -43,7 +43,7 @@ fun ModifyShopScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: Shop) -> Unit)? = null,
-    mergeCandidates: Flow<List<Shop>> = flowOf(),
+    mergeCandidates: Flow<Data<List<Shop>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: Shop? = null,
     onChosenMergeCandidateChange: ((Shop?) -> Unit)? = null,

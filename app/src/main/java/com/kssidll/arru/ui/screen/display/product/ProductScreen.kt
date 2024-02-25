@@ -53,9 +53,9 @@ internal fun ProductScreen(
     onBack: () -> Unit,
     product: Product?,
     transactionItems: LazyPagingItems<FullItem>,
-    spentByTimeData: List<ChartSource>,
-    productPriceByShopByTimeData: List<ProductPriceByShopByTime>,
-    totalSpentData: Float,
+    spentByTimeData: Data<List<ItemSpentByTime>>,
+    productPriceByShopByTimeData: Data<List<ProductPriceByShopByTime>>,
+    totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     chartEntryModelProducer: ChartEntryModelProducer,
@@ -164,32 +164,45 @@ internal fun ProductScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
+                    val chartData = if (spentByTimeData is Data.Loaded) {
+                        spentByTimeData.data
+                    } else emptyList()
+
+                    val totalSpent = if (totalSpentData is Data.Loaded) {
+                        totalSpentData.data ?: 0f
+                    } else 0f
+
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = spentByTimeData,
-                        totalSpentData = totalSpentData,
+                        spentByTimeData = chartData,
+                        totalSpentData = totalSpent,
                     )
 
                     Spacer(Modifier.height(28.dp))
 
-                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
-                        SpendingSummaryComponent(
-                            spentByTimeData = spentByTimeData,
-                            spentByTimePeriod = spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                            columnChartEntryModelProducer = chartEntryModelProducer,
-                        )
+                    AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                        if (spentByTimeData is Data.Loaded) {
+                            SpendingSummaryComponent(
+                                spentByTimeData = spentByTimeData.data,
+                                spentByTimePeriod = spentByTimePeriod,
+                                onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
+                                columnChartEntryModelProducer = chartEntryModelProducer,
+                            )
 
-                        Spacer(Modifier.height(12.dp))
+                            Spacer(Modifier.height(12.dp))
+                        }
                     }
 
-                    AnimatedVisibility(visible = productPriceByShopByTimeData.isNotEmpty()) {
-                        ShopPriceCompareChart(
-                            items = productPriceByShopByTimeData,
-                        )
+                    AnimatedVisibility(visible = productPriceByShopByTimeData.loadedData()) {
+                        if (productPriceByShopByTimeData is Data.Loaded) {
+                            ShopPriceCompareChart(
+                                items = productPriceByShopByTimeData.data,
+                            )
 
-                        Spacer(Modifier.height(12.dp))
+                            Spacer(Modifier.height(12.dp))
+                        }
                     }
 
+                    // TODO change this to center title large like on dashboard
                     AnimatedVisibility(visible = transactionItems.itemCount == 0) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
@@ -233,9 +246,9 @@ fun ProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
-                productPriceByShopByTimeData = ProductPriceByShopByTime.generateList(),
-                totalSpentData = generateRandomFloatValue(),
+                spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
+                productPriceByShopByTimeData = Data.Loaded(ProductPriceByShopByTime.generateList()),
+                totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
                 chartEntryModelProducer = ChartEntryModelProducer(),

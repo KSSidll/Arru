@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.display.shop
 
 import androidx.compose.runtime.*
 import androidx.paging.compose.*
+import com.kssidll.arru.domain.data.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -28,10 +29,10 @@ fun ShopRoute(
         shop = viewModel.shop,
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList())?.value
-            ?: emptyList(),
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
+            ?: Data.Loaded(emptyList()),
         totalSpentData = viewModel.shopTotalSpent()
-            ?.collectAsState(initial = 0F)?.value ?: 0F,
+            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loaded(0F),
         spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)

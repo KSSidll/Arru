@@ -52,9 +52,13 @@ class EditCategoryViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(categoryId: Long): Flow<List<ProductCategory>> {
+    fun allMergeCandidates(categoryId: Long): Flow<Data<List<ProductCategory>>> {
         return categoryRepository.allFlow()
-            .onEach { it.filter { item -> item.id != categoryId } }
+            .onEach {
+                if (it is Data.Loaded) {
+                    it.data.filter { item -> item.id != categoryId }
+                }
+            }
     }
 
     /**

@@ -2,6 +2,7 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.*
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 interface CategoryRepositorySource {
@@ -186,37 +187,37 @@ interface CategoryRepositorySource {
      * @param categoryId id of the [ProductCategory]
      * @return [ProductCategory] matching [categoryId] id or null if none match, as flow
      */
-    fun getFlow(categoryId: Long): Flow<ProductCategory?>
+    fun getFlow(categoryId: Long): Flow<Data<ProductCategory?>>
 
     /**
      * @param category [ProductCategory] to get the total spending from
-     * @return long representing total spending for the [category] as flow
+     * @return float representing total spending for the [category] as flow
      */
-    fun totalSpentFlow(category: ProductCategory): Flow<Long>
+    fun totalSpentFlow(category: ProductCategory): Flow<Data<Float?>>
 
     /**
      * @param category [ProductCategory] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(category: ProductCategory): Flow<List<ItemSpentByTime>>
+    fun totalSpentByDayFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(category: ProductCategory): Flow<List<ItemSpentByTime>>
+    fun totalSpentByWeekFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(category: ProductCategory): Flow<List<ItemSpentByTime>>
+    fun totalSpentByMonthFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(category: ProductCategory): Flow<List<ItemSpentByTime>>
+    fun totalSpentByYearFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to match the items to
@@ -226,7 +227,7 @@ interface CategoryRepositorySource {
     /**
      * @return list of [ItemSpentByCategory] representing total spending groupped by category
      */
-    fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>>
+    fun totalSpentByCategoryFlow(): Flow<Data<List<ItemSpentByCategory>>>
 
     /**
      * @param year year to match the data to
@@ -236,15 +237,15 @@ interface CategoryRepositorySource {
     fun totalSpentByCategoryByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<List<ItemSpentByCategory>>
+    ): Flow<Data<List<ItemSpentByCategory>>>
 
     /**
      * @return list of all [ProductCategory] as flow
      */
-    fun allFlow(): Flow<List<ProductCategory>>
+    fun allFlow(): Flow<Data<List<ProductCategory>>>
 
     /**
      * @return list of all [ProductCategoryWithAltNames] as flow
      */
-    fun allWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>>
+    fun allWithAltNamesFlow(): Flow<Data<List<ProductCategoryWithAltNames>>>
 }

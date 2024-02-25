@@ -18,7 +18,7 @@ abstract class ModifyTransactionViewModel: ViewModel() {
     /**
      * @return List of all shops
      */
-    fun allShops(): Flow<List<Shop>> {
+    fun allShops(): Flow<Data<List<Shop>>> {
         return shopRepository.allFlow()
     }
 
@@ -37,7 +37,9 @@ abstract class ModifyTransactionViewModel: ViewModel() {
             mShopListener = viewModelScope.launch {
                 shopRepository.getFlow(shop.id)
                     .collectLatest {
-                        screenState.selectedShop.value = Field.Loaded(it)
+                        if (it is Data.Loaded) {
+                            screenState.selectedShop.value = Field.Loaded(it.data)
+                        }
                     }
             }
         }

@@ -8,6 +8,7 @@ import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteRes
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
@@ -118,40 +119,57 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         return dao.get(shopId)
     }
 
-    override fun getFlow(shopId: Long): Flow<Shop?> {
+    override fun getFlow(shopId: Long): Flow<Data<Shop?>> {
         return dao.getFlow(shopId)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<Shop?>() }
     }
 
-    override fun totalSpentFlow(shop: Shop): Flow<Long> {
+    override fun totalSpentFlow(shop: Shop): Flow<Data<Float?>> {
         return dao.totalSpentFlow(shop.id)
             .cancellable()
             .distinctUntilChanged()
+            .map {
+                Data.Loaded(
+                    it?.toFloat()
+                        ?.div(TransactionBasket.COST_DIVISOR)
+                )
+            }
+            .onStart { Data.Loading<Long>() }
     }
 
-    override fun totalSpentByDayFlow(shop: Shop): Flow<List<TransactionTotalSpentByTime>> {
+    override fun totalSpentByDayFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>> {
         return dao.totalSpentByDayFlow(shop.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<TransactionTotalSpentByTime>>() }
     }
 
-    override fun totalSpentByWeekFlow(shop: Shop): Flow<List<TransactionTotalSpentByTime>> {
+    override fun totalSpentByWeekFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>> {
         return dao.totalSpentByWeekFlow(shop.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<TransactionTotalSpentByTime>>() }
     }
 
-    override fun totalSpentByMonthFlow(shop: Shop): Flow<List<TransactionTotalSpentByTime>> {
+    override fun totalSpentByMonthFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>> {
         return dao.totalSpentByMonthFlow(shop.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<TransactionTotalSpentByTime>>() }
     }
 
-    override fun totalSpentByYearFlow(shop: Shop): Flow<List<TransactionTotalSpentByTime>> {
+    override fun totalSpentByYearFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>> {
         return dao.totalSpentByYearFlow(shop.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<TransactionTotalSpentByTime>>() }
     }
 
     override fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<FullItem>> {
@@ -185,8 +203,9 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
             .flow
     }
 
-    override fun totalSpentByShopFlow(): Flow<List<TransactionTotalSpentByShop>> {
+    override fun totalSpentByShopFlow(): Flow<Data<List<TransactionTotalSpentByShop>>> {
         return dao.totalSpentByShopFlow()
+            .map { Data.Loaded(it) }
             .cancellable()
             .distinctUntilChanged()
     }
@@ -194,7 +213,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
     override fun totalSpentByShopByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<List<TransactionTotalSpentByShop>> {
+    ): Flow<Data<List<TransactionTotalSpentByShop>>> {
         val date: String = buildString {
             append(year)
             append("-")
@@ -210,11 +229,15 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         return dao.totalSpentByShopByMonthFlow(date)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<TransactionTotalSpentByShop>>() }
     }
 
-    override fun allFlow(): Flow<List<Shop>> {
+    override fun allFlow(): Flow<Data<List<Shop>>> {
         return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<Shop>>() }
     }
 }

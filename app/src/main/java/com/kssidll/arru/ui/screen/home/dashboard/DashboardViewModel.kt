@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.*
 import com.kssidll.arru.domain.*
+import com.kssidll.arru.domain.data.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
@@ -15,7 +16,8 @@ class DashboardViewModel @Inject constructor(
     private val categoryRepository: CategoryRepositorySource,
     private val shopRepository: ShopRepositorySource,
 ): ViewModel() {
-    private val mTimePeriodFlowHandler: TimePeriodFlowHandler = TimePeriodFlowHandler(
+    private val mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<TransactionSpentByTime>>> =
+        TimePeriodFlowHandler(
         scope = viewModelScope,
         dayFlow = {
             transactionRepository.totalSpentByDayFlow()
@@ -52,25 +54,21 @@ class DashboardViewModel @Inject constructor(
     /**
      * @return Number representing total transaction spending as flow
      */
-    fun getTotalSpent(): Flow<Float> {
+    fun getTotalSpent(): Flow<Data<Float?>> {
         return transactionRepository.totalSpentFlow()
-            .map {
-                it.toFloat()
-                    .div(TransactionBasket.COST_DIVISOR)
-            }
     }
 
     /**
      * @return List of items representing [Shop] spending in time as flow
      */
-    fun getSpentByShop(): Flow<List<TransactionTotalSpentByShop>> {
+    fun getSpentByShop(): Flow<Data<List<TransactionTotalSpentByShop>>> {
         return shopRepository.totalSpentByShopFlow()
     }
 
     /**
      * @return List of items representing [ProductCategory] spending in time as flow
      */
-    fun getSpentByCategory(): Flow<List<ItemSpentByCategory>> {
+    fun getSpentByCategory(): Flow<Data<List<ItemSpentByCategory>>> {
         return categoryRepository.totalSpentByCategoryFlow()
     }
 }

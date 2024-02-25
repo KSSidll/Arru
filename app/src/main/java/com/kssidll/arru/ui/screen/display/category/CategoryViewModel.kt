@@ -25,18 +25,14 @@ class CategoryViewModel @Inject constructor(
 
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<ItemSpentByTime>>>? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<Data<List<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun categoryTotalSpent(): Flow<Float>? {
+    fun categoryTotalSpent(): Flow<Data<Float?>>? {
         if (category == null) return null
 
         return categoryRepository.totalSpentFlow(category!!)
-            .map {
-                it.toFloat()
-                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
-            }
     }
 
     /**
@@ -70,7 +66,11 @@ class CategoryViewModel @Inject constructor(
         mCategoryListener = viewModelScope.launch {
             categoryRepository.getFlow(categoryId)
                 .collectLatest {
-                    mCategory.value = it
+                    if (it is Data.Loaded) {
+                        mCategory.value = it.data
+                    } else {
+                        mCategory.value = null
+                    }
                 }
         }
 

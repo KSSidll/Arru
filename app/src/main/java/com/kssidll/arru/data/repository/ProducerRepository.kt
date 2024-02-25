@@ -8,6 +8,7 @@ import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.Delet
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
@@ -117,40 +118,57 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         return dao.get(producerId)
     }
 
-    override fun getFlow(producerId: Long): Flow<ProductProducer?> {
+    override fun getFlow(producerId: Long): Flow<Data<ProductProducer?>> {
         return dao.getFlow(producerId)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<ProductProducer?>() }
     }
 
-    override fun totalSpentFlow(producer: ProductProducer): Flow<Long> {
+    override fun totalSpentFlow(producer: ProductProducer): Flow<Data<Float?>> {
         return dao.totalSpentFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
+            .map {
+                Data.Loaded(
+                    it?.toFloat()
+                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                )
+            }
+            .onStart { Data.Loading<Long>() }
     }
 
-    override fun totalSpentByDayFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByDayFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByWeekFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByWeekFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByMonthFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByMonthFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByYearFlow(producer: ProductProducer): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByYearFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
     override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>> {
@@ -184,9 +202,11 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .flow
     }
 
-    override fun allFlow(): Flow<List<ProductProducer>> {
+    override fun allFlow(): Flow<Data<List<ProductProducer>>> {
         return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ProductProducer>>() }
     }
 }

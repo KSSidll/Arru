@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.home.analysis
 
 
 import androidx.compose.runtime.*
+import com.kssidll.arru.domain.data.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -22,10 +23,10 @@ fun AnalysisRoute(
         onMonthIncrement = {
             viewModel.monthIncrement()
         },
-        setCategorySpending = viewModel.setCategorySpending.collectAsState(initial = emptyList()).value,
-        compareCategorySpending = viewModel.compareCategorySpending.collectAsState(initial = emptyList()).value,
-        setShopSpending = viewModel.setShopSpending.collectAsState(initial = emptyList()).value,
-        compareShopSpending = viewModel.compareShopSpending.collectAsState(initial = emptyList()).value,
+        setCategorySpending = viewModel.setCategorySpending.collectAsState(initial = Data.Loading()).value,
+        compareCategorySpending = viewModel.compareCategorySpending.collectAsState(initial = Data.Loading()).value,
+        setShopSpending = viewModel.setShopSpending.collectAsState(initial = Data.Loading()).value,
+        compareShopSpending = viewModel.compareShopSpending.collectAsState(initial = Data.Loading()).value,
         onCategorySpendingComparisonCardClick = {
             navigateCategorySpendingComparison(
                 viewModel.year,

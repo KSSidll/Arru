@@ -3,26 +3,25 @@ package com.kssidll.arru.domain
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 /**
  * Defines available time periods and handles flow managment when changing time periods
  */
-class TimePeriodFlowHandler(
+class TimePeriodFlowHandler<T>(
     private val scope: CoroutineScope,
-    private val dayFlow: () -> Flow<List<ChartSource>>,
-    private val weekFlow: () -> Flow<List<ChartSource>>,
-    private val monthFlow: () -> Flow<List<ChartSource>>,
-    private val yearFlow: () -> Flow<List<ChartSource>>,
+    private val dayFlow: () -> Flow<T>,
+    private val weekFlow: () -> Flow<T>,
+    private val monthFlow: () -> Flow<T>,
+    private val yearFlow: () -> Flow<T>,
     startPeriod: Periods = Periods.Month,
 ) {
     private var mCurrentPeriod: MutableState<Periods>
     val currentPeriod get() = mCurrentPeriod.value
 
     private var mSpentByTimeQuery: Job? = null
-    private var mSpentByTimeData: MutableState<Flow<List<ChartSource>>> =
+    private var mSpentByTimeData: MutableState<Flow<T>> =
         mutableStateOf(flowOf())
     val spentByTimeData by mSpentByTimeData
 

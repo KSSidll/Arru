@@ -38,9 +38,9 @@ fun AddProductRoute(
         },
         state = viewModel.screenState,
         categories = viewModel.allCategories()
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         producers = viewModel.allProducers()
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         onNewProducerSelected = {
             viewModel.onNewProducerSelected(it)
         },

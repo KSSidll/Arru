@@ -50,8 +50,8 @@ internal fun ShopScreen(
     onBack: () -> Unit,
     shop: Shop?,
     transactionItems: LazyPagingItems<FullItem>,
-    spentByTimeData: List<ChartSource>,
-    totalSpentData: Float,
+    spentByTimeData: Data<List<TransactionTotalSpentByTime>>,
+    totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
     chartEntryModelProducer: ChartEntryModelProducer,
@@ -161,25 +161,35 @@ internal fun ShopScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
+                    val chartData = if (spentByTimeData is Data.Loaded) {
+                        spentByTimeData.data
+                    } else emptyList()
+
+                    val totalSpent = if (totalSpentData is Data.Loaded) {
+                        totalSpentData.data ?: 0f
+                    } else 0f
+
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = spentByTimeData,
-                        totalSpentData = totalSpentData,
+                        spentByTimeData = chartData,
+                        totalSpentData = totalSpent,
                     )
 
                     Spacer(Modifier.height(28.dp))
 
-                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
-                        SpendingSummaryComponent(
-                            spentByTimeData = spentByTimeData,
-                            spentByTimePeriod = spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                            columnChartEntryModelProducer = chartEntryModelProducer,
-                        )
-
+                    AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                        if (spentByTimeData is Data.Loaded) {
+                            SpendingSummaryComponent(
+                                spentByTimeData = spentByTimeData.data,
+                                spentByTimePeriod = spentByTimePeriod,
+                                onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
+                                columnChartEntryModelProducer = chartEntryModelProducer,
+                            )
+                        }
                     }
 
                     Spacer(Modifier.height(12.dp))
 
+                    // TODO change this to center title large like on dashboard
                     AnimatedVisibility(visible = transactionItems.itemCount == 0) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
@@ -224,8 +234,8 @@ fun ShopScreenPreview() {
                 onBack = {},
                 shop = null,
                 transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
-                totalSpentData = generateRandomFloatValue(),
+                spentByTimeData = Data.Loaded(TransactionTotalSpentByTime.generateList()),
+                totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
                 chartEntryModelProducer = ChartEntryModelProducer(),

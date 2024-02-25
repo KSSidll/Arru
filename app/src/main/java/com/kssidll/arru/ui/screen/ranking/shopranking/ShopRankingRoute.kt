@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.ranking.shopranking
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.ranking.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
@@ -18,7 +19,7 @@ fun ShopRankingRoute(
         onBack = navigateBack,
         title = stringResource(R.string.shops),
         data = viewModel.shopTotalSpentFlow()
-            .collectAsState(emptyList()).value,
+            .collectAsState(Data.Loading()).value,
         onItemClick = {
             navigateShop(it.shop.id)
         },

@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.display.producer
 
 import androidx.compose.runtime.*
 import androidx.paging.compose.*
+import com.kssidll.arru.domain.data.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
 @Composable
@@ -28,10 +29,10 @@ fun ProducerRoute(
         producer = viewModel.producer,
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList())?.value
-            ?: emptyList(),
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
+            ?: Data.Loaded(emptyList()),
         totalSpentData = viewModel.producerTotalSpent()
-            ?.collectAsState(initial = 0F)?.value ?: 0F,
+            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loaded(0f),
         spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)

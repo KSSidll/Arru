@@ -31,13 +31,18 @@ import com.kssidll.arru.ui.theme.*
 fun <T> RankingScreen(
     onBack: () -> Unit,
     title: String,
-    data: List<T>,
+    data: Data<List<T>>,
     onItemClick: ((T) -> Unit)? = null,
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
     onItemLongClickLabel: String? = null,
 ) where T: RankSource {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // TODO add animation when loading / info when no available
+    val items = if (data is Data.Loaded) {
+        data.data
+    } else emptyList()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -64,7 +69,7 @@ fun <T> RankingScreen(
             ) {
                 RankingList(
                     innerItemPadding = PaddingValues(horizontal = 16.dp),
-                    items = data,
+                    items = items,
                     displayCount = 0,
                     scaleByRank = false,
                     onItemClick = onItemClick,
@@ -86,7 +91,7 @@ fun RankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = ItemSpentByCategory.generateList(),
+                data = Data.Loaded(ItemSpentByCategory.generateList()),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},

@@ -67,10 +67,13 @@ class EditProductViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(productId: Long): Flow<List<Product>> {
+    fun allMergeCandidates(productId: Long): Flow<Data<List<Product>>> {
         return productRepository.allFlow()
-            .onEach { it.filter { item -> item.id != productId } }
-            .distinctUntilChanged()
+            .onEach {
+                if (it is Data.Loaded) {
+                    it.data.filter { item -> item.id != productId }
+                }
+            }
     }
 
     /**

@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.modify.transaction.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -35,7 +36,7 @@ fun EditTransactionRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops()
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         onNewShopSelected = {
             viewModel.onNewShopSelected(it)
         },

@@ -44,7 +44,9 @@ abstract class ModifyProductViewModel: ViewModel() {
             mProducerListener = viewModelScope.launch {
                 producerRepository.getFlow(producer.id)
                     .collectLatest {
-                        screenState.selectedProductProducer.value = Field.Loaded(it)
+                        if (it is Data.Loaded) {
+                            screenState.selectedProductProducer.value = Field.Loaded(it.data)
+                        }
                     }
             }
         }
@@ -58,7 +60,9 @@ abstract class ModifyProductViewModel: ViewModel() {
             mCategoryListener = viewModelScope.launch {
                 categoryRepository.getFlow(category.id)
                     .collectLatest {
-                        screenState.selectedProductCategory.value = Field.Loaded(it)
+                        if (it is Data.Loaded) {
+                            screenState.selectedProductCategory.value = Field.Loaded(it.data)
+                        }
                     }
             }
         }
@@ -67,14 +71,14 @@ abstract class ModifyProductViewModel: ViewModel() {
     /**
      * @return List of all categories
      */
-    fun allCategories(): Flow<List<ProductCategoryWithAltNames>> {
+    fun allCategories(): Flow<Data<List<ProductCategoryWithAltNames>>> {
         return categoryRepository.allWithAltNamesFlow()
     }
 
     /**
      * @return List of all producers
      */
-    fun allProducers(): Flow<List<ProductProducer>> {
+    fun allProducers(): Flow<Data<List<ProductProducer>>> {
         return producerRepository.allFlow()
     }
 }

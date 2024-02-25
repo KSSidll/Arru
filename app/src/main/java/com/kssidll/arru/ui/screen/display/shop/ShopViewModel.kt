@@ -25,18 +25,15 @@ class ShopViewModel @Inject constructor(
 
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<TransactionTotalSpentByTime>>>? =
+        null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<Data<List<TransactionTotalSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun shopTotalSpent(): Flow<Float>? {
+    fun shopTotalSpent(): Flow<Data<Float?>>? {
         if (shop == null) return null
 
         return shopRepository.totalSpentFlow(shop!!)
-            .map {
-                it.toFloat()
-                    .div(TransactionBasket.COST_DIVISOR)
-            }
     }
 
     /**
@@ -70,7 +67,11 @@ class ShopViewModel @Inject constructor(
         mShopListener = viewModelScope.launch {
             shopRepository.getFlow(shopId)
                 .collectLatest {
-                    mShop.value = it
+                    if (it is Data.Loaded) {
+                        mShop.value = it.data
+                    } else {
+                        mShop.value = null
+                    }
                 }
         }
 

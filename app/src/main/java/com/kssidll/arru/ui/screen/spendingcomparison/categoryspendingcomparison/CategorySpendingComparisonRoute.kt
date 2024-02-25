@@ -4,6 +4,7 @@ package com.kssidll.arru.ui.screen.spendingcomparison.categoryspendingcomparison
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.spendingcomparison.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import java.text.*
@@ -39,13 +40,13 @@ fun CategorySpendingComparisonRoute(
             year,
             month
         )
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         leftSideHeader = stringResource(id = R.string.previous),
         rightSideItems = viewModel.categoryTotalSpentCurrentMonth(
             year,
             month
         )
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         rightSideHeader = stringResource(id = R.string.current),
     )
 }

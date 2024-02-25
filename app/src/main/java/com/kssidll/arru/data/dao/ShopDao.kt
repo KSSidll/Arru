@@ -137,7 +137,7 @@ interface ShopDao {
         WHERE transactionbasket.shopId = :shopId
     """
     )
-    fun totalSpentFlow(shopId: Long): Flow<Long>
+    fun totalSpentFlow(shopId: Long): Flow<Long?>
 
     @Query(
         """

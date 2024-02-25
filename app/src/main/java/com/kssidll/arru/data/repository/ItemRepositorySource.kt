@@ -1,6 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 interface ItemRepositorySource {
@@ -117,5 +118,5 @@ interface ItemRepositorySource {
     /**
      * @return newest [Item] as flow
      */
-    suspend fun newestFlow(): Flow<Item>
+    suspend fun newestFlow(): Flow<Data<Item?>>
 }

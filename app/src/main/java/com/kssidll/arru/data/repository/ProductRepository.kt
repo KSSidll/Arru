@@ -10,6 +10,7 @@ import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.Delete
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
@@ -228,40 +229,57 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         return dao.get(productId)
     }
 
-    override fun getFlow(productId: Long): Flow<Product?> {
+    override fun getFlow(productId: Long): Flow<Data<Product?>> {
         return dao.getFlow(productId)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<Product?>() }
     }
 
-    override fun totalSpentFlow(product: Product): Flow<Long> {
+    override fun totalSpentFlow(product: Product): Flow<Data<Float?>> {
         return dao.totalSpentFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map {
+                Data.Loaded(
+                    it?.toFloat()
+                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                )
+            }
+            .onStart { Data.Loading<Long>() }
     }
 
-    override fun totalSpentByDayFlow(product: Product): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByDayFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByDayFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByWeekFlow(product: Product): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByWeekFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByWeekFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByMonthFlow(product: Product): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByMonthFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByMonthFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByYearFlow(product: Product): Flow<List<ItemSpentByTime>> {
+    override fun totalSpentByYearFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
         return dao.totalSpentByYearFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
     override fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>> {
@@ -299,21 +317,27 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         return dao.newestItem(product.id)
     }
 
-    override fun allWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
+    override fun allWithAltNamesFlow(): Flow<Data<List<ProductWithAltNames>>> {
         return dao.allWithAltNamesFlow()
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ProductCategoryWithAltNames>>() }
     }
 
-    override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<List<ProductPriceByShopByTime>> {
+    override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<List<ProductPriceByShopByTime>>> {
         return dao.averagePriceByVariantByShopByMonthFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<ProductPriceByShopByTime>>() }
     }
 
-    override fun allFlow(): Flow<List<Product>> {
+    override fun allFlow(): Flow<Data<List<Product>>> {
         return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
+            .map { Data.Loaded(it) }
+            .onStart { Data.Loading<List<Product>>() }
     }
 }

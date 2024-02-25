@@ -182,7 +182,7 @@ interface ProducerDao {
         WHERE product.producerId = :producerId
     """
     )
-    fun totalSpentFlow(producerId: Long): Flow<Long>
+    fun totalSpentFlow(producerId: Long): Flow<Long?>
 
     @Query(
         """

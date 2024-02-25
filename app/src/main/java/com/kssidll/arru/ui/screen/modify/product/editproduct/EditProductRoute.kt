@@ -4,6 +4,7 @@ package com.kssidll.arru.ui.screen.modify.product.editproduct
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.modify.product.*
 import dev.olshevski.navigation.reimagined.hilt.*
 import kotlinx.coroutines.*
@@ -42,9 +43,9 @@ fun EditProductRoute(
         onBack = navigateBack,
         state = viewModel.screenState,
         categories = viewModel.allCategories()
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         producers = viewModel.allProducers()
-            .collectAsState(initial = emptyList()).value,
+            .collectAsState(initial = Data.Loading()).value,
         onNewProducerSelected = {
             viewModel.onNewProducerSelected(it)
         },

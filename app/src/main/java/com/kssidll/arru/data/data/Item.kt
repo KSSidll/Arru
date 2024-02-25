@@ -270,14 +270,14 @@ data class TransactionTotalSpentByTime(
     val total: Long,
 ): ChartSource {
     companion object {
-        fun generate(): ItemSpentByTime {
-            return ItemSpentByTime(
+        fun generate(): TransactionTotalSpentByTime {
+            return TransactionTotalSpentByTime(
                 time = generateRandomDateString(),
                 total = generateRandomLongValue(),
             )
         }
 
-        fun generateList(amount: Int = 10): List<ItemSpentByTime> {
+        fun generateList(amount: Int = 10): List<TransactionTotalSpentByTime> {
             return List(amount) {
                 generate()
             }

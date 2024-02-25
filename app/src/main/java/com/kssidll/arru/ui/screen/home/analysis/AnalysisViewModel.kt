@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.*
+import com.kssidll.arru.domain.data.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -29,24 +30,24 @@ class AnalysisViewModel @Inject constructor(
     val month: Int get() = mMonth.value // 1 - 12
 
     private var mSetCategorySpendingJob: Job? = null
-    private val mSetCategorySpending: MutableState<Flow<List<ItemSpentByCategory>>> =
+    private val mSetCategorySpending: MutableState<Flow<Data<List<ItemSpentByCategory>>>> =
         mutableStateOf(flowOf())
-    val setCategorySpending: Flow<List<ItemSpentByCategory>> get() = mSetCategorySpending.value
+    val setCategorySpending: Flow<Data<List<ItemSpentByCategory>>> get() = mSetCategorySpending.value
 
     private var mCompareCategorySpendingJob: Job? = null
-    private val mCompareCategorySpending: MutableState<Flow<List<ItemSpentByCategory>>> =
+    private val mCompareCategorySpending: MutableState<Flow<Data<List<ItemSpentByCategory>>>> =
         mutableStateOf(flowOf())
-    val compareCategorySpending: Flow<List<ItemSpentByCategory>> get() = mCompareCategorySpending.value
+    val compareCategorySpending: Flow<Data<List<ItemSpentByCategory>>> get() = mCompareCategorySpending.value
 
     private var mSetShopSpendingJob: Job? = null
-    private val mSetShopSpending: MutableState<Flow<List<TransactionTotalSpentByShop>>> =
+    private val mSetShopSpending: MutableState<Flow<Data<List<TransactionTotalSpentByShop>>>> =
         mutableStateOf(flowOf())
-    val setShopSpending: Flow<List<TransactionTotalSpentByShop>> get() = mSetShopSpending.value
+    val setShopSpending: Flow<Data<List<TransactionTotalSpentByShop>>> get() = mSetShopSpending.value
 
     private var mCompareShopSpendingJob: Job? = null
-    private val mCompareShopSpending: MutableState<Flow<List<TransactionTotalSpentByShop>>> =
+    private val mCompareShopSpending: MutableState<Flow<Data<List<TransactionTotalSpentByShop>>>> =
         mutableStateOf(flowOf())
-    val compareShopSpending: Flow<List<TransactionTotalSpentByShop>> get() = mCompareShopSpending.value
+    val compareShopSpending: Flow<Data<List<TransactionTotalSpentByShop>>> get() = mCompareShopSpending.value
 
     init {
         updateData()

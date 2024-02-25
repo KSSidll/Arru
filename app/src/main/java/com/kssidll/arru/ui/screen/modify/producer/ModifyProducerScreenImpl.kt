@@ -43,7 +43,7 @@ fun ModifyProducerScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ProductProducer) -> Unit)? = null,
-    mergeCandidates: Flow<List<ProductProducer>> = flowOf(),
+    mergeCandidates: Flow<Data<List<ProductProducer>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: ProductProducer? = null,
     onChosenMergeCandidateChange: ((ProductProducer?) -> Unit)? = null,

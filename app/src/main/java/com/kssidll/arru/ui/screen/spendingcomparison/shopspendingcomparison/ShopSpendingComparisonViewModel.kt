@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison
 import androidx.lifecycle.*
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.*
+import com.kssidll.arru.domain.data.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.flow.*
 import javax.inject.*
@@ -18,7 +19,7 @@ class ShopSpendingComparisonViewModel @Inject constructor(
     fun shopTotalSpentCurrentMonth(
         year: Int,
         month: Int
-    ): Flow<List<TransactionTotalSpentByShop>> {
+    ): Flow<Data<List<TransactionTotalSpentByShop>>> {
         return shopRepository.totalSpentByShopByMonthFlow(
             year,
             month
@@ -31,7 +32,7 @@ class ShopSpendingComparisonViewModel @Inject constructor(
     fun shopTotalSpentPreviousMonth(
         year: Int,
         month: Int
-    ): Flow<List<TransactionTotalSpentByShop>> {
+    ): Flow<Data<List<TransactionTotalSpentByShop>>> {
         var localYear: Int = year
         var localMonth: Int = month
 

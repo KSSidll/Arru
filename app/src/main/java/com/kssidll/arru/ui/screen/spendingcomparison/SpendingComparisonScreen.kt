@@ -21,13 +21,23 @@ import com.kssidll.arru.ui.theme.*
 fun <T> SpendingComparisonScreen(
     onBack: () -> Unit,
     title: String,
-    leftSideItems: List<T>,
+    leftSideItems: Data<List<T>>,
     leftSideHeader: String,
-    rightSideItems: List<T>,
+    rightSideItems: Data<List<T>>,
     rightSideHeader: String,
     modifier: Modifier = Modifier,
 ) where T: RankSource {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // TODO add animation on loading / info when none available
+    val leftItems = if (leftSideItems is Data.Loaded) {
+        leftSideItems.data
+    } else emptyList()
+
+    val rightItems = if (rightSideItems is Data.Loaded) {
+        rightSideItems.data
+    } else emptyList()
+
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -49,9 +59,9 @@ fun <T> SpendingComparisonScreen(
 
             SpendingComparisonList(
                 listHeader = String(),
-                leftSideItems = leftSideItems,
+                leftSideItems = leftItems,
                 leftSideHeader = leftSideHeader,
-                rightSideItems = rightSideItems,
+                rightSideItems = rightItems,
                 rightSideHeader = rightSideHeader,
                 modifier = modifier
                     .padding(it)
@@ -71,9 +81,9 @@ private fun SpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4),
+                leftSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4),
+                rightSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
                 rightSideHeader = "right",
             )
         }

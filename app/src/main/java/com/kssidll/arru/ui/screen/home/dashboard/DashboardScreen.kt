@@ -43,18 +43,22 @@ internal fun DashboardScreen(
     onSettingsAction: () -> Unit,
     onCategoryRankingCardClick: () -> Unit,
     onShopRankingCardClick: () -> Unit,
-    totalSpentData: Float,
-    spentByShopData: List<TransactionTotalSpentByShop>,
-    spentByCategoryData: List<ItemSpentByCategory>,
-    spentByTimeData: List<ChartSource>,
+    totalSpentData: Data<Float?>,
+    spentByShopData: Data<List<TransactionTotalSpentByShop>>,
+    spentByCategoryData: Data<List<ItemSpentByCategory>>,
+    spentByTimeData: Data<List<TransactionSpentByTime>>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods,
     onSpentByTimePeriodUpdate: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
 ) {
+    val totalSpent = if (totalSpentData is Data.Loaded) {
+        totalSpentData.data ?: 0f
+    } else 0f
+
     if (isExpandedScreen) {
         ExpandedDashboardScreenContent(
             onCategoryRankingCardClick = onCategoryRankingCardClick,
             onShopRankingCardClick = onShopRankingCardClick,
-            totalSpentData = totalSpentData,
+            totalSpentData = totalSpent,
             spentByShopData = spentByShopData,
             spentByCategoryData = spentByCategoryData,
             spentByTimeData = spentByTimeData,
@@ -66,7 +70,7 @@ internal fun DashboardScreen(
             onSettingsAction = onSettingsAction,
             onCategoryRankingCardClick = onCategoryRankingCardClick,
             onShopRankingCardClick = onShopRankingCardClick,
-            totalSpentData = totalSpentData,
+            totalSpentData = totalSpent,
             spentByShopData = spentByShopData,
             spentByCategoryData = spentByCategoryData,
             spentByTimeData = spentByTimeData,
@@ -83,9 +87,9 @@ private fun DashboardScreenContent(
     onCategoryRankingCardClick: () -> Unit,
     onShopRankingCardClick: () -> Unit,
     totalSpentData: Float,
-    spentByShopData: List<TransactionTotalSpentByShop>,
-    spentByCategoryData: List<ItemSpentByCategory>,
-    spentByTimeData: List<ChartSource>,
+    spentByShopData: Data<List<TransactionTotalSpentByShop>>,
+    spentByCategoryData: Data<List<ItemSpentByCategory>>,
+    spentByTimeData: Data<List<TransactionSpentByTime>>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods,
     onSpentByTimePeriodUpdate: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
 ) {
@@ -120,7 +124,7 @@ private fun DashboardScreenContent(
         Box(modifier = Modifier.padding(paddingValues)) {
 
             AnimatedVisibility(
-                visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty(),
+                visible = spentByTimeData.loadedEmpty() && spentByCategoryData.loadedEmpty() && spentByShopData.loadedEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -135,64 +139,74 @@ private fun DashboardScreenContent(
             ) {
                 Spacer(Modifier.height(16.dp))
 
-                TotalAverageAndMedianSpendingComponent(
-                    spentByTimeData = spentByTimeData,
-                    totalSpentData = totalSpentData,
-                )
+                AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                    if (spentByTimeData is Data.Loaded) {
+                        TotalAverageAndMedianSpendingComponent(
+                            spentByTimeData = spentByTimeData.data,
+                            totalSpentData = totalSpentData,
+                        )
+                    }
+                }
 
                 Spacer(Modifier.height(28.dp))
 
-                AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
-                    SpendingSummaryComponent(
-                        modifier = Modifier.animateContentSize(),
-                        spentByTimeData = spentByTimeData,
-                        spentByTimePeriod = spentByTimePeriod,
-                        onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
-                    )
+                AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                    if (spentByTimeData is Data.Loaded) {
+                        SpendingSummaryComponent(
+                            modifier = Modifier.animateContentSize(),
+                            spentByTimeData = spentByTimeData.data,
+                            spentByTimePeriod = spentByTimePeriod,
+                            onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(4.dp))
 
                 Column {
-                    AnimatedVisibility(visible = spentByCategoryData.isNotEmpty()) {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            ),
-                            modifier = Modifier
-                                .padding(TileOuterPadding)
-                                .fillMaxWidth()
-                        ) {
-                            RankingList(
-                                innerItemPadding = PaddingValues(TileInnerPadding),
-                                items = spentByCategoryData,
+                    AnimatedVisibility(visible = spentByCategoryData.loadedData()) {
+                        if (spentByCategoryData is Data.Loaded) {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                ),
                                 modifier = Modifier
-                                    .heightIn(min = 144.dp)
-                                    .clickable {
-                                        onCategoryRankingCardClick()
-                                    }
-                            )
+                                    .padding(TileOuterPadding)
+                                    .fillMaxWidth()
+                            ) {
+                                RankingList(
+                                    innerItemPadding = PaddingValues(TileInnerPadding),
+                                    items = spentByCategoryData.data,
+                                    modifier = Modifier
+                                        .heightIn(min = 144.dp)
+                                        .clickable {
+                                            onCategoryRankingCardClick()
+                                        }
+                                )
+                            }
                         }
                     }
 
-                    AnimatedVisibility(visible = spentByShopData.isNotEmpty()) {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            ),
-                            modifier = Modifier
-                                .padding(TileOuterPadding)
-                                .fillMaxWidth()
-                        ) {
-                            RankingList(
-                                innerItemPadding = PaddingValues(TileInnerPadding),
-                                items = spentByShopData,
+                    AnimatedVisibility(visible = spentByShopData.loadedData()) {
+                        if (spentByShopData is Data.Loaded) {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                ),
                                 modifier = Modifier
-                                    .heightIn(min = 144.dp)
-                                    .clickable {
-                                        onShopRankingCardClick()
-                                    }
-                            )
+                                    .padding(TileOuterPadding)
+                                    .fillMaxWidth()
+                            ) {
+                                RankingList(
+                                    innerItemPadding = PaddingValues(TileInnerPadding),
+                                    items = spentByShopData.data,
+                                    modifier = Modifier
+                                        .heightIn(min = 144.dp)
+                                        .clickable {
+                                            onShopRankingCardClick()
+                                        }
+                                )
+                            }
                         }
                     }
                 }
@@ -206,9 +220,9 @@ private fun ExpandedDashboardScreenContent(
     onCategoryRankingCardClick: () -> Unit,
     onShopRankingCardClick: () -> Unit,
     totalSpentData: Float,
-    spentByShopData: List<TransactionTotalSpentByShop>,
-    spentByCategoryData: List<ItemSpentByCategory>,
-    spentByTimeData: List<ChartSource>,
+    spentByShopData: Data<List<TransactionTotalSpentByShop>>,
+    spentByCategoryData: Data<List<ItemSpentByCategory>>,
+    spentByTimeData: Data<List<TransactionSpentByTime>>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods,
     onSpentByTimePeriodUpdate: (newPeriod: TimePeriodFlowHandler.Periods) -> Unit,
 ) {
@@ -216,7 +230,7 @@ private fun ExpandedDashboardScreenContent(
         // overlay displayed when there is no data available
         Box(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(
-                visible = spentByTimeData.isEmpty() && spentByCategoryData.isEmpty() && spentByShopData.isEmpty(),
+                visible = spentByTimeData.loadedEmpty() && spentByCategoryData.loadedEmpty() && spentByShopData.loadedEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -229,70 +243,78 @@ private fun ExpandedDashboardScreenContent(
         Column(modifier = Modifier.verticalScroll(state = scrollState)) {
             Spacer(Modifier.height(12.dp))
 
-            AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
-                TotalAverageAndMedianSpendingComponent(
-                    spentByTimeData = spentByTimeData,
-                    totalSpentData = totalSpentData,
-                )
+            AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                if (spentByTimeData is Data.Loaded) {
+                    TotalAverageAndMedianSpendingComponent(
+                        spentByTimeData = spentByTimeData.data,
+                        totalSpentData = totalSpentData,
+                    )
+                }
             }
 
             Spacer(Modifier.height(28.dp))
 
-            AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
-                SpendingSummaryComponent(
-                    spentByTimeData = spentByTimeData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
-                    modifier = Modifier
-                        .animateContentSize()
-                        .fillMaxWidth()
-                )
+            AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                if (spentByTimeData is Data.Loaded) {
+                    SpendingSummaryComponent(
+                        spentByTimeData = spentByTimeData.data,
+                        spentByTimePeriod = spentByTimePeriod,
+                        onSpentByTimePeriodUpdate = onSpentByTimePeriodUpdate,
+                        modifier = Modifier
+                            .animateContentSize()
+                            .fillMaxWidth()
+                    )
+                }
             }
 
             Spacer(Modifier.height(4.dp))
 
             Row {
                 AnimatedVisibility(
-                    visible = spentByCategoryData.isNotEmpty(),
+                    visible = spentByCategoryData.loadedData(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier.padding(TileOuterPadding)
-                    ) {
-                        RankingList(
-                            innerItemPadding = PaddingValues(TileInnerPadding),
-                            items = spentByCategoryData,
-                            modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
-                                    onCategoryRankingCardClick()
-                                }
-                        )
+                    if (spentByCategoryData is Data.Loaded) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            modifier = Modifier.padding(TileOuterPadding)
+                        ) {
+                            RankingList(
+                                innerItemPadding = PaddingValues(TileInnerPadding),
+                                items = spentByCategoryData.data,
+                                modifier = Modifier
+                                    .heightIn(min = 144.dp)
+                                    .clickable {
+                                        onCategoryRankingCardClick()
+                                    }
+                            )
+                        }
                     }
                 }
 
                 AnimatedVisibility(
-                    visible = spentByShopData.isNotEmpty(),
+                    visible = spentByShopData.loadedData(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier.padding(TileOuterPadding)
-                    ) {
-                        RankingList(
-                            innerItemPadding = PaddingValues(TileInnerPadding),
-                            items = spentByShopData,
-                            modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
-                                    onShopRankingCardClick()
-                                }
-                        )
+                    if (spentByShopData is Data.Loaded) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            modifier = Modifier.padding(TileOuterPadding)
+                        ) {
+                            RankingList(
+                                innerItemPadding = PaddingValues(TileInnerPadding),
+                                items = spentByShopData.data,
+                                modifier = Modifier
+                                    .heightIn(min = 144.dp)
+                                    .clickable {
+                                        onShopRankingCardClick()
+                                    }
+                            )
+                        }
                     }
                 }
             }
@@ -310,10 +332,10 @@ fun DashboardScreenPreview() {
                 onSettingsAction = {},
                 onCategoryRankingCardClick = {},
                 onShopRankingCardClick = {},
-                totalSpentData = 16832.18F,
-                spentByShopData = TransactionTotalSpentByShop.generateList(),
-                spentByCategoryData = ItemSpentByCategory.generateList(),
-                spentByTimeData = ItemSpentByTime.generateList(),
+                totalSpentData = Data.Loaded(16832.18F),
+                spentByShopData = Data.Loaded(TransactionTotalSpentByShop.generateList()),
+                spentByCategoryData = Data.Loaded(ItemSpentByCategory.generateList()),
+                spentByTimeData = Data.Loaded(TransactionSpentByTime.generateList()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodUpdate = {},
             )
@@ -331,10 +353,10 @@ fun EmptyDashboardScreenPreview() {
                 onSettingsAction = {},
                 onCategoryRankingCardClick = {},
                 onShopRankingCardClick = {},
-                totalSpentData = 16832.18F,
-                spentByShopData = emptyList(),
-                spentByCategoryData = emptyList(),
-                spentByTimeData = emptyList(),
+                totalSpentData = Data.Loaded(16832.18F),
+                spentByShopData = Data.Loading(),
+                spentByCategoryData = Data.Loading(),
+                spentByTimeData = Data.Loading(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodUpdate = {},
             )
@@ -352,10 +374,10 @@ fun ExpandedDashboardScreenPreview() {
                 onSettingsAction = {},
                 onCategoryRankingCardClick = {},
                 onShopRankingCardClick = {},
-                totalSpentData = 16832.18F,
-                spentByShopData = TransactionTotalSpentByShop.generateList(),
-                spentByCategoryData = ItemSpentByCategory.generateList(),
-                spentByTimeData = ItemSpentByTime.generateList(),
+                totalSpentData = Data.Loaded(16832.18F),
+                spentByShopData = Data.Loaded(TransactionTotalSpentByShop.generateList()),
+                spentByCategoryData = Data.Loaded(ItemSpentByCategory.generateList()),
+                spentByTimeData = Data.Loaded(TransactionSpentByTime.generateList()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodUpdate = {},
             )
@@ -373,10 +395,10 @@ fun EmptyExpandedDashboardScreenPreview() {
                 onSettingsAction = {},
                 onCategoryRankingCardClick = {},
                 onShopRankingCardClick = {},
-                totalSpentData = 16832.18F,
-                spentByShopData = emptyList(),
-                spentByCategoryData = emptyList(),
-                spentByTimeData = emptyList(),
+                totalSpentData = Data.Loaded(16832.18F),
+                spentByShopData = Data.Loading(),
+                spentByCategoryData = Data.Loading(),
+                spentByTimeData = Data.Loading(),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodUpdate = {},
             )

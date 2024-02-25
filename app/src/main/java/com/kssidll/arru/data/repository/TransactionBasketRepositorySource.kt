@@ -2,6 +2,7 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.*
 import com.kssidll.arru.data.data.*
+import com.kssidll.arru.domain.data.*
 import kotlinx.coroutines.flow.*
 
 interface TransactionBasketRepositorySource {
@@ -150,29 +151,29 @@ interface TransactionBasketRepositorySource {
     suspend fun countAfter(transactionBasketId: Long): Int
 
     /**
-     * @return long representing total spending for the [category] as flow
+     * @return float representing total spending for the [category] as flow
      */
-    fun totalSpentFlow(): Flow<Long>
+    fun totalSpentFlow(): Flow<Data<Float?>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByDayFlow(): Flow<Data<List<TransactionSpentByTime>>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByWeekFlow(): Flow<Data<List<TransactionSpentByTime>>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByMonthFlow(): Flow<Data<List<TransactionSpentByTime>>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByYearFlow(): Flow<Data<List<TransactionSpentByTime>>>
 
     /**
      * @param startPosition position, from 0 up, to get next [count] items from
@@ -194,5 +195,5 @@ interface TransactionBasketRepositorySource {
      * @param transactionId id to match [TransactionBasketWithItems] with
      * @return [TransactionBasketWithItems] matching [transactionId] as flow
      */
-    fun transactionBasketWithItemsFlow(transactionId: Long): Flow<TransactionBasketWithItems>
+    fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>>
 }

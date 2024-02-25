@@ -207,7 +207,7 @@ interface CategoryDao {
         WHERE productcategory.id = :categoryId
     """
     )
-    fun totalSpentFlow(categoryId: Long): Flow<Long>
+    fun totalSpentFlow(categoryId: Long): Flow<Long?>
 
     @Query(
         """

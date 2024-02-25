@@ -134,10 +134,10 @@ interface TransactionBasketDao {
     suspend fun countAfter(transactionBasketId: Long): Int
 
     @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
-    fun getFlow(transactionBasketId: Long): Flow<TransactionBasket>
+    fun getFlow(transactionBasketId: Long): Flow<TransactionBasket?>
 
     @Query("SELECT SUM(transactionbasket.totalCost) FROM transactionbasket")
-    fun totalSpentFlow(): Flow<Long>
+    fun totalSpentFlow(): Flow<Long?>
 
     @Query(
         """
@@ -266,18 +266,20 @@ interface TransactionBasketDao {
         }
     }
 
-    fun transactionBasketWithItems(transactionBasketId: Long): Flow<TransactionBasketWithItems> {
+    fun transactionBasketWithItems(transactionBasketId: Long): Flow<TransactionBasketWithItems?> {
         return getFlow(transactionBasketId).map { basket ->
-            val shop = basket.shopId?.let { shopById(it) }
-            val items = fullItemsByTransactionBasketId(basket.id)
+            if (basket != null) {
+                val shop = basket.shopId?.let { shopById(it) }
+                val items = fullItemsByTransactionBasketId(basket.id)
 
-            TransactionBasketWithItems(
-                id = basket.id,
-                date = basket.date,
-                shop = shop,
-                totalCost = basket.totalCost,
-                items = items,
-            )
+                return@map TransactionBasketWithItems(
+                    id = basket.id,
+                    date = basket.date,
+                    shop = shop,
+                    totalCost = basket.totalCost,
+                    items = items,
+                )
+            } else return@map null
         }
     }
 }

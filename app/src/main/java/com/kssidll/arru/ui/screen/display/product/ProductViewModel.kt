@@ -25,21 +25,17 @@ class ProductViewModel @Inject constructor(
 
     val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<ItemSpentByTime>>>? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<List<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<Data<List<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun productTotalSpent(): Flow<Float>? {
+    fun productTotalSpent(): Flow<Data<Float?>>? {
         if (product == null) return null
 
         return productRepository.totalSpentFlow(product!!)
-            .map {
-                it.toFloat()
-                    .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
-            }
     }
 
-    fun productPriceByShop(): Flow<List<ProductPriceByShopByTime>>? {
+    fun productPriceByShop(): Flow<Data<List<ProductPriceByShopByTime>>>? {
         if (product == null) return null
 
         return productRepository.averagePriceByVariantByShopByMonthFlow(product!!)
@@ -76,7 +72,11 @@ class ProductViewModel @Inject constructor(
         mProductListener = viewModelScope.launch {
             productRepository.getFlow(productId)
                 .collectLatest {
-                    mProduct.value = it
+                    if (it is Data.Loaded) {
+                        mProduct.value = it.data
+                    } else {
+                        mProduct.value = null
+                    }
                 }
         }
 

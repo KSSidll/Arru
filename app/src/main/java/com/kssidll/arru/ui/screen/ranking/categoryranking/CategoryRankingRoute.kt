@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.ranking.categoryranking
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.*
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.ranking.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
@@ -18,7 +19,7 @@ fun CategoryRankingRoute(
         onBack = navigateBack,
         title = stringResource(R.string.categories),
         data = viewModel.categoryTotalSpentFlow()
-            .collectAsState(emptyList()).value,
+            .collectAsState(Data.Loading()).value,
         onItemClick = {
             navigateCategory(it.category.id)
         },
