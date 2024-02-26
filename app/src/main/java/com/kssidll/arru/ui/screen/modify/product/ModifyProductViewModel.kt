@@ -37,6 +37,12 @@ abstract class ModifyProductViewModel: ViewModel() {
     }
 
     fun onNewProducerSelected(producer: ProductProducer?) {
+        // Don't do anything if the producer is the same as already selected
+        if (screenState.selectedProductProducer.value.data == producer) {
+            screenState.selectedProductProducer.apply { value = value.toLoaded() }
+            return
+        }
+
         screenState.selectedProductProducer.value = Field.Loaded(producer)
 
         mProducerListener?.cancel()
@@ -53,6 +59,12 @@ abstract class ModifyProductViewModel: ViewModel() {
     }
 
     fun onNewCategorySelected(category: ProductCategory?) {
+        // Don't do anything if the producer is the same as already selected
+        if (screenState.selectedProductCategory.value.data == category) {
+            screenState.selectedProductCategory.apply { value = value.toLoaded() }
+            return
+        }
+
         screenState.selectedProductCategory.value = Field.Loaded(category)
 
         mCategoryListener?.cancel()

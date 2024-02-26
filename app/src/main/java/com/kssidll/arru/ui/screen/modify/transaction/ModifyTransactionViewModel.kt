@@ -30,6 +30,12 @@ abstract class ModifyTransactionViewModel: ViewModel() {
     }
 
     fun onNewShopSelected(shop: Shop?) {
+        // Don't do anything if the shop is the same as already selected
+        if (screenState.selectedShop.value.data == shop) {
+            screenState.selectedShop.apply { value = value.toLoaded() }
+            return
+        }
+
         screenState.selectedShop.value = Field.Loaded(shop)
 
         mShopListener?.cancel()

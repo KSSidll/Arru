@@ -52,6 +52,12 @@ abstract class ModifyItemViewModel: ViewModel() {
         product: Product?,
         loadLastItemProductData: Boolean = true
     ) {
+        // Don't do anything if the product is the same as already selected
+        if (screenState.selectedProduct.value.data == product) {
+            screenState.selectedProduct.apply { value = value.toLoaded() }
+            return
+        }
+
         screenState.selectedProduct.value = Field.Loaded(product)
         updateProductVariants()
 
@@ -64,6 +70,12 @@ abstract class ModifyItemViewModel: ViewModel() {
     }
 
     fun onNewVariantSelected(variant: ProductVariant?) {
+        // Don't do anything if the variant is the same as already selected
+        if (screenState.selectedVariant.value.data == variant) {
+            screenState.selectedVariant.apply { value = value.toLoaded() }
+            return
+        }
+
         screenState.selectedVariant.value = Field.Loaded(variant)
         setNewVariantListener(variant)
     }
