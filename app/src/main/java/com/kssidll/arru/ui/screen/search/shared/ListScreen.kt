@@ -49,6 +49,7 @@ internal fun <T> ListScreen(
     }
 
     // TODO add info when empty
+    // TODO this animation is kinda weird, fix it (the product search screen mostly)
     AnimatedVisibility(
         visible = items.loadedData(),
         enter = fadeIn(),

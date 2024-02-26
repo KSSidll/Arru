@@ -92,43 +92,43 @@ ksp {
 
 dependencies {
     // AndroidX
-    implementation(libs.activity.compose)
-    implementation(libs.core.splashscreen)
-    implementation(libs.appcompat)
-    implementation(libs.datastore.preferences)
-    implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.androidx.splashscreen.core)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.google.accompanist.systemuicontroller)
 
     // Navigation
-    implementation(libs.reimagined)
-    implementation(libs.reimagined.hilt)
+    implementation(libs.dev.navigation.reimagined)
+    implementation(libs.dev.navigation.reimagined.hilt)
 
     // Compose
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
-    debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.compose.ui.test.manifest)
-    implementation(libs.material3)
-    implementation(libs.material3.window.sizeclass)
-    implementation(libs.material.icons.extended)
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.window.sizeclass)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // DI
-    implementation(libs.hilt)
-    kapt(libs.hilt.compiler)
+    implementation(libs.google.hilt)
+    kapt(libs.google.hilt.compiler)
 
     // Room
-    implementation(libs.room.ktx)
-    ksp(libs.room.ktx)
-    ksp(libs.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // Paging
-    implementation(libs.paging)
-    implementation(libs.paging.compose)
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
 
-    // Other
-    implementation(libs.fuzzywuzzy)
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m3)
+    // Text fuzzy search
+    implementation(libs.dev.text.search.fuzzywuzzy)
+
+    // Chart
+    implementation(libs.dev.chart.vico.compose)
+    implementation(libs.dev.chart.vico.compose.m3)
 }
 
 ksp {
