@@ -34,21 +34,99 @@ import com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison.*
 import dev.olshevski.navigation.reimagined.*
 import kotlinx.parcelize.*
 
+/**
+ * Interface for navigation destinations that can accept shop id
+ */
 private interface AcceptsShopId {
     val providedShopId: MutableState<Long?>
+
+    /**
+     * Provides the [id] to the navigation destination
+     * @param id id to provide
+     * @param forceToNull whether to set the value to null if [id] is null, false by default
+     */
+    fun provideShop(
+        id: Long? = null,
+        forceToNull: Boolean = false
+    ) {
+        if (!forceToNull && id != null) {
+            providedShopId.value = id
+        }
+    }
 }
 
+/**
+ * Interface for navigation destinations that can accept product id with product variant id
+ */
 private interface AcceptsProductId {
     val providedProductId: MutableState<Long?>
     val providedVariantId: MutableState<Long?>
+
+    /**
+     * Provides the [productId] and [variantId] to the navigation destination
+     *
+     * Will forcefully set variant to null if only [productId] is provided
+     * @param productId product id to provide
+     * @param variantId variant id to provide
+     * @param forceProductToNull whether to set the product value to null if [productId] is null, false by default
+     * @param forceVariantToNull whether to set the variant value to null if [variantId] is null, false by default
+     */
+    fun provideProduct(
+        productId: Long? = null,
+        variantId: Long? = null,
+        forceProductToNull: Boolean = false,
+        forceVariantToNull: Boolean = false,
+    ) {
+        if (forceProductToNull || productId != null) {
+            providedProductId.value = productId
+        }
+
+        if ((forceVariantToNull || productId != null) || variantId != null) {
+            providedVariantId.value = variantId
+        }
+    }
 }
 
+/**
+ * Interface for navigation destinations that can accept producer id
+ */
 private interface AcceptsProducerId {
     val providedProducerId: MutableState<Long?>
+
+    /**
+     * Provides the [id] to the navigation destination
+     * @param id id to provide
+     * @param forceToNull whether to set the value to null if [id] is null, false by default
+     */
+    fun provideProducer(
+        id: Long? = null,
+        forceToNull: Boolean = false
+    ) {
+        if (!forceToNull && id != null) {
+            providedProducerId.value = id
+        }
+    }
 }
 
+/**
+ * Interface for navigation destinations that can accept a category id
+ */
 private interface AcceptsCategoryId {
     val providedCategoryId: MutableState<Long?>
+
+    /**
+     * Provides the [id] to the navigation destination
+     * @param id id to provide
+     * @param forceToNull whether to set the value to null if [id] is null, false by default
+     */
+    fun provideCategory(
+        id: Long? = null,
+        forceToNull: Boolean = false
+    ) {
+        if (!forceToNull && id != null) {
+            providedCategoryId.value = id
+        }
+    }
 }
 
 @Parcelize
@@ -547,8 +625,7 @@ fun Navigation(
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsProductId) {
-                            previousDestination.providedProductId.value = it
-                            previousDestination.providedVariantId.value = null
+                            previousDestination.provideProduct(it)
                         }
                         navigateBack()
                     },
@@ -568,8 +645,10 @@ fun Navigation(
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsProductId) {
-                            previousDestination.providedProductId.value = screen.productId
-                            previousDestination.providedVariantId.value = it
+                            previousDestination.provideProduct(
+                                screen.productId,
+                                it
+                            )
                         }
                         navigateBack()
                     },
@@ -582,7 +661,7 @@ fun Navigation(
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsCategoryId) {
-                            previousDestination.providedCategoryId.value = it
+                            previousDestination.provideCategory(it)
                         }
                         navigateBack()
                     },
@@ -595,7 +674,7 @@ fun Navigation(
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsProducerId) {
-                            previousDestination.providedProducerId.value = it
+                            previousDestination.provideProducer(it)
                         }
                         navigateBack()
                     },
@@ -608,7 +687,7 @@ fun Navigation(
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsShopId) {
-                            previousDestination.providedShopId.value = it
+                            previousDestination.provideShop(it)
                         }
                         navigateBack()
                     },
