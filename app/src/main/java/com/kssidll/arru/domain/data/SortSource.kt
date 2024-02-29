@@ -4,8 +4,8 @@ interface SortSource {
     fun sortValue(): Long
 }
 
-fun <E> List<E>.median(): Double where E: SortSource, E: DoubleSource {
-    if (isEmpty()) return 0.0
+fun <E> List<E>.median(): Float where E: SortSource, E: FloatSource {
+    if (isEmpty()) return 0f
 
     val sorted = this.sortedBy { it.sortValue() }
     val middle = sorted.size.div(2) - 1

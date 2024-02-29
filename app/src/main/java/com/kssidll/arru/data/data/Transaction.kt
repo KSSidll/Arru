@@ -208,8 +208,8 @@ data class TransactionSpentByTime(
         }
     }
 
-    override fun value(): Double {
-        return total.toDouble()
+    override fun value(): Float {
+        return total.toFloat()
             .div(TransactionBasket.COST_DIVISOR)
     }
 
@@ -220,7 +220,7 @@ data class TransactionSpentByTime(
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
-            value().toFloat()
+            value()
         )
     }
 

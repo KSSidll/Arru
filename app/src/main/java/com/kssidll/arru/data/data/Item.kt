@@ -232,8 +232,8 @@ data class ItemSpentByTime(
         }
     }
 
-    override fun value(): Double {
-        return total.toDouble()
+    override fun value(): Float {
+        return total.toFloat()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 
@@ -244,7 +244,7 @@ data class ItemSpentByTime(
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
-            value().toFloat()
+            value()
         )
     }
 
@@ -284,8 +284,8 @@ data class TransactionTotalSpentByTime(
         }
     }
 
-    override fun value(): Double {
-        return total.toDouble()
+    override fun value(): Float {
+        return total.toFloat()
             .div(TransactionBasket.COST_DIVISOR)
     }
 
@@ -296,7 +296,7 @@ data class TransactionTotalSpentByTime(
     override fun chartEntry(x: Int): ChartEntry {
         return FloatEntry(
             x.toFloat(),
-            value().toFloat()
+            value()
         )
     }
 
@@ -336,8 +336,8 @@ data class TransactionTotalSpentByShop(
         }
     }
 
-    override fun value(): Double {
-        return total.toDouble()
+    override fun value(): Float {
+        return total.toFloat()
             .div(TransactionBasket.COST_DIVISOR)
     }
 
@@ -377,8 +377,8 @@ data class ItemSpentByCategory(
         }
     }
 
-    override fun value(): Double {
-        return total.toDouble()
+    override fun value(): Float {
+        return total.toFloat()
             .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
     }
 

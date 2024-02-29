@@ -19,11 +19,17 @@ import com.kssidll.arru.ui.theme.*
 fun TotalAverageAndMedianSpendingComponent(
     spentByTimeData: List<ChartSource>,
     totalSpentData: Float,
-    animationSpec: AnimationSpec<Float> = tween(1200),
+    animationSpec: AnimationSpec<Float> = tween(800, easing = EaseIn),
+    skipAnimation: Boolean = false,
+    onAnimationEnd: () -> Unit = {},
 ) {
+    val totalStartValue = if (skipAnimation) totalSpentData else 0f
+    val averageStartValue = if (skipAnimation) spentByTimeData.avg() else 0f
+    val medianStartValue = if (skipAnimation) spentByTimeData.median() else 0f
+
     Column {
         Box(Modifier.fillMaxWidth()) {
-            var targetValue by remember { mutableFloatStateOf(totalSpentData) }
+            var targetValue by remember { mutableFloatStateOf(totalStartValue) }
 
             LaunchedEffect(totalSpentData) {
                 targetValue = totalSpentData
@@ -31,8 +37,13 @@ fun TotalAverageAndMedianSpendingComponent(
 
             val animatedValue = animateFloatAsState(
                 targetValue = targetValue,
-                animationSpec = tween(1200),
-                label = "total spent value animation"
+                animationSpec = animationSpec,
+                label = "total spent value animation",
+                finishedListener = {
+                    // only called here since all animations use same spec and the total is the highest value
+                    // so will take the longest no matter the spec
+                    onAnimationEnd()
+                }
             )
 
             Text(
@@ -50,8 +61,8 @@ fun TotalAverageAndMedianSpendingComponent(
                 .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            var averageTargetValue by remember { mutableDoubleStateOf(spentByTimeData.avg()) }
-            var medianTargetValue by remember { mutableDoubleStateOf(spentByTimeData.median()) }
+            var averageTargetValue by remember { mutableFloatStateOf(averageStartValue) }
+            var medianTargetValue by remember { mutableFloatStateOf(medianStartValue) }
 
             LaunchedEffect(spentByTimeData) {
                 averageTargetValue = spentByTimeData.avg()
@@ -59,13 +70,13 @@ fun TotalAverageAndMedianSpendingComponent(
             }
 
             val animatedAverageValue = animateFloatAsState(
-                targetValue = averageTargetValue.toFloat(),
+                targetValue = averageTargetValue,
                 animationSpec = animationSpec,
                 label = "average spent value animation"
             )
 
             val animatedMedianValue = animateFloatAsState(
-                targetValue = medianTargetValue.toFloat(),
+                targetValue = medianTargetValue,
                 animationSpec = animationSpec,
                 label = "median spent value animation"
             )

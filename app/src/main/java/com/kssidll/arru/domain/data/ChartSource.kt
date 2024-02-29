@@ -2,7 +2,7 @@ package com.kssidll.arru.domain.data
 
 import com.patrykandpatrick.vico.core.entry.*
 
-interface ChartSource: DoubleSource, SortSource {
+interface ChartSource: FloatSource, SortSource {
     fun chartEntry(x: Int): ChartEntry
     fun startAxisLabel(): String?
     fun topAxisLabel(): String?
