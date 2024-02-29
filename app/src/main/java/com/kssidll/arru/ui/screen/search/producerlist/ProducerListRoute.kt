@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.search.producerlist
 
 
 import androidx.compose.runtime.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.search.shared.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
@@ -12,8 +13,13 @@ fun ProducerListRoute(
 ) {
     val viewModel: ProducerListViewModel = hiltViewModel()
 
-    ListScreen(
-        state = viewModel.screenState,
+    SearchList(
+        filter = viewModel.filter,
+        onFilterChange = {
+            viewModel.filter = it
+        },
+        items = viewModel.items()
+            .collectAsState(initial = Data.Loading()).value,
         onItemClick = {
             onProducerClick(it.id)
         },

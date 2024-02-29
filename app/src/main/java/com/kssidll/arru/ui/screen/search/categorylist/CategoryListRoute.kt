@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.search.categorylist
 
 
 import androidx.compose.runtime.*
+import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.screen.search.shared.*
 import dev.olshevski.navigation.reimagined.hilt.*
 
@@ -12,8 +13,13 @@ fun CategoryListRoute(
 ) {
     val viewModel: CategoryListViewModel = hiltViewModel()
 
-    ListScreen(
-        state = viewModel.screenState,
+    SearchList(
+        filter = viewModel.filter,
+        onFilterChange = {
+            viewModel.filter = it
+        },
+        items = viewModel.items()
+            .collectAsState(initial = Data.Loading()).value,
         onItemClick = {
             onCategoryClick(it.category.id)
         },

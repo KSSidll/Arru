@@ -1,10 +1,9 @@
 package com.kssidll.arru.ui.screen.search.categorylist
 
 
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.ui.screen.search.shared.*
 import dagger.hilt.android.lifecycle.*
 import javax.inject.*
 
@@ -12,16 +11,8 @@ import javax.inject.*
 class CategoryListViewModel @Inject constructor(
     private val categoryRepository: CategoryRepositorySource,
 ): ViewModel() {
-    internal val screenState: ListScreenState<ProductCategoryWithAltNames> = ListScreenState()
+    private val _filter = mutableStateOf(String())
+    var filter by _filter
 
-    init {
-        fillStateItems()
-    }
-
-    /**
-     * Fetches new data to screen state
-     */
-    private fun fillStateItems() {
-        screenState.items.value = categoryRepository.allWithAltNamesFlow()
-    }
+    fun items() = categoryRepository.allWithAltNamesFlow()
 }
