@@ -65,193 +65,229 @@ internal fun ProductScreen(
     onItemLongClick: (itemId: Long) -> Unit,
     onEditAction: () -> Unit,
 ) {
-    Box {
-        AnimatedVisibility(
-            visible = transactionItems.loadedEmpty() && spentByTimeData.loadedEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.Center)
+    Scaffold(
+        topBar = {
+            SecondaryAppBar(
+                onBack = onBack,
+                title = {
+                    Text(
+                        text = product?.name.orEmpty(),
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            onEditAction()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(27.dp),
+                        )
+                    }
+                },
+            )
+        },
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+            AnimatedVisibility(
+                visible = transactionItems.loadedEmpty() && spentByTimeData.loadedEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.Center)
             ) {
-                Text(
-                    text = stringResource(id = R.string.no_data_to_display_text),
-                    textAlign = TextAlign.Center,
-                    style = Typography.titleLarge,
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.no_data_to_display_text),
+                        textAlign = TextAlign.Center,
+                        style = Typography.titleLarge,
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = transactionItems.itemCount != 0 || spentByTimeData.loadedData(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                ProductScreenContent(
+                    transactionItems = transactionItems,
+                    spentByTimeData = spentByTimeData,
+                    productPriceByShopByTimeData = productPriceByShopByTimeData,
+                    totalSpentData = totalSpentData,
+                    spentByTimePeriod = spentByTimePeriod,
+                    onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
+                    chartEntryModelProducer = chartEntryModelProducer,
+                    onItemCategoryClick = onItemCategoryClick,
+                    onItemProducerClick = onItemProducerClick,
+                    onItemShopClick = onItemShopClick,
+                    onItemLongClick = onItemLongClick,
                 )
             }
         }
+    }
+}
 
-        AnimatedVisibility(
-            visible = transactionItems.itemCount != 0 || spentByTimeData.loadedData(),
-            enter = fadeIn(),
-            exit = fadeOut(),
+@Composable
+private fun ProductScreenContent(
+    transactionItems: LazyPagingItems<FullItem>,
+    spentByTimeData: Data<List<ItemSpentByTime>>,
+    productPriceByShopByTimeData: Data<List<ProductPriceByShopByTime>>,
+    totalSpentData: Data<Float?>,
+    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
+    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
+    chartEntryModelProducer: ChartEntryModelProducer,
+    onItemCategoryClick: (categoryId: Long) -> Unit,
+    onItemProducerClick: (producerId: Long) -> Unit,
+    onItemShopClick: (shopId: Long) -> Unit,
+    onItemLongClick: (itemId: Long) -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
+    val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
+    var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
+
+    var returnActionButtonVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(firstVisibleItemIndex) {
+        if (
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
+            firstVisibleItemIndex >= 10
         ) {
-            val scope = rememberCoroutineScope()
+            // scrolling up
+            returnActionButtonVisible = true
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+        } else if (
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
+            firstVisibleItemIndex < 10
+        ) {
+            // scrolling down
+            returnActionButtonVisible = false
+            previousFirstVisibleItemIndex = firstVisibleItemIndex
+        }
+    }
 
-            val listState = rememberLazyListState()
-            val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
-
-            var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
-
-            var returnActionButtonVisible by remember { mutableStateOf(false) }
-
-            LaunchedEffect(firstVisibleItemIndex) {
-                if (
-                    previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-                    firstVisibleItemIndex >= 10
+    Scaffold(
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = returnActionButtonVisible,
+                enter = slideInHorizontally(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = EaseOut
+                    ),
+                    initialOffsetX = { it }
+                ),
+                exit = slideOutHorizontally(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = EaseIn
+                    ),
+                    targetOffsetX = { it }
+                )
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 ) {
-                    // scrolling up
-                    returnActionButtonVisible = true
-                    previousFirstVisibleItemIndex = firstVisibleItemIndex
-                } else if (
-                    previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-                    firstVisibleItemIndex < 10
-                ) {
-                    // scrolling down
-                    returnActionButtonVisible = false
-                    previousFirstVisibleItemIndex = firstVisibleItemIndex
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowUpward,
+                        contentDescription = null,
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            state = listState,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+        ) {
+            item {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(Modifier.height(40.dp))
+
+                    val chartData = if (spentByTimeData is Data.Loaded) {
+                        spentByTimeData.data
+                    } else emptyList()
+
+                    val totalSpent = if (totalSpentData is Data.Loaded) {
+                        totalSpentData.data ?: 0f
+                    } else 0f
+
+                    TotalAverageAndMedianSpendingComponent(
+                        spentByTimeData = chartData,
+                        totalSpentData = totalSpent,
+                    )
+
+                    Spacer(Modifier.height(28.dp))
+
+                    AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                        if (spentByTimeData is Data.Loaded) {
+                            SpendingSummaryComponent(
+                                spentByTimeData = spentByTimeData.data,
+                                spentByTimePeriod = spentByTimePeriod,
+                                onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
+                                columnChartEntryModelProducer = chartEntryModelProducer,
+                            )
+
+                            Spacer(Modifier.height(12.dp))
+                        }
+                    }
+
+                    AnimatedVisibility(visible = productPriceByShopByTimeData.loadedData()) {
+                        if (productPriceByShopByTimeData is Data.Loaded) {
+                            ShopPriceCompareChart(
+                                items = productPriceByShopByTimeData.data,
+                            )
+
+                            Spacer(Modifier.height(12.dp))
+                        }
+                    }
                 }
             }
 
-            Scaffold(
-                topBar = {
-                    SecondaryAppBar(
-                        onBack = onBack,
-                        title = {
-                            Text(
-                                text = product?.name.orEmpty(),
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        },
-                        actions = {
-                            IconButton(
-                                onClick = {
-                                    onEditAction()
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Edit,
-                                    contentDescription = stringResource(R.string.edit),
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(27.dp),
-                                )
-                            }
-                        },
-                    )
+            fullItemListContent(
+                transactionItems = transactionItems,
+                onItemLongClick = {
+                    onItemLongClick(it.id)
                 },
-                floatingActionButton = {
-                    AnimatedVisibility(
-                        visible = returnActionButtonVisible,
-                        enter = slideInHorizontally(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseOut
-                            ),
-                            initialOffsetX = { it }
-                        ),
-                        exit = slideOutHorizontally(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseIn
-                            ),
-                            targetOffsetX = { it }
-                        )
-                    ) {
-                        FloatingActionButton(
-                            onClick = {
-                                scope.launch {
-                                    listState.animateScrollToItem(0)
-                                }
-                            },
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.ArrowUpward,
-                                contentDescription = null,
-                            )
-                        }
-                    }
-                }
-            ) { paddingValues ->
-                LazyColumn(
-                    state = listState,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(paddingValues)
-                ) {
-                    item {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Spacer(Modifier.height(40.dp))
-
-                            val chartData = if (spentByTimeData is Data.Loaded) {
-                                spentByTimeData.data
-                            } else emptyList()
-
-                            val totalSpent = if (totalSpentData is Data.Loaded) {
-                                totalSpentData.data ?: 0f
-                            } else 0f
-
-                            TotalAverageAndMedianSpendingComponent(
-                                spentByTimeData = chartData,
-                                totalSpentData = totalSpent,
-                            )
-
-                            Spacer(Modifier.height(28.dp))
-
-                            AnimatedVisibility(visible = spentByTimeData.loadedData()) {
-                                if (spentByTimeData is Data.Loaded) {
-                                    SpendingSummaryComponent(
-                                        spentByTimeData = spentByTimeData.data,
-                                        spentByTimePeriod = spentByTimePeriod,
-                                        onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                                        columnChartEntryModelProducer = chartEntryModelProducer,
-                                    )
-
-                                    Spacer(Modifier.height(12.dp))
-                                }
-                            }
-
-                            AnimatedVisibility(visible = productPriceByShopByTimeData.loadedData()) {
-                                if (productPriceByShopByTimeData is Data.Loaded) {
-                                    ShopPriceCompareChart(
-                                        items = productPriceByShopByTimeData.data,
-                                    )
-
-                                    Spacer(Modifier.height(12.dp))
-                                }
-                            }
-                        }
-                    }
-
-                    fullItemListContent(
-                        transactionItems = transactionItems,
-                        onItemLongClick = {
-                            onItemLongClick(it.id)
-                        },
-                        onCategoryClick = {
-                            onItemCategoryClick(it.id)
-                        },
-                        onProducerClick = {
-                            onItemProducerClick(it.id)
-                        },
-                        onShopClick = {
-                            onItemShopClick(it.id)
-                        },
-                    )
-                }
-            }
+                onCategoryClick = {
+                    onItemCategoryClick(it.id)
+                },
+                onProducerClick = {
+                    onItemProducerClick(it.id)
+                },
+                onShopClick = {
+                    onItemShopClick(it.id)
+                },
+            )
         }
     }
 }
 
 @PreviewLightDark
 @Composable
-fun ProductScreenPreview() {
+private fun ProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ProductScreen(
@@ -276,16 +312,16 @@ fun ProductScreenPreview() {
 
 @PreviewLightDark
 @Composable
-fun EmptyProductScreenPreview() {
+private fun EmptyProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ProductScreen(
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
-                spentByTimeData = Data.Loading(),
-                productPriceByShopByTimeData = Data.Loading(),
-                totalSpentData = Data.Loaded(generateRandomFloatValue()),
+                spentByTimeData = Data.Loaded(emptyList()),
+                productPriceByShopByTimeData = Data.Loaded(emptyList()),
+                totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
                 chartEntryModelProducer = ChartEntryModelProducer(),
@@ -301,7 +337,7 @@ fun EmptyProductScreenPreview() {
 
 @PreviewExpanded
 @Composable
-fun ExpandedProductScreenPreview() {
+private fun ExpandedProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ProductScreen(
@@ -326,16 +362,16 @@ fun ExpandedProductScreenPreview() {
 
 @PreviewExpanded
 @Composable
-fun ExpandedEmptyProductScreenPreview() {
+private fun ExpandedEmptyProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ProductScreen(
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
-                spentByTimeData = Data.Loading(),
-                productPriceByShopByTimeData = Data.Loading(),
-                totalSpentData = Data.Loaded(generateRandomFloatValue()),
+                spentByTimeData = Data.Loaded(emptyList()),
+                productPriceByShopByTimeData = Data.Loaded(emptyList()),
+                totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
                 chartEntryModelProducer = ChartEntryModelProducer(),
