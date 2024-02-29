@@ -49,74 +49,75 @@ internal fun <T> ListScreen(
     }
 
     // TODO add info when empty
-    // TODO this animation is kinda weird, fix it (the product search screen mostly)
-    AnimatedVisibility(
-        visible = items.loadedData(),
-        enter = fadeIn(),
-        exit = fadeOut(),
-    ) {
-        Scaffold(
-            bottomBar = {
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            visible = items.loadedData(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Scaffold(
+                bottomBar = {
+                    Column(
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                            .fillMaxWidth()
+                    ) {
+                        SearchItemHorizontalDivider()
+
+                        StyledOutlinedTextField(
+                            value = state.filter.value,
+                            onValueChange = {
+                                state.filter.value = it
+                            },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(id = R.string.search),
+                                    style = Typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.tertiary.copy(optionalAlpha),
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Search,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            },
+                            colors = styledTextFieldColorDefaults(
+                                disabledIndicator = Color.Transparent,
+                                unfocusedIndicator = Color.Transparent,
+                                focusedIndicator = Color.Transparent,
+                                errorIndicator = Color.Transparent,
+                            ),
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+            ) {
                 Column(
                     modifier = Modifier
-                        .minimumInteractiveComponentSize()
-                        .fillMaxWidth()
+                        .fillMaxSize()
+                        .padding(it)
                 ) {
-                    SearchItemHorizontalDivider()
-
-                    StyledOutlinedTextField(
-                        value = state.filter.value,
-                        onValueChange = {
-                            state.filter.value = it
-                        },
-                        placeholder = {
-                            Text(
-                                text = stringResource(id = R.string.search),
-                                style = Typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.tertiary.copy(optionalAlpha),
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.tertiary
-                            )
-                        },
-                        colors = styledTextFieldColorDefaults(
-                            disabledIndicator = Color.Transparent,
-                            unfocusedIndicator = Color.Transparent,
-                            focusedIndicator = Color.Transparent,
-                            errorIndicator = Color.Transparent,
-                        ),
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-            }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                LazyColumn(
-                    reverseLayout = true,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    itemsIndexed(displayItems.toList()) { index, item ->
-                        if (index != 0) {
-                            SearchItemHorizontalDivider()
-                        }
-
-                        SearchItem(
-                            text = item.name(),
-                            onItemClick = {
-                                onItemClick(item)
-                            },
-                            onItemLongClick = {
-                                onItemLongClick(item)
+                    LazyColumn(
+                        reverseLayout = true,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        itemsIndexed(displayItems.toList()) { index, item ->
+                            if (index != 0) {
+                                SearchItemHorizontalDivider()
                             }
-                        )
+
+                            SearchItem(
+                                text = item.name(),
+                                onItemClick = {
+                                    onItemClick(item)
+                                },
+                                onItemLongClick = {
+                                    onItemLongClick(item)
+                                }
+                            )
+                        }
                     }
                 }
             }
