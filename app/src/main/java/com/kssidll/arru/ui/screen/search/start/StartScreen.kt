@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.search.component.*
 import com.kssidll.arru.ui.theme.*
@@ -49,28 +50,31 @@ private fun StartScreenContent(
 ) {
     Column(
         verticalArrangement = Arrangement.Bottom,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize()
     ) {
 
         SearchItem(
             text = stringResource(id = R.string.item_product_producer),
             onItemClick = onProducerClick,
         )
-        SearchItemHorizontalDivider()
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
         SearchItem(
             text = stringResource(id = R.string.item_shop),
             onItemClick = onShopClick,
         )
 
-        SearchItemHorizontalDivider()
+        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
         SearchItem(
             text = stringResource(id = R.string.item_product_category),
             onItemClick = onCategoryClick,
         )
 
-        SearchItemHorizontalDivider()
+        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
         SearchItem(
             text = stringResource(id = R.string.item_product),

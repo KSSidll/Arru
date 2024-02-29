@@ -89,7 +89,7 @@ fun <T> SearchList(
                                     .minimumInteractiveComponentSize()
                                     .fillMaxWidth()
                             ) {
-                                SearchItemHorizontalDivider()
+                                HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
                                 StyledOutlinedTextField(
                                     value = filter,
@@ -130,20 +130,20 @@ fun <T> SearchList(
                                 reverseLayout = true,
                                 modifier = Modifier.weight(1f),
                             ) {
-                                itemsIndexed(displayItems.toList()) { index, item ->
-                                    if (index != 0) {
-                                        SearchItemHorizontalDivider()
-                                    }
+                                items(displayItems.toList()) { item ->
+                                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
-                                    SearchItem(
-                                        text = item.name(),
-                                        onItemClick = {
-                                            onItemClick(item)
-                                        },
-                                        onItemLongClick = {
-                                            onItemLongClick(item)
-                                        }
-                                    )
+                                        SearchItem(
+                                            text = item.name(),
+                                            onItemClick = {
+                                                onItemClick(item)
+                                            },
+                                            onItemLongClick = {
+                                                onItemLongClick(item)
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arru.R
@@ -52,6 +53,7 @@ internal fun SearchItem(
         Text(
             text = text,
             style = Typography.titleLarge,
+            textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.Center)
         )
     }
