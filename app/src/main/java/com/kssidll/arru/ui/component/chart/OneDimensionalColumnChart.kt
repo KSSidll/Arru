@@ -33,6 +33,7 @@ fun OneDimensionalColumnChart(
     diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
     scrollState: ChartScrollState = rememberChartScrollState(),
     runInitialAnimation: Boolean = true,
+    initialScroll: InitialScroll = InitialScroll.End,
 ) {
     val defaultColumns = currentChartStyle.columnChart.columns
 
@@ -58,7 +59,7 @@ fun OneDimensionalColumnChart(
         chartScrollState = scrollState,
         chartScrollSpec = rememberChartScrollSpec(
             isScrollEnabled = true,
-            initialScroll = InitialScroll.End,
+            initialScroll = initialScroll,
             autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased,
             autoScrollAnimationSpec = autoScrollSpec,
         ),

@@ -16,6 +16,7 @@ import com.kssidll.arru.ui.component.chart.*
 import com.kssidll.arru.ui.theme.*
 import com.patrykandpatrick.vico.compose.chart.scroll.*
 import com.patrykandpatrick.vico.core.entry.*
+import com.patrykandpatrick.vico.core.scroll.*
 
 @Composable
 fun SpendingSummaryComponent(
@@ -29,6 +30,7 @@ fun SpendingSummaryComponent(
     scrollState: ChartScrollState = rememberChartScrollState(),
     columnChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
     runInitialAnimation: Boolean = true,
+    initialScroll: InitialScroll = InitialScroll.End,
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
 ) {
@@ -53,6 +55,7 @@ fun SpendingSummaryComponent(
             runInitialAnimation = runInitialAnimation,
             columnWidth = columnWidth,
             columnSpacing = columnSpacing,
+            initialScroll = initialScroll,
         )
 
     }
