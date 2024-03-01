@@ -254,7 +254,7 @@ private fun EditScreenContent(
 
 @PreviewLightDark
 @Composable
-fun EditScreenPreview() {
+private fun EditScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyScreen<FuzzySearchSource>(
@@ -273,7 +273,7 @@ fun EditScreenPreview() {
 
 @PreviewLightDark
 @Composable
-fun ModifyScreenNoDeletePreview() {
+private fun ModifyScreenNoDeletePreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyScreen<FuzzySearchSource>(

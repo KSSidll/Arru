@@ -71,7 +71,7 @@ internal fun HomeBottomNavBar(
 
 @PreviewLightDark
 @Composable
-fun HomeBottomNavBarPreview() {
+private fun HomeBottomNavBarPreview() {
     ArrugarqTheme {
         Surface {
             HomeBottomNavBar(

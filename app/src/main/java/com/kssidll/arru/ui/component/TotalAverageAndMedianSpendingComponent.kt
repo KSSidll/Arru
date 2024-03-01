@@ -19,7 +19,10 @@ import com.kssidll.arru.ui.theme.*
 fun TotalAverageAndMedianSpendingComponent(
     spentByTimeData: List<ChartSource>,
     totalSpentData: Float,
-    animationSpec: AnimationSpec<Float> = tween(800, easing = EaseIn),
+    animationSpec: AnimationSpec<Float> = tween(
+        800,
+        easing = EaseIn
+    ),
     skipAnimation: Boolean = false,
     onAnimationEnd: () -> Unit = {},
 ) {
@@ -114,7 +117,7 @@ fun TotalAverageAndMedianSpendingComponent(
 
 @PreviewLightDark
 @Composable
-fun TotalAverageAndMedianSpendingComponentPreview() {
+private fun TotalAverageAndMedianSpendingComponentPreview() {
     ArrugarqTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(

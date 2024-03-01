@@ -168,7 +168,7 @@ fun SearchField(
 
 @PreviewLightDark
 @Composable
-fun SearchFieldPreview() {
+private fun SearchFieldPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier
@@ -184,7 +184,7 @@ fun SearchFieldPreview() {
 
 @PreviewLightDark
 @Composable
-fun OptionalSearchFieldPreview() {
+private fun OptionalSearchFieldPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier
@@ -201,7 +201,7 @@ fun OptionalSearchFieldPreview() {
 
 @PreviewLightDark
 @Composable
-fun DisabledSearchFieldPreview() {
+private fun DisabledSearchFieldPreview() {
     ArrugarqTheme {
         Surface(
             modifier = Modifier
@@ -218,7 +218,7 @@ fun DisabledSearchFieldPreview() {
 
 @PreviewLightDark
 @Composable
-fun ErrorSearchFieldPreview() {
+private fun ErrorSearchFieldPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxWidth()) {
             SearchField(

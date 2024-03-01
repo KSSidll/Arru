@@ -25,7 +25,7 @@ fun Loading() {
 
 @PreviewLightDark
 @Composable
-fun LoadingPreview() {
+private fun LoadingPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Loading()

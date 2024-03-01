@@ -87,7 +87,7 @@ fun ModifyVariantScreenImpl(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun ModifyVariantScreenImplPreview() {
+private fun ModifyVariantScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyVariantScreenImpl(

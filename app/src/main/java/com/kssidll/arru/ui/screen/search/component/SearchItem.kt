@@ -61,7 +61,7 @@ internal fun SearchItem(
 
 @PreviewLightDark
 @Composable
-fun SearchItemPreview() {
+private fun SearchItemPreview() {
     ArrugarqTheme {
         Surface {
             SearchItem(

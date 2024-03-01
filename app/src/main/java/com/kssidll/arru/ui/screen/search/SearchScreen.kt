@@ -170,7 +170,7 @@ internal data class SearchScreenState(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun SearchScreenPreview() {
+private fun SearchScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchScreen(

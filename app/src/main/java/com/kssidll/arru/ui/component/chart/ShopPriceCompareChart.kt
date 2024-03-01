@@ -115,19 +115,19 @@ fun ShopPriceCompareChart(
             legend = verticalLegend(
                 items = data.toList()
                     .mapIndexed { index, pair ->
-                    LegendItem(
-                        icon = ShapeComponent(
-                            shape = Shapes.pillShape,
-                            color = currentChartStyle.lineChart.lines[index.mod(currentChartStyle.lineChart.lines.size)].lineColor,
-                        ),
-                        label = textComponent(
-                            color = currentChartStyle.axis.axisLabelColor,
-                            textSize = 12.sp,
-                            typeface = Typeface.MONOSPACE,
-                        ),
-                        labelText = pair.first,
-                    )
-                },
+                        LegendItem(
+                            icon = ShapeComponent(
+                                shape = Shapes.pillShape,
+                                color = currentChartStyle.lineChart.lines[index.mod(currentChartStyle.lineChart.lines.size)].lineColor,
+                            ),
+                            label = textComponent(
+                                color = currentChartStyle.axis.axisLabelColor,
+                                textSize = 12.sp,
+                                typeface = Typeface.MONOSPACE,
+                            ),
+                            labelText = pair.first,
+                        )
+                    },
                 iconSize = 8.dp,
                 iconPadding = 10.dp,
                 spacing = 4.dp,
@@ -140,7 +140,7 @@ fun ShopPriceCompareChart(
 
 @PreviewLightDark
 @Composable
-fun ShopPriceCompareChartPreview() {
+private fun ShopPriceCompareChartPreview() {
     ArrugarqTheme {
         Surface {
             ShopPriceCompareChart(

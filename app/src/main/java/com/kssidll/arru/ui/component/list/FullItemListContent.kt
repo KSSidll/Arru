@@ -89,7 +89,7 @@ fun LazyListScope.fullItemListContent(
 
 @PreviewLightDark
 @Composable
-fun FullItemListContentPreview() {
+private fun FullItemListContentPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             val transactionItems =

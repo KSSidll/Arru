@@ -90,7 +90,7 @@ internal fun TransactionScreen(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun TransactionScreenPreview() {
+private fun TransactionScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionScreen(

@@ -217,7 +217,7 @@ fun ModifyProductScreenImpl(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun ModifyProductScreenImplPreview() {
+private fun ModifyProductScreenImplPreview() {
     ArrugarqTheme {
         Surface1(modifier = Modifier.fillMaxSize()) {
             ModifyProductScreenImpl(

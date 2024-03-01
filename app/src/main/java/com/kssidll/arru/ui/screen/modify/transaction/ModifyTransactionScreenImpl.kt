@@ -469,9 +469,10 @@ private fun ExpandedModifyTransactionScreenContent(
         )
     }
 }
+
 @PreviewLightDark
 @Composable
-fun ModifyTransactionScreenImplPreview() {
+private fun ModifyTransactionScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(
@@ -490,7 +491,7 @@ fun ModifyTransactionScreenImplPreview() {
 
 @PreviewExpanded
 @Composable
-fun ExpandedModifyTransactionScreenImplPreview() {
+private fun ExpandedModifyTransactionScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(

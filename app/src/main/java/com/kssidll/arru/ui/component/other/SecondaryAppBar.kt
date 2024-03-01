@@ -51,7 +51,7 @@ fun SecondaryAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
 @Composable
-fun SecondaryAppBarPreview() {
+private fun SecondaryAppBarPreview() {
     ArrugarqTheme {
         Surface {
             SecondaryAppBar(

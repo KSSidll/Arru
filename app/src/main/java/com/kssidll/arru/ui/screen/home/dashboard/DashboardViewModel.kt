@@ -18,20 +18,20 @@ class DashboardViewModel @Inject constructor(
 ): ViewModel() {
     private val mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<TransactionSpentByTime>>> =
         TimePeriodFlowHandler(
-        scope = viewModelScope,
-        dayFlow = {
-            transactionRepository.totalSpentByDayFlow()
-        },
-        weekFlow = {
-            transactionRepository.totalSpentByWeekFlow()
-        },
-        monthFlow = {
-            transactionRepository.totalSpentByMonthFlow()
-        },
-        yearFlow = {
-            transactionRepository.totalSpentByYearFlow()
-        },
-    )
+            scope = viewModelScope,
+            dayFlow = {
+                transactionRepository.totalSpentByDayFlow()
+            },
+            weekFlow = {
+                transactionRepository.totalSpentByWeekFlow()
+            },
+            monthFlow = {
+                transactionRepository.totalSpentByMonthFlow()
+            },
+            yearFlow = {
+                transactionRepository.totalSpentByYearFlow()
+            },
+        )
 
     /**
      * List of items representing [Item] spending in time as flow

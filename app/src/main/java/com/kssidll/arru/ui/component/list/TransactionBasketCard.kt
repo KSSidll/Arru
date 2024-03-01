@@ -280,7 +280,7 @@ fun LazyListScope.transactionBasketCardHeaderPlaceholder(
 
 @PreviewLightDark
 @Composable
-fun TransactionBasketCardPreview() {
+private fun TransactionBasketCardPreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
             val color = MaterialTheme.colorScheme.background
@@ -303,7 +303,7 @@ fun TransactionBasketCardPreview() {
 
 @PreviewLightDark
 @Composable
-fun TransactionBasketCardHeaderPlaceholderSizePreview() {
+private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
             val color = MaterialTheme.colorScheme.background

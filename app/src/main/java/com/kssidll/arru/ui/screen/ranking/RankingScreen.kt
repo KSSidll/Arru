@@ -85,7 +85,7 @@ fun <T> RankingScreen(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun RankingScreenPreview() {
+private fun RankingScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             RankingScreen(

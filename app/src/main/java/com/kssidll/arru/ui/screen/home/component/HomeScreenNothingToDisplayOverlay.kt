@@ -147,7 +147,7 @@ fun ExpandedHomeScreenNothingToDisplayOverlay() {
 
 @PreviewLightDark
 @Composable
-fun HomeScreenNothingToDisplayOverlayPreview() {
+private fun HomeScreenNothingToDisplayOverlayPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             HomeRouteNavigation(
@@ -162,7 +162,7 @@ fun HomeScreenNothingToDisplayOverlayPreview() {
 
 @PreviewExpanded
 @Composable
-fun ExpandedHomeScreenNothingToDisplayOverlayPreview() {
+private fun ExpandedHomeScreenNothingToDisplayOverlayPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ExpandedHomeRouteNavigation(

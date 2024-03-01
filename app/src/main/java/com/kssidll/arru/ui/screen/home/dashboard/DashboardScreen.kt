@@ -352,7 +352,7 @@ private fun ExpandedDashboardScreenContent(
 
 @PreviewLightDark
 @Composable
-fun DashboardScreenPreview() {
+private fun DashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(
@@ -373,7 +373,7 @@ fun DashboardScreenPreview() {
 
 @PreviewLightDark
 @Composable
-fun EmptyDashboardScreenPreview() {
+private fun EmptyDashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(
@@ -394,7 +394,7 @@ fun EmptyDashboardScreenPreview() {
 
 @PreviewExpanded
 @Composable
-fun ExpandedDashboardScreenPreview() {
+private fun ExpandedDashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(
@@ -415,7 +415,7 @@ fun ExpandedDashboardScreenPreview() {
 
 @PreviewExpanded
 @Composable
-fun EmptyExpandedDashboardScreenPreview() {
+private fun EmptyExpandedDashboardScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(

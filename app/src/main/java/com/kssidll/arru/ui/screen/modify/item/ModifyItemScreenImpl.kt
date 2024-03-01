@@ -402,7 +402,7 @@ fun ModifyItemScreenImpl(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun ModifyItemScreenImplPreview() {
+private fun ModifyItemScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyItemScreenImpl(

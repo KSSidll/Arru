@@ -127,7 +127,7 @@ fun DeleteWarningConfirmDialog(
 
 @PreviewLightDark
 @Composable
-fun DeleteWarningConfirmDialogPreview() {
+private fun DeleteWarningConfirmDialogPreview() {
     ArrugarqTheme {
         DeleteWarningConfirmDialog(
             message = "test",

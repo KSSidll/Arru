@@ -110,7 +110,7 @@ fun ModifyCategoryScreenImpl(
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun ModifyCategoryScreenImplPreview() {
+private fun ModifyCategoryScreenImplPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyCategoryScreenImpl(

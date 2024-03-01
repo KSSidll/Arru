@@ -92,7 +92,7 @@ internal fun HomeRailNavBar(
 
 @PreviewLightDark
 @Composable
-fun HomeRailNavBarPreview() {
+private fun HomeRailNavBarPreview() {
     ArrugarqTheme {
         Surface {
             HomeRailNavBar(

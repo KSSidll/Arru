@@ -256,7 +256,7 @@ fun <T> RankingList(
 
 @PreviewLightDark
 @Composable
-fun RankingListPreview() {
+private fun RankingListPreview() {
     ArrugarqTheme {
         Surface {
             RankingList(

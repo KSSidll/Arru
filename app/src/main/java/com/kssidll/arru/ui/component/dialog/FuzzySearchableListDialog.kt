@@ -162,13 +162,11 @@ fun <T> FuzzySearchableListDialog(
                                 ),
                                 trailingIcon = {
                                     if (showAddButton) {
-                                        Box(
-                                            modifier = Modifier
-                                                .clickable {
-                                                    onDismissRequest()
-                                                    onAddButtonClick?.invoke(query)
-                                                },
-                                            contentAlignment = Alignment.Center
+                                        IconButton(
+                                            onClick = {
+                                                onDismissRequest()
+                                                onAddButtonClick?.invoke(query)
+                                            }
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.Add,

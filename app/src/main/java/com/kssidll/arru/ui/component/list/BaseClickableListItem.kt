@@ -52,7 +52,7 @@ fun BaseClickableListItem(
 
 @PreviewLightDark
 @Composable
-fun BaseClickableListItemPreview() {
+private fun BaseClickableListItemPreview() {
     ArrugarqTheme {
         Surface {
             BaseClickableListItem(

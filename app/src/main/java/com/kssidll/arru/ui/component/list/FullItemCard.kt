@@ -262,7 +262,7 @@ fun FullItemCard(
 
 @PreviewLightDark
 @Composable
-fun FullItemCardPreview() {
+private fun FullItemCardPreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
             FullItemCard(

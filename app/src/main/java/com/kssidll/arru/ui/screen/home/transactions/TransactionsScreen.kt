@@ -293,7 +293,7 @@ fun TransactionScreenContent(
 @SuppressLint("FlowOperatorInvokedInComposition")
 @PreviewLightDark
 @Composable
-fun TransactionsScreenPreview() {
+private fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
@@ -317,7 +317,7 @@ fun TransactionsScreenPreview() {
 @SuppressLint("FlowOperatorInvokedInComposition")
 @PreviewExpanded
 @Composable
-fun ExpandedTransactionsScreenPreview() {
+private fun ExpandedTransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
@@ -341,7 +341,7 @@ fun ExpandedTransactionsScreenPreview() {
 @SuppressLint("FlowOperatorInvokedInComposition")
 @PreviewLightDark
 @Composable
-fun EmptyTransactionsScreenPreview() {
+private fun EmptyTransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
@@ -366,7 +366,7 @@ fun EmptyTransactionsScreenPreview() {
 @PreviewLightDark
 @PreviewExpanded
 @Composable
-fun ExpandedEmptyTransactionsScreenPreview() {
+private fun ExpandedEmptyTransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(

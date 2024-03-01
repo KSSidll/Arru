@@ -89,7 +89,7 @@ fun OneDimensionalColumnChart(
 
 @PreviewLightDark
 @Composable
-fun OneDimesionalColumnChartPreview() {
+private fun OneDimesionalColumnChartPreview() {
     ArrugarqTheme {
         Surface {
             OneDimensionalColumnChart(

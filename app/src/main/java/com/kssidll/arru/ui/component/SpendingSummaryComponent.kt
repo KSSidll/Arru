@@ -115,7 +115,7 @@ private fun PeriodButtons(
 
 @PreviewLightDark
 @Composable
-fun SpendingSummaryComponentPreview() {
+private fun SpendingSummaryComponentPreview() {
     ArrugarqTheme {
         Surface {
             SpendingSummaryComponent(
