@@ -11,6 +11,7 @@ import com.google.accompanist.systemuicontroller.*
 import com.kssidll.arru.ui.theme.schema.*
 import com.patrykandpatrick.vico.compose.m3.style.*
 import com.patrykandpatrick.vico.compose.style.*
+import kotlin.math.*
 
 const val disabledAlpha = 0.38f
 const val optionalAlpha = 0.60f
@@ -114,9 +115,61 @@ fun isAppInDynamicColor(): Boolean {
 @Composable
 fun arrugarqChartStyle(): ChartStyle {
     return m3ChartStyle(
-        entityColors = listOf(
-            MaterialTheme.colorScheme.tertiary,
-        )
+        entityColors = List(12) { itr ->
+            val main = MaterialTheme.colorScheme.tertiary
+            val red = main.red
+            val green = main.green
+            val blue = main.blue
+            val alpha = main.alpha
+            val colorSpace = main.colorSpace
+
+            val minRed = max(
+                red.minus(0.25f),
+                0f
+            )
+            val minGreen = max(
+                green.minus(0.25f),
+                0f
+            )
+            val minBlue = max(
+                blue.minus(0.25f),
+                0f
+            )
+
+            val maxRed = min(
+                red.plus(0.25f),
+                1f
+            )
+            val maxGreen = min(
+                green.plus(0.25f),
+                1f
+            )
+            val maxBlue = min(
+                blue.plus(0.25f),
+                1f
+            )
+
+            val newRed = red.plus(0.11f * itr)
+                .minus(minRed)
+                .mod(maxRed - minRed)
+                .plus(minRed)
+            val newGreen = green.plus(0.8f * itr)
+                .minus(minGreen)
+                .mod(maxGreen - minGreen)
+                .plus(minGreen)
+            val newBlue = blue.plus(0.5f * itr)
+                .minus(minBlue)
+                .mod(maxBlue - minBlue)
+                .plus(minBlue)
+
+            Color(
+                red = newRed,
+                green = newGreen,
+                blue = newBlue,
+                alpha = alpha,
+                colorSpace = colorSpace,
+            )
+        }
     )
 }
 

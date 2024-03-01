@@ -241,26 +241,38 @@ private fun ProductScreenContent(
 
                     Spacer(Modifier.height(28.dp))
 
-                    AnimatedVisibility(visible = spentByTimeData.loadedData()) {
+                    AnimatedVisibility(
+                        visible = spentByTimeData.loadedData(),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                    ) {
                         if (spentByTimeData is Data.Loaded) {
-                            SpendingSummaryComponent(
-                                spentByTimeData = spentByTimeData.data,
-                                spentByTimePeriod = spentByTimePeriod,
-                                onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                                columnChartEntryModelProducer = chartEntryModelProducer,
-                            )
+                            Column {
+                                SpendingSummaryComponent(
+                                    spentByTimeData = spentByTimeData.data,
+                                    spentByTimePeriod = spentByTimePeriod,
+                                    onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
+                                    columnChartEntryModelProducer = chartEntryModelProducer,
+                                )
 
-                            Spacer(Modifier.height(12.dp))
+                                Spacer(Modifier.height(12.dp))
+                            }
                         }
                     }
 
-                    AnimatedVisibility(visible = productPriceByShopByTimeData.loadedData()) {
+                    AnimatedVisibility(
+                        visible = productPriceByShopByTimeData.loadedData(),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                    ) {
                         if (productPriceByShopByTimeData is Data.Loaded) {
-                            ShopPriceCompareChart(
-                                items = productPriceByShopByTimeData.data,
-                            )
+                            Column {
+                                ShopPriceCompareChart(
+                                    items = productPriceByShopByTimeData.data,
+                                )
 
-                            Spacer(Modifier.height(12.dp))
+                                Spacer(Modifier.height(12.dp))
+                            }
                         }
                     }
                 }

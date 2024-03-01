@@ -4,10 +4,10 @@ package com.kssidll.arru.ui.component.chart
 import android.graphics.*
 import android.text.*
 import android.text.style.*
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
@@ -22,6 +22,7 @@ import com.patrykandpatrick.vico.compose.component.*
 import com.patrykandpatrick.vico.compose.dimensions.*
 import com.patrykandpatrick.vico.compose.legend.*
 import com.patrykandpatrick.vico.compose.style.*
+import com.patrykandpatrick.vico.core.component.shape.*
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.extension.*
@@ -32,17 +33,13 @@ import com.patrykandpatrick.vico.core.scroll.*
 fun ShopPriceCompareChart(
     items: List<ProductPriceByShopByTime>,
     chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
-    chartMinimumEntrySize: Int = 3,
+    chartMinimumEntrySize: Int = 2,
 ) {
     val data: MutableMap<String, MutableList<ChartEntry>> = remember { mutableMapOf() }
 
-    val chartColorsMap: MutableMap<String, Color> = remember { mutableMapOf() }
     val defaultVariantName = stringResource(id = R.string.item_product_variant_default_value)
 
     LaunchedEffect(items.size) {
-        data.clear()
-        chartColorsMap.clear()
-
         val dateMap: MutableMap<String, Int> = mutableMapOf()
         dateMap.putAll(
             items.mapIndexed { index, it ->
@@ -54,6 +51,8 @@ fun ShopPriceCompareChart(
                 .toMap()
         )
 
+        data.clear()
+
         items.forEach {
             if (it.shopName == null) return@forEach
 
@@ -63,9 +62,7 @@ fun ShopPriceCompareChart(
                 append(" - ")
                 append(it.variantName ?: defaultVariantName)
 
-                if (it.producerName.isNullOrBlank()
-                        .not()
-                ) {
+                if (!it.producerName.isNullOrBlank()) {
                     append(" (")
                     append(it.producerName)
                     append(")")
@@ -83,40 +80,18 @@ fun ShopPriceCompareChart(
                 )
         }
 
-        var offset = 0f
         chartEntryModelProducer.setEntries(
-            data.map {
-                chartColorsMap[it.key] =
-                    Color.hsl(
-                        hue = 270f.plus(offset.times(25))
-                            .mod(330f)
-                            .plus(30f),
-                        saturation = 0.4f.plus(offset)
-                            .mod(0.8f)
-                            .plus(0.2f),
-                        lightness = 0.6f.plus(offset)
-                            .mod(0.4f)
-                            .plus(0.4f),
-                    )
-                offset += 0.2f
-
-                it.value.toList()
-            }
+            data.map { it.value.toList() }
         )
     }
 
-    if (chartEntryModelProducer.getModel()?.entries?.maxOfOrNull { it.size }.orZero > chartMinimumEntrySize) {
+    AnimatedVisibility(
+        visible = chartEntryModelProducer.getModel()?.entries?.maxOfOrNull { it.size }.orZero >= chartMinimumEntrySize,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
         Chart(
-            chart = lineChart(
-                lines = chartColorsMap.map {
-                    lineSpec(
-                        lineColor = it.value
-                    )
-                }
-                    .ifEmpty {
-                        LocalChartStyle.current.lineChart.lines
-                    }
-            ),
+            chart = lineChart(),
             chartModelProducer = chartEntryModelProducer,
             chartScrollSpec = rememberChartScrollSpec(
                 isScrollEnabled = true,
@@ -138,18 +113,19 @@ fun ShopPriceCompareChart(
                 }
             ),
             legend = verticalLegend(
-                items = chartColorsMap.map {
+                items = data.toList()
+                    .mapIndexed { index, pair ->
                     LegendItem(
-                        icon = shapeComponent(
+                        icon = ShapeComponent(
                             shape = Shapes.pillShape,
-                            color = it.value,
+                            color = currentChartStyle.lineChart.lines[index.mod(currentChartStyle.lineChart.lines.size)].lineColor,
                         ),
                         label = textComponent(
                             color = currentChartStyle.axis.axisLabelColor,
                             textSize = 12.sp,
                             typeface = Typeface.MONOSPACE,
                         ),
-                        labelText = it.key,
+                        labelText = pair.first,
                     )
                 },
                 iconSize = 8.dp,
