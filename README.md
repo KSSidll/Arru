@@ -14,24 +14,26 @@
 <h4 align="center">Arru is an app for expenditure tracking/analysis</h4>
 
 <p align="middle">
-    <img src="images/dashboard.png" width="30%"/>
-    <img src="images/analysis.png" width="30%"/>
-    <img src="images/transactions.png" width="30%"/>
-    <img src="images/product_top.png" width="30%"/>
-    <img src="images/categories_ranking.png" width="30%"/>
-    <img src="images/merge.png" width="30%"/>
-    <img src="images/transaction_add_item.png" width="30%"/>
-    <img src="images/transaction_add_select.png" width="30%"/>
-    <img src="images/transaction_add.png" width="30%"/>
+    <img src="images/dashboard.jpg" width="30%"/>
+    <img src="images/analysis.jpg" width="30%"/>
+    <img src="images/transactions.jpg" width="30%"/>
+    <img src="images/product_top.jpg" width="30%"/>
+    <img src="images/categories_ranking.jpg" width="30%"/>
+    <img src="images/merge.jpg" width="30%"/>
+    <img src="images/transaction_add_item.jpg" width="30%"/>
+    <img src="images/transaction_add_select.jpg" width="30%"/>
+    <img src="images/transaction_add.jpg" width="30%"/>
 </p>
 
 # Features
 
 - Light/Dark mode
-- Support for Polish and English languages
-- Merging capabilities for categories, shops, products and producers
+- Wide screen support
+- Polish and English localization
+- Transaction baskets tracking your total expenditure with optional product, category, shop and producer spending tracking
 - Comparisons between prices at different shops
 - Ranking of categories and shops based on total money spent
+- Merging capabilities for categories, shops, products and producers
 
 ### TBD
 
@@ -68,4 +70,3 @@
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Manages UI-related data holder and lifecycle awareness. Allows data to survive configuration changes such as screen rotations
 
   - [Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle) - Observe Android lifecycles and handle UI states upon the lifecycle changes
-  
