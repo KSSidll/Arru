@@ -15,6 +15,7 @@ class AddTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
+    // TODO load last transaction shop and date on init
 
     /**
      * Tries to add a transaction to the repository

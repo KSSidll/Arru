@@ -1,15 +1,19 @@
 package com.kssidll.arru.ui.screen.spendingcomparison
 
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.input.nestedscroll.*
+import androidx.compose.ui.res.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arru.*
+import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.domain.data.*
 import com.kssidll.arru.ui.component.list.*
@@ -53,27 +57,50 @@ fun <T> SpendingComparisonScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            AnimatedVisibility(
+                visible = leftSideItems.loadedEmpty() && rightSideItems.loadedEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.align(Alignment.Center)) {
+                        Text(
+                            text = stringResource(id = R.string.no_data_to_display_text),
+                            textAlign = TextAlign.Center,
+                            style = Typography.titleLarge,
+                        )
+                    }
+                }
+            }
 
-            SpendingComparisonList(
-                listHeader = String(),
-                leftSideItems = leftItems,
-                leftSideHeader = leftSideHeader,
-                rightSideItems = rightItems,
-                rightSideHeader = rightSideHeader,
-                modifier = modifier
-                    .padding(it)
-                    .widthIn(max = 688.dp)
-                    .verticalScroll(state = rememberScrollState())
-            )
+            AnimatedVisibility(
+                visible = leftSideItems.loadedData() || rightSideItems.loadedData(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    SpendingComparisonList(
+                        listHeader = String(),
+                        leftSideItems = leftItems,
+                        leftSideHeader = leftSideHeader,
+                        rightSideItems = rightItems,
+                        rightSideHeader = rightSideHeader,
+                        modifier = modifier
+                            .padding(it)
+                            .widthIn(max = 688.dp)
+                            .verticalScroll(state = rememberScrollState())
+                    )
+                }
+            }
         }
     }
 }
 
 @PreviewLightDark
-@PreviewExpanded
 @Composable
 private fun SpendingComparisonScreenPreview() {
     ArrugarqTheme {
@@ -84,6 +111,57 @@ private fun SpendingComparisonScreenPreview() {
                 leftSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
                 leftSideHeader = "left",
                 rightSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                rightSideHeader = "right",
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun EmptySpendingComparisonScreenPreview() {
+    ArrugarqTheme {
+        Surface {
+            SpendingComparisonScreen(
+                onBack = {},
+                title = "test",
+                leftSideItems = Data.Loaded(emptyList()),
+                leftSideHeader = "left",
+                rightSideItems = Data.Loaded(emptyList()),
+                rightSideHeader = "right",
+            )
+        }
+    }
+}
+
+@PreviewExpanded
+@Composable
+private fun ExpandedSpendingComparisonScreenPreview() {
+    ArrugarqTheme {
+        Surface {
+            SpendingComparisonScreen(
+                onBack = {},
+                title = "test",
+                leftSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                leftSideHeader = "left",
+                rightSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                rightSideHeader = "right",
+            )
+        }
+    }
+}
+
+@PreviewExpanded
+@Composable
+private fun ExpandedEmptySpendingComparisonScreenPreview() {
+    ArrugarqTheme {
+        Surface {
+            SpendingComparisonScreen(
+                onBack = {},
+                title = "test",
+                leftSideItems = Data.Loaded(emptyList()),
+                leftSideHeader = "left",
+                rightSideItems = Data.Loaded(emptyList()),
                 rightSideHeader = "right",
             )
         }

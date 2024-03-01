@@ -340,6 +340,7 @@ fun ModifyItemScreenImpl(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(12.dp))
 
+            // TODO when click empty, go to add
             SearchField(
                 enabled = state.selectedProduct.value.isEnabled(),
                 value = state.selectedProduct.value.data?.name ?: String(),
@@ -369,6 +370,7 @@ fun ModifyItemScreenImpl(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // TODO when click empty, go to add
             SearchField(
                 enabled = state.selectedProduct.value.data != null && state.selectedVariant.value.isEnabled(),
                 value = state.selectedVariant.value.data?.name

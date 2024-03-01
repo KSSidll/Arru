@@ -274,6 +274,7 @@ private fun ModifyTransactionScreenContent(
         HorizontalDivider()
         Spacer(modifier = Modifier.height(12.dp))
 
+        // TODO when click empty, go to add
         SearchField(
             enabled = state.selectedShop.value.isEnabled(),
             optional = true,
