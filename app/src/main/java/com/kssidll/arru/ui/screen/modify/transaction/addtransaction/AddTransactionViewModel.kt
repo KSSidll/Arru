@@ -15,7 +15,30 @@ class AddTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
-    // TODO load last transaction shop and date on init
+
+    init {
+        loadLastest()
+    }
+
+    /**
+     * Loads data from latest transaction
+     */
+    private fun loadLastest() = viewModelScope.launch {
+        screenState.selectedShop.apply { value = value.toLoading() }
+        screenState.date.apply { value = value.toLoading() }
+
+        val latest = transactionRepository.newest()
+
+        if (latest != null) {
+            val shop = latest.shopId?.let { shopRepository.get(it) }
+
+            screenState.selectedShop.value = Field.Loaded(shop)
+            screenState.date.value = Field.Loaded(latest.date)
+        } else {
+            screenState.selectedShop.apply { value = value.toLoaded() }
+            screenState.date.apply { value = value.toLoaded() }
+        }
+    }
 
     /**
      * Tries to add a transaction to the repository

@@ -134,6 +134,11 @@ interface TransactionBasketRepositorySource {
     suspend fun get(transactionBasketId: Long): TransactionBasket?
 
     /**
+     * @return newest [TransactionBasket] (by time added, not transaction date) or null if none exist
+     */
+    suspend fun newest(): TransactionBasket?
+
+    /**
      * @return value representing the count of [TransactionBasket]
      */
     suspend fun count(): Int

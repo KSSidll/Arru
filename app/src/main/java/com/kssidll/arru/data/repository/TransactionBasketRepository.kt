@@ -129,6 +129,10 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         return dao.get(transactionBasketId)
     }
 
+    override suspend fun newest(): TransactionBasket? {
+        return dao.newest()
+    }
+
     override suspend fun count(): Int {
         return dao.count()
     }

@@ -124,6 +124,9 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM transactionbasket WHERE transactionbasket.id = :transactionBasketId")
     suspend fun get(transactionBasketId: Long): TransactionBasket?
 
+    @Query("SELECT * FROM transactionbasket ORDER BY id DESC LIMIT 1")
+    suspend fun newest(): TransactionBasket?
+
     @Query("SELECT COUNT(*) FROM transactionbasket")
     suspend fun count(): Int
 
