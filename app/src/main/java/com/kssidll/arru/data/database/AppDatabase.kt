@@ -1,14 +1,69 @@
 package com.kssidll.arru.data.database
 
 import android.content.*
+import androidx.datastore.preferences.core.*
 import androidx.room.*
 import androidx.room.migration.*
 import androidx.sqlite.db.*
 import com.kssidll.arru.*
 import com.kssidll.arru.data.dao.*
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.di.module.*
+import com.kssidll.arru.data.preference.*
 import java.io.*
+import java.util.*
+
+/**
+ * default database name
+ */
+const val DATABASE_NAME: String = "arru_database.db"
+
+/**
+ * default database backup directory name
+ */
+const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
+
+/**
+ * default database backup prefix
+ */
+const val DATABASE_BACKUP_PREFIX: String = "bak_arru_db_"
+
+/**
+ * @return absolute path to external database file as [File]
+ */
+fun Context.externalDbFile(): File =
+    File(getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME"))
+
+/**
+ * @return absolute path to internal database file as [File]
+ */
+fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
+
+/**
+ * @return absolute path to currently used database file as [File]
+ */
+fun Context.currentDbFile(preferences: Preferences): File {
+    return when (preferences[AppPreferences.Database.Location.key]) {
+        AppPreferences.Database.Location.EXTERNAL -> {
+            externalDbFile()
+        }
+
+        AppPreferences.Database.Location.INTERNAL -> {
+            internalDbFile()
+        }
+
+        else -> error("The database location preference key isn't set to a valid value")
+    }
+}
+
+fun Context.currentDbBackupDirectory(preferences: Preferences): File {
+    val parent = currentDbFile(preferences).parentFile!!.absolutePath
+    val dbBackup = File(parent.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
+
+    // create in case it doesn't exist
+    dbBackup.mkdir()
+
+    return dbBackup
+}
 
 @Database(
     version = 5,
@@ -84,21 +139,21 @@ abstract class AppDatabase: RoomDatabase() {
 
         /**
          * @param context app context
-         * @return [AppDatabase] created in external [Context.externalDbPath] location, doesn't ensure database file creation
+         * @return [AppDatabase] created in external [Context.externalDbFile] location, doesn't ensure database file creation
          */
         fun buildExternal(context: Context): AppDatabase {
             return builder(
                 context,
-                context.externalDbPath()
+                context.externalDbFile().absolutePath
             ).build()
         }
 
         /**
-         * moves database files from [fromDbFile] parent directory to [toDbFile] parent directory
+         * copies database files from [fromDbFile] parent directory to [toDbFile] parent directory
          * @param fromDbFile absolute path to db file from whose parent directory to move database files
          * @param toDbFile absolute path to db file to whose parent directory to move database files
          */
-        fun move(
+        private fun copy(
             fromDbFile: File,
             toDbFile: File
         ) {
@@ -115,14 +170,12 @@ abstract class AppDatabase: RoomDatabase() {
                 toDbFile,
                 true
             )
-            fromDbFile.delete()
 
             if (fromDbWalFile.exists()) {
                 fromDbWalFile.copyTo(
                     toDbWalFile,
                     true
                 )
-                fromDbWalFile.delete()
             }
 
             if (fromDbShmFile.exists()) {
@@ -130,6 +183,34 @@ abstract class AppDatabase: RoomDatabase() {
                     toDbShmFile,
                     true
                 )
+            }
+        }
+
+        /**
+         * moves database files from [fromDbFile] parent directory to [toDbFile] parent directory
+         * @param fromDbFile absolute path to db file from whose parent directory to move database files
+         * @param toDbFile absolute path to db file to whose parent directory to move database files
+         */
+        private fun move(
+            fromDbFile: File,
+            toDbFile: File
+        ) {
+            // TODO add moving backups too
+            copy(
+                fromDbFile,
+                toDbFile
+            )
+
+            val fromDbWalFile = File("${fromDbFile.path}-wal")
+            val fromDbShmFile = File("${fromDbFile.path}-shm")
+
+            fromDbFile.delete()
+
+            if (fromDbWalFile.exists()) {
+                fromDbWalFile.delete()
+            }
+
+            if (fromDbShmFile.exists()) {
                 fromDbShmFile.delete()
             }
         }
@@ -139,7 +220,7 @@ abstract class AppDatabase: RoomDatabase() {
          * @param context app context
          */
         fun moveExternalToInternal(context: Context) {
-            val externalDbFile = File(context.externalDbPath())
+            val externalDbFile = context.externalDbFile()
             val internalDbFile = context.internalDbFile()
 
             move(
@@ -153,13 +234,83 @@ abstract class AppDatabase: RoomDatabase() {
          * @param context app context
          */
         fun moveInternalToExternal(context: Context) {
-            val externalDbFile = File(context.externalDbPath())
+            val externalDbFile = context.externalDbFile()
             val internalDbFile = context.internalDbFile()
 
             move(
                 internalDbFile,
                 externalDbFile
             )
+        }
+
+        /**
+         * creates a database backup in current database location at set [time]
+         * @param context app context
+         * @param preferences app preferences
+         * @param time time to stamp the database files with, current time by default
+         * @return absolute path to created db backup file as [File]
+         */
+        fun saveDbBackup(
+            context: Context,
+            preferences: Preferences,
+            time: Long = Calendar.getInstance().timeInMillis
+        ): File {
+            val backupDir = context.currentDbBackupDirectory(preferences)
+            val currentDbFile = context.currentDbFile(preferences)
+            val backupDbFile = File(backupDir.absolutePath.plus("/$DATABASE_BACKUP_PREFIX$time.db"))
+
+            copy(
+                currentDbFile,
+                backupDbFile
+            )
+
+            return backupDbFile
+        }
+
+        /**
+         * loads a database backup to current database location
+         * @param context app context
+         * @param preferences app preferences
+         * @param backupDbFile database backup file to load
+         */
+        fun loadDbBackup(
+            context: Context,
+            preferences: Preferences,
+            backupDbFile: File
+        ) {
+            if (backupDbFile.exists()) {
+                val currentDbFile = context.currentDbFile(preferences)
+                copy(
+                    backupDbFile,
+                    currentDbFile
+                )
+            }
+        }
+
+        /**
+         * @param context app context
+         * @param preferences app preferences
+         * @return all available backups as a list of [File], sorted newest to oldest
+         */
+        fun availableBackups(
+            context: Context,
+            preferences: Preferences
+        ): List<File> {
+            val directory = context.currentDbBackupDirectory(preferences)
+
+            if (directory.exists() && directory.isDirectory) {
+                val files = directory.listFiles { file ->
+                    // return only files that are databases, ignore shm, wal and other files
+                    file.name.endsWith(".db")
+                }
+
+                if (files != null) {
+                    return files.toList()
+                        .sortedDescending()
+                }
+            }
+
+            return emptyList()
         }
     }
 }

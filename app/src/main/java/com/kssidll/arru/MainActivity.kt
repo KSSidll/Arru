@@ -9,7 +9,7 @@ import androidx.compose.material3.windowsizeclass.*
 import androidx.compose.ui.*
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.*
-import com.kssidll.arru.domain.preference.*
+import com.kssidll.arru.data.preference.*
 import com.kssidll.arru.ui.theme.*
 import dagger.hilt.android.*
 import kotlinx.coroutines.*

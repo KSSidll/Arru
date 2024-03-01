@@ -14,6 +14,10 @@ fun SettingsRoute(
         setLocale = {
             viewModel.setLocale(it)
         },
+        createBackup = {
+            viewModel.createDbBackup()
+        },
+        availableBackups = viewModel.availableBackups.toList(),
         onBack = navigateBack,
     )
 }

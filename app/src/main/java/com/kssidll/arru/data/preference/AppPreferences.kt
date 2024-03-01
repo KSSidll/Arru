@@ -1,4 +1,4 @@
-package com.kssidll.arru.domain.preference
+package com.kssidll.arru.data.preference
 
 import android.content.*
 import androidx.datastore.preferences.core.*

@@ -4,7 +4,7 @@ import android.content.*
 import androidx.datastore.core.*
 import androidx.datastore.preferences.*
 import androidx.datastore.preferences.core.*
-import com.kssidll.arru.domain.preference.*
+import com.kssidll.arru.data.preference.*
 import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.qualifiers.*

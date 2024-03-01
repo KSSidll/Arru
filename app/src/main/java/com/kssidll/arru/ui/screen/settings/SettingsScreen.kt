@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.settings
 
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -13,6 +14,7 @@ import com.kssidll.arru.domain.*
 import com.kssidll.arru.ui.component.other.*
 import com.kssidll.arru.ui.screen.settings.component.*
 import com.kssidll.arru.ui.theme.*
+import java.io.*
 
 /**
  * @param setLocale Callback called as request to change current Locale. Provides requested locale as parameter
@@ -22,6 +24,8 @@ import com.kssidll.arru.ui.theme.*
 @Composable
 internal fun SettingsScreen(
     setLocale: (locale: AppLocale?) -> Unit,
+    createBackup: () -> Unit,
+    availableBackups: List<File>,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -46,6 +50,20 @@ internal fun SettingsScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+
+            Button(
+                onClick = {
+                    createBackup()
+                }
+            ) {
+                Text(text = "Create Backup")
+            }
+
+            LazyColumn {
+                items(availableBackups) {
+                    Text(text = it.name)
+                }
+            }
         }
     }
 }
@@ -57,6 +75,8 @@ private fun SettingsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             SettingsScreen(
                 setLocale = {},
+                createBackup = {},
+                availableBackups = emptyList(),
                 onBack = {},
             )
         }
