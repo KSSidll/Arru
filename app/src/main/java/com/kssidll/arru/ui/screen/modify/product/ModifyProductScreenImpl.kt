@@ -159,12 +159,15 @@ fun ModifyProductScreenImpl(
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // TODO when click empty, go to add
                 SearchField(
                     enabled = state.selectedProductProducer.value.isEnabled(),
                     value = state.selectedProductProducer.value.data?.name ?: String(),
                     onClick = {
-                        state.isProducerSearchDialogExpanded.value = true
+                        if (producers.loadedData()) {
+                            state.isProducerSearchDialogExpanded.value = true
+                        } else if (producers.loadedEmpty()) {
+                            onProducerAddButtonClick(null)
+                        }
                     },
                     onLongClick = {
                         state.selectedProductProducer.value.data?.let {
@@ -184,12 +187,15 @@ fun ModifyProductScreenImpl(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // TODO when click empty, go to add
                 SearchField(
                     enabled = state.selectedProductCategory.value.isEnabled(),
                     value = state.selectedProductCategory.value.data?.name ?: String(),
                     onClick = {
-                        state.isCategorySearchDialogExpanded.value = true
+                        if (categories.loadedData()) {
+                            state.isCategorySearchDialogExpanded.value = true
+                        } else if (categories.loadedEmpty()) {
+                            onCategoryAddButtonClick(null)
+                        }
                     },
                     onLongClick = {
                         state.selectedProductCategory.value.data?.let {

@@ -340,12 +340,15 @@ fun ModifyItemScreenImpl(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(12.dp))
 
-            // TODO when click empty, go to add
             SearchField(
                 enabled = state.selectedProduct.value.isEnabled(),
                 value = state.selectedProduct.value.data?.name ?: String(),
                 onClick = {
-                    state.isProductSearchDialogExpanded.value = true
+                    if (products.loadedData()) {
+                        state.isProductSearchDialogExpanded.value = true
+                    } else if (products.loadedEmpty()) {
+                        onProductAddButtonClick(null)
+                    }
                 },
                 onLongClick = {
                     state.selectedProduct.value.data?.let {
@@ -370,13 +373,21 @@ fun ModifyItemScreenImpl(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // TODO when click empty, go to add
             SearchField(
                 enabled = state.selectedProduct.value.data != null && state.selectedVariant.value.isEnabled(),
                 value = state.selectedVariant.value.data?.name
                     ?: stringResource(R.string.item_product_variant_default_value),
                 onClick = {
-                    state.isVariantSearchDialogExpanded.value = true
+                    state.selectedProduct.value.data?.let {
+                        if (variants.loadedData()) {
+                            state.isVariantSearchDialogExpanded.value = true
+                        } else if (variants.loadedEmpty()) {
+                            onVariantAddButtonClick(
+                                it.id,
+                                null
+                            )
+                        }
+                    }
                 },
                 onLongClick = {
                     state.selectedVariant.value.data?.let {

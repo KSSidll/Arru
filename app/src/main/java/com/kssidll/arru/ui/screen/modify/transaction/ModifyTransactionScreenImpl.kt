@@ -118,12 +118,14 @@ fun ModifyTransactionScreenImpl(
         if (isExpandedScreen) {
             ExpandedModifyTransactionScreenContent(
                 state = state,
+                shops = shops,
                 onShopAddButtonClick = onShopAddButtonClick,
                 onTransactionShopLongClick = onTransactionShopLongClick,
             )
         } else {
             ModifyTransactionScreenContent(
                 state = state,
+                shops = shops,
                 onShopAddButtonClick = onShopAddButtonClick,
                 onTransactionShopLongClick = onTransactionShopLongClick,
             )
@@ -134,6 +136,7 @@ fun ModifyTransactionScreenImpl(
 @Composable
 private fun ModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
+    shops: Data<List<Shop>>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
@@ -274,13 +277,16 @@ private fun ModifyTransactionScreenContent(
         HorizontalDivider()
         Spacer(modifier = Modifier.height(12.dp))
 
-        // TODO when click empty, go to add
         SearchField(
             enabled = state.selectedShop.value.isEnabled(),
             optional = true,
             value = state.selectedShop.value.data?.name ?: String(),
             onClick = {
-                state.isShopSearchDialogExpanded.value = true
+                if (shops.loadedData()) {
+                    state.isShopSearchDialogExpanded.value = true
+                } else if (shops.loadedEmpty()) {
+                    onShopAddButtonClick(null)
+                }
             },
             onLongClick = {
                 state.selectedShop.value.data?.let {
@@ -302,6 +308,7 @@ private fun ModifyTransactionScreenContent(
 @Composable
 private fun ExpandedModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
+    shops: Data<List<Shop>>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
@@ -452,7 +459,11 @@ private fun ExpandedModifyTransactionScreenContent(
             optional = true,
             value = state.selectedShop.value.data?.name ?: String(),
             onClick = {
-                state.isShopSearchDialogExpanded.value = true
+                if (shops.loadedData()) {
+                    state.isShopSearchDialogExpanded.value = true
+                } else if (shops.loadedEmpty()) {
+                    onShopAddButtonClick(null)
+                }
             },
             onLongClick = {
                 state.selectedShop.value.data?.let {

@@ -33,16 +33,6 @@ fun <T> SpendingComparisonScreen(
 ) where T: RankSource {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    // TODO add animation on loading / info when none available
-    val leftItems = if (leftSideItems is Data.Loaded) {
-        leftSideItems.data
-    } else emptyList()
-
-    val rightItems = if (rightSideItems is Data.Loaded) {
-        rightSideItems.data
-    } else emptyList()
-
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -80,6 +70,14 @@ fun <T> SpendingComparisonScreen(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
+                val leftItems = if (leftSideItems is Data.Loaded) {
+                    leftSideItems.data
+                } else emptyList()
+
+                val rightItems = if (rightSideItems is Data.Loaded) {
+                    rightSideItems.data
+                } else emptyList()
+
                 Column {
                     Spacer(modifier = Modifier.height(24.dp))
 
