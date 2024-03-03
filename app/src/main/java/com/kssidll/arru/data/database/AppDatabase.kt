@@ -195,23 +195,31 @@ abstract class AppDatabase: RoomDatabase() {
             fromDbFile: File,
             toDbFile: File
         ) {
-            // TODO add moving backups too
+            // TODO add moving backups too when localization change is implemented
             copy(
                 fromDbFile,
                 toDbFile
             )
 
-            val fromDbWalFile = File("${fromDbFile.path}-wal")
-            val fromDbShmFile = File("${fromDbFile.path}-shm")
+            delete(fromDbFile)
+        }
 
-            fromDbFile.delete()
+        /**
+         * delete [dbFile] database files
+         * @param dbFile absolute path to the main db file to be deleted
+         */
+        private fun delete(dbFile: File) {
+            val dbWalFile = File("${dbFile.path}-wal")
+            val dbShmFile = File("${dbFile.path}-shm")
 
-            if (fromDbWalFile.exists()) {
-                fromDbWalFile.delete()
+            dbFile.delete()
+
+            if (dbWalFile.exists()) {
+                dbWalFile.delete()
             }
 
-            if (fromDbShmFile.exists()) {
-                fromDbShmFile.delete()
+            if (dbShmFile.exists()) {
+                dbShmFile.delete()
             }
         }
 
@@ -284,6 +292,18 @@ abstract class AppDatabase: RoomDatabase() {
                     backupDbFile,
                     currentDbFile
                 )
+
+                Arru.restart(context)
+            }
+        }
+
+        /**
+         * delete [backupDbFile] database files
+         * @param backupDbFile absolute path to the main db file to be deleted
+         */
+        fun deleteDbBackup(backupDbFile: File) {
+            if (backupDbFile.exists()) {
+                delete(backupDbFile)
             }
         }
 

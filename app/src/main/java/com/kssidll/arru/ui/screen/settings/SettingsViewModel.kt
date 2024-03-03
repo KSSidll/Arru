@@ -53,12 +53,36 @@ class SettingsViewModel @Inject constructor(
         setApplicationLocales(localeList)
     }
 
+    /**
+     * Creates a backup of current database
+     */
     fun createDbBackup() {
         // TODO add notification when you create maybe?
         AppDatabase.saveDbBackup(
             appContext,
-            preferences
+            preferences,
         )
+        refreshAvailableBackups()
+    }
+
+    /**
+     * Loads a backup of the database
+     * @param dbFile Database file to load
+     */
+    fun loadDbBackup(dbFile: File) {
+        AppDatabase.loadDbBackup(
+            appContext,
+            preferences,
+            dbFile,
+        )
+    }
+
+    /**
+     * Removes a backup of the database
+     * @param dbFile Database file to remove
+     */
+    fun deleteDbBackup(dbFile: File) {
+        AppDatabase.deleteDbBackup(dbFile)
         refreshAvailableBackups()
     }
 }

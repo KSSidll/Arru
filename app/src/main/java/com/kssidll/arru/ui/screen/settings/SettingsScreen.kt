@@ -3,6 +3,8 @@ package com.kssidll.arru.ui.screen.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -25,6 +27,8 @@ import java.io.*
 internal fun SettingsScreen(
     setLocale: (locale: AppLocale?) -> Unit,
     createBackup: () -> Unit,
+    loadBackup: (dbFile: File) -> Unit,
+    deleteBackup: (dbFile: File) -> Unit,
     availableBackups: List<File>,
     onBack: () -> Unit,
 ) {
@@ -60,8 +64,28 @@ internal fun SettingsScreen(
             }
 
             LazyColumn {
+
                 items(availableBackups) {
-                    Text(text = it.name)
+                    Row {
+                        Button(
+                            onClick = {
+                                loadBackup(it)
+                            }
+                        ) {
+                            Text(text = it.name)
+                        }
+
+                        IconButton(
+                           onClick = {
+                               deleteBackup(it)
+                           }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteForever,
+                                contentDescription = "Delete this backup file",
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -76,6 +100,8 @@ private fun SettingsScreenPreview() {
             SettingsScreen(
                 setLocale = {},
                 createBackup = {},
+                loadBackup = {},
+                deleteBackup = {},
                 availableBackups = emptyList(),
                 onBack = {},
             )
