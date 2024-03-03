@@ -292,8 +292,6 @@ abstract class AppDatabase: RoomDatabase() {
                     backupDbFile,
                     currentDbFile
                 )
-
-                Arru.restart(context)
             }
         }
 

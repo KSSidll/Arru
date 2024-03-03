@@ -19,6 +19,7 @@ fun SettingsRoute(
         },
         loadBackup = {
             viewModel.loadDbBackup(it)
+            navigateBack()
         },
         deleteBackup = {
             viewModel.deleteDbBackup(it)

@@ -76,9 +76,9 @@ internal fun SettingsScreen(
                         }
 
                         IconButton(
-                           onClick = {
-                               deleteBackup(it)
-                           }
+                            onClick = {
+                                deleteBackup(it)
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.DeleteForever,
