@@ -156,6 +156,11 @@ interface TransactionBasketRepositorySource {
     suspend fun countAfter(transactionBasketId: Long): Int
 
     /**
+     * @return long representing total spending for the [category]
+     */
+    suspend fun totalSpentLong(): Data<Long?>
+
+    /**
      * @return float representing total spending for the [category] as flow
      */
     fun totalSpentFlow(): Flow<Data<Float?>>

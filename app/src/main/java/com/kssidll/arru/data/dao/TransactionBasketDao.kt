@@ -140,6 +140,9 @@ interface TransactionBasketDao {
     fun getFlow(transactionBasketId: Long): Flow<TransactionBasket?>
 
     @Query("SELECT SUM(transactionbasket.totalCost) FROM transactionbasket")
+    fun totalSpent(): Long?
+
+    @Query("SELECT SUM(transactionbasket.totalCost) FROM transactionbasket")
     fun totalSpentFlow(): Flow<Long?>
 
     @Query(

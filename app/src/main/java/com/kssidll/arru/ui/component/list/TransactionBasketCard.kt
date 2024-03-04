@@ -203,8 +203,7 @@ fun LazyListScope.transactionBasketCardHeader(
                         )
                     ) {
                         Text(
-                            text = transaction.totalCost.toFloat()
-                                .div(TransactionBasket.COST_DIVISOR)
+                            text = TransactionBasket.actualTotalCost(transaction.totalCost)
                                 .formatToCurrency(),
                             style = Typography.titleLarge,
                         )

@@ -75,14 +75,14 @@ data class Item(
         const val INVALID_PRODUCT_ID: Long = Long.MIN_VALUE
 
         @Ignore
-        fun actualQuantity(quantity: Long): Double {
-            return quantity.toDouble()
+        fun actualQuantity(quantity: Long): Float {
+            return quantity.toFloat()
                 .div(QUANTITY_DIVISOR)
         }
 
         @Ignore
-        fun actualPrice(price: Long): Double {
-            return price.toDouble()
+        fun actualPrice(price: Long): Float {
+            return price.toFloat()
                 .div(PRICE_DIVISOR)
         }
 
@@ -181,11 +181,11 @@ data class FullItem(
     val date: Long,
     val shop: Shop?,
 ) {
-    fun actualQuantity(): Double {
+    fun actualQuantity(): Float {
         return Item.actualQuantity(quantity)
     }
 
-    fun actualPrice(): Double {
+    fun actualPrice(): Float {
         return Item.actualPrice(price)
     }
 

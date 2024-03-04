@@ -5,18 +5,22 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.*
 import androidx.datastore.preferences.core.*
 import androidx.lifecycle.*
+import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.database.*
+import com.kssidll.arru.data.repository.*
+import com.kssidll.arru.domain.data.*
 import dagger.hilt.android.lifecycle.*
 import dagger.hilt.android.qualifiers.*
-import java.io.*
+import kotlinx.coroutines.*
 import javax.inject.*
 
 @HiltViewModel
 class BackupsViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    private val transactionBasketRepository: TransactionBasketRepositorySource,
 ): ViewModel() {
-    val availableBackups: SnapshotStateList<File> = mutableStateListOf()
+    val availableBackups: SnapshotStateList<DatabaseBackup> = mutableStateListOf()
 
     init {
         refreshAvailableBackups()
@@ -38,20 +42,29 @@ class BackupsViewModel @Inject constructor(
     /**
      * Creates a backup of current database
      */
-    fun createDbBackup() {
-        // TODO add notification when you create maybe?
-        AppDatabase.saveDbBackup(
-            appContext,
-            preferences,
-        )
-        refreshAvailableBackups()
+    fun createDbBackup() = viewModelScope.launch {
+        Dispatchers.IO.invoke {
+            // TODO add notification when you create maybe?
+            val totalTransactions = transactionBasketRepository.count()
+            val totalSpending = transactionBasketRepository.totalSpentLong()
+
+            if (totalSpending is Data.Loaded) {
+                AppDatabase.saveDbBackup(
+                    context = appContext,
+                    preferences = preferences,
+                    totalTransactions = totalTransactions,
+                    totalSpending = totalSpending.data ?: 0,
+                )
+            }
+            refreshAvailableBackups()
+        }
     }
 
     /**
      * Loads a backup of the database
      * @param dbFile Database file to load
      */
-    fun loadDbBackup(dbFile: File) {
+    fun loadDbBackup(dbFile: DatabaseBackup) {
         AppDatabase.loadDbBackup(
             appContext,
             preferences,
@@ -63,7 +76,7 @@ class BackupsViewModel @Inject constructor(
      * Removes a backup of the database
      * @param dbFile Database file to remove
      */
-    fun deleteDbBackup(dbFile: File) {
+    fun deleteDbBackup(dbFile: DatabaseBackup) {
         AppDatabase.deleteDbBackup(dbFile)
         refreshAvailableBackups()
     }

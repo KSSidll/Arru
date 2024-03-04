@@ -23,11 +23,6 @@ const val DATABASE_NAME: String = "arru_database.db"
 const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
 
 /**
- * default database backup prefix
- */
-const val DATABASE_BACKUP_PREFIX: String = "bak_arru_db_"
-
-/**
  * @return absolute path to external database file as [File]
  */
 fun Context.externalDbFile(): File =
@@ -255,17 +250,31 @@ abstract class AppDatabase: RoomDatabase() {
          * creates a database backup in current database location at set [time]
          * @param context app context
          * @param preferences app preferences
+         * @param totalTransactions total transactions to stamp the database files with
+         * @param totalSpending total spending to stamp the database files with
          * @param time time to stamp the database files with, current time by default
          * @return absolute path to created db backup file as [File]
          */
         fun saveDbBackup(
             context: Context,
             preferences: Preferences,
+            totalTransactions: Int,
+            totalSpending: Long,
             time: Long = Calendar.getInstance().timeInMillis
         ): File {
             val backupDir = context.currentDbBackupDirectory(preferences)
             val currentDbFile = context.currentDbFile(preferences)
-            val backupDbFile = File(backupDir.absolutePath.plus("/$DATABASE_BACKUP_PREFIX$time.db"))
+            val backupDbFile = File(
+                backupDir.absolutePath.plus(
+                    "/${
+                        DatabaseBackup.makeName(
+                            time,
+                            totalTransactions,
+                            totalSpending
+                        )
+                    }.db"
+                )
+            )
 
             copy(
                 currentDbFile,
@@ -284,12 +293,14 @@ abstract class AppDatabase: RoomDatabase() {
         fun loadDbBackup(
             context: Context,
             preferences: Preferences,
-            backupDbFile: File
+            backupDbFile: DatabaseBackup
         ) {
-            if (backupDbFile.exists()) {
+            // TODO ensure that what we are loading is actually the database file
+            val file = backupDbFile.file
+            if (file.exists()) {
                 val currentDbFile = context.currentDbFile(preferences)
                 copy(
-                    backupDbFile,
+                    file,
                     currentDbFile
                 )
             }
@@ -302,9 +313,11 @@ abstract class AppDatabase: RoomDatabase() {
          * delete [backupDbFile] database files
          * @param backupDbFile absolute path to the main db file to be deleted
          */
-        fun deleteDbBackup(backupDbFile: File) {
-            if (backupDbFile.exists()) {
-                delete(backupDbFile)
+        fun deleteDbBackup(backupDbFile: DatabaseBackup) {
+            // TODO ensure that what we are deleting is actually the database file
+            val file = backupDbFile.file
+            if (file.exists()) {
+                delete(file)
             }
         }
 
@@ -316,18 +329,27 @@ abstract class AppDatabase: RoomDatabase() {
         fun availableBackups(
             context: Context,
             preferences: Preferences
-        ): List<File> {
+        ): List<DatabaseBackup> {
             val directory = context.currentDbBackupDirectory(preferences)
 
             if (directory.exists() && directory.isDirectory) {
                 val files = directory.listFiles { file ->
                     // return only files that are databases, ignore shm, wal and other files
-                    file.name.endsWith(".db")
+                    file.extension == "db"
                 }
 
                 if (files != null) {
-                    return files.toList()
-                        .sortedDescending()
+                    // TODO ensure that the mapped file is actually the database file
+                    val dbFiles = files.mapNotNull {
+                        try {
+                            DatabaseBackup.fromFile(it)
+                        } catch (_: IllegalStateException) {
+                            null
+                        }
+                    }
+
+                    return dbFiles.toList()
+                        .sortedByDescending { it.time }
                 }
             }
 

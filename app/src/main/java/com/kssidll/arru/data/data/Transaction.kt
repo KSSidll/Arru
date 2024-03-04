@@ -37,9 +37,8 @@ data class TransactionBasket(
     )
 
     @Ignore
-    fun actualTotalCost(): Double {
-        return totalCost.toDouble()
-            .div(COST_DIVISOR)
+    fun actualTotalCost(): Float {
+        return actualTotalCost(totalCost)
     }
 
     companion object {
@@ -51,6 +50,12 @@ data class TransactionBasket(
 
         @Ignore
         const val INVALID_TOTAL_COST: Long = Long.MIN_VALUE
+
+        @Ignore
+        fun actualTotalCost(cost: Long): Float {
+            return cost.toFloat()
+                .div(COST_DIVISOR)
+        }
 
         @Ignore
         fun totalCostFromString(string: String): Long? {
