@@ -7,6 +7,7 @@ import dev.olshevski.navigation.reimagined.hilt.*
 @Composable
 fun SettingsRoute(
     navigateBack: () -> Unit,
+    navigateBackups: () -> Unit,
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
 
@@ -15,5 +16,6 @@ fun SettingsRoute(
             viewModel.setLocale(it)
         },
         onBack = navigateBack,
+        onBackupsClick = navigateBackups,
     )
 }

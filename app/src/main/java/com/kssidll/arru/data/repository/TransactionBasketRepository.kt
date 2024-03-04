@@ -145,6 +145,10 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         return dao.countAfter(transactionBasketId)
     }
 
+    override suspend fun totalSpentLong(): Data<Long?> {
+        return Data.Loaded(dao.totalSpent())
+    }
+
     override fun totalSpentFlow(): Flow<Data<Float?>> {
         return dao.totalSpentFlow()
             .cancellable()

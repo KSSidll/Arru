@@ -74,6 +74,13 @@
     <string name="item_product_category_add_description">Dodaj nową kategorię produktów</string>
     <string name="item_product_category_delete_warning_text">Ta akcja usunie wszystkie transakcje skojarzone z tą kategorią produktów</string>
 
+    <string name="backups">Kopie Zapasowe</string>
+    <string name="backup_create">Utwórz kopie zapasową</string>
+    <string name="backup_load">Wczytaj kopie zapasową</string>
+    <string name="backup_delete">Usuń kopie zapasową</string>
+    <string name="no_data_to_display_add_backup_hint">Spróbuj dodać kopie zapasową</string>
+    <string name="backups_upload_not_implemented_snackbar_message">Będziesz mógł wysłać kopię zapasową do chmury w przyszłej wersji!</string>
+
     <string name="day">Dzień</string>
     <string name="week">Tydzień</string>
     <string name="month">Miesiąc</string>

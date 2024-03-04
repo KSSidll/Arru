@@ -5,30 +5,13 @@ import androidx.datastore.preferences.core.*
 import com.kssidll.arru.*
 import com.kssidll.arru.data.dao.*
 import com.kssidll.arru.data.database.*
+import com.kssidll.arru.data.preference.*
 import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.preference.*
 import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.qualifiers.*
 import dagger.hilt.components.*
-import java.io.*
 import javax.inject.*
-
-/**
- * default database name
- */
-const val DATABASE_NAME: String = "arru_database"
-
-/**
- * @return absolute path to external database file
- */
-fun Context.externalDbPath(): String =
-    getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME.db")
-
-/**
- * @return absolute path to internal database file as [File]
- */
-fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,10 +24,10 @@ class DatabaseModule {
     ): AppDatabase {
         val location = preferences[AppPreferences.Database.Location.key]
 
+        // if it's not internal and doesn't exist, create it so it can be moved
         if (location != AppPreferences.Database.Location.INTERNAL) {
-            if (appContext.internalDbFile()
+            if (!appContext.internalDbFile()
                     .exists()
-                    .not()
             ) {
                 // simple query to ensure database creation
                 AppDatabase.buildInternal(appContext)
@@ -59,8 +42,8 @@ class DatabaseModule {
 
         return when (preferences[AppPreferences.Database.Location.key]) {
             AppPreferences.Database.Location.EXTERNAL -> {
-                if (File(appContext.externalDbPath()).exists()
-                        .not()
+                if (!appContext.externalDbFile()
+                        .exists()
                 ) {
                     AppDatabase.moveInternalToExternal(appContext)
                 }
@@ -69,11 +52,14 @@ class DatabaseModule {
             }
 
             AppPreferences.Database.Location.INTERNAL -> {
-                if (appContext.internalDbFile()
+                if (!appContext.internalDbFile()
                         .exists()
-                        .not()
                 ) {
-                    AppDatabase.moveExternalToInternal(appContext)
+                    if (appContext.externalDbFile()
+                            .exists()
+                    ) {
+                        AppDatabase.moveExternalToInternal(appContext)
+                    }
                 }
 
                 AppDatabase.buildInternal(appContext)
