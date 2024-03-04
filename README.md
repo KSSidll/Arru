@@ -17,9 +17,10 @@
     <img src="images/dashboard.jpg" width="30%"/>
     <img src="images/analysis.jpg" width="30%"/>
     <img src="images/transactions.jpg" width="30%"/>
-    <img src="images/product_top.jpg" width="30%"/>
-    <img src="images/categories_ranking.jpg" width="30%"/>
-    <img src="images/merge.jpg" width="30%"/>
+    <img src="images/product_top.jpg" width="24%"/>
+    <img src="images/categories_ranking.jpg" width="24%"/>
+    <img src="images/merge.jpg" width="24%"/>
+    <img src="images/backups.jpg" width="24%"/>
     <img src="images/transaction_add_item.jpg" width="30%"/>
     <img src="images/transaction_add_select.jpg" width="30%"/>
     <img src="images/transaction_add.jpg" width="30%"/>
@@ -29,6 +30,7 @@
 
 - Light/Dark mode
 - Wide screen support
+- Local backups
 - Polish and English localization
 - Transaction baskets tracking your total expenditure with optional product, category, shop and producer spending tracking
 - Comparisons between prices at different shops
@@ -39,6 +41,7 @@
 
 - Alternative names for Products and Product Categories for easier searching
 - Filtering for easier searching
+- Cloud backups sync (Google Drive)
 
 # Tech Stack & Libraries
 
