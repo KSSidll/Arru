@@ -5,6 +5,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
+import com.kssidll.arru.ui.screen.backups.*
 import com.kssidll.arru.ui.screen.display.category.*
 import com.kssidll.arru.ui.screen.display.producer.*
 import com.kssidll.arru.ui.screen.display.product.*
@@ -238,6 +239,9 @@ sealed class Screen: Parcelable {
         val year: Int,
         val month: Int
     ): Screen()
+
+    @Immutable
+    data object Backups: Screen()
 }
 
 /**
@@ -570,6 +574,12 @@ fun Navigation(
         }
     }
 
+    val navigateBackups: () -> Unit = {
+        if (navController.currentDestination() !is Screen.Backups) {
+            navController.navigate(Screen.Backups)
+        }
+    }
+
     val screenWidth = LocalConfiguration.current.screenWidthDp
 
     AnimatedNavHost(
@@ -845,6 +855,7 @@ fun Navigation(
             is Screen.Settings -> {
                 SettingsRoute(
                     navigateBack = navigateBack,
+                    navigateBackups = navigateBackups,
                 )
             }
 
@@ -912,6 +923,12 @@ fun Navigation(
                     navigateCategory = navigateCategory,
                     navigateProducer = navigateProducer,
                     navigateShop = navigateShop,
+                )
+            }
+
+            is Screen.Backups -> {
+                BackupsRoute(
+                    navigateBack = navigateBack,
                 )
             }
         }

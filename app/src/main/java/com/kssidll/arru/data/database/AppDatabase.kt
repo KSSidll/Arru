@@ -293,6 +293,9 @@ abstract class AppDatabase: RoomDatabase() {
                     currentDbFile
                 )
             }
+
+            // Required, if we don't restart, we can't add or edit the db, only read seems to work
+            Arru.restart(context)
         }
 
         /**
