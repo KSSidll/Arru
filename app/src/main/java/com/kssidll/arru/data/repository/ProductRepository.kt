@@ -179,6 +179,11 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         }
 
         val items = dao.getItems(product.id)
+        val variants = dao.variants(product.id)
+
+        variants.forEach { it.productId = mergingInto.id }
+        dao.updateVariants(variants)
+
         items.forEach { it.productId = mergingInto.id }
         dao.updateItems(items)
 
