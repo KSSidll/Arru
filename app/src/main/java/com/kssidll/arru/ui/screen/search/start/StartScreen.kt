@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.search.start
 
 
 import android.content.res.Configuration.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -48,38 +49,42 @@ private fun StartScreenContent(
     onShopClick: () -> Unit,
     onProducerClick: () -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.Bottom,
+    Box(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
+        Column(
+            modifier = Modifier
+                .width(600.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            SearchItem(
+                text = stringResource(id = R.string.item_product_producer),
+                onItemClick = onProducerClick,
+            )
 
-        SearchItem(
-            text = stringResource(id = R.string.item_product_producer),
-            onItemClick = onProducerClick,
-        )
+            HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
+            SearchItem(
+                text = stringResource(id = R.string.item_shop),
+                onItemClick = onShopClick,
+            )
 
-        SearchItem(
-            text = stringResource(id = R.string.item_shop),
-            onItemClick = onShopClick,
-        )
+            HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
+            SearchItem(
+                text = stringResource(id = R.string.item_product_category),
+                onItemClick = onCategoryClick,
+            )
 
-        SearchItem(
-            text = stringResource(id = R.string.item_product_category),
-            onItemClick = onCategoryClick,
-        )
+            HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
-
-        SearchItem(
-            text = stringResource(id = R.string.item_product),
-            onItemClick = onProductClick,
-        )
+            SearchItem(
+                text = stringResource(id = R.string.item_product),
+                onItemClick = onProductClick,
+            )
+        }
     }
 }
 

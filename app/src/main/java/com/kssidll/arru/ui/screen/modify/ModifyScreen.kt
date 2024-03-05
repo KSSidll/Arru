@@ -163,7 +163,11 @@ fun <T> ModifyScreen(
                 )
             }
         ) {
-            Box(Modifier.padding(it)) {
+            Box(
+                Modifier
+                    .padding(it)
+                    .consumeWindowInsets(it)
+            ) {
                 EditScreenContent(
                     onSubmit = onSubmit,
                     submitButtonText = submitButtonText,

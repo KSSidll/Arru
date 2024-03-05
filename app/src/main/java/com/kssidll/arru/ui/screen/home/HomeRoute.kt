@@ -112,33 +112,19 @@ fun ExpandedHomeRouteNavigation(
     navigateTransactionAdd: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Row {
+    Row(
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+        )
+    ) {
         HomeRailNavBar(
             currentLocation = currentLocation,
             onLocationChange = onLocationChange,
             onActionButtonClick = navigateTransactionAdd,
             onSettingsAction = navigateSettings,
-            windowInsets = WindowInsets.navigationBars
-                .add(WindowInsets.statusBars)
-                .only(
-                    WindowInsetsSides.Vertical + WindowInsetsSides.Start
-                ),
         )
 
-        Box(modifier = Modifier.weight(1f)) {
-            content()
-        }
-
-        Spacer(
-            modifier = Modifier
-                .windowInsetsPadding(
-                    WindowInsets.navigationBars
-                        .add(WindowInsets.statusBars)
-                        .only(
-                            WindowInsetsSides.Vertical + WindowInsetsSides.End
-                        )
-                )
-        )
+        content()
     }
 }
 
@@ -157,13 +143,7 @@ fun HomeRouteNavigation(
                 onActionButtonClick = navigateTransactionAdd,
             )
         },
-        // consume only insets handled by the bottom bar
-        contentWindowInsets = WindowInsets(
-            0,
-            0,
-            0,
-            0
-        )
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) {
         Box(
             modifier = Modifier

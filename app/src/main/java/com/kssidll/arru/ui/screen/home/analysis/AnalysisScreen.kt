@@ -87,8 +87,7 @@ private fun AnalysisScreenContent(
     compareShopSpending: Data<List<TransactionTotalSpentByShop>>,
     onCategorySpendingComparisonCardClick: () -> Unit,
     onShopSpendingComparisonCardClick: () -> Unit,
-
-    ) {
+) {
     Scaffold(
         bottomBar = {
             Column(modifier = Modifier.padding(vertical = 12.dp)) {
@@ -111,11 +110,13 @@ private fun AnalysisScreenContent(
                     onMonthDecrement = onMonthDecrement,
                 )
             }
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(12.dp))
@@ -210,15 +211,15 @@ private fun ExpandedAnalysisScreenContent(
                     onMonthDecrement = onMonthDecrement,
                 )
             }
-        }
+        },
+        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(6.dp))
-
             AnimatedVisibility(visible = compareCategorySpending.loadedEmpty() && setCategorySpending.loadedEmpty() && compareShopSpending.loadedEmpty() && setShopSpending.loadedEmpty()) {
                 Row(
                     horizontalArrangement = Arrangement.Center,

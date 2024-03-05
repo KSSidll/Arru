@@ -49,10 +49,13 @@ fun <T> RankingScreen(
                 },
             )
         },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) {
         Box(
             modifier = Modifier
                 .padding(it)
+                .consumeWindowInsets(it)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {

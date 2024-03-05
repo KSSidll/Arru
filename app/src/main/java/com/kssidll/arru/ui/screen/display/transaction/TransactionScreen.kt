@@ -55,7 +55,9 @@ internal fun TransactionScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) { paddingValues ->
         AnimatedVisibility(
             visible = transaction is Data.Loaded && transaction.data != null,
@@ -68,6 +70,7 @@ internal fun TransactionScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(paddingValues)
+                        .consumeWindowInsets(paddingValues)
                 ) {
                     transactionBasketCard(
                         transaction = transaction.data,

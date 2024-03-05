@@ -84,40 +84,41 @@ fun <T> SearchList(
                 ) {
                     Scaffold(
                         bottomBar = {
-                            Column(
-                                modifier = Modifier
-                                    .minimumInteractiveComponentSize()
-                                    .fillMaxWidth()
-                            ) {
-                                HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                Column(
+                                    modifier = Modifier
+                                        .width(600.dp)
+                                        .align(Alignment.Center)
+                                ) {
+                                    HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
-                                StyledOutlinedTextField(
-                                    value = filter,
-                                    onValueChange = {
-                                        onFilterChange(it)
-                                    },
-                                    placeholder = {
-                                        Text(
-                                            text = stringResource(id = R.string.search),
-                                            style = Typography.bodyLarge,
-                                            color = MaterialTheme.colorScheme.tertiary.copy(optionalAlpha),
-                                        )
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Rounded.Search,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.tertiary
-                                        )
-                                    },
-                                    colors = styledTextFieldColorDefaults(
-                                        disabledIndicator = Color.Transparent,
-                                        unfocusedIndicator = Color.Transparent,
-                                        focusedIndicator = Color.Transparent,
-                                        errorIndicator = Color.Transparent,
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                    StyledOutlinedTextField(
+                                        value = filter,
+                                        onValueChange = {
+                                            onFilterChange(it)
+                                        },
+                                        placeholder = {
+                                            Text(
+                                                text = stringResource(id = R.string.search),
+                                                style = Typography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.tertiary.copy(optionalAlpha),
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Search,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.tertiary
+                                            )
+                                        },
+                                        colors = styledTextFieldColorDefaults(
+                                            disabledIndicator = Color.Transparent,
+                                            unfocusedIndicator = Color.Transparent,
+                                            focusedIndicator = Color.Transparent,
+                                            errorIndicator = Color.Transparent,
+                                        ),
+                                    )
+                                }
                             }
                         }
                     ) {
@@ -125,24 +126,31 @@ fun <T> SearchList(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(it)
+                                .consumeWindowInsets(it)
                         ) {
                             LazyColumn(
                                 reverseLayout = true,
                                 modifier = Modifier.weight(1f),
                             ) {
                                 items(displayItems.toList()) { item ->
-                                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                        HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
+                                    Box(modifier = Modifier.fillMaxWidth()) {
+                                        Column(
+                                            modifier = Modifier
+                                                .width(600.dp)
+                                                .align(Alignment.Center)
+                                        ) {
+                                            HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
 
-                                        SearchItem(
-                                            text = item.name(),
-                                            onItemClick = {
-                                                onItemClick(item)
-                                            },
-                                            onItemLongClick = {
-                                                onItemLongClick(item)
-                                            }
-                                        )
+                                            SearchItem(
+                                                text = item.name(),
+                                                onItemClick = {
+                                                    onItemClick(item)
+                                                },
+                                                onItemLongClick = {
+                                                    onItemLongClick(item)
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }

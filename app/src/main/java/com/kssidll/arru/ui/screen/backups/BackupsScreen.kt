@@ -85,6 +85,7 @@ fun BackupsScreen(
                 )
             }
         },
+        // Without this, the FAB can be placed under the system navigation bar
         modifier = Modifier.windowInsetsPadding(
             WindowInsets.navigationBars
                 .only(
@@ -323,18 +324,18 @@ fun BackupsScreenNothingToDisplayOverlay() {
                     )
 
                     // temporarily disabled arrow as it looks too weird on wide screens
-//                    relativeLineTo(
-//                        -32.dp.toPx(),
-//                        6.dp.toPx()
-//                    )
-//                    relativeMoveTo(
-//                        34.dp.toPx(),
-//                        -6.dp.toPx()
-//                    )
-//                    relativeLineTo(
-//                        -6.dp.toPx(),
-//                        -33.dp.toPx()
-//                    )
+                    //                    relativeLineTo(
+                    //                        -32.dp.toPx(),
+                    //                        6.dp.toPx()
+                    //                    )
+                    //                    relativeMoveTo(
+                    //                        34.dp.toPx(),
+                    //                        -6.dp.toPx()
+                    //                    )
+                    //                    relativeLineTo(
+                    //                        -6.dp.toPx(),
+                    //                        -33.dp.toPx()
+                    //                    )
                 },
                 style = Stroke(width = lineWidth),
                 color = pathColor

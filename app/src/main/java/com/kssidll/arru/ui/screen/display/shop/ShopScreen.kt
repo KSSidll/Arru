@@ -88,10 +88,13 @@ internal fun ShopScreen(
                 },
             )
         },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .fillMaxSize()
         ) {
             AnimatedVisibility(
@@ -208,7 +211,8 @@ private fun ShopScreenContent(
                     )
                 }
             }
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
     ) { paddingValues ->
         LazyColumn(
             state = listState,
@@ -216,7 +220,9 @@ private fun ShopScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
         ) {
+            // TODO add keys to items in lazycolumns coz this bugs out
             item {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))

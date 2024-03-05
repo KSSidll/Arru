@@ -34,7 +34,6 @@ fun <T> SpendingComparisonScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SecondaryAppBar(
                 onBack = onBack,
@@ -43,11 +42,18 @@ fun <T> SpendingComparisonScreen(
                 },
                 scrollBehavior = scrollBehavior,
             )
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .padding(it)
+                .consumeWindowInsets(it)
+                .fillMaxSize()
         ) {
             AnimatedVisibility(
                 visible = leftSideItems.loadedEmpty() && rightSideItems.loadedEmpty(),
@@ -78,20 +84,26 @@ fun <T> SpendingComparisonScreen(
                     rightSideItems.data
                 } else emptyList()
 
-                Column {
-                    Spacer(modifier = Modifier.height(24.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .width(600.dp)
+                            .align(Alignment.TopCenter)
+                    ) {
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    SpendingComparisonList(
-                        listHeader = String(),
-                        leftSideItems = leftItems,
-                        leftSideHeader = leftSideHeader,
-                        rightSideItems = rightItems,
-                        rightSideHeader = rightSideHeader,
-                        modifier = modifier
-                            .padding(it)
-                            .widthIn(max = 688.dp)
-                            .verticalScroll(state = rememberScrollState())
-                    )
+                        SpendingComparisonList(
+                            listHeader = String(),
+                            leftSideItems = leftItems,
+                            leftSideHeader = leftSideHeader,
+                            rightSideItems = rightItems,
+                            rightSideHeader = rightSideHeader,
+                        )
+                    }
                 }
             }
         }
