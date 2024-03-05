@@ -3,6 +3,7 @@ package com.kssidll.arru
 import android.os.*
 import androidx.activity.*
 import androidx.activity.compose.*
+import androidx.appcompat.app.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.*
@@ -16,7 +17,7 @@ import kotlinx.coroutines.*
 import javax.inject.*
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity() {
+class MainActivity: AppCompatActivity() {
     @Inject
     lateinit var preferences: Preferences
 
