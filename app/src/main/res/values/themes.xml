@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.Arrugarq" parent="Theme.AppCompat.DayNight.NoActionBar" />
+    <style name="Theme.Arrugarq" parent="android:Theme.Material.NoActionBar" />
 
     <style name="Theme.Arrugarq.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>

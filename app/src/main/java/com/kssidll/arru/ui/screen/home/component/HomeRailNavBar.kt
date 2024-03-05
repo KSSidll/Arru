@@ -21,12 +21,15 @@ import com.kssidll.arru.ui.theme.*
  */
 @Composable
 internal fun HomeRailNavBar(
+    modifier: Modifier = Modifier,
     currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
     onLocationChange: (HomeRouteLocations) -> Unit,
     onActionButtonClick: () -> Unit,
     onSettingsAction: () -> Unit,
+    windowInsets: WindowInsets = NavigationRailDefaults.windowInsets,
 ) {
     NavigationRail(
+        modifier = modifier,
         header = {
             FloatingActionButton(
                 onClick = {
@@ -42,6 +45,7 @@ internal fun HomeRailNavBar(
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        windowInsets = windowInsets,
     ) {
         HomeRouteLocations.entries.forEach {
             NavigationRailItem(

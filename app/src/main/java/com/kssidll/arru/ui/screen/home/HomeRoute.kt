@@ -118,9 +118,27 @@ fun ExpandedHomeRouteNavigation(
             onLocationChange = onLocationChange,
             onActionButtonClick = navigateTransactionAdd,
             onSettingsAction = navigateSettings,
+            windowInsets = WindowInsets.navigationBars
+                .add(WindowInsets.statusBars)
+                .only(
+                    WindowInsetsSides.Vertical + WindowInsetsSides.Start
+                ),
         )
 
-        content()
+        Box(modifier = Modifier.weight(1f)) {
+            content()
+        }
+
+        Spacer(
+            modifier = Modifier
+                .windowInsetsPadding(
+                    WindowInsets.navigationBars
+                        .add(WindowInsets.statusBars)
+                        .only(
+                            WindowInsetsSides.Vertical + WindowInsetsSides.End
+                        )
+                )
+        )
     }
 }
 
@@ -138,9 +156,20 @@ fun HomeRouteNavigation(
                 onLocationChange = onLocationChange,
                 onActionButtonClick = navigateTransactionAdd,
             )
-        }
+        },
+        // consume only insets handled by the bottom bar
+        contentWindowInsets = WindowInsets(
+            0,
+            0,
+            0,
+            0
+        )
     ) {
-        Box(modifier = Modifier.padding(it)) {
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .consumeWindowInsets(it)
+        ) {
             content()
         }
     }

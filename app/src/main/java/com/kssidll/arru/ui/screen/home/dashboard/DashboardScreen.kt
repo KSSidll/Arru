@@ -121,7 +121,11 @@ private fun DashboardScreenContent(
             )
         },
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
+        ) {
             AnimatedVisibility(
                 visible = spentByTimeData.loadedEmpty() && spentByCategoryData.loadedEmpty() && spentByShopData.loadedEmpty(),
                 enter = fadeIn(),
@@ -137,8 +141,6 @@ private fun DashboardScreenContent(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(paddingValues)
-                        .animateContentSize()
                         .nestedScroll(nestedScrollConnection)
                         .verticalScroll(state = scrollState)
                 ) {

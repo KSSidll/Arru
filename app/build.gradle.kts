@@ -92,10 +92,10 @@ ksp {
 
 dependencies {
     // AndroidX
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.splashscreen.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.google.accompanist.systemuicontroller)
 
     // Navigation
     implementation(libs.dev.navigation.reimagined)
