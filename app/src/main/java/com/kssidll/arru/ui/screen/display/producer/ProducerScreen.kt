@@ -89,10 +89,13 @@ internal fun ProducerScreen(
                 },
             )
         },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .fillMaxSize()
         ) {
             AnimatedVisibility(
@@ -209,7 +212,8 @@ private fun ProducerScreenContent(
                     )
                 }
             }
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { paddingValues ->
         LazyColumn(
             state = listState,
@@ -217,6 +221,7 @@ private fun ProducerScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
         ) {
             item {
                 Column(modifier = Modifier.fillMaxWidth()) {

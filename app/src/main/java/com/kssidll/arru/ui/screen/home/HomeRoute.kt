@@ -112,7 +112,11 @@ fun ExpandedHomeRouteNavigation(
     navigateTransactionAdd: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Row {
+    Row(
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+        )
+    ) {
         HomeRailNavBar(
             currentLocation = currentLocation,
             onLocationChange = onLocationChange,
@@ -138,9 +142,14 @@ fun HomeRouteNavigation(
                 onLocationChange = onLocationChange,
                 onActionButtonClick = navigateTransactionAdd,
             )
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) {
-        Box(modifier = Modifier.padding(it)) {
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .consumeWindowInsets(it)
+        ) {
             content()
         }
     }

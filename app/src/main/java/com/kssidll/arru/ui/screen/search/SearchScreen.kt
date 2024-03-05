@@ -62,6 +62,7 @@ internal fun SearchScreen(
                     title = {},
                 )
             },
+            modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)
         ) {
             AnimatedNavHost(
                 controller = navController,
@@ -92,7 +93,11 @@ internal fun SearchScreen(
                     }
 
                     is SearchDestinations.ProductList -> {
-                        Box(modifier = Modifier.padding(it)) {
+                        Box(
+                            modifier = Modifier
+                                .padding(it)
+                                .consumeWindowInsets(it)
+                        ) {
                             ProductListRoute(
                                 onProductClick = {
                                     onProductClick(it)
@@ -105,7 +110,11 @@ internal fun SearchScreen(
                     }
 
                     is SearchDestinations.CategoryList -> {
-                        Box(modifier = Modifier.padding(it)) {
+                        Box(
+                            modifier = Modifier
+                                .padding(it)
+                                .consumeWindowInsets(it)
+                        ) {
                             CategoryListRoute(
                                 onCategoryClick = {
                                     onCategoryClick(it)
@@ -118,7 +127,11 @@ internal fun SearchScreen(
                     }
 
                     is SearchDestinations.ProducerList -> {
-                        Box(modifier = Modifier.padding(it)) {
+                        Box(
+                            modifier = Modifier
+                                .padding(it)
+                                .consumeWindowInsets(it)
+                        ) {
                             ProducerListRoute(
                                 onProducerClick = {
                                     onProducerClick(it)
@@ -131,7 +144,11 @@ internal fun SearchScreen(
                     }
 
                     is SearchDestinations.ShopList -> {
-                        Box(modifier = Modifier.padding(it)) {
+                        Box(
+                            modifier = Modifier
+                                .padding(it)
+                                .consumeWindowInsets(it)
+                        ) {
                             ShopListRoute(
                                 onShopClick = {
                                     onShopClick(it)

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import com.kssidll.arru.data.data.*
@@ -36,154 +37,159 @@ fun <T> SpendingComparisonList(
     modifier: Modifier = Modifier,
     itemDisplayLimit: Int? = null,
 ) where T: RankSource {
-    Box(modifier = modifier) {
-        Row(modifier = Modifier.padding(horizontal = 12.dp)) {
-            val leftGroupped = leftSideItems.groupBy { it.displayName() }
-            val rightSorted = rightSideItems.sortedByDescending { it.sortValue() }
-            val rightGroupped = rightSideItems.groupBy { it.displayName() }
-            var names = rightSorted.plus(
-                leftSideItems.filterNot { it.displayName() in rightGroupped }
-                    .sortedBy { it.sortValue() }
-            )
-                .map { it.displayName() }
+    Row(modifier = modifier) {
+        val leftGroupped = leftSideItems.groupBy { it.displayName() }
+        val rightSorted = rightSideItems.sortedByDescending { it.sortValue() }
+        val rightGroupped = rightSideItems.groupBy { it.displayName() }
+        var names = rightSorted.plus(
+            leftSideItems.filterNot { it.displayName() in rightGroupped }
+                .sortedBy { it.sortValue() }
+        )
+            .map { it.displayName() }
 
-            if (itemDisplayLimit != null) {
-                names = names.subList(
+        if (itemDisplayLimit != null) {
+            names = names.subList(
+                0,
+                itemDisplayLimit.coerceIn(
                     0,
-                    itemDisplayLimit.coerceIn(
-                        0,
-                        names.size
-                    )
+                    names.size
+                )
+            )
+        }
+
+        Column(modifier = Modifier.width(IntrinsicSize.Min)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(HEADER_HEIGHT)
+            ) {
+                Text(
+                    text = listHeader,
+                    style = Typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
 
-            Column(modifier = Modifier.width(IntrinsicSize.Min)) {
+            names.forEachIndexed { index, it ->
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(HEADER_HEIGHT)
+                        .height(ITEM_HEIGHT)
+                        .padding(start = 16.dp)
                 ) {
                     Text(
-                        text = listHeader,
+                        text = it,
                         style = Typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Center)
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
                     )
                 }
 
-                names.forEachIndexed { index, it ->
-                    Box(modifier = Modifier.height(ITEM_HEIGHT)) {
+                if (index != names.lastIndex) {
+                    HorizontalDivider()
+                }
+            }
+        }
+
+        Column(modifier = Modifier.weight(1F)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(HEADER_HEIGHT)
+            ) {
+                Text(
+                    text = leftSideHeader,
+                    style = Typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            names.forEachIndexed { index, it ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(ITEM_HEIGHT)
+                ) {
+                    val item = leftGroupped[it]
+                    if (item != null) {
                         Text(
-                            text = it,
+                            text = item[0].displayValue(),
                             style = Typography.bodyLarge,
-                            modifier = Modifier.align(Alignment.CenterStart)
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
+                }
 
-                    if (index != names.lastIndex) {
-                        HorizontalDivider()
-                    }
+                if (index != names.lastIndex) {
+                    HorizontalDivider()
                 }
             }
+        }
 
-            Column(modifier = Modifier.weight(1F)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(HEADER_HEIGHT)
-                ) {
-                    Text(
-                        text = leftSideHeader,
-                        style = Typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-
-                names.forEachIndexed { index, it ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(ITEM_HEIGHT)
-                    ) {
-                        val item = leftGroupped[it]
-                        if (item != null) {
-                            Text(
-                                text = item[0].displayValue(),
-                                style = Typography.bodyLarge,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                    }
-
-                    if (index != names.lastIndex) {
-                        HorizontalDivider()
-                    }
-                }
+        Column(modifier = Modifier.weight(1F)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(HEADER_HEIGHT)
+            ) {
+                Text(
+                    text = rightSideHeader,
+                    style = Typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
-
-            Column(modifier = Modifier.weight(1F)) {
+            names.forEachIndexed { index, it ->
                 Box(
                     modifier = Modifier
+                        .height(ITEM_HEIGHT)
                         .fillMaxWidth()
-                        .height(HEADER_HEIGHT)
                 ) {
-                    Text(
-                        text = rightSideHeader,
-                        style = Typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                names.forEachIndexed { index, it ->
-                    Box(
-                        modifier = Modifier
-                            .height(ITEM_HEIGHT)
-                            .fillMaxWidth()
-                    ) {
-                        val item = rightGroupped[it]
-                        val otherItem = leftGroupped[it]
-                        if (item != null) {
-                            Text(
-                                text = item[0].displayValue(),
-                                style = Typography.bodyLarge,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
+                    val item = rightGroupped[it]
+                    val otherItem = leftGroupped[it]
+                    if (item != null) {
+                        Text(
+                            text = item[0].displayValue(),
+                            style = Typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
 
-                            if (otherItem != null) {
-                                val itemValue = item[0].value()
-                                    .roundToLong()
-                                val otherItemValue = otherItem[0].value()
-                                    .roundToLong()
+                        if (otherItem != null) {
+                            val itemValue = item[0].value()
+                                .roundToLong()
+                            val otherItemValue = otherItem[0].value()
+                                .roundToLong()
 
-                                val diff: Long = (itemValue.toDouble()
-                                    .div(otherItemValue)).minus(1)
-                                    .times(100)
-                                    .toLong()
-                                val diffStr: String = if (diff > 0) {
-                                    "+${diff} %"
-                                } else {
-                                    "$diff %"
-                                }
+                            val diff: Long = (itemValue.toDouble()
+                                .div(otherItemValue)).minus(1)
+                                .times(100)
+                                .toLong()
+                            val diffStr: String = if (diff > 0) {
+                                "+${diff} %"
+                            } else {
+                                "$diff %"
+                            }
 
-                                if (itemValue != otherItemValue) {
-                                    Text(
-                                        text = diffStr,
-                                        style = Typography.bodySmall,
-                                        color = if (diff < 0) {
-                                            MaterialTheme.colorScheme.tertiary.copy(optionalAlpha)
-                                        } else {
-                                            MaterialTheme.colorScheme.error.copy(optionalAlpha)
-                                        },
-                                        modifier = Modifier
-                                            .padding(bottom = DIFF_PERCENT_STRING_BOTTOM_PADDING)
-                                            .align(Alignment.BottomCenter)
-                                    )
-                                }
+                            if (itemValue != otherItemValue) {
+                                Text(
+                                    text = diffStr,
+                                    style = Typography.bodySmall,
+                                    color = if (diff < 0) {
+                                        MaterialTheme.colorScheme.tertiary.copy(optionalAlpha)
+                                    } else {
+                                        MaterialTheme.colorScheme.error.copy(optionalAlpha)
+                                    },
+                                    modifier = Modifier
+                                        .padding(bottom = DIFF_PERCENT_STRING_BOTTOM_PADDING)
+                                        .align(Alignment.BottomCenter)
+                                )
                             }
                         }
                     }
+                }
 
-                    if (index != names.lastIndex) {
-                        HorizontalDivider()
-                    }
+                if (index != names.lastIndex) {
+                    HorizontalDivider()
                 }
             }
         }

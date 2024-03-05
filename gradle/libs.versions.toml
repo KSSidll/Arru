@@ -1,10 +1,10 @@
 [versions]
 ## Libraries
 # AndroidX
+androidx-activity = "1.8.2"
 androidx-splashscreen-core = "1.0.1"
 androidx-appcompat = "1.7.0-alpha03"
 androidx-datastore-preferences = "1.1.0-beta01"
-google-accompanist-systemuicontroller = "0.32.0"
 
 # Navigation
 dev-navigation-reimagined = "1.5.0"
@@ -35,10 +35,10 @@ ksp = "1.9.22-1.0.17"
 
 [libraries]
 # AndroidX
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity" }
 androidx-splashscreen-core = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splashscreen-core" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences-android", version.ref = "androidx-datastore-preferences" }
-google-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "google-accompanist-systemuicontroller" }
 
 # Navigation
 dev-navigation-reimagined = { group = "dev.olshevski.navigation", name = "reimagined", version.ref = "dev-navigation-reimagined" }

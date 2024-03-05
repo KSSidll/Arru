@@ -39,30 +39,34 @@ fun LazyListScope.fullItemListContent(
             //... yeah
             if (index == 0 || (lastItem != null && item.date / DAY_IN_MILIS != lastItem.date / DAY_IN_MILIS)) {
                 stickyHeader {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = modifier,
-                    ) {
-                        Surface(
-                            shape = RoundedCornerShape(
-                                bottomStart = 24.dp,
-                                bottomEnd = 24.dp,
-                            ),
-                            color = MaterialTheme.colorScheme.surfaceContainer,
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = modifier
+                                .width(600.dp)
+                                .align(Alignment.Center)
                         ) {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
+                            Surface(
+                                shape = RoundedCornerShape(
+                                    bottomStart = 24.dp,
+                                    bottomEnd = 24.dp,
+                                ),
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                             ) {
-                                Text(
-                                    modifier = Modifier.align(Alignment.Center),
-                                    text = SimpleDateFormat(
-                                        "MMM d, yyyy",
-                                        Locale.getDefault()
-                                    ).format(item.date),
-                                    style = Typography.headlineMedium,
-                                )
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        modifier = Modifier.align(Alignment.Center),
+                                        text = SimpleDateFormat(
+                                            "MMM d, yyyy",
+                                            Locale.getDefault()
+                                        ).format(item.date),
+                                        style = Typography.headlineMedium,
+                                    )
+                                }
                             }
                         }
                     }
@@ -70,15 +74,22 @@ fun LazyListScope.fullItemListContent(
             }
 
             item {
-                Column(modifier = modifier) {
-                    FullItemCard(
-                        item = transactionItems[index]!!,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onCategoryClick = onCategoryClick,
-                        onProducerClick = onProducerClick,
-                        onShopClick = onShopClick,
-                    )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier
+                            .width(600.dp)
+                            .align(Alignment.Center)
+                    ) {
+                        FullItemCard(
+                            item = transactionItems[index]!!,
+                            onItemClick = onItemClick,
+                            onItemLongClick = onItemLongClick,
+                            onCategoryClick = onCategoryClick,
+                            onProducerClick = onProducerClick,
+                            onShopClick = onShopClick,
+                        )
+                    }
                 }
             }
         }

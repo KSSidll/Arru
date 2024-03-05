@@ -70,22 +70,26 @@ internal fun TransactionsScreen(
         }
 
         if (isExpandedScreen) {
-            Row {
-                Box(modifier = Modifier.weight(1f)) {
-                    TransactionScreenContent(
-                        transactions = transactions,
-                        onTransactionLongClick = onTransactionLongClick,
-                        onTransactionLongClickLabel = onTransactionLongClickLabel,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
-                    )
-                }
+            Box(
+                modifier = Modifier
+            ) {
+                TransactionScreenContent(
+                    transactions = transactions,
+                    onTransactionLongClick = onTransactionLongClick,
+                    onTransactionLongClickLabel = onTransactionLongClickLabel,
+                    onItemAddClick = onItemAddClick,
+                    onItemClick = onItemClick,
+                    onItemLongClick = onItemLongClick,
+                    onItemCategoryClick = onItemCategoryClick,
+                    onItemProducerClick = onItemProducerClick,
+                    onItemShopClick = onItemShopClick,
+                )
 
-                Column(modifier = Modifier.fillMaxHeight()) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ) {
                     IconButton(
                         onClick = {
                             onSearchAction()
@@ -150,7 +154,10 @@ internal fun TransactionsScreen(
                         onItemCategoryClick = onItemCategoryClick,
                         onItemProducerClick = onItemProducerClick,
                         onItemShopClick = onItemShopClick,
-                        modifier = Modifier.padding(paddingValues)
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .consumeWindowInsets(paddingValues)
+                            .windowInsetsPadding(WindowInsets.statusBars)
                     )
                 }
             }
@@ -236,9 +243,14 @@ fun TransactionScreenContent(
                 }
             }
         },
+        contentWindowInsets = WindowInsets(0),
         modifier = modifier
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
+        ) {
             LazyColumn(
                 state = listState,
                 horizontalAlignment = Alignment.CenterHorizontally,

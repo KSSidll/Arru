@@ -53,8 +53,6 @@
 
 - [Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/) to emit values from data layer reactively
 
-- [Accompanist](https://github.com/google/accompanist) to extend jetpack compose
-
 - [Hilt](https://dagger.dev/hilt/) for dependency injection
 
 - [Compose Navigation Reimagined](https://github.com/olshevski/compose-navigation-reimagined) for animated navigation

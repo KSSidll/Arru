@@ -40,11 +40,18 @@ internal fun SettingsScreen(
                     )
                 },
             )
-        }
+        },
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.navigationBars
+                .only(
+                    WindowInsetsSides.Horizontal
+                )
+        )
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .fillMaxWidth()
         ) {
             Column(

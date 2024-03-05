@@ -29,8 +29,8 @@ android {
         applicationId = "com.kssidll.arru"
         minSdk = 21
         targetSdk = 34
-        versionCode = 30
-        versionName = "2.4.1"
+        versionCode = 31
+        versionName = "2.4.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -92,10 +92,10 @@ ksp {
 
 dependencies {
     // AndroidX
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.splashscreen.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.google.accompanist.systemuicontroller)
 
     // Navigation
     implementation(libs.dev.navigation.reimagined)
