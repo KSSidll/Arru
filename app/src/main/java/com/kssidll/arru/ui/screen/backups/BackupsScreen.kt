@@ -84,9 +84,19 @@ fun BackupsScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-        }
+        },
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.navigationBars
+                .only(
+                    WindowInsetsSides.Horizontal
+                )
+        )
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
+        ) {
             AnimatedVisibility(
                 visible = availableBackups.isEmpty(),
                 enter = fadeIn(),
@@ -295,8 +305,9 @@ fun BackupsScreenNothingToDisplayOverlay() {
                 .fillMaxWidth()
         ) {
             val curveEndX = size.width - 90.dp.toPx()
-            val curveEndY = size.height - 75.dp.toPx()
+            val curveEndY = size.height - 45.dp.toPx()
             val lineWidth = 3.dp.toPx()
+
 
             drawPath(
                 path = Path().apply {
@@ -311,18 +322,19 @@ fun BackupsScreenNothingToDisplayOverlay() {
                         curveEndY,
                     )
 
-                    relativeLineTo(
-                        -32.dp.toPx(),
-                        6.dp.toPx()
-                    )
-                    relativeMoveTo(
-                        33.dp.toPx(),
-                        -5.dp.toPx()
-                    )
-                    relativeLineTo(
-                        -6.dp.toPx(),
-                        -35.dp.toPx()
-                    )
+                    // temporarily disabled arrow as it looks too weird on wide screens
+//                    relativeLineTo(
+//                        -32.dp.toPx(),
+//                        6.dp.toPx()
+//                    )
+//                    relativeMoveTo(
+//                        34.dp.toPx(),
+//                        -6.dp.toPx()
+//                    )
+//                    relativeLineTo(
+//                        -6.dp.toPx(),
+//                        -33.dp.toPx()
+//                    )
                 },
                 style = Stroke(width = lineWidth),
                 color = pathColor
