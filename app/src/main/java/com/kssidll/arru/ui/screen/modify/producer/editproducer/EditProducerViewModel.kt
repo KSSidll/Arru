@@ -54,10 +54,10 @@ class EditProducerViewModel @Inject constructor(
      */
     fun allMergeCandidates(producerId: Long): Flow<Data<List<ProductProducer>>> {
         return producerRepository.allFlow()
-            .onEach {
+            .map {
                 if (it is Data.Loaded) {
-                    it.data.filter { item -> item.id != producerId }
-                }
+                    Data.Loaded(it.data.filter { item -> item.id != producerId })
+                } else it
             }
     }
 
