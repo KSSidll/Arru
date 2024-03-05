@@ -114,6 +114,9 @@ interface ProductDao {
     suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
 
     @Update
+    suspend fun updateVariants(variants: List<ProductVariant>)
+
+    @Update
     suspend fun updateItems(items: List<Item>)
 
     @Query(
