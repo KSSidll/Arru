@@ -114,7 +114,10 @@ fun BackupsScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     var lastDate: Long? = null
                     availableBackups.forEach {
-                        val currentDate = (it.time / DAY_IN_MILIS) * DAY_IN_MILIS
+                        // TODO test if this fixes backup day being wrong until current timezone
+                        // fixes for polish time zone, but wasn't tested on others
+                        val offset = Calendar.getInstance().timeZone.rawOffset
+                        val currentDate = ((it.time + offset) / DAY_IN_MILIS) * DAY_IN_MILIS
 
                         if (lastDate == null || currentDate != lastDate) {
                             stickyHeader {
@@ -285,7 +288,7 @@ fun BackupsScreenNothingToDisplayOverlay() {
 
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_text),
+                text = stringResource(id = R.string.no_data_to_display_text),
                 style = Typography.titleLarge,
                 modifier = Modifier.align(Alignment.Center)
             )
