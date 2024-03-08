@@ -142,23 +142,24 @@ internal fun TransactionsScreen(
                         }
                     },
                     sheetPeekHeight = 48.dp,
-                    containerColor = MaterialTheme.colorScheme.background,
                 ) { paddingValues ->
-                    TransactionScreenContent(
-                        transactions = transactions,
-                        onTransactionLongClick = onTransactionLongClick,
-                        onTransactionLongClickLabel = onTransactionLongClickLabel,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
+                    Box(
                         modifier = Modifier
-                            .padding(paddingValues)
                             .consumeWindowInsets(paddingValues)
                             .windowInsetsPadding(WindowInsets.statusBars)
-                    )
+                    ) {
+                        TransactionScreenContent(
+                            transactions = transactions,
+                            onTransactionLongClick = onTransactionLongClick,
+                            onTransactionLongClickLabel = onTransactionLongClickLabel,
+                            onItemAddClick = onItemAddClick,
+                            onItemClick = onItemClick,
+                            onItemLongClick = onItemLongClick,
+                            onItemCategoryClick = onItemCategoryClick,
+                            onItemProducerClick = onItemProducerClick,
+                            onItemShopClick = onItemShopClick,
+                        )
+                    }
                 }
             }
         }
