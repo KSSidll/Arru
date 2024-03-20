@@ -27,6 +27,8 @@ import com.kssidll.arru.ui.theme.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
+private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
+
 /**
  * @param transactions Transactions to display in the transactions list
  * @param onSearchAction Callback called when the 'search' action is triggered
@@ -141,7 +143,7 @@ internal fun TransactionsScreen(
                             }
                         }
                     },
-                    sheetPeekHeight = 48.dp,
+                    sheetPeekHeight = BOTTOM_SHEET_PEEK_HEIGHT,
                 ) { paddingValues ->
                     Box(
                         modifier = Modifier
@@ -228,20 +230,22 @@ fun TransactionScreenContent(
                     targetOffsetX = { it }
                 )
             ) {
-                // FIXME this FAB is partially hidden under the bottom sheet bar if it's displayed
-                FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowUpward,
-                        contentDescription = null,
-                    )
+                // ignores orientation but works well enough on landscape imo
+                Box(modifier = Modifier.padding(bottom = BOTTOM_SHEET_PEEK_HEIGHT)) {
+                    FloatingActionButton(
+                        onClick = {
+                            scope.launch {
+                                listState.animateScrollToItem(0)
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowUpward,
+                            contentDescription = null,
+                        )
+                    }
                 }
             }
         },
