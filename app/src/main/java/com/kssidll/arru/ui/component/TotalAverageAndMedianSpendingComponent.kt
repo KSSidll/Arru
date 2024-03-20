@@ -22,6 +22,12 @@ import com.patrykandpatrick.vico.core.entry.*
 import com.patrykandpatrick.vico.core.scroll.*
 import kotlinx.coroutines.*
 
+private val HALF_CHART_TOP_PADDING: Dp = 36.dp
+private val FULL_CHART_TOP_PADDING: Dp = 18.dp
+private val CARD_SPACING: Dp = 8.dp
+private val CARD_HEIGHT: Dp = 140.dp
+private val CARD_TEXT_TOP_PADDING: Dp = 10.dp
+
 @Composable
 fun TotalAverageAndMedianSpendingComponent(
     modifier: Modifier = Modifier,
@@ -43,56 +49,56 @@ fun TotalAverageAndMedianSpendingComponent(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             ),
-            modifier = Modifier.height(140.dp)
+            modifier = Modifier.height(CARD_HEIGHT)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-                var targetValue by remember { mutableFloatStateOf(totalStartValue) }
+            var targetValue by remember { mutableFloatStateOf(totalStartValue) }
 
-                val chartProducer = remember {
-                    ChartEntryModelProducer()
+            val chartProducer = remember {
+                ChartEntryModelProducer()
+            }
+
+            LaunchedEffect(totalSpentData) {
+                targetValue = totalSpentData
+
+                val oldDataAdjusted = chartProducer.getModel()?.entries?.map { chart ->
+                    chart.map { it.withY(0f) }
+                }
+                    .orEmpty()
+
+                if (oldDataAdjusted.isNotEmpty()) {
+                    chartProducer.setEntries(oldDataAdjusted)
                 }
 
-                LaunchedEffect(totalSpentData) {
-                    targetValue = totalSpentData
+                val newData = spentByTimeData.movingTotalChartData()
 
-                    val oldDataAdjusted = chartProducer.getModel()?.entries?.map { chart ->
-                        chart.map { it.withY(0f) }
-                    }
-                        .orEmpty()
-
-                    if (oldDataAdjusted.isNotEmpty()) {
-                        chartProducer.setEntries(oldDataAdjusted)
-                    }
-
-                    val newData = spentByTimeData.movingTotalChartData()
-
-                    if (oldDataAdjusted.isNotEmpty()) {
-                        delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
-                    }
-
-                    chartProducer.setEntries(newData)
+                if (oldDataAdjusted.isNotEmpty()) {
+                    delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
                 }
 
-                val animatedValue = animateFloatAsState(
-                    targetValue = targetValue,
-                    animationSpec = animationSpec,
-                    label = "total spent value animation",
-                    finishedListener = {
-                        // only called here since all animations use same spec and the total is the highest value
-                        // so will take the longest no matter the spec
-                        onAnimationEnd()
-                    }
-                )
+                chartProducer.setEntries(newData)
+            }
 
-                Text(
-                    text = animatedValue.value.formatToCurrency(),
-                    style = Typography.headlineLarge,
-                )
+            val animatedValue = animateFloatAsState(
+                targetValue = targetValue,
+                animationSpec = animationSpec,
+                label = "total spent value animation",
+                finishedListener = {
+                    // only called here since all animations use same spec and the total is the highest value
+                    // so will take the longest no matter the spec
+                    onAnimationEnd()
+                }
+            )
+
+            Box(modifier = Modifier.padding(top = CARD_TEXT_TOP_PADDING)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = animatedValue.value.formatToCurrency(),
+                        style = Typography.headlineLarge,
+                    )
+                }
 
                 Chart(
                     chart = lineChart(),
@@ -102,23 +108,24 @@ fun TotalAverageAndMedianSpendingComponent(
                         initialScroll = InitialScroll.End,
                     ),
                     marker = rememberMarker(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = FULL_CHART_TOP_PADDING)
+                        .align(Alignment.BottomCenter)
                 )
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(CARD_SPACING))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
+        Row {
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .height(140.dp)
+                    .height(CARD_HEIGHT)
             ) {
                 var averageTargetValue by remember { mutableFloatStateOf(averageStartValue) }
                 val chartProducer = remember {
@@ -152,38 +159,39 @@ fun TotalAverageAndMedianSpendingComponent(
                     label = "average spent value animation"
                 )
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.average),
-                        style = Typography.headlineSmall,
-                    )
+                Box(modifier = Modifier.padding(top = CARD_TEXT_TOP_PADDING)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.average),
+                            style = Typography.headlineSmall,
+                        )
 
-                    Text(
-                        text = animatedAverageValue.value.formatToCurrency(),
-                        style = Typography.headlineSmall,
-                    )
-
-                    Box(modifier = Modifier.height(88.dp)) {
-                        Chart(
-                            chart = lineChart(),
-                            chartModelProducer = chartProducer,
-                            chartScrollSpec = rememberChartScrollSpec(
-                                isScrollEnabled = false,
-                                initialScroll = InitialScroll.End,
-                            ),
-                            marker = rememberMarker(),
-                            modifier = Modifier.fillMaxWidth()
+                        Text(
+                            text = animatedAverageValue.value.formatToCurrency(),
+                            style = Typography.headlineSmall,
                         )
                     }
+
+                    Chart(
+                        chart = lineChart(),
+                        chartModelProducer = chartProducer,
+                        chartScrollSpec = rememberChartScrollSpec(
+                            isScrollEnabled = false,
+                            initialScroll = InitialScroll.End,
+                        ),
+                        marker = rememberMarker(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = HALF_CHART_TOP_PADDING)
+                            .align(Alignment.BottomCenter)
+                    )
                 }
             }
 
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(CARD_SPACING))
 
             Card(
                 colors = CardDefaults.cardColors(
@@ -191,7 +199,7 @@ fun TotalAverageAndMedianSpendingComponent(
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .height(140.dp)
+                    .height(CARD_HEIGHT)
             ) {
                 var medianTargetValue by remember { mutableFloatStateOf(medianStartValue) }
                 val chartProducer = remember {
@@ -224,34 +232,35 @@ fun TotalAverageAndMedianSpendingComponent(
                     label = "median spent value animation"
                 )
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.median),
-                        style = Typography.headlineSmall,
-                    )
+                Box(modifier = Modifier.padding(top = CARD_TEXT_TOP_PADDING)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.median),
+                            style = Typography.headlineSmall,
+                        )
 
-                    Text(
-                        text = animatedMedianValue.value.formatToCurrency(),
-                        style = Typography.headlineSmall,
-                    )
-
-                    Box(modifier = Modifier.height(88.dp)) {
-                        Chart(
-                            chart = lineChart(),
-                            chartModelProducer = chartProducer,
-                            chartScrollSpec = rememberChartScrollSpec(
-                                isScrollEnabled = false,
-                                initialScroll = InitialScroll.End,
-                            ),
-                            marker = rememberMarker(),
-                            modifier = Modifier.fillMaxWidth()
+                        Text(
+                            text = animatedMedianValue.value.formatToCurrency(),
+                            style = Typography.headlineSmall,
                         )
                     }
+
+                    Chart(
+                        chart = lineChart(),
+                        chartModelProducer = chartProducer,
+                        chartScrollSpec = rememberChartScrollSpec(
+                            isScrollEnabled = false,
+                            initialScroll = InitialScroll.End,
+                        ),
+                        marker = rememberMarker(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = HALF_CHART_TOP_PADDING)
+                            .align(Alignment.BottomCenter)
+                    )
                 }
             }
         }
