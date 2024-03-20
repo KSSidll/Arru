@@ -156,6 +156,7 @@ private fun DashboardScreenContent(
                                 TotalAverageAndMedianSpendingComponent(
                                     spentByTimeData = spentByTimeData.data,
                                     totalSpentData = totalSpentData,
+                                    modifier = Modifier.padding(horizontal = 12.dp)
                                 )
 
                                 Spacer(Modifier.height(28.dp))

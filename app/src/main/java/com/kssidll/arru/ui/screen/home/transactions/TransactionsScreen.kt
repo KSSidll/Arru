@@ -228,6 +228,7 @@ fun TransactionScreenContent(
                     targetOffsetX = { it }
                 )
             ) {
+                // FIXME this FAB is partially hidden under the bottom sheet bar if it's displayed
                 FloatingActionButton(
                     onClick = {
                         scope.launch {
