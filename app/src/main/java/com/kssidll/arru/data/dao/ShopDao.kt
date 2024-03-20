@@ -145,12 +145,11 @@ interface ShopDao {
             SELECT MIN(transactionbasket.date) AS start_date,
                    MAX(transactionbasket.date) AS end_date
             FROM transactionbasket
-            JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-                AND transactionbasket.shopId = :shopId
+                WHERE transactionbasket.shopId = :shopId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
-            WHERE date_series.end_date > date_series.start_date
+                WHERE date_series.end_date > date_series.start_date
         ), items AS (
             SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
             FROM transactionbasket
@@ -173,12 +172,11 @@ interface ShopDao {
         SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
                  (MAX(transactionbasket.date) - 604800000) AS end_date
         FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            AND transactionbasket.shopId = :shopId
+            WHERE transactionbasket.shopId = :shopId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
-        WHERE date_series.end_date >= date_series.start_date
+            WHERE date_series.end_date >= date_series.start_date
     ), items AS (
         SELECT ((transactionbasket.date - 345600000) / 604800000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket
@@ -203,12 +201,11 @@ interface ShopDao {
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
         FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            AND transactionbasket.shopId = :shopId
+            WHERE transactionbasket.shopId = :shopId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
-        WHERE date_series.end_date > date_series.start_date
+            WHERE date_series.end_date > date_series.start_date
     ), items AS (
         SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket
@@ -231,12 +228,11 @@ interface ShopDao {
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
                DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS end_date
         FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            AND transactionbasket.shopId = :shopId
+            WHERE transactionbasket.shopId = :shopId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
-        WHERE date_series.end_date > date_series.start_date
+            WHERE date_series.end_date > date_series.start_date
     ), items AS (
         SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket

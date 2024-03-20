@@ -27,10 +27,6 @@ class CategoryViewModel @Inject constructor(
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<ItemSpentByTime>>>? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-
-    // TODO this should probably take from transaction spending instead of items
-    // this being items means that if there's a transaction but no items are registered
-    // the displayed data would be inaccurate
     val spentByTimeData: Flow<Data<List<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun categoryTotalSpent(): Flow<Data<Float?>>? {
