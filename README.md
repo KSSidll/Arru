@@ -37,11 +37,14 @@
 - Ranking of categories and shops based on total money spent
 - Merging capabilities for categories, shops, products and producers
 
-### TBD
+# Plans for the future updates (Roadmap)
 
 - Alternative names for Products and Product Categories for easier searching
 - Filtering for easier searching
-- Cloud backups sync (Google Drive)
+- Groups to aggregate data for easier analysis
+- Cloud backups (most likely Google Drive)
+- Option to use an online database (most likely Firebase)
+- Exporting and importing app data as CSV (currently can only perform a backup in the app folder)
 
 # Tech Stack & Libraries
 
@@ -62,6 +65,7 @@
 - [Fuzzywuzzy](https://github.com/xdrop/fuzzywuzzy) for fuzzy searching capabilities
 
 - Jetpack
+
   - [Compose](https://developer.android.com/jetpack/compose) - Modern Declarative UI style framework based on composable functions
 
   - [Room](https://developer.android.com/jetpack/androidx/releases/room) - Persistence library providing abstraction layer over SQLite
