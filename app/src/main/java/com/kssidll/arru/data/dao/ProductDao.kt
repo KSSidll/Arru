@@ -45,6 +45,12 @@ interface ProductDao {
     @Query("SELECT * FROM productvariant WHERE productvariant.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariant?
 
+    @Query("SELECT * FROM productvariant WHERE productvariant.productId = :productId AND productvariant.name = :variantName")
+    suspend fun variantByName(
+        productId: Long,
+        variantName: String
+    ): ProductVariant?
+
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun categoryById(categoryId: Long): ProductCategory?
 

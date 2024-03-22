@@ -180,14 +180,31 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
 
         val items = dao.getItems(product.id)
         val variants = dao.variants(product.id)
+        val mergingIntoVariantsNames = dao.variants(mergingInto.id)
+            .map { it.name }
 
-        variants.forEach { it.productId = mergingInto.id }
-        dao.updateVariants(variants)
+        val newVariants = variants.filterNot { it.name in mergingIntoVariantsNames }
+        val duplicateVariants = variants.filter { it.name in mergingIntoVariantsNames }
 
-        items.forEach { it.productId = mergingInto.id }
+        // update new variants
+        newVariants.forEach { it.productId = mergingInto.id }
+        dao.updateVariants(newVariants)
+
+        items.forEach {
+            it.productId = mergingInto.id
+
+            // update id in case it's part of the duplicate variants
+            if (it.variantId != null && it.variantId in duplicateVariants.map { variant -> variant.id }) {
+                it.variantId = dao.variantByName(
+                    it.productId,
+                    dao.variantById(it.variantId!!)!!.name
+                )!!.id
+            }
+        }
         dao.updateItems(items)
 
         dao.deleteAltName(dao.altNames(product.id))
+        dao.deleteVariants(duplicateVariants)
         dao.delete(product)
 
         return MergeResult.Success
