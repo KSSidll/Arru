@@ -28,7 +28,7 @@ dev-text-search-fuzzywuzzy = "1.4.0"
 dev-chart-vico-compose = "1.14.0"
 
 ## Plugins
-agp = "8.3.1"
+agp = "8.4.0"
 kotlin = "1.9.22"
 # hilt plugin has same version as hilt library so it is declared in the library section
 ksp = "1.9.22-1.0.17"

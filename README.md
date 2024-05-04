@@ -48,7 +48,7 @@
 
 # Tech Stack & Libraries
 
-- Android Studio Iguana 2023.2.1
+- Android Studio Jellyfish 2023.3.1
 
 - [Kotlin](https://kotlinlang.org/) based
 
