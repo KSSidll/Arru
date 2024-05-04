@@ -28,7 +28,7 @@ android {
     defaultConfig {
         applicationId = "com.kssidll.arru"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 34
         versionName = "2.4.5"
 
@@ -46,6 +46,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
