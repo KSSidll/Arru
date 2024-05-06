@@ -55,11 +55,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
 
         val other = dao.byName(shop.name)
 
-        if (other != null) {
-            if (other.id == shop.id) {
-                return UpdateResult.Success
-            }
-
+        if (other != null && other.id != shop.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
         }
 

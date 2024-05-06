@@ -85,11 +85,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
 
         val other = dao.byName(category.name)
 
-        if (other != null) {
-            if (other.id == category.id) {
-                return UpdateResult.Success
-            }
-
+        if (other != null && other.id != category.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
         }
 
@@ -125,11 +121,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
 
         val others = dao.altNames(categoryId)
 
-        if (alternativeName.name in others.map { it.name }) {
-            if (alternativeName.id in others.map { it.id }) {
-                return AltUpdateResult.Success
-            }
-
+        if (alternativeName.name in others.map { it.name } && alternativeName.id !in others.map { it.id }) {
             return AltUpdateResult.Error(AltUpdateResult.DuplicateName)
         }
 

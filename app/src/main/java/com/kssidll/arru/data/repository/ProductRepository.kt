@@ -113,11 +113,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
 
         val other = dao.byName(product.name)
 
-        if (other != null) {
-            if (other.id == product.id) {
-                return UpdateResult.Success
-            }
-
+        if (other != null && other.id != product.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
         }
 
@@ -153,11 +149,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
 
         val others = dao.altNames(productId)
 
-        if (alternativeName.name in others.map { it.name }) {
-            if (alternativeName.id in others.map { it.id }) {
-                return AltUpdateResult.Success
-            }
-
+        if (alternativeName.name in others.map { it.name } && alternativeName.id !in others.map { it.id }) {
             return AltUpdateResult.Error(AltUpdateResult.DuplicateName)
         }
 

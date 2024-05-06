@@ -63,11 +63,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             name
         )
 
-        if (other != null) {
-            if (other.id == variant.id) {
-                return UpdateResult.Success
-            }
-
+        if (other != null && other.id != variant.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
         }
 
@@ -106,11 +102,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             name
         )
 
-        if (other != null) {
-            if (other.id == variant.id) {
-                return UpdateResult.Success
-            }
-
+        if (other != null && other.id != variant.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
         }
 

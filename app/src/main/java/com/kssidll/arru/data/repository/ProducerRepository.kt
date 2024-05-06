@@ -50,11 +50,7 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
 
         val other = dao.byName(producer.name)
 
-        if (other != null) {
-            if (other.id == producer.id) {
-                return UpdateResult.Success
-            }
-
+        if (other != null && other.id != producer.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
         }
 
