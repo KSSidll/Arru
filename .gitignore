@@ -30,4 +30,4 @@ google-services.json
 # Android Profiling
 *.hprof
 
-/app/src/main/assets/database/arrugarq-test.db
+/app/src/main/assets/database/arru.db
