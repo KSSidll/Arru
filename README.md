@@ -7,24 +7,10 @@
   <img alt="API" src="https://img.shields.io/badge/Api%2021+-50f270?logo=android&logoColor=black&style=for-the-badge"/>
   <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-a503fc?logo=kotlin&logoColor=white&style=for-the-badge"/>
   <img alt="Jetpack Compose" src="https://img.shields.io/static/v1?style=for-the-badge&message=Jetpack+Compose&color=4285F4&logo=Jetpack+Compose&logoColor=FFFFFF&label="/>
-  <img alt="material" src="https://img.shields.io/static/v1?style=for-the-badge&message=Material 3&color=lightblue&logoColor=333&logo=material-design&label="/>
-
+  <img alt="Material" src="https://img.shields.io/static/v1?style=for-the-badge&message=Material 3&color=lightblue&logoColor=333&logo=material-design&label="/>
 </p>
 
 <h4 align="center">Arru is an app for expenditure tracking/analysis</h4>
-
-<p align="middle">
-    <img src="images/dashboard.jpg" width="30%"/>
-    <img src="images/analysis.jpg" width="30%"/>
-    <img src="images/transactions.jpg" width="30%"/>
-    <img src="images/product_top.jpg" width="24%"/>
-    <img src="images/categories_ranking.jpg" width="24%"/>
-    <img src="images/merge.jpg" width="24%"/>
-    <img src="images/backups.jpg" width="24%"/>
-    <img src="images/transaction_add_item.jpg" width="30%"/>
-    <img src="images/transaction_add_select.jpg" width="30%"/>
-    <img src="images/transaction_add.jpg" width="30%"/>
-</p>
 
 # Features
 
@@ -32,23 +18,15 @@
 - Wide screen support
 - Local backups
 - Polish and English localization
-- Transaction baskets tracking your total expenditure with optional product, category, shop and producer spending tracking
-- Comparisons between prices at different shops
-- Ranking of categories and shops based on total money spent
-- Merging capabilities for categories, shops, products and producers
 
 # Plans for the future updates (Roadmap)
 
-- Alternative names for Products and Product Categories for easier searching
-- Filtering for easier searching
-- Groups to aggregate data for easier analysis
-- Cloud backups (most likely Google Drive)
-- Option to use an online database (most likely Firebase)
-- Exporting and importing app data as CSV (currently can only perform a backup in the app folder)
+- Fully tag based (v3)
+- Receipt image data loading (post v3)
 
 # Tech Stack & Libraries
 
-- Android Studio Jellyfish 2023.3.1
+- Android Studio Koala 2024.1.1
 
 - [Kotlin](https://kotlinlang.org/) based
 

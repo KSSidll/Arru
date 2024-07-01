@@ -1,4 +1,4 @@
-import java.util.*
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -26,11 +26,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.kssidll.arru"
+        applicationId = "com.kssidll.arru.devel"
         minSdk = 21
         targetSdk = 35
-        versionCode = 35
-        versionName = "2.4.6"
+        versionCode = 36
+        versionName = "3.0.0-dev"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
