@@ -1,7 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.dao.ItemDao
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
@@ -18,8 +18,8 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         quantity: Long,
         price: Long
     ): InsertResult {
-        val item = Item(
-            transactionBasketId = transactionId,
+        val item = ItemEntity(
+            transactionId = transactionId,
             productId = productId,
             variantId = variantId,
             quantity = quantity,
@@ -108,19 +108,19 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
 
     // Read
 
-    override suspend fun get(itemId: Long): Item? {
+    override suspend fun get(itemId: Long): ItemEntity? {
         return dao.get(itemId)
     }
 
-    override suspend fun newest(): Item? {
+    override suspend fun newest(): ItemEntity? {
         return dao.newest()
     }
 
-    override suspend fun newestFlow(): Flow<Data<Item?>> {
+    override suspend fun newestFlow(): Flow<Data<ItemEntity?>> {
         return dao.newestFlow()
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<Item>() }
+            .onStart { Data.Loading<ItemEntity>() }
     }
 }

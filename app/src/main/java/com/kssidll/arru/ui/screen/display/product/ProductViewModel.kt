@@ -44,7 +44,7 @@ class ProductViewModel @Inject constructor(
     /**
      * @return paging data of full item for current product as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
+    fun transactions(): Flow<PagingData<Item>> {
         if (product == null) return emptyFlow()
         return productRepository.fullItemsPagedFlow(product!!)
     }

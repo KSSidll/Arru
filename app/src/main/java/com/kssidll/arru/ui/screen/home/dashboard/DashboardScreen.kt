@@ -30,10 +30,10 @@ private val TileInnerPadding: Dp = 12.dp
  * @param onSettingsAction Callback called when the 'settings' action is triggered
  * @param onCategoryRankingCardClick Callback to call wen [ProductCategory] ranking card is clicked
  * @param onShopRankingCardClick Callback to call when [Shop] ranking card is clicked
- * @param totalSpentData Number representing total [Item] spending
+ * @param totalSpentData Number representing total [ItemEntity] spending
  * @param spentByShopData List of items representing [Shop] spending in time
  * @param spentByCategoryData List of items representing [ProductCategory] spending in time
- * @param spentByTimeData List of items representing [Item] spending in time
+ * @param spentByTimeData List of items representing [ItemEntity] spending in time
  * @param spentByTimePeriod Current [totalSpentData] time period
  * @param onSpentByTimePeriodUpdate Callback called as a request to update the [totalSpentData] time period, Provides new time period as parameter
  */

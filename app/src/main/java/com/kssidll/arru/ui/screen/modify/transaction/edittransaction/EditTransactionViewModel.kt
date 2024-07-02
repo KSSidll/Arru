@@ -17,7 +17,7 @@ class EditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
-    private var mTransaction: TransactionBasket? = null
+    private var mTransaction: TransactionEntity? = null
 
     /**
      * Updates data in the screen state
@@ -38,7 +38,7 @@ class EditTransactionViewModel @Inject constructor(
         .await()
 
     private suspend fun updateStateForTransaction(
-        transaction: TransactionBasket?
+        transaction: TransactionEntity?
     ) {
         val shop: Shop? = transaction?.shopId?.let { shopRepository.get(it) }
 
@@ -67,9 +67,9 @@ class EditTransactionViewModel @Inject constructor(
 
         val result = transactionRepository.update(
             transactionId = transactionId,
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
-            totalCost = screenState.totalCost.value.data?.let { TransactionBasket.totalCostFromString(it) }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
+            date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
+            totalCost = screenState.totalCost.value.data?.let { TransactionEntity.totalCostFromString(it) }
+                ?: TransactionEntity.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id
         )
 

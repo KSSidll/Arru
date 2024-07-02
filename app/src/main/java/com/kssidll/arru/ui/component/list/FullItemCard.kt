@@ -24,9 +24,9 @@ import com.kssidll.arru.ui.theme.*
 )
 @Composable
 fun FullItemCard(
-    item: FullItem,
-    onItemClick: ((item: FullItem) -> Unit)? = null,
-    onItemLongClick: ((item: FullItem) -> Unit)? = null,
+    item: Item,
+    onItemClick: ((item: Item) -> Unit)? = null,
+    onItemLongClick: ((item: Item) -> Unit)? = null,
     onCategoryClick: ((category: ProductCategory) -> Unit)? = null,
     onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
     onShopClick: ((shop: Shop) -> Unit)? = null,
@@ -266,7 +266,7 @@ private fun FullItemCardPreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
             FullItemCard(
-                item = FullItem.generate(),
+                item = Item.generate(),
                 onItemClick = {},
                 onItemLongClick = {},
                 onCategoryClick = {},

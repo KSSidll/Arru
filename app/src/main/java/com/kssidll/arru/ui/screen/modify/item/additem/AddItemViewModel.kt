@@ -24,7 +24,7 @@ class AddItemViewModel @Inject constructor(
 
     /**
      * Tries to add an item to the repository
-     * @param transactionId id of the [TransactionBasket] to add the item to
+     * @param transactionId id of the [TransactionEntity] to add the item to
      * @return resulting [InsertResult]
      */
     suspend fun addItem(transactionId: Long) = viewModelScope.async {
@@ -32,12 +32,12 @@ class AddItemViewModel @Inject constructor(
 
         val result = itemRepository.insert(
             transactionId = transactionId,
-            productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
+            productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
-            quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
-                ?: Item.INVALID_QUANTITY,
-            price = screenState.price.value.data?.let { Item.priceFromString(it) }
-                ?: Item.INVALID_PRICE,
+            quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }
+                ?: ItemEntity.INVALID_QUANTITY,
+            price = screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
+                ?: ItemEntity.INVALID_PRICE,
         )
 
         if (result.isError()) {

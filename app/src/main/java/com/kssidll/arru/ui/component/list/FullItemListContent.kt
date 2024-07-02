@@ -20,16 +20,16 @@ import java.util.*
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.fullItemListContent(
-    transactionItems: LazyPagingItems<FullItem>,
-    onItemClick: ((item: FullItem) -> Unit)? = null,
-    onItemLongClick: ((item: FullItem) -> Unit)? = null,
+    transactionItems: LazyPagingItems<Item>,
+    onItemClick: ((item: Item) -> Unit)? = null,
+    onItemLongClick: ((item: Item) -> Unit)? = null,
     onCategoryClick: ((category: ProductCategory) -> Unit)? = null,
     onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
     onShopClick: ((shop: Shop) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val itemCount = transactionItems.itemCount
-    var lastItem: FullItem? = null
+    var lastItem: Item? = null
 
     // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
     for (index in 0 until itemCount) {
@@ -104,7 +104,7 @@ private fun FullItemListContentPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             val transactionItems =
-                flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems()
+                flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems()
             LazyColumn {
                 fullItemListContent(
                     transactionItems = transactionItems,

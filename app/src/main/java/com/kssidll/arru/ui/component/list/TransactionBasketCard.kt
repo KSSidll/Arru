@@ -27,7 +27,7 @@ private val HEADER_HEIGHT: Dp = 105.dp
 
 fun LazyListScope.transactionBasketCard(
     modifier: Modifier = Modifier,
-    transaction: TransactionBasketWithItems,
+    transaction: Transaction,
     itemsVisible: Boolean,
     onTransactionClick: ((transactionId: Long) -> Unit)? = null,
     onTransactionClickLabel: String? = null,
@@ -97,7 +97,7 @@ fun LazyListScope.transactionBasketCard(
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.transactionBasketCardHeader(
     modifier: Modifier = Modifier,
-    transaction: TransactionBasketWithItems,
+    transaction: Transaction,
     itemsVisible: Boolean,
     onTransactionClick: ((transactionId: Long) -> Unit)? = null,
     onTransactionClickLabel: String? = null,
@@ -109,7 +109,7 @@ fun LazyListScope.transactionBasketCardHeader(
 ) {
     stickyHeader(
         key = transaction.id,
-        contentType = TransactionBasketWithItems
+        contentType = Transaction
     ) {
         Column(modifier = modifier.fillMaxWidth()) {
             val transactionModifier =
@@ -203,7 +203,7 @@ fun LazyListScope.transactionBasketCardHeader(
                         )
                     ) {
                         Text(
-                            text = TransactionBasket.actualTotalCost(transaction.totalCost)
+                            text = TransactionEntity.actualTotalCost(transaction.totalCost)
                                 .formatToCurrency(),
                             style = Typography.titleLarge,
                         )
@@ -285,7 +285,7 @@ private fun TransactionBasketCardPreview() {
             val color = MaterialTheme.colorScheme.background
             LazyColumn {
                 transactionBasketCard(
-                    transaction = TransactionBasketWithItems.generate(),
+                    transaction = Transaction.generate(),
                     itemsVisible = true,
                     onItemAddClick = {},
                     onItemClick = {},
@@ -308,7 +308,7 @@ private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
             val color = MaterialTheme.colorScheme.background
             LazyColumn {
                 transactionBasketCardHeader(
-                    transaction = TransactionBasketWithItems.generate(),
+                    transaction = Transaction.generate(),
                     itemsVisible = false,
                     onItemAddClick = {},
                     onItemShopClick = {},

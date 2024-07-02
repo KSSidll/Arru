@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 data class TransactionBasketDisplayData(
-    val basket: TransactionBasketWithItems,
+    val basket: Transaction,
     var itemsVisible: MutableState<Boolean> = mutableStateOf(false)
 )
 
-fun Flow<PagingData<TransactionBasketWithItems>>.toDisplayData(): Flow<PagingData<TransactionBasketDisplayData>> {
+fun Flow<PagingData<Transaction>>.toDisplayData(): Flow<PagingData<TransactionBasketDisplayData>> {
     return map { flow -> flow.map { TransactionBasketDisplayData(it) } }
 }
 

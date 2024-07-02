@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "ea4d517e4f8b4300a243773bd8eb8201",
+    "identityHash": "4abee32fbf5ba2ca1d81e7c3d4ef0a4a",
     "entities": [
       {
-        "tableName": "TransactionBasket",
+        "tableName": "TransactionEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `shopId` INTEGER, `totalCost` INTEGER NOT NULL, FOREIGN KEY(`shopId`) REFERENCES `Shop`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
         "fields": [
           {
@@ -41,22 +41,22 @@
         },
         "indices": [
           {
-            "name": "index_TransactionBasket_date",
+            "name": "index_TransactionEntity_date",
             "unique": false,
             "columnNames": [
               "date"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionBasket_date` ON `${TABLE_NAME}` (`date`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionEntity_date` ON `${TABLE_NAME}` (`date`)"
           },
           {
-            "name": "index_TransactionBasket_shopId",
+            "name": "index_TransactionEntity_shopId",
             "unique": false,
             "columnNames": [
               "shopId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionBasket_shopId` ON `${TABLE_NAME}` (`shopId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionEntity_shopId` ON `${TABLE_NAME}` (`shopId`)"
           }
         ],
         "foreignKeys": [
@@ -74,8 +74,8 @@
         ]
       },
       {
-        "tableName": "Item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionBasketId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `variantId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, FOREIGN KEY(`transactionBasketId`) REFERENCES `TransactionBasket`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`productId`) REFERENCES `Product`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`variantId`) REFERENCES `ProductVariant`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "tableName": "ItemEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `variantId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, FOREIGN KEY(`transactionId`) REFERENCES `TransactionEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`productId`) REFERENCES `Product`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`variantId`) REFERENCES `ProductVariant`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -84,8 +84,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "transactionBasketId",
-            "columnName": "transactionBasketId",
+            "fieldPath": "transactionId",
+            "columnName": "transactionId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -122,40 +122,40 @@
         },
         "indices": [
           {
-            "name": "index_Item_transactionBasketId",
+            "name": "index_ItemEntity_transactionId",
             "unique": false,
             "columnNames": [
-              "transactionBasketId"
+              "transactionId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_transactionBasketId` ON `${TABLE_NAME}` (`transactionBasketId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemEntity_transactionId` ON `${TABLE_NAME}` (`transactionId`)"
           },
           {
-            "name": "index_Item_productId",
+            "name": "index_ItemEntity_productId",
             "unique": false,
             "columnNames": [
               "productId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_productId` ON `${TABLE_NAME}` (`productId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemEntity_productId` ON `${TABLE_NAME}` (`productId`)"
           },
           {
-            "name": "index_Item_variantId",
+            "name": "index_ItemEntity_variantId",
             "unique": false,
             "columnNames": [
               "variantId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_variantId` ON `${TABLE_NAME}` (`variantId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemEntity_variantId` ON `${TABLE_NAME}` (`variantId`)"
           }
         ],
         "foreignKeys": [
           {
-            "table": "TransactionBasket",
+            "table": "TransactionEntity",
             "onDelete": "RESTRICT",
             "onUpdate": "RESTRICT",
             "columns": [
-              "transactionBasketId"
+              "transactionId"
             ],
             "referencedColumns": [
               "id"
@@ -567,7 +567,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ea4d517e4f8b4300a243773bd8eb8201')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4abee32fbf5ba2ca1d81e7c3d4ef0a4a')"
     ]
   }
 }

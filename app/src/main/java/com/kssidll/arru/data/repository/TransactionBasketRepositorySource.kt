@@ -2,8 +2,8 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
-import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.data.Transaction
 import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.Flow
@@ -75,11 +75,11 @@ interface TransactionBasketRepositorySource {
     // Create
 
     /**
-     * Inserts [TransactionBasket]
-     * @param date date of the [TransactionBasket]
-     * @param totalCost total cost of the [TransactionBasket]
-     * @param shopId id of the [Shop] in the [TransactionBasket]
-     * @return [InsertResult] with id of the newly inserted [TransactionBasket] or an error if any
+     * Inserts [TransactionEntity]
+     * @param date date of the [TransactionEntity]
+     * @param totalCost total cost of the [TransactionEntity]
+     * @param shopId id of the [Shop] in the [TransactionEntity]
+     * @return [InsertResult] with id of the newly inserted [TransactionEntity] or an error if any
      */
     suspend fun insert(
         date: Long,
@@ -90,11 +90,11 @@ interface TransactionBasketRepositorySource {
     // Update
 
     /**
-     * Updates [TransactionBasket] with [transactionId] to provided [date], [totalCost] and [shopId]
-     * @param transactionId id to match [TransactionBasket]
-     * @param date date to update the matching [TransactionBasket] to
-     * @param totalCost total cost to update the matching [TransactionBasket] to
-     * @param shopId id of the [Shop] to update the matching [TransactionBasket] to
+     * Updates [TransactionEntity] with [transactionId] to provided [date], [totalCost] and [shopId]
+     * @param transactionId id to match [TransactionEntity]
+     * @param date date to update the matching [TransactionEntity] to
+     * @param totalCost total cost to update the matching [TransactionEntity] to
+     * @param shopId id of the [Shop] to update the matching [TransactionEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -107,8 +107,8 @@ interface TransactionBasketRepositorySource {
     // Delete
 
     /**
-     * Deletes [TransactionBasket]
-     * @param transactionId id of the [TransactionBasket] to delete
+     * Deletes [TransactionEntity]
+     * @param transactionId id of the [TransactionEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
@@ -120,30 +120,30 @@ interface TransactionBasketRepositorySource {
     // Read
 
     /**
-     * @param transactionBasketId id of the [TransactionBasket]
-     * @return [TransactionBasket] matching [transactionBasketId] id or null if none match
+     * @param transactionBasketId id of the [TransactionEntity]
+     * @return [TransactionEntity] matching [transactionBasketId] id or null if none match
      */
-    suspend fun get(transactionBasketId: Long): TransactionBasket?
+    suspend fun get(transactionBasketId: Long): TransactionEntity?
 
     /**
-     * @return newest [TransactionBasket] (by time added, not transaction date) or null if none exist
+     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none exist
      */
-    suspend fun newest(): TransactionBasket?
+    suspend fun newest(): TransactionEntity?
 
     /**
-     * @return value representing the count of [TransactionBasket]
+     * @return value representing the count of [TransactionEntity]
      */
     suspend fun count(): Int
 
     /**
-     * @param [transactionBasketId] id of the [TransactionBasket] that acts as the breakpoint before which the transactions are counted
-     * @return value representing the count of [TransactionBasket] added before (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
+     * @param [transactionBasketId] id of the [TransactionEntity] that acts as the breakpoint before which the transactions are counted
+     * @return value representing the count of [TransactionEntity] added before (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
      */
     suspend fun countBefore(transactionBasketId: Long): Int
 
     /**
-     * @param [transactionBasketId] id of the [TransactionBasket] that acts as the breakpoint after which the transactions are counted
-     * @return value representing the count of [TransactionBasket] added after (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
+     * @param [transactionBasketId] id of the [TransactionEntity] that acts as the breakpoint after which the transactions are counted
+     * @return value representing the count of [TransactionEntity] added after (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
      */
     suspend fun countAfter(transactionBasketId: Long): Int
 
@@ -180,22 +180,22 @@ interface TransactionBasketRepositorySource {
     /**
      * @param startPosition position, from 0 up, to get next [count] items from
      * @param count how many items to query
-     * @return list of [count] [TransactionBasketWithItems] where the first item is the item at [startPosition]
+     * @return list of [count] [Transaction] where the first item is the item at [startPosition]
      */
     suspend fun transactionBasketsWithItems(
         startPosition: Int,
         count: Int
-    ): List<TransactionBasketWithItems>
+    ): List<Transaction>
 
 
     /**
-     * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for placeholder values
+     * @return [Transaction] as [PagingData] as [Flow], includes null data for placeholder values
      */
-    fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>>
+    fun transactionBasketsPagedFlow(): Flow<PagingData<Transaction>>
 
     /**
-     * @param transactionId id to match [TransactionBasketWithItems] with
-     * @return [TransactionBasketWithItems] matching [transactionId] as flow
+     * @param transactionId id to match [Transaction] with
+     * @return [Transaction] matching [transactionId] as flow
      */
-    fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>>
+    fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<Transaction?>>
 }

@@ -6,8 +6,8 @@ import com.kssidll.arru.data.repository.*
 
 class TransactionBasketWithItemsPagingSource(
     private val transactionRepository: TransactionBasketRepositorySource
-): PagingSource<Int, TransactionBasketWithItems>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TransactionBasketWithItems> {
+): PagingSource<Int, Transaction>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Transaction> {
         val pageIndex = params.key ?: 0
 
         val page = transactionRepository.transactionBasketsWithItems(
@@ -35,7 +35,7 @@ class TransactionBasketWithItemsPagingSource(
         )
     }
 
-    override fun getRefreshKey(state: PagingState<Int, TransactionBasketWithItems>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Transaction>): Int? {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.prevKey
         }

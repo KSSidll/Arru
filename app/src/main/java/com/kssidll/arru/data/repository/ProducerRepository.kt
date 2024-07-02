@@ -4,8 +4,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProducerDao
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.paging.FullItemPagingSource
@@ -132,7 +132,7 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                        ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }
@@ -170,7 +170,7 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>> {
+    override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<Item>> {
         return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,

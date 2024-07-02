@@ -159,7 +159,7 @@ interface ShopRepositorySource {
     /**
      * @param shop [Shop] to match the items to
      */
-    fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<Item>>
 
     /**
      * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop

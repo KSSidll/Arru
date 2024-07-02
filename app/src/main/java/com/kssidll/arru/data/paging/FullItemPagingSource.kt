@@ -4,11 +4,11 @@ import androidx.paging.*
 import com.kssidll.arru.data.data.*
 
 class FullItemPagingSource(
-    private val query: suspend (start: Int, loadSize: Int) -> List<FullItem>,
+    private val query: suspend (start: Int, loadSize: Int) -> List<Item>,
     private val itemsBefore: suspend (id: Long) -> Int,
     private val itemsAfter: suspend (id: Long) -> Int,
-): PagingSource<Int, FullItem>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FullItem> {
+): PagingSource<Int, Item>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> {
         val pageIndex = params.key ?: 0
 
         val page = query(
@@ -35,7 +35,7 @@ class FullItemPagingSource(
         )
     }
 
-    override fun getRefreshKey(state: PagingState<Int, FullItem>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Item>): Int? {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.prevKey
         }

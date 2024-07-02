@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.*
 internal fun ProducerScreen(
     onBack: () -> Unit,
     producer: ProductProducer?,
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<ItemSpentByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -140,7 +140,7 @@ internal fun ProducerScreen(
 
 @Composable
 private fun ProducerScreenContent(
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<ItemSpentByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -285,7 +285,7 @@ private fun ProducerScreenPreview() {
             ProducerScreen(
                 onBack = {},
                 producer = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -309,7 +309,7 @@ private fun EmptyProducerScreenPreview() {
             ProducerScreen(
                 onBack = {},
                 producer = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -333,7 +333,7 @@ private fun ExpandedProducerScreenPreview() {
             ProducerScreen(
                 onBack = {},
                 producer = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -357,7 +357,7 @@ private fun ExpandedEmptyProducerScreenPreview() {
             ProducerScreen(
                 onBack = {},
                 producer = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,

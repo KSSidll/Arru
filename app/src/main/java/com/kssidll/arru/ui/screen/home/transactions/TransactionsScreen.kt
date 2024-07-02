@@ -316,7 +316,7 @@ private fun TransactionsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
                 isExpandedScreen = false,
-                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).toDisplayData()
+                transactions = flowOf(PagingData.from(Transaction.generateList())).toDisplayData()
                     .collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
                 onTransactionLongClickLabel = String(),
@@ -340,7 +340,7 @@ private fun ExpandedTransactionsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
                 isExpandedScreen = true,
-                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).toDisplayData()
+                transactions = flowOf(PagingData.from(Transaction.generateList())).toDisplayData()
                     .collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
                 onTransactionLongClickLabel = String(),

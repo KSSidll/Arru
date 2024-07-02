@@ -222,7 +222,7 @@ interface CategoryRepositorySource {
     /**
      * @param category [ProductCategory] to match the items to
      */
-    fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<Item>>
 
     /**
      * @return list of [ItemSpentByCategory] representing total spending groupped by category

@@ -78,9 +78,9 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
             return MergeResult.Error(MergeResult.InvalidMergingInto)
         }
 
-        val transactionBaskets = dao.getTransactionBaskets(shop.id)
+        val transactionBaskets = dao.transactionEntities(shop.id)
         transactionBaskets.forEach { it.shopId = mergingInto.id }
-        dao.updateTransactionBaskets(transactionBaskets)
+        dao.updateTransactionEntities(transactionBaskets)
 
         dao.delete(shop)
 
@@ -95,14 +95,14 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
     ): DeleteResult {
         val shop = dao.get(shopId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val transactionBaskets = dao.getTransactionBaskets(shopId)
+        val transactionBaskets = dao.transactionEntities(shopId)
         val items = dao.getItems(shopId)
 
         if (!force && transactionBaskets.isNotEmpty()) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
             dao.deleteItems(items)
-            dao.deleteTransactionBaskets(transactionBaskets)
+            dao.deleteTransactionEntities(transactionBaskets)
             dao.delete(shop)
         }
 
@@ -130,7 +130,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(TransactionBasket.COST_DIVISOR)
+                        ?.div(TransactionEntity.COST_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }
@@ -168,7 +168,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
             .onStart { Data.Loading<List<TransactionTotalSpentByTime>>() }
     }
 
-    override fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<FullItem>> {
+    override fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<Item>> {
         return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,

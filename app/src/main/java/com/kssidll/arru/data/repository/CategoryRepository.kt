@@ -213,7 +213,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                        ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }
@@ -251,7 +251,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<FullItem>> {
+    override fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<Item>> {
         return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,

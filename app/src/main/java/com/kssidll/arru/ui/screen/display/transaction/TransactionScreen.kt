@@ -23,7 +23,7 @@ import com.kssidll.arru.ui.theme.*
 @Composable
 internal fun TransactionScreen(
     onBack: () -> Unit,
-    transaction: Data<TransactionBasketWithItems?>,
+    transaction: Data<Transaction?>,
     onEditAction: () -> Unit,
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
@@ -98,7 +98,7 @@ private fun TransactionScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionScreen(
                 onBack = {},
-                transaction = Data.Loaded(TransactionBasketWithItems.generate()),
+                transaction = Data.Loaded(Transaction.generate()),
                 onEditAction = {},
                 onItemAddClick = {},
                 onItemClick = {},

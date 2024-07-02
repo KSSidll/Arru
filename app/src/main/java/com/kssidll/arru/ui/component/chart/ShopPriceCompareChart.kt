@@ -104,7 +104,7 @@ fun ShopPriceCompareChart(
                 labelFormatter = { markedEntries, _ ->
                     markedEntries.transformToSpannable { model ->
                         appendCompat(
-                            model.entry.y.div(Item.PRICE_DIVISOR)
+                            model.entry.y.div(ItemEntity.PRICE_DIVISOR)
                                 .formatToCurrency(),
                             ForegroundColorSpan(model.color),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,

@@ -38,7 +38,7 @@ class CategoryViewModel @Inject constructor(
     /**
      * @return paging data of full item for current category as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
+    fun transactions(): Flow<PagingData<Item>> {
         if (category == null) return emptyFlow()
         return categoryRepository.fullItemsPagedFlow(category!!)
     }

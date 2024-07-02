@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.*
 internal fun ShopScreen(
     onBack: () -> Unit,
     shop: Shop?,
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<TransactionTotalSpentByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -139,7 +139,7 @@ internal fun ShopScreen(
 
 @Composable
 private fun ShopScreenContent(
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<TransactionTotalSpentByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -286,7 +286,7 @@ private fun ShopScreenPreview() {
             ShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(TransactionTotalSpentByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -310,7 +310,7 @@ private fun EmptyShopScreenPreview() {
             ShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -334,7 +334,7 @@ private fun ExpandedShopScreenPreview() {
             ShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(TransactionTotalSpentByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -358,7 +358,7 @@ private fun ExpandedEmptyShopScreenPreview() {
             ShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,

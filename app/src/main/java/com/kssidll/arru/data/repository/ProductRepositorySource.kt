@@ -236,13 +236,13 @@ interface ProductRepositorySource {
     /**
      * @param product [Product] to match the items to
      */
-    fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(product: Product): Flow<PagingData<Item>>
 
     /**
-     * @param product [Product] to match the [Item] with
-     * @return newest [Item] that matches [product], null if none match
+     * @param product [Product] to match the [ItemEntity] with
+     * @return newest [ItemEntity] that matches [product], null if none match
      */
-    suspend fun newestItem(product: Product): Item?
+    suspend fun newestItem(product: Product): ItemEntity?
 
     /**
      * @return list of all [ProductWithAltNames] as flow

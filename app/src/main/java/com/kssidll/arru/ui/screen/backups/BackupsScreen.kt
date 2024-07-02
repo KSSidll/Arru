@@ -228,7 +228,7 @@ fun BackupsScreen(
 
                                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                                         Text(
-                                                            text = TransactionBasket.actualTotalCost(it.totalSpending)
+                                                            text = TransactionEntity.actualTotalCost(it.totalSpending)
                                                                 .formatToCurrency(),
                                                             style = Typography.titleMedium,
                                                         )

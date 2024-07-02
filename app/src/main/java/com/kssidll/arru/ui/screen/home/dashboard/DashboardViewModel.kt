@@ -34,7 +34,7 @@ class DashboardViewModel @Inject constructor(
         )
 
     /**
-     * List of items representing [Item] spending in time as flow
+     * List of items representing [ItemEntity] spending in time as flow
      */
     val spentByTimeData get() = mTimePeriodFlowHandler.spentByTimeData
 

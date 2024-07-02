@@ -1,10 +1,10 @@
 package com.kssidll.arru.data.dao
 
 import androidx.room.*
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -12,22 +12,22 @@ interface ItemDao {
     // Create
 
     @Insert
-    suspend fun insert(item: Item): Long
+    suspend fun insert(item: ItemEntity): Long
 
     // Update
 
     @Update
-    suspend fun update(item: Item)
+    suspend fun update(item: ItemEntity)
 
     // Delete
 
     @Delete
-    suspend fun delete(item: Item)
+    suspend fun delete(item: ItemEntity)
 
     // Helper
 
-    @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.id = :transactionId")
-    suspend fun getTransactionBasket(transactionId: Long): TransactionBasket?
+    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.id = :transactionId")
+    suspend fun getTransactionBasket(transactionId: Long): TransactionEntity?
 
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
     suspend fun getProduct(productId: Long): Product?
@@ -37,12 +37,12 @@ interface ItemDao {
 
     // Read
 
-    @Query("SELECT item.* FROM item WHERE item.id = :itemId")
-    suspend fun get(itemId: Long): Item?
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.id = :itemId")
+    suspend fun get(itemId: Long): ItemEntity?
 
-    @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    suspend fun newest(): Item?
+    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
+    suspend fun newest(): ItemEntity?
 
-    @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    fun newestFlow(): Flow<Item?>
+    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
+    fun newestFlow(): Flow<ItemEntity?>
 }

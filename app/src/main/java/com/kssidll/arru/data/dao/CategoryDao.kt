@@ -1,6 +1,7 @@
 package com.kssidll.arru.data.dao
 
 import androidx.room.*
+import androidx.room.Transaction
 import com.kssidll.arru.data.data.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -56,20 +57,20 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT transactionbasket.*
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        WHERE item.id = :itemId
+        SELECT TransactionEntity.*
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        WHERE ItemEntity.id = :itemEntityId
     """
     )
-    suspend fun transactionBasketByItemId(itemId: Long): TransactionBasket
+    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
 
     @Query(
         """
-        SELECT item.*
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        JOIN product ON product.id = item.productId
+        SELECT ItemEntity.*
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        JOIN product ON product.id = ItemEntity.productId
         WHERE product.categoryId = :categoryId
         ORDER BY date DESC
         LIMIT :count
@@ -80,7 +81,7 @@ interface CategoryDao {
         categoryId: Long,
         count: Int,
         offset: Int
-    ): List<Item>
+    ): List<ItemEntity>
 
     @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.productCategoryId = :categoryId")
     suspend fun altNames(categoryId: Long): List<ProductCategoryAltName>
@@ -119,14 +120,14 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT item.*
-        FROM item
-        JOIN product ON product.id = item.productId
+        SELECT ItemEntity.*
+        FROM ItemEntity
+        JOIN product ON product.id = ItemEntity.productId
         JOIN productcategory ON productcategory.id = product.categoryId
         WHERE productcategory.id = :categoryId
     """
     )
-    suspend fun getItems(categoryId: Long): List<Item>
+    suspend fun getItems(categoryId: Long): List<ItemEntity>
 
     @Delete
     suspend fun deleteProducts(products: List<Product>)
@@ -138,7 +139,7 @@ interface CategoryDao {
     suspend fun deleteProductAltNames(productAltNames: List<ProductAltName>)
 
     @Delete
-    suspend fun deleteItems(items: List<Item>)
+    suspend fun deleteItems(items: List<ItemEntity>)
 
     @Update
     suspend fun updateProducts(products: List<Product>)
@@ -146,9 +147,9 @@ interface CategoryDao {
     @Query(
         """
         SELECT COUNT(*)
-        FROM item
-        JOIN product ON product.id = item.productId
-        WHERE item.id < :itemId AND product.categoryId = :categoryId
+        FROM ItemEntity
+        JOIN product ON product.id = ItemEntity.productId
+        WHERE ItemEntity.id < :itemId AND product.categoryId = :categoryId
     """
     )
     suspend fun countItemsBefore(
@@ -159,9 +160,9 @@ interface CategoryDao {
     @Query(
         """
         SELECT COUNT(*)
-        FROM item
-        JOIN product ON product.id = item.productId
-        WHERE item.id > :itemId AND product.categoryId = :categoryId
+        FROM ItemEntity
+        JOIN product ON product.id = ItemEntity.productId
+        WHERE ItemEntity.id > :itemId AND product.categoryId = :categoryId
     """
     )
     suspend fun countItemsAfter(
@@ -185,9 +186,9 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT SUM(item.price * item.quantity)
-        FROM item
-        JOIN product ON product.id = item.productId
+        SELECT SUM(ItemEntity.price * ItemEntity.quantity)
+        FROM ItemEntity
+        JOIN product ON product.id = ItemEntity.productId
         JOIN productcategory ON productcategory.id = product.categoryId
         WHERE productcategory.id = :categoryId
     """
@@ -197,27 +198,27 @@ interface CategoryDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT MIN(transactionbasket.date) AS start_date,
-                   MAX(transactionbasket.date) AS end_date
-            FROM item
-            JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-            INNER JOIN product ON product.id = item.productId
+            SELECT MIN(TransactionEntity.date) AS start_date,
+                   MAX(TransactionEntity.date) AS end_date
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+            INNER JOIN product ON product.id = ItemEntity.productId
                 AND categoryId = :categoryId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
             WHERE date_series.end_date > date_series.start_date
-        ), items AS (
-            SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(item.price * item.quantity) AS item_total
-            FROM item
-            JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-            INNER JOIN product ON product.id = item.productId
+        ), ItemEntitys AS (
+            SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+            INNER JOIN product ON product.id = ItemEntity.productId
                 AND categoryId = :categoryId
             GROUP BY transaction_time
         )
-        SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
+        SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
         FROM date_series
-        LEFT JOIN items ON (date_series.start_date / 86400000) = transaction_time
+        LEFT JOIN ItemEntitys ON (date_series.start_date / 86400000) = transaction_time
         WHERE time IS NOT NULL
         GROUP BY time
         ORDER BY time
@@ -228,27 +229,27 @@ interface CategoryDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
-                 (MAX(transactionbasket.date) - 604800000) AS end_date
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON product.id = item.productId
+        SELECT (((MIN(TransactionEntity.date) / 86400000) - ((MIN(TransactionEntity.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+                 (MAX(TransactionEntity.date) - 604800000) AS end_date
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON product.id = ItemEntity.productId
             AND categoryId = :categoryId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
         WHERE date_series.end_date >= date_series.start_date
-    ), items AS (
-        SELECT ((transactionbasket.date - 345600000) / 604800000) AS items_time, SUM(item.price * item.quantity) AS item_total
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON product.id = item.productId
+    ), ItemEntitys AS (
+        SELECT ((TransactionEntity.date - 345600000) / 604800000) AS ItemEntitys_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON product.id = ItemEntity.productId
             AND categoryId = :categoryId
-        GROUP BY items_time
+        GROUP BY ItemEntitys_time
     )
-    SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(item_total, 0) AS total
+    SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
     FROM date_series
-    LEFT JOIN items ON (date_series.start_date / 604800000) = items_time
+    LEFT JOIN ItemEntitys ON (date_series.start_date / 604800000) = ItemEntitys_time
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
@@ -259,27 +260,27 @@ interface CategoryDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
-               DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON product.id = item.productId
+        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+               DATE(MAX(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS end_date
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON product.id = ItemEntity.productId
             AND categoryId = :categoryId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
         WHERE date_series.end_date > date_series.start_date
-    ), items AS (
-        SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON product.id = item.productId
+    ), ItemEntitys AS (
+        SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntitys_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON product.id = ItemEntity.productId
             AND categoryId = :categoryId
-        GROUP BY items_time
+        GROUP BY ItemEntitys_time
     )
-    SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
+    SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
     FROM date_series
-    LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = items_time
+    LEFT JOIN ItemEntitys ON STRFTIME('%Y-%m', date_series.start_date) = ItemEntitys_time
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
@@ -290,27 +291,27 @@ interface CategoryDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
-               DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS end_date
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON product.id = item.productId
+        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+               DATE(MAX(TransactionEntity.date) / 1000, 'unixepoch', 'start of year') AS end_date
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON product.id = ItemEntity.productId
             AND categoryId = :categoryId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
         WHERE date_series.end_date > date_series.start_date
-    ), items AS (
-        SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON product.id = item.productId
+    ), ItemEntitys AS (
+        SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntitys_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON product.id = ItemEntity.productId
             AND categoryId = :categoryId
-        GROUP BY items_time
+        GROUP BY ItemEntitys_time
     )
-    SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(item_total, 0) AS total
+    SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
     FROM date_series
-    LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = items_time
+    LEFT JOIN ItemEntitys ON STRFTIME('%Y', date_series.start_date) = ItemEntitys_time
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
@@ -323,33 +324,33 @@ interface CategoryDao {
         categoryId: Long,
         count: Int,
         offset: Int
-    ): List<FullItem> {
+    ): List<Item> {
         val category = get(categoryId) ?: return emptyList()
 
-        val items = itemsByCategory(
+        val itemEntitys = itemsByCategory(
             categoryId,
             count,
             offset
         )
 
-        if (items.isEmpty()) return emptyList()
+        if (itemEntitys.isEmpty()) return emptyList()
 
-        return items.map { item ->
-            val transactionBasket = transactionBasketByItemId(item.id)
-            val product = productById(item.productId)
-            val variant = item.variantId?.let { variantById(it) }
+        return itemEntitys.map { itemEntity ->
+            val transactionEntity = transactionEntityByItemEntityId(itemEntity.id)
+            val product = productById(itemEntity.productId)
+            val variant = itemEntity.variantId?.let { variantById(it) }
             val producer = product.producerId?.let { producerById(it) }
-            val shop = transactionBasket.shopId?.let { shopById(it) }
+            val shop = transactionEntity.shopId?.let { shopById(it) }
 
-            FullItem(
-                id = item.id,
-                quantity = item.quantity,
-                price = item.price,
+            Item(
+                id = itemEntity.id,
+                quantity = itemEntity.quantity,
+                price = itemEntity.price,
                 product = product,
                 variant = variant,
                 category = category,
                 producer = producer,
-                date = transactionBasket.date,
+                date = transactionEntity.date,
                 shop = shop,
             )
         }
@@ -357,10 +358,10 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT productcategory.*, SUM(item.price * item.quantity) as total
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        JOIN product ON product.id = item.productId
+        SELECT productcategory.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        JOIN product ON product.id = ItemEntity.productId
         JOIN productcategory ON productcategory.id = product.categoryId
         GROUP BY productcategory.id
     """
@@ -369,12 +370,12 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT productcategory.*, SUM(item.price * item.quantity) as total
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        INNER JOIN product ON item.productId = product.id
+        SELECT productcategory.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
+        FROM ItemEntity
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionId
+        INNER JOIN product ON ItemEntity.productId = product.id
         INNER JOIN productcategory ON product.categoryId = productcategory.id
-        WHERE STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) = :date
+        WHERE STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) = :date
         GROUP BY productcategory.id
     """
     )
@@ -385,10 +386,10 @@ interface CategoryDao {
 
     fun allWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>> {
         return allFlow().map { list ->
-            list.map { item ->
+            list.map { itemEntity ->
                 ProductCategoryWithAltNames(
-                    category = item,
-                    alternativeNames = altNames(item.id),
+                    category = itemEntity,
+                    alternativeNames = altNames(itemEntity.id),
                 )
             }
         }

@@ -159,7 +159,7 @@ interface ProducerRepositorySource {
     /**
      * @param producer [ProductProducer] to match the items to
      */
-    fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<Item>>
 
     /**
      * @return list of all [ProductProducer] as flow

@@ -25,7 +25,7 @@ import com.kssidll.arru.ui.theme.*
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [Item]
+ * [ModifyScreen] implementation for [ItemEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyItemScreenState] instance representing the screen state
  * @param products Products that can be set for the item

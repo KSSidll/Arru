@@ -51,7 +51,7 @@ import kotlinx.coroutines.flow.*
 internal fun CategoryScreen(
     onBack: () -> Unit,
     category: ProductCategory?,
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<ItemSpentByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -142,7 +142,7 @@ internal fun CategoryScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CategoryScreenContent(
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<ItemSpentByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
@@ -286,7 +286,7 @@ private fun CategoryScreenPreview() {
             CategoryScreen(
                 onBack = {},
                 category = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -310,7 +310,7 @@ private fun EmptyCategoryScreenPreview() {
             CategoryScreen(
                 onBack = {},
                 category = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -334,7 +334,7 @@ private fun ExpandedCategoryScreenPreview() {
             CategoryScreen(
                 onBack = {},
                 category = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
@@ -358,7 +358,7 @@ private fun ExpandedEmptyCategoryScreenPreview() {
             CategoryScreen(
                 onBack = {},
                 category = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,

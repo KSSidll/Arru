@@ -12,7 +12,7 @@ import javax.inject.*
 class TransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
 ): ViewModel() {
-    fun transaction(transactionId: Long): Flow<Data<TransactionBasketWithItems?>> {
+    fun transaction(transactionId: Long): Flow<Data<Transaction?>> {
         return transactionRepository.transactionBasketWithItemsFlow(transactionId)
     }
 }

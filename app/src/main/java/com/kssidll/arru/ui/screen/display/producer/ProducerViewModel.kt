@@ -38,7 +38,7 @@ class ProducerViewModel @Inject constructor(
     /**
      * @return paging data of full item for current producer as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
+    fun transactions(): Flow<PagingData<Item>> {
         if (producer == null) return emptyFlow()
         return producerRepository.fullItemsPagedFlow(producer!!)
     }

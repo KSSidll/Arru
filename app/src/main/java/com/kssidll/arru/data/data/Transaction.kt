@@ -22,7 +22,7 @@ import kotlin.math.log10
         )
     ]
 )
-data class TransactionBasket(
+data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var date: Long,
     @ColumnInfo(index = true) var shopId: Long?,
@@ -86,8 +86,8 @@ data class TransactionBasket(
         }
 
         @Ignore
-        fun generate(transactionId: Long = 0): TransactionBasket {
-            return TransactionBasket(
+        fun generate(transactionId: Long = 0): TransactionEntity {
+            return TransactionEntity(
                 id = transactionId,
                 date = generateRandomTime(),
                 shopId = generateRandomLongValue(),
@@ -96,7 +96,7 @@ data class TransactionBasket(
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<TransactionBasket> {
+        fun generateList(amount: Int = 10): List<TransactionEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -120,25 +120,25 @@ data class TransactionBasket(
     }
 }
 
-data class TransactionBasketWithItems(
+data class Transaction(
     val id: Long,
     val date: Long,
     val shop: Shop?,
     val totalCost: Long,
-    val items: List<FullItem>,
+    val items: List<Item>,
 ) {
     companion object {
-        fun generate(transactionBasketWithItemsId: Long = 0): TransactionBasketWithItems {
-            return TransactionBasketWithItems(
+        fun generate(transactionBasketWithItemsId: Long = 0): Transaction {
+            return Transaction(
                 id = transactionBasketWithItemsId,
                 date = generateRandomTime(),
                 shop = Shop.generate(),
                 totalCost = generateRandomLongValue(),
-                items = FullItem.generateList(),
+                items = Item.generateList(),
             )
         }
 
-        fun generateList(amount: Int = 10): List<TransactionBasketWithItems> {
+        fun generateList(amount: Int = 10): List<Transaction> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -167,7 +167,7 @@ data class TransactionSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {

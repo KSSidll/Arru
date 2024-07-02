@@ -12,9 +12,9 @@ import kotlin.math.log10
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = TransactionBasket::class,
+            entity = TransactionEntity::class,
             parentColumns = ["id"],
-            childColumns = ["transactionBasketId"],
+            childColumns = ["transactionId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
@@ -34,9 +34,9 @@ import kotlin.math.log10
         )
     ]
 )
-data class Item(
+data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var transactionBasketId: Long,
+    @ColumnInfo(index = true) var transactionId: Long,
     @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) var variantId: Long?,
     var quantity: Long,
@@ -44,14 +44,14 @@ data class Item(
 ) {
     @Ignore
     constructor(
-        transactionBasketId: Long,
+        transactionId: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
-        transactionBasketId,
+        transactionId,
         productId,
         variantId,
         quantity,
@@ -99,10 +99,10 @@ data class Item(
         }
 
         @Ignore
-        fun generate(itemId: Long = 0): Item {
-            return Item(
+        fun generate(itemId: Long = 0): ItemEntity {
+            return ItemEntity(
                 id = itemId,
-                transactionBasketId = generateRandomLongValue(),
+                transactionId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
                 variantId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
@@ -159,7 +159,7 @@ data class Item(
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<Item> {
+        fun generateList(amount: Int = 10): List<ItemEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -183,7 +183,7 @@ data class Item(
     }
 }
 
-data class FullItem(
+data class Item(
     val id: Long,
     val quantity: Long,
     val price: Long,
@@ -195,16 +195,16 @@ data class FullItem(
     val shop: Shop?,
 ) {
     fun actualQuantity(): Float {
-        return Item.actualQuantity(quantity)
+        return ItemEntity.actualQuantity(quantity)
     }
 
     fun actualPrice(): Float {
-        return Item.actualPrice(price)
+        return ItemEntity.actualPrice(price)
     }
 
     companion object {
-        fun generate(itemId: Long = 0): FullItem {
-            return FullItem(
+        fun generate(itemId: Long = 0): Item {
+            return Item(
                 id = itemId,
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
@@ -217,7 +217,7 @@ data class FullItem(
             )
         }
 
-        fun generateList(amount: Int = 10): List<FullItem> {
+        fun generateList(amount: Int = 10): List<Item> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -247,7 +247,7 @@ data class ItemSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -299,7 +299,7 @@ data class TransactionTotalSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -351,7 +351,7 @@ data class TransactionTotalSpentByShop(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -392,7 +392,7 @@ data class ItemSpentByCategory(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {

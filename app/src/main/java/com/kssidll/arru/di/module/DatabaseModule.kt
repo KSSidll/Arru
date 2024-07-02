@@ -1,17 +1,20 @@
 package com.kssidll.arru.di.module
 
-import android.content.*
-import androidx.datastore.preferences.core.*
-import com.kssidll.arru.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
+import com.kssidll.arru.Arru
 import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.database.*
-import com.kssidll.arru.data.preference.*
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.database.externalDbFile
+import com.kssidll.arru.data.database.internalDbFile
+import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.repository.*
-import dagger.*
-import dagger.hilt.*
-import dagger.hilt.android.qualifiers.*
-import dagger.hilt.components.*
-import javax.inject.*
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -70,12 +73,12 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideTransactionBasketDao(appDatabase: AppDatabase): TransactionBasketDao {
-        return appDatabase.getTransactionBasketDao()
+    fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao {
+        return appDatabase.getTransactionDao()
     }
 
     @Provides
-    fun provideTransactionBasketRepository(transactionBasketDao: TransactionBasketDao): TransactionBasketRepositorySource {
+    fun provideTransactionEntityRepository(transactionBasketDao: TransactionDao): TransactionBasketRepositorySource {
         return TransactionBasketRepository(transactionBasketDao)
     }
 

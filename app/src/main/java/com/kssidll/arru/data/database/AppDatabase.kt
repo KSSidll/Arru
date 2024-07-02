@@ -65,8 +65,8 @@ fun Context.currentDbBackupDirectory(preferences: Preferences): File {
 @Database(
     version = 6,
     entities = [
-        TransactionBasket::class,
-        Item::class,
+        TransactionEntity::class,
+        ItemEntity::class,
         Product::class,
         ProductAltName::class,
         ProductVariant::class,
@@ -92,7 +92,7 @@ fun Context.currentDbBackupDirectory(preferences: Preferences): File {
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun getTransactionBasketDao(): TransactionBasketDao
+    abstract fun getTransactionDao(): TransactionDao
     abstract fun getItemDao(): ItemDao
     abstract fun getProductDao(): ProductDao
     abstract fun getVariantDao(): VariantDao
@@ -408,16 +408,19 @@ val MIGRATION_5_6 = object: Migration(
     6
 ) {
     override fun migrate(db: SupportSQLiteDatabase) {
+
+        /// Stage 1: Remove TransactionBasketItem
+
         db.execSQL(
             """
             CREATE TABLE tmp_item (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                transactionBasketId INTEGER NOT NULL,
+                transactionId INTEGER NOT NULL,
                 productId INTEGER NOT NULL,
                 variantId INTEGER,
                 quantity INTEGER NOT NULL,
                 price INTEGER NOT NULL,
-                FOREIGN KEY(transactionBasketId) REFERENCES TransactionBasket(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
                 FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
                 FOREIGN KEY(variantId) REFERENCES ProductVariant(id) ON UPDATE RESTRICT ON DELETE RESTRICT
             )
@@ -426,7 +429,7 @@ val MIGRATION_5_6 = object: Migration(
 
         db.execSQL(
             """
-                INSERT INTO tmp_item (transactionBasketId, productId, variantId, quantity, price)
+                INSERT INTO tmp_item (transactionId, productId, variantId, quantity, price)
                 SELECT TransactionBasketItem.transactionBasketId, productId, variantId, quantity, price
                 FROM Item
                 JOIN TransactionBasketItem ON Item.id = TransactionBasketItem.itemId
@@ -442,19 +445,25 @@ val MIGRATION_5_6 = object: Migration(
         """.trimIndent())
 
         db.execSQL("""
-            ALTER TABLE tmp_item RENAME TO Item
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_transactionId ON tmp_item (transactionId)
         """.trimIndent())
 
         db.execSQL("""
-            CREATE INDEX IF NOT EXISTS index_Item_transactionBasketId ON Item (transactionBasketId)
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_productId ON tmp_item (productId)
         """.trimIndent())
 
         db.execSQL("""
-            CREATE INDEX IF NOT EXISTS index_Item_productId ON Item (productId)
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_variantId ON tmp_item (variantId)
+        """.trimIndent())
+
+        /// Stage 2: Rename tables
+
+        db.execSQL("""
+            ALTER TABLE tmp_item RENAME TO ItemEntity
         """.trimIndent())
 
         db.execSQL("""
-            CREATE INDEX IF NOT EXISTS index_Item_variantId ON Item (variantId)
+            ALTER TABLE TransactionBasket RENAME TO TransactionEntity
         """.trimIndent())
     }
 }

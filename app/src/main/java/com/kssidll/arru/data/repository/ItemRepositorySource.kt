@@ -58,13 +58,13 @@ interface ItemRepositorySource {
     // Create
 
     /**
-     * Inserts [Item]
-     * @param transactionId id of the [TransactionBasket] to add the [Item] to
-     * @param productId id of the [Product] in the [Item]
-     * @param variantId id of the [ProductVariant] in the [Item]
-     * @param quantity quantity of the [Item]
-     * @param price price of the [Item]
-     * @return [InsertResult] with id of the newly inserted [Item] or an error if any
+     * Inserts [ItemEntity]
+     * @param transactionId id of the [TransactionEntity] to add the [ItemEntity] to
+     * @param productId id of the [Product] in the [ItemEntity]
+     * @param variantId id of the [ProductVariant] in the [ItemEntity]
+     * @param quantity quantity of the [ItemEntity]
+     * @param price price of the [ItemEntity]
+     * @return [InsertResult] with id of the newly inserted [ItemEntity] or an error if any
      */
     suspend fun insert(
         transactionId: Long,
@@ -77,12 +77,12 @@ interface ItemRepositorySource {
     // Update
 
     /**
-     * Updates [Item] with [itemId] to provided [productId], [variantId], [quantity] and [price]
-     * @param itemId id to match [Item]
-     * @param productId [Product] id to update the matching [Item] to
-     * @param variantId [ProductVariant] id to update the matching [Item] to
-     * @param quantity quantity to update the matching [Item] to
-     * @param price price to update the matching [Item] to
+     * Updates [ItemEntity] with [itemId] to provided [productId], [variantId], [quantity] and [price]
+     * @param itemId id to match [ItemEntity]
+     * @param productId [Product] id to update the matching [ItemEntity] to
+     * @param variantId [ProductVariant] id to update the matching [ItemEntity] to
+     * @param quantity quantity to update the matching [ItemEntity] to
+     * @param price price to update the matching [ItemEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -96,8 +96,8 @@ interface ItemRepositorySource {
     // Delete
 
     /**
-     * Deletes [Item]
-     * @param itemId id of the [Item] to delete
+     * Deletes [ItemEntity]
+     * @param itemId id of the [ItemEntity] to delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(itemId: Long): DeleteResult
@@ -105,18 +105,18 @@ interface ItemRepositorySource {
     // Read
 
     /**
-     * @param itemId id of the [Item]
-     * @return [Item] with [itemId] id or null if none match
+     * @param itemId id of the [ItemEntity]
+     * @return [ItemEntity] with [itemId] id or null if none match
      */
-    suspend fun get(itemId: Long): Item?
+    suspend fun get(itemId: Long): ItemEntity?
 
     /**
-     * @return newest [Item], null if none found
+     * @return newest [ItemEntity], null if none found
      */
-    suspend fun newest(): Item?
+    suspend fun newest(): ItemEntity?
 
     /**
-     * @return newest [Item] as flow
+     * @return newest [ItemEntity] as flow
      */
-    suspend fun newestFlow(): Flow<Data<Item?>>
+    suspend fun newestFlow(): Flow<Data<ItemEntity?>>
 }
