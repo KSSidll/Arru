@@ -1,10 +1,12 @@
 package com.kssidll.arru.ui.screen.display.product
 
 
-import androidx.compose.runtime.*
-import androidx.paging.compose.*
-import com.kssidll.arru.domain.data.*
-import dev.olshevski.navigation.reimagined.hilt.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.domain.data.Data
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
 fun ProductRoute(

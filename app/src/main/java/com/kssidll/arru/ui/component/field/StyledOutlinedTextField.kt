@@ -1,16 +1,19 @@
 package com.kssidll.arru.ui.component.field
 
-import androidx.compose.foundation.interaction.*
-import androidx.compose.foundation.text.*
-import androidx.compose.foundation.text.selection.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.text.*
-import androidx.compose.ui.text.input.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.ui.theme.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.sp
+import com.kssidll.arru.ui.theme.disabledAlpha
+import com.kssidll.arru.ui.theme.optionalAlpha
 
 data class StyledTextFieldColors(
     val colors: TextFieldColors,

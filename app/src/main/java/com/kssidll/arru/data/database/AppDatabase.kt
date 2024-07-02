@@ -1,16 +1,18 @@
 package com.kssidll.arru.data.database
 
-import android.content.*
-import androidx.datastore.preferences.core.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.*
-import androidx.room.migration.*
-import androidx.sqlite.db.*
-import com.kssidll.arru.*
+import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.kssidll.arru.Arru
+import com.kssidll.arru.BuildConfig
 import com.kssidll.arru.data.dao.*
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.preference.*
-import java.io.*
-import java.util.*
+import com.kssidll.arru.data.preference.AppPreferences
+import java.io.File
+import java.util.Calendar
 
 /**
  * default database name
@@ -61,11 +63,15 @@ fun Context.currentDbBackupDirectory(preferences: Preferences): File {
 }
 
 @Database(
-    version = 5,
+    version = 6,
     entities = [
-        TransactionBasket::class,
-        TransactionBasketItem::class,
-        Item::class,
+        TransactionEntity::class,
+        TransactionTagEntity::class,
+        ItemEntity::class,
+        ItemTagEntity::class,
+        TagEntity::class,
+        TagTagEntity::class,
+
         Product::class,
         ProductAltName::class,
         ProductVariant::class,
@@ -91,7 +97,7 @@ fun Context.currentDbBackupDirectory(preferences: Preferences): File {
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun getTransactionBasketDao(): TransactionBasketDao
+    abstract fun getTransactionDao(): TransactionDao
     abstract fun getItemDao(): ItemDao
     abstract fun getProductDao(): ProductDao
     abstract fun getVariantDao(): VariantDao
@@ -115,6 +121,7 @@ abstract class AppDatabase: RoomDatabase() {
                 name
             )
                 .addMigrations(MIGRATION_3_4)
+                .addMigrations(MIGRATION_5_6)
         }
 
         /**
@@ -400,3 +407,205 @@ val MIGRATION_3_4 = object: Migration(
     "date"
 )
 class MIGRATION_4_5_SPEC: AutoMigrationSpec
+
+val MIGRATION_5_6 = object: Migration(
+    5,
+    6
+) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        /// Stage 1: Remove TransactionBasketItem
+
+        db.execSQL(
+            """
+            CREATE TABLE tmp_item (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                transactionId INTEGER NOT NULL,
+                productId INTEGER NOT NULL,
+                variantId INTEGER,
+                quantity INTEGER NOT NULL,
+                price INTEGER NOT NULL,
+                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(variantId) REFERENCES ProductVariant(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+                INSERT INTO tmp_item (transactionId, productId, variantId, quantity, price)
+                SELECT TransactionBasketItem.transactionBasketId, productId, variantId, quantity, price
+                FROM Item
+                JOIN TransactionBasketItem ON Item.id = TransactionBasketItem.itemId
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE Item
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE TransactionBasketItem
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_transactionId ON tmp_item (transactionId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_productId ON tmp_item (productId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_variantId ON tmp_item (variantId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE tmp_item RENAME TO ItemEntity
+        """.trimIndent()
+        )
+
+        /// Stage 2: Change constraints
+
+        db.execSQL(
+            """
+            CREATE TABLE tmp_transactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                date INTEGER NOT NULL,
+                shopId INTEGER,
+                totalCost INTEGER NOT NULL,
+                FOREIGN KEY(shopId) REFERENCES Shop(id) ON UPDATE CASCADE ON DELETE SET NULL
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+                INSERT INTO tmp_transactions (id, date, shopId, totalCost)
+                SELECT id, date, shopId, totalCost
+                FROM TransactionBasket
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE TransactionBasket
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionEntity_date ON tmp_transactions (date)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionEntity_shopId ON tmp_transactions (shopId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE tmp_transactions RENAME TO TransactionEntity
+        """.trimIndent()
+        )
+
+
+        /// Stage 3: Add tag tables
+
+        db.execSQL(
+            """
+            CREATE TABLE TagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                name TEXT NOT NULL,
+                colorOrdinal INTEGER NOT NULL
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE ItemTagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                itemId INTEGER NOT NULL,
+                tagId INTEGER NOT NULL,
+                FOREIGN KEY(itemId) REFERENCES ItemEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(tagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemTagEntity_itemId ON ItemTagEntity (itemId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemTagEntity_tagId ON ItemTagEntity (tagId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE TransactionTagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                transactionId INTEGER NOT NULL,
+                tagId INTEGER NOT NULL,
+                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(tagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionTagEntity_transactionId ON TransactionTagEntity (transactionId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionTagEntity_tagId ON TransactionTagEntity (tagId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE TagTagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                mainTagId INTEGER NOT NULL,
+                subTagId INTEGER NOT NULL,
+                FOREIGN KEY(mainTagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(subTagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TagTagEntity_mainTagId ON TagTagEntity (mainTagId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TagTagEntity_subTagId ON TagTagEntity (subTagId)
+        """.trimIndent()
+        )
+    }
+}

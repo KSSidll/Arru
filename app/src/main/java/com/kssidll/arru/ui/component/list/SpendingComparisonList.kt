@@ -2,16 +2,23 @@ package com.kssidll.arru.ui.component.list
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.theme.*
-import kotlin.math.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.domain.data.RankSource
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import com.kssidll.arru.ui.theme.optionalAlpha
+import kotlin.math.roundToLong
 
 
 private val ITEM_HEIGHT: Dp = 90.dp

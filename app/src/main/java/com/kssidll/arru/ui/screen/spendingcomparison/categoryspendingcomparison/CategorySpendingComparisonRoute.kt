@@ -1,14 +1,16 @@
 package com.kssidll.arru.ui.screen.spendingcomparison.categoryspendingcomparison
 
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.spendingcomparison.*
-import dev.olshevski.navigation.reimagined.hilt.*
-import java.text.*
-import java.util.*
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.ui.screen.spendingcomparison.SpendingComparisonScreen
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun CategorySpendingComparisonRoute(

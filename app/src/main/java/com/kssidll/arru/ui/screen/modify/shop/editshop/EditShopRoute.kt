@@ -1,12 +1,14 @@
 package com.kssidll.arru.ui.screen.modify.shop.editshop
 
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.screen.modify.shop.*
-import dev.olshevski.navigation.reimagined.hilt.*
-import kotlinx.coroutines.*
+import com.kssidll.arru.ui.screen.modify.shop.ModifyShopScreenImpl
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditShopRoute(

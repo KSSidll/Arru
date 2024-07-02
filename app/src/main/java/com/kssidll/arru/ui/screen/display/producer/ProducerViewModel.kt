@@ -1,18 +1,27 @@
 package com.kssidll.arru.ui.screen.display.producer
 
 
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import androidx.paging.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.*
-import com.kssidll.arru.domain.data.*
-import com.patrykandpatrick.vico.core.entry.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import javax.inject.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.Data
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProducerViewModel @Inject constructor(
@@ -38,7 +47,7 @@ class ProducerViewModel @Inject constructor(
     /**
      * @return paging data of full item for current producer as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
+    fun transactions(): Flow<PagingData<Item>> {
         if (producer == null) return emptyFlow()
         return producerRepository.fullItemsPagedFlow(producer!!)
     }

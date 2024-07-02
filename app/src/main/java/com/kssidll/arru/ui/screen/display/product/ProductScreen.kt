@@ -2,34 +2,48 @@ package com.kssidll.arru.ui.screen.display.product
 
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import androidx.paging.*
-import androidx.paging.compose.*
-import com.kssidll.arru.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import com.kssidll.arru.ui.component.*
-import com.kssidll.arru.ui.component.chart.*
-import com.kssidll.arru.ui.component.list.*
-import com.kssidll.arru.ui.component.other.*
-import com.kssidll.arru.ui.theme.*
-import com.patrykandpatrick.vico.core.entry.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductPriceByShopByTime
+import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.loadedData
+import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.helper.generateRandomFloatValue
+import com.kssidll.arru.ui.component.SpendingSummaryComponent
+import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
+import com.kssidll.arru.ui.component.chart.ShopPriceCompareChart
+import com.kssidll.arru.ui.component.list.fullItemListContent
+import com.kssidll.arru.ui.component.other.SecondaryAppBar
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
 /**
  * @param onBack Called to request a back navigation
@@ -52,7 +66,7 @@ import kotlinx.coroutines.flow.*
 internal fun ProductScreen(
     onBack: () -> Unit,
     product: Product?,
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<ItemSpentByTime>>,
     productPriceByShopByTimeData: Data<List<ProductPriceByShopByTime>>,
     totalSpentData: Data<Float?>,
@@ -143,7 +157,7 @@ internal fun ProductScreen(
 
 @Composable
 private fun ProductScreenContent(
-    transactionItems: LazyPagingItems<FullItem>,
+    transactionItems: LazyPagingItems<Item>,
     spentByTimeData: Data<List<ItemSpentByTime>>,
     productPriceByShopByTimeData: Data<List<ProductPriceByShopByTime>>,
     totalSpentData: Data<Float?>,
@@ -310,7 +324,7 @@ private fun ProductScreenPreview() {
             ProductScreen(
                 onBack = {},
                 product = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
                 productPriceByShopByTimeData = Data.Loaded(ProductPriceByShopByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
@@ -335,7 +349,7 @@ private fun EmptyProductScreenPreview() {
             ProductScreen(
                 onBack = {},
                 product = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 productPriceByShopByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),
@@ -360,7 +374,7 @@ private fun ExpandedProductScreenPreview() {
             ProductScreen(
                 onBack = {},
                 product = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(ItemSpentByTime.generateList()),
                 productPriceByShopByTimeData = Data.Loaded(ProductPriceByShopByTime.generateList()),
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
@@ -385,7 +399,7 @@ private fun ExpandedEmptyProductScreenPreview() {
             ProductScreen(
                 onBack = {},
                 product = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
+                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = Data.Loaded(emptyList()),
                 productPriceByShopByTimeData = Data.Loaded(emptyList()),
                 totalSpentData = Data.Loaded(null),

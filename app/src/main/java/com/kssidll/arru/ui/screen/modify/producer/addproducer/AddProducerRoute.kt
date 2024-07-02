@@ -1,10 +1,12 @@
 package com.kssidll.arru.ui.screen.modify.producer.addproducer
 
-import androidx.compose.runtime.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.producer.*
-import dev.olshevski.navigation.reimagined.hilt.*
-import kotlinx.coroutines.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerScreenImpl
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddProducerRoute(

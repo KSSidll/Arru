@@ -1,16 +1,22 @@
 package com.kssidll.arru.ui.theme
 
-import android.os.*
-import androidx.compose.foundation.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.colorspace.*
-import androidx.compose.ui.platform.*
-import com.kssidll.arru.ui.theme.schema.*
-import com.patrykandpatrick.vico.compose.m3.style.*
-import com.patrykandpatrick.vico.compose.style.*
-import kotlin.math.*
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.colorspace.ColorSpaces
+import androidx.compose.ui.platform.LocalContext
+import com.kssidll.arru.ui.theme.schema.DarkColorScheme
+import com.kssidll.arru.ui.theme.schema.LightColorScheme
+import com.patrykandpatrick.vico.compose.m3.style.m3ChartStyle
+import com.patrykandpatrick.vico.compose.style.ChartStyle
+import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
+import kotlin.math.max
+import kotlin.math.min
 
 const val disabledAlpha = 0.38f
 const val optionalAlpha = 0.60f

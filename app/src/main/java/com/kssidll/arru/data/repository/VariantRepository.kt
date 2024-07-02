@@ -1,11 +1,12 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.dao.VariantDao
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
@@ -114,6 +115,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Delete
 
     override suspend fun delete(variantId: Long): DeleteResult {
+        // FIXME will crash when deleting a variant that some item uses
         val variant = dao.get(variantId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         dao.delete(variant)

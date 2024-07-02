@@ -1,14 +1,16 @@
 package com.kssidll.arru.ui.screen.modify.product.addproduct
 
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.repository.CategoryRepositorySource
+import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.product.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import javax.inject.Inject
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(

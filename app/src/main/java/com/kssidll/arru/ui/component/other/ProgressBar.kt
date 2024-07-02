@@ -1,12 +1,17 @@
 package com.kssidll.arru.ui.component.other
 
 
-import androidx.compose.animation.core.*
-import androidx.compose.material3.*
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.tooling.preview.*
-import com.kssidll.arru.ui.theme.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.kssidll.arru.ui.theme.ArrugarqTheme
 
 /**
  * A progress bar component

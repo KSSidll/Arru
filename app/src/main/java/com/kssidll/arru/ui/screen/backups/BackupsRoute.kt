@@ -1,7 +1,7 @@
 package com.kssidll.arru.ui.screen.backups
 
-import androidx.compose.runtime.*
-import dev.olshevski.navigation.reimagined.hilt.*
+import androidx.compose.runtime.Composable
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
 fun BackupsRoute(

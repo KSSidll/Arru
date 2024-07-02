@@ -1,14 +1,17 @@
 package com.kssidll.arru.ui.screen.modify.transaction.addtransaction
 
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.transaction.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
@@ -48,9 +51,9 @@ class AddTransactionViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = transactionRepository.insert(
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
-            totalCost = screenState.totalCost.value.data?.let { TransactionBasket.totalCostFromString(it) }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
+            date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
+            totalCost = screenState.totalCost.value.data?.let { TransactionEntity.totalCostFromString(it) }
+                ?: TransactionEntity.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id
         )
 

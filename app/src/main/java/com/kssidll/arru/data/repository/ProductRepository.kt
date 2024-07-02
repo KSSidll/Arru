@@ -1,16 +1,18 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltInsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltUpdateResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
@@ -213,12 +215,10 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         val variants = dao.variants(productId)
         val altNames = dao.altNames(productId)
         val items = dao.getItems(productId)
-        val transactionBasketItems = dao.getTransactionBasketItems(productId)
 
         if (!force && (variants.isNotEmpty() || altNames.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.deleteAltName(altNames)
             dao.deleteVariants(variants)
@@ -258,7 +258,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                        ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }
@@ -296,7 +296,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             .onStart { Data.Loading<List<ItemSpentByTime>>() }
     }
 
-    override fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>> {
+    override fun fullItemsPagedFlow(product: Product): Flow<PagingData<Item>> {
         return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,
@@ -327,7 +327,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             .flow
     }
 
-    override suspend fun newestItem(product: Product): Item? {
+    override suspend fun newestItem(product: Product): ItemEntity? {
         return dao.newestItem(product.id)
     }
 

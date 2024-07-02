@@ -1,17 +1,20 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.TransactionDao
+import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.data.Transaction
+import com.kssidll.arru.data.data.TransactionSpentByTime
+import com.kssidll.arru.data.paging.TransactionBasketWithItemsPagingSource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.ItemInsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
-class TransactionBasketRepository(private val dao: TransactionBasketDao): TransactionBasketRepositorySource {
+class TransactionBasketRepository(private val dao: TransactionDao): TransactionBasketRepositorySource {
     // Create
 
     override suspend fun insert(
@@ -19,7 +22,7 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         totalCost: Long,
         shopId: Long?
     ): InsertResult {
-        val transaction = TransactionBasket(
+        val transaction = TransactionEntity(
             date = date,
             totalCost = totalCost,
             shopId = shopId
@@ -42,26 +45,6 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         }
 
         return InsertResult.Success(dao.insert(transaction))
-    }
-
-    override suspend fun insertTransactionItem(
-        transactionBasketId: Long,
-        itemId: Long
-    ): ItemInsertResult {
-        val transactionItem = TransactionBasketItem(
-            transactionBasketId = transactionBasketId,
-            itemId = itemId,
-        )
-
-        if (dao.get(transactionBasketId) == null) {
-            return ItemInsertResult.Error(ItemInsertResult.InvalidTransactionId)
-        }
-
-        if (dao.itemById(itemId) == null) {
-            return ItemInsertResult.Error(ItemInsertResult.InvalidItemId)
-        }
-
-        return ItemInsertResult.Success(dao.insertTransactionBasketItem(transactionItem))
     }
 
     // Update
@@ -109,13 +92,11 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         val transaction =
             dao.get(transactionId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val transactionBasketItems = dao.transactionBasketItems(transactionId)
-        val items = dao.itemsByTransactionBasketId(transactionId)
+        val items = dao.itemsByTransactionEntityId(transactionId)
 
         if (!force && (items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.delete(transaction)
         }
@@ -125,11 +106,11 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
 
     // Read
 
-    override suspend fun get(transactionBasketId: Long): TransactionBasket? {
+    override suspend fun get(transactionBasketId: Long): TransactionEntity? {
         return dao.get(transactionBasketId)
     }
 
-    override suspend fun newest(): TransactionBasket? {
+    override suspend fun newest(): TransactionEntity? {
         return dao.newest()
     }
 
@@ -156,7 +137,7 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(TransactionBasket.COST_DIVISOR)
+                        ?.div(TransactionEntity.COST_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }
@@ -197,14 +178,14 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
     override suspend fun transactionBasketsWithItems(
         startPosition: Int,
         count: Int
-    ): List<TransactionBasketWithItems> {
-        return dao.transactionBasketsWithItems(
+    ): List<Transaction> {
+        return dao.transactionEntitiesWithItems(
             startPosition,
             count
         )
     }
 
-    override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {
+    override fun transactionBasketsPagedFlow(): Flow<PagingData<Transaction>> {
         return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,
@@ -213,11 +194,11 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
             .flow
     }
 
-    override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>> {
-        return dao.transactionBasketWithItems(transactionId)
+    override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<Transaction?>> {
+        return dao.transactionEntityWithItems(transactionId)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<TransactionBasketWithItems>() }
+            .onStart { Data.Loading<Transaction>() }
     }
 }
