@@ -1,6 +1,10 @@
 package com.kssidll.arru.data.data
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
@@ -137,6 +141,32 @@ data class TransactionBasket(
     @Ignore
     fun validTotalCost(): Boolean {
         return totalCost != INVALID_TOTAL_COST
+    }
+}
+
+data class TransactionBasketWithItems(
+    val id: Long,
+    val date: Long,
+    val shop: Shop?,
+    val totalCost: Long,
+    val items: List<FullItem>,
+) {
+    companion object {
+        fun generate(transactionBasketWithItemsId: Long = 0): TransactionBasketWithItems {
+            return TransactionBasketWithItems(
+                id = transactionBasketWithItemsId,
+                date = generateRandomTime(),
+                shop = Shop.generate(),
+                totalCost = generateRandomLongValue(),
+                items = FullItem.generateList(),
+            )
+        }
+
+        fun generateList(amount: Int = 10): List<TransactionBasketWithItems> {
+            return List(amount) {
+                generate(it.toLong())
+            }
+        }
     }
 }
 

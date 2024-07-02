@@ -38,9 +38,9 @@ interface ShopDao {
     @Query(
         """
         SELECT transactionbasket.*
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            AND transactionbasketitem.itemId = :itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
+        WHERE item.id = :itemId
     """
     )
     suspend fun transactionBasketByItemId(itemId: Long): TransactionBasket
@@ -48,9 +48,8 @@ interface ShopDao {
     @Query(
         """
         SELECT item.*
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         JOIN product ON product.id = item.productId
         WHERE transactionbasket.shopId = :shopId
         ORDER BY date DESC
@@ -68,8 +67,7 @@ interface ShopDao {
         """
         SELECT item.*
         FROM item
-        JOIN transactionbasketitem ON transactionbasketitem.itemId = item.id
-        JOIN transactionbasket ON transactionbasket.id = transactionbasketitem.transactionBasketId
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         WHERE shopId = :shopId
     """
     )
@@ -78,14 +76,8 @@ interface ShopDao {
     @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.shopId = :shopId")
     suspend fun getTransactionBaskets(shopId: Long): List<TransactionBasket>
 
-    @Query("SELECT transactionbasketitem.* FROM transactionbasketitem JOIN transactionbasket ON transactionbasketitem.transactionBasketId = transactionbasket.id WHERE shopId = :shopId")
-    suspend fun getTransactionBasketItems(shopId: Long): List<TransactionBasketItem>
-
     @Update
     suspend fun updateTransactionBaskets(baskets: List<TransactionBasket>)
-
-    @Delete
-    suspend fun deleteTransactionBasketItems(items: List<TransactionBasketItem>)
 
     @Delete
     suspend fun deleteTransactionBaskets(baskets: List<TransactionBasket>)
@@ -96,9 +88,9 @@ interface ShopDao {
     @Query(
         """
         SELECT COUNT(*)
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        WHERE transactionbasketitem.itemId < :itemId AND transactionbasket.shopId = :shopId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
+        WHERE item.id < :itemId AND transactionbasket.shopId = :shopId
     """
     )
     suspend fun countItemsBefore(
@@ -109,9 +101,9 @@ interface ShopDao {
     @Query(
         """
         SELECT COUNT(*)
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        WHERE transactionbasketitem.itemId > :itemId AND transactionbasket.shopId = :shopId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
+        WHERE item.id > :itemId AND transactionbasket.shopId = :shopId
     """
     )
     suspend fun countItemsAfter(
@@ -180,9 +172,8 @@ interface ShopDao {
     ), items AS (
         SELECT ((transactionbasket.date - 345600000) / 604800000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
+        JOIN item ON item.transactionBasketId = transactionbasket.id
             AND transactionbasket.shopId = :shopId
-        JOIN item ON item.id = transactionbasketitem.itemId
         GROUP BY transaction_time
     )
     SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total

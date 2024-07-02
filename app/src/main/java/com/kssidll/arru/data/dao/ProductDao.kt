@@ -58,9 +58,9 @@ interface ProductDao {
     @Query(
         """
         SELECT transactionbasket.*
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            AND transactionbasketitem.itemId = :itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
+        WHERE item.id = :itemId
     """
     )
     suspend fun transactionBasketByItemId(itemId: Long): TransactionBasket
@@ -68,9 +68,8 @@ interface ProductDao {
     @Query(
         """
         SELECT item.*
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         JOIN product ON product.id = item.productId
         WHERE product.id = :productId
         ORDER BY date DESC
@@ -100,25 +99,11 @@ interface ProductDao {
     )
     suspend fun getItems(productId: Long): List<Item>
 
-    @Query(
-        """
-        SELECT transactionbasketitem.*
-        FROM transactionbasketitem
-        JOIN item ON item.id = transactionbasketitem.itemId
-        JOIN product ON product.id = item.productId
-        WHERE product.id = :productId
-    """
-    )
-    suspend fun getTransactionBasketItems(productId: Long): List<TransactionBasketItem>
-
     @Delete
     suspend fun deleteItems(items: List<Item>)
 
     @Delete
     suspend fun deleteVariants(variants: List<ProductVariant>)
-
-    @Delete
-    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
 
     @Update
     suspend fun updateVariants(variants: List<ProductVariant>)
@@ -179,9 +164,8 @@ interface ProductDao {
         WITH date_series AS (
             SELECT MIN(transactionbasket.date) AS start_date,
                    MAX(transactionbasket.date) AS end_date
-            FROM transactionbasket
-            JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            JOIN item ON item.id = transactionbasketitem.itemId
+            FROM item
+            JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
             INNER JOIN product ON product.id = item.productId
                 AND productId = :productId
             UNION ALL
@@ -190,9 +174,8 @@ interface ProductDao {
             WHERE date_series.end_date > date_series.start_date
         ), items AS (
             SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(item.price * item.quantity) AS item_total
-            FROM transactionbasket
-            JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            JOIN item ON item.id = transactionbasketitem.itemId
+            FROM item
+            JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
             INNER JOIN product ON product.id = item.productId
                 AND productId = :productId
             GROUP BY transaction_time
@@ -212,9 +195,8 @@ interface ProductDao {
         WITH date_series AS (
         SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
                  (MAX(transactionbasket.date) - 604800000) AS end_date
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
               AND productId = :productId
         UNION ALL
@@ -223,9 +205,8 @@ interface ProductDao {
         WHERE date_series.end_date >= date_series.start_date
     ), items AS (
         SELECT ((transactionbasket.date - 345600000) / 604800000) AS items_time, SUM(item.price * item.quantity) AS item_total
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
             AND productId = :productId
         GROUP BY items_time
@@ -245,9 +226,8 @@ interface ProductDao {
         WITH date_series AS (
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
             AND productId = :productId
         UNION ALL
@@ -256,9 +236,8 @@ interface ProductDao {
         WHERE date_series.end_date > date_series.start_date
     ), items AS (
         SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
             AND productId = :productId
         GROUP BY items_time
@@ -278,9 +257,8 @@ interface ProductDao {
         WITH date_series AS (
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
                DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS end_date
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
             AND productId = :productId
         UNION ALL
@@ -289,9 +267,8 @@ interface ProductDao {
         WHERE date_series.end_date > date_series.start_date
     ), items AS (
         SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS items_time, SUM(item.price * item.quantity) AS item_total
-        FROM transactionbasket
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        FROM item
+        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
             AND productId = :productId
         GROUP BY items_time
@@ -362,9 +339,8 @@ interface ProductDao {
         WITH date_series AS (
             SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                    DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
-            FROM transactionbasket
-            JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-            JOIN item ON item.id = transactionbasketitem.itemId
+            FROM item
+            JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
             WHERE productId = :productId
             UNION ALL
             SELECT DATE(start_date, '+1 month') AS start_date, end_date
@@ -374,8 +350,7 @@ interface ProductDao {
         SELECT product.*, AVG(item.price) AS price, shop.name AS shopName, productvariant.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
         FROM date_series
         LEFT JOIN transactionbasket ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch'))
-        JOIN transactionbasketitem ON transactionbasketitem.transactionBasketId = transactionbasket.id
-        JOIN item ON item.id = transactionbasketitem.itemId
+        JOIN item ON item.transactionBasketId = transactionBasket.id
             AND item.productId = :productId
         LEFT JOIN shop ON transactionbasket.shopId = shop.id
         LEFT JOIN productvariant ON item.variantId = productvariant.id

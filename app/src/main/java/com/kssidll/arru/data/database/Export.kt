@@ -12,7 +12,6 @@ import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionBasket
-import com.kssidll.arru.data.data.TransactionBasketItem
 import com.kssidll.arru.data.data.asCsvList
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource
@@ -126,13 +125,6 @@ suspend fun exportDataAsRawCsv(
         exportDirUri,
         "text/csv",
         "transaction.csv"
-    )!!
-
-    val transactionItemCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "transaction-item.csv"
     )!!
 
     val variantCsvFileUri = DocumentsContractCompat.createDocument(
@@ -306,36 +298,6 @@ suspend fun exportDataAsRawCsv(
                 var offset = 0
                 do {
                     val data = transactionRepository.getPagedList(
-                        limit = batchSize,
-                        offset = offset
-                    )
-                        .asCsvList()
-
-                    outputStream.write("\n".toByteArray())
-                    data.forEach { csvData ->
-                        outputStream.write(csvData.toByteArray())
-                    }
-
-                    offset += batchSize
-                    addProgress(data.size)
-                } while (data.isNotEmpty())
-            }
-        }
-
-    context.contentResolver.openFileDescriptor(
-        transactionItemCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
-            FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-                outputStream.write(
-                    TransactionBasketItem.csvHeaders()
-                        .toByteArray()
-                )
-
-                var offset = 0
-                do {
-                    val data = transactionRepository.getPagedItemList(
                         limit = batchSize,
                         offset = offset
                     )

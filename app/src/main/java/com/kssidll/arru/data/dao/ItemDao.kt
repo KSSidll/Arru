@@ -9,7 +9,6 @@ import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.TransactionBasket
-import com.kssidll.arru.data.data.TransactionBasketItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -40,22 +39,6 @@ interface ItemDao {
     @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
     suspend fun getVariant(variantId: Long): ProductVariant?
 
-    @Query(
-        """
-        SELECT transactionbasketitem.*
-        FROM transactionbasketitem
-        JOIN item ON item.id = transactionbasketitem.itemId
-        WHERE item.id = :itemId
-    """
-    )
-    suspend fun getTransactionBasketItems(itemId: Long): List<TransactionBasketItem>
-
-    @Delete
-    suspend fun deleteTransactionBasketItems(items: List<TransactionBasketItem>)
-
-    @Insert
-    suspend fun insertTransactionItem(transactionItem: TransactionBasketItem)
-
     // Read
 
     @Query("SELECT item.* FROM item WHERE item.id = :itemId")
@@ -76,6 +59,6 @@ interface ItemDao {
         offset: Int
     ): List<Item>
 
-    @Query("SELECT item.* FROM item JOIN transactionbasketitem ON item.id = transactionbasketitem.itemId WHERE transactionBasketId = :transactionId")
+    @Query("SELECT item.* FROM item WHERE item.transactionBasketId = :transactionId")
     suspend fun getByTransaction(transactionId: Long): List<Item>
 }

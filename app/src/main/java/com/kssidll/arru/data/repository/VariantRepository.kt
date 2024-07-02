@@ -115,6 +115,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Delete
 
     override suspend fun delete(variantId: Long): DeleteResult {
+        // FIXME will crash when deleting a variant that some item uses
         val variant = dao.get(variantId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         dao.delete(variant)
