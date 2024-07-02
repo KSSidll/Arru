@@ -1,12 +1,12 @@
 package com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison
 
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.data.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.flow.*
-import javax.inject.*
+import androidx.lifecycle.ViewModel
+import com.kssidll.arru.data.data.TransactionTotalSpentByShop
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.domain.data.Data
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 @HiltViewModel
 class ShopSpendingComparisonViewModel @Inject constructor(

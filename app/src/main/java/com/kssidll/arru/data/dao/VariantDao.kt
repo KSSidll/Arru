@@ -1,8 +1,9 @@
 package com.kssidll.arru.data.dao
 
 import androidx.room.*
-import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface VariantDao {

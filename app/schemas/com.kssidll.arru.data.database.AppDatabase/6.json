@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "4abee32fbf5ba2ca1d81e7c3d4ef0a4a",
+    "identityHash": "08d5033bfee227c64d5db123118fcdd4",
     "entities": [
       {
         "tableName": "TransactionEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `shopId` INTEGER, `totalCost` INTEGER NOT NULL, FOREIGN KEY(`shopId`) REFERENCES `Shop`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `shopId` INTEGER, `totalCost` INTEGER NOT NULL, FOREIGN KEY(`shopId`) REFERENCES `Shop`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -62,8 +62,8 @@
         "foreignKeys": [
           {
             "table": "Shop",
-            "onDelete": "RESTRICT",
-            "onUpdate": "RESTRICT",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
             "columns": [
               "shopId"
             ],
@@ -74,8 +74,82 @@
         ]
       },
       {
+        "tableName": "TransactionTagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, FOREIGN KEY(`transactionId`) REFERENCES `TransactionEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`tagId`) REFERENCES `TagEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transactionId",
+            "columnName": "transactionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TransactionTagEntity_transactionId",
+            "unique": false,
+            "columnNames": [
+              "transactionId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionTagEntity_transactionId` ON `${TABLE_NAME}` (`transactionId`)"
+          },
+          {
+            "name": "index_TransactionTagEntity_tagId",
+            "unique": false,
+            "columnNames": [
+              "tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionTagEntity_tagId` ON `${TABLE_NAME}` (`tagId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TransactionEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transactionId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "TagEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "tagId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
         "tableName": "ItemEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `variantId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, FOREIGN KEY(`transactionId`) REFERENCES `TransactionEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`productId`) REFERENCES `Product`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`variantId`) REFERENCES `ProductVariant`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `variantId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, FOREIGN KEY(`transactionId`) REFERENCES `TransactionEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`productId`) REFERENCES `Product`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`variantId`) REFERENCES `ProductVariant`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -152,8 +226,8 @@
         "foreignKeys": [
           {
             "table": "TransactionEntity",
-            "onDelete": "RESTRICT",
-            "onUpdate": "RESTRICT",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
             "columns": [
               "transactionId"
             ],
@@ -163,8 +237,8 @@
           },
           {
             "table": "Product",
-            "onDelete": "RESTRICT",
-            "onUpdate": "RESTRICT",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
             "columns": [
               "productId"
             ],
@@ -174,10 +248,190 @@
           },
           {
             "table": "ProductVariant",
-            "onDelete": "RESTRICT",
-            "onUpdate": "RESTRICT",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
             "columns": [
               "variantId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ItemTagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `itemId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, FOREIGN KEY(`itemId`) REFERENCES `ItemEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`tagId`) REFERENCES `TagEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemId",
+            "columnName": "itemId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ItemTagEntity_itemId",
+            "unique": false,
+            "columnNames": [
+              "itemId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemTagEntity_itemId` ON `${TABLE_NAME}` (`itemId`)"
+          },
+          {
+            "name": "index_ItemTagEntity_tagId",
+            "unique": false,
+            "columnNames": [
+              "tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemTagEntity_tagId` ON `${TABLE_NAME}` (`tagId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ItemEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "itemId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "TagEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "tagId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "TagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `colorOrdinal` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "colorOrdinal",
+            "columnName": "colorOrdinal",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TagTagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mainTagId` INTEGER NOT NULL, `subTagId` INTEGER NOT NULL, FOREIGN KEY(`mainTagId`) REFERENCES `TagEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`subTagId`) REFERENCES `TagEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mainTagId",
+            "columnName": "mainTagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subTagId",
+            "columnName": "subTagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TagTagEntity_mainTagId",
+            "unique": false,
+            "columnNames": [
+              "mainTagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TagTagEntity_mainTagId` ON `${TABLE_NAME}` (`mainTagId`)"
+          },
+          {
+            "name": "index_TagTagEntity_subTagId",
+            "unique": false,
+            "columnNames": [
+              "subTagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TagTagEntity_subTagId` ON `${TABLE_NAME}` (`subTagId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TagEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "mainTagId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "TagEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "subTagId"
             ],
             "referencedColumns": [
               "id"
@@ -567,7 +821,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4abee32fbf5ba2ca1d81e7c3d4ef0a4a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '08d5033bfee227c64d5db123118fcdd4')"
     ]
   }
 }

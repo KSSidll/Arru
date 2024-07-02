@@ -17,8 +17,8 @@ import kotlin.math.log10
             entity = Shop::class,
             parentColumns = ["id"],
             childColumns = ["shopId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE,
         )
     ]
 )
@@ -119,6 +119,31 @@ data class TransactionEntity(
         return totalCost != INVALID_TOTAL_COST
     }
 }
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = TransactionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["transactionId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+        ForeignKey(
+            entity = TagEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["tagId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+    ]
+)
+data class TransactionTagEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) val transactionId: Long,
+    @ColumnInfo(index = true) val tagId: Long,
+)
+
 
 data class Transaction(
     val id: Long,

@@ -1,22 +1,32 @@
 package com.kssidll.arru.ui.component.list
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Payment
+import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material.icons.outlined.ShoppingBasket
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.PrecisionManufacturing
+import androidx.compose.material.icons.rounded.Store
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.semantics.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.utils.*
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.domain.utils.formatToCurrency
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
 
 @OptIn(
     ExperimentalLayoutApi::class,

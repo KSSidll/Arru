@@ -1,8 +1,10 @@
 package com.kssidll.arru.data.preference
 
-import android.content.*
-import androidx.datastore.preferences.core.*
-import com.kssidll.arru.di.module.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.kssidll.arru.di.module.dataStore
 
 /**
  * Data associated with datastore preferences

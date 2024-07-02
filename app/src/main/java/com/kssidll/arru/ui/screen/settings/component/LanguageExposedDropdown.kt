@@ -1,19 +1,20 @@
 package com.kssidll.arru.ui.screen.settings.component
 
 
-import androidx.appcompat.app.*
-import androidx.compose.foundation.*
-import androidx.compose.foundation.shape.*
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.*
-import com.kssidll.arru.ui.theme.*
-import java.util.*
+import com.kssidll.arru.domain.AppLocale
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import java.util.Locale
 
 /**
  * Exposed dropdown to select locale

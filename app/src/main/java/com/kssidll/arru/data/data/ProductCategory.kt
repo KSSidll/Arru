@@ -1,9 +1,11 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import me.xdrop.fuzzywuzzy.*
+import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.NameSource
+import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomStringValue
+import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
     indices = [

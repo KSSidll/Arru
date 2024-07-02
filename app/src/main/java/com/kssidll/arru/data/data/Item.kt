@@ -15,22 +15,22 @@ import kotlin.math.log10
             entity = TransactionEntity::class,
             parentColumns = ["id"],
             childColumns = ["transactionId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = Product::class,
             parentColumns = ["id"],
             childColumns = ["productId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = ProductVariant::class,
             parentColumns = ["id"],
             childColumns = ["variantId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
         )
     ]
 )
@@ -182,6 +182,31 @@ data class ItemEntity(
         return price != INVALID_PRICE
     }
 }
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = ItemEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["itemId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+        ForeignKey(
+            entity = TagEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["tagId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+    ]
+)
+data class ItemTagEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) val itemId: Long,
+    @ColumnInfo(index = true) val tagId: Long,
+)
+
 
 data class Item(
     val id: Long,

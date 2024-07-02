@@ -66,7 +66,12 @@ fun Context.currentDbBackupDirectory(preferences: Preferences): File {
     version = 6,
     entities = [
         TransactionEntity::class,
+        TransactionTagEntity::class,
         ItemEntity::class,
+        ItemTagEntity::class,
+        TagEntity::class,
+        TagTagEntity::class,
+
         Product::class,
         ProductAltName::class,
         ProductVariant::class,
@@ -420,9 +425,9 @@ val MIGRATION_5_6 = object: Migration(
                 variantId INTEGER,
                 quantity INTEGER NOT NULL,
                 price INTEGER NOT NULL,
-                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-                FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-                FOREIGN KEY(variantId) REFERENCES ProductVariant(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(variantId) REFERENCES ProductVariant(id) ON UPDATE CASCADE ON DELETE CASCADE
             )
         """.trimIndent()
         )
@@ -466,17 +471,140 @@ val MIGRATION_5_6 = object: Migration(
         """.trimIndent()
         )
 
-        /// Stage 2: Rename tables
-
         db.execSQL(
             """
             ALTER TABLE tmp_item RENAME TO ItemEntity
         """.trimIndent()
         )
 
+        /// Stage 2: Change constraints
+
         db.execSQL(
             """
-            ALTER TABLE TransactionBasket RENAME TO TransactionEntity
+            CREATE TABLE tmp_transactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                date INTEGER NOT NULL,
+                shopId INTEGER,
+                totalCost INTEGER NOT NULL,
+                FOREIGN KEY(shopId) REFERENCES Shop(id) ON UPDATE CASCADE ON DELETE SET NULL
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+                INSERT INTO tmp_transactions (id, date, shopId, totalCost)
+                SELECT id, date, shopId, totalCost
+                FROM TransactionBasket
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE TransactionBasket
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionEntity_date ON tmp_transactions (date)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionEntity_shopId ON tmp_transactions (shopId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE tmp_transactions RENAME TO TransactionEntity
+        """.trimIndent()
+        )
+
+
+        /// Stage 3: Add tag tables
+
+        db.execSQL(
+            """
+            CREATE TABLE TagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                name TEXT NOT NULL,
+                colorOrdinal INTEGER NOT NULL
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE ItemTagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                itemId INTEGER NOT NULL,
+                tagId INTEGER NOT NULL,
+                FOREIGN KEY(itemId) REFERENCES ItemEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(tagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemTagEntity_itemId ON ItemTagEntity (itemId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemTagEntity_tagId ON ItemTagEntity (tagId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE TransactionTagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                transactionId INTEGER NOT NULL,
+                tagId INTEGER NOT NULL,
+                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(tagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionTagEntity_transactionId ON TransactionTagEntity (transactionId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionTagEntity_tagId ON TransactionTagEntity (tagId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE TagTagEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                mainTagId INTEGER NOT NULL,
+                subTagId INTEGER NOT NULL,
+                FOREIGN KEY(mainTagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(subTagId) REFERENCES TagEntity(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TagTagEntity_mainTagId ON TagTagEntity (mainTagId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TagTagEntity_subTagId ON TagTagEntity (subTagId)
         """.trimIndent()
         )
     }
