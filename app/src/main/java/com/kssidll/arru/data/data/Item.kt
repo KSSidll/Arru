@@ -1,14 +1,23 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.domain.utils.*
+import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.data.RankSource
+import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.*
-import com.patrykandpatrick.vico.core.entry.*
-import kotlin.math.*
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import kotlin.math.log10
 
 @Entity(
     foreignKeys = [
+        ForeignKey(
+            entity = TransactionBasket::class,
+            parentColumns = ["id"],
+            childColumns = ["transactionBasketId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
         ForeignKey(
             entity = Product::class,
             parentColumns = ["id"],
@@ -27,6 +36,7 @@ import kotlin.math.*
 )
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) var transactionBasketId: Long,
     @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) var variantId: Long?,
     var quantity: Long,
@@ -34,12 +44,14 @@ data class Item(
 ) {
     @Ignore
     constructor(
+        transactionBasketId: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
+        transactionBasketId,
         productId,
         variantId,
         quantity,
@@ -90,6 +102,7 @@ data class Item(
         fun generate(itemId: Long = 0): Item {
             return Item(
                 id = itemId,
+                transactionBasketId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
                 variantId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),

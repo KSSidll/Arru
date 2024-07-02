@@ -1,9 +1,12 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import androidx.paging.PagingData
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionSpentByTime
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface TransactionBasketRepositorySource {
     companion object {
@@ -83,17 +86,6 @@ interface TransactionBasketRepositorySource {
         totalCost: Long,
         shopId: Long?,
     ): InsertResult
-
-    /**
-     * Inserts [TransactionBasketItem]
-     * @param transactionBasketId id of the [TransactionBasket] in the [TransactionBasketItem]
-     * @param itemId id of the [Item] in the [TransactionBasketItem]
-     * @return [ItemInsertResult] with id of the newly inserted [TransactionBasketItem] or an error if any
-     */
-    suspend fun insertTransactionItem(
-        transactionBasketId: Long,
-        itemId: Long,
-    ): ItemInsertResult
 
     // Update
 

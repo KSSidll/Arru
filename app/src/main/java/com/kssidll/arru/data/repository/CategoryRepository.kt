@@ -1,16 +1,18 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.AltInsertResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.AltUpdateResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource {
@@ -166,12 +168,10 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         val productVariants = dao.getProductsVariants(productCategoryId)
         val productAltNames = dao.getProductsAltNames(productCategoryId)
         val items = dao.getItems(productCategoryId)
-        val transactionBasketItems = dao.getTransactionBasketItems(productCategoryId)
 
         if (!force && (altNames.isNotEmpty() || products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.deleteProductAltNames(productAltNames)
             dao.deleteProductVariants(productVariants)

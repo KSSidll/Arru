@@ -1,14 +1,16 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.ShopDao
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
@@ -95,12 +97,10 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
 
         val transactionBaskets = dao.getTransactionBaskets(shopId)
         val items = dao.getItems(shopId)
-        val transactionBasketItems = dao.getTransactionBasketItems(shopId)
 
         if (!force && transactionBaskets.isNotEmpty()) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.deleteTransactionBaskets(transactionBaskets)
             dao.delete(shop)

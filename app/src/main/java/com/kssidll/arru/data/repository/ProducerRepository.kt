@@ -1,14 +1,19 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.ProducerDao
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
@@ -92,12 +97,10 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         val productVariants = dao.getProductsVariants(producerid)
         val productAltNames = dao.getProductsAltNames(producerid)
         val items = dao.getItems(producerid)
-        val transactionBasketItems = dao.getTransactionBasketItems(producerid)
 
         if (!force && (products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.deleteProductAltNames(productAltNames)
             dao.deleteProductVariants(productVariants)

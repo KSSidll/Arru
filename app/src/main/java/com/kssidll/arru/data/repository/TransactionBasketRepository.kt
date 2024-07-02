@@ -1,14 +1,17 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.TransactionBasketDao
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionSpentByTime
+import com.kssidll.arru.data.paging.TransactionBasketWithItemsPagingSource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.ItemInsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class TransactionBasketRepository(private val dao: TransactionBasketDao): TransactionBasketRepositorySource {
@@ -42,26 +45,6 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         }
 
         return InsertResult.Success(dao.insert(transaction))
-    }
-
-    override suspend fun insertTransactionItem(
-        transactionBasketId: Long,
-        itemId: Long
-    ): ItemInsertResult {
-        val transactionItem = TransactionBasketItem(
-            transactionBasketId = transactionBasketId,
-            itemId = itemId,
-        )
-
-        if (dao.get(transactionBasketId) == null) {
-            return ItemInsertResult.Error(ItemInsertResult.InvalidTransactionId)
-        }
-
-        if (dao.itemById(itemId) == null) {
-            return ItemInsertResult.Error(ItemInsertResult.InvalidItemId)
-        }
-
-        return ItemInsertResult.Success(dao.insertTransactionBasketItem(transactionItem))
     }
 
     // Update
@@ -109,13 +92,11 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         val transaction =
             dao.get(transactionId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val transactionBasketItems = dao.transactionBasketItems(transactionId)
         val items = dao.itemsByTransactionBasketId(transactionId)
 
         if (!force && (items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.delete(transaction)
         }

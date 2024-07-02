@@ -80,17 +80,6 @@ android {
     }
 }
 
-ksp {
-    arg(
-        RoomSchemaArgProvider(
-            File(
-                projectDir,
-                "schemas"
-            )
-        )
-    )
-}
-
 dependencies {
     // AndroidX
     implementation(libs.androidx.activity)

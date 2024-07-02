@@ -1,11 +1,11 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.dao.ItemDao
+import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
@@ -19,6 +19,7 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         price: Long
     ): InsertResult {
         val item = Item(
+            transactionBasketId = transactionId,
             productId = productId,
             variantId = variantId,
             quantity = quantity,
@@ -50,13 +51,6 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         }
 
         val itemId = dao.insert(item)
-
-        val transactionItem = TransactionBasketItem(
-            transactionBasketId = transactionId,
-            itemId = itemId
-        )
-
-        dao.insertTransactionItem(transactionItem)
 
         return InsertResult.Success(itemId)
     }
@@ -107,9 +101,6 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     override suspend fun delete(itemId: Long): DeleteResult {
         val item = dao.get(itemId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val transactionBasketItems = dao.getTransactionBasketItems(itemId)
-
-        dao.deleteTransactionBasketItems(transactionBasketItems)
         dao.delete(item)
 
         return DeleteResult.Success

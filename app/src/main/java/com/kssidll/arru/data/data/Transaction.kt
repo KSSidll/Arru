@@ -1,11 +1,15 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.domain.utils.*
-import com.kssidll.arru.helper.*
-import com.patrykandpatrick.vico.core.entry.*
-import kotlin.math.*
+import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.utils.formatToCurrency
+import com.kssidll.arru.helper.RegexHelper
+import com.kssidll.arru.helper.generateRandomDateString
+import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomTime
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import kotlin.math.log10
 
 @Entity(
     foreignKeys = [
@@ -113,58 +117,6 @@ data class TransactionBasket(
     @Ignore
     fun validTotalCost(): Boolean {
         return totalCost != INVALID_TOTAL_COST
-    }
-}
-
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = TransactionBasket::class,
-            parentColumns = ["id"],
-            childColumns = ["transactionBasketId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        ),
-        ForeignKey(
-            entity = Item::class,
-            parentColumns = ["id"],
-            childColumns = ["itemId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        )
-    ]
-)
-data class TransactionBasketItem(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val transactionBasketId: Long,
-    @ColumnInfo(index = true) val itemId: Long,
-) {
-    @Ignore
-    constructor(
-        transactionBasketId: Long,
-        itemId: Long
-    ): this(
-        0,
-        transactionBasketId,
-        itemId
-    )
-
-    companion object {
-        @Ignore
-        fun generate(transactionBasketItemId: Long = 0): TransactionBasketItem {
-            return TransactionBasketItem(
-                id = transactionBasketItemId,
-                transactionBasketId = generateRandomLongValue(),
-                itemId = generateRandomLongValue(),
-            )
-        }
-
-        @Ignore
-        fun generateList(amount: Int = 10): List<TransactionBasketItem> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
     }
 }
 

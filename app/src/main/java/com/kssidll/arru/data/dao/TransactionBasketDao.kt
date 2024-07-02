@@ -2,7 +2,8 @@ package com.kssidll.arru.data.dao
 
 import androidx.room.*
 import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Dao
 interface TransactionBasketDao {
@@ -10,9 +11,6 @@ interface TransactionBasketDao {
 
     @Insert
     suspend fun insert(transactionBasket: TransactionBasket): Long
-
-    @Insert
-    suspend fun insertTransactionBasketItem(transactionBasketItem: TransactionBasketItem): Long
 
     // Update
 
@@ -23,9 +21,6 @@ interface TransactionBasketDao {
 
     @Delete
     suspend fun delete(transactionBasket: TransactionBasket)
-
-    @Delete
-    suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem)
 
     // Helper
 
@@ -47,10 +42,10 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer?
 
-    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    @Query("SELECT item.* FROM item WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
     suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
 
-    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    @Query("SELECT item.* FROM item WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
     fun itemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<Item>>
 
     @Transaction
@@ -109,12 +104,6 @@ interface TransactionBasketDao {
             }
         }
     }
-
-    @Query("SELECT * FROM transactionbasketitem WHERE transactionBasketId = :transactionBasketId")
-    suspend fun transactionBasketItems(transactionBasketId: Long): List<TransactionBasketItem>
-
-    @Delete
-    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
 
     @Delete
     suspend fun deleteItems(items: List<Item>)

@@ -1,16 +1,18 @@
 package com.kssidll.arru.data.database
 
-import android.content.*
-import androidx.datastore.preferences.core.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.*
-import androidx.room.migration.*
-import androidx.sqlite.db.*
-import com.kssidll.arru.*
+import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.kssidll.arru.Arru
+import com.kssidll.arru.BuildConfig
 import com.kssidll.arru.data.dao.*
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.preference.*
-import java.io.*
-import java.util.*
+import com.kssidll.arru.data.preference.AppPreferences
+import java.io.File
+import java.util.Calendar
 
 /**
  * default database name
@@ -61,10 +63,9 @@ fun Context.currentDbBackupDirectory(preferences: Preferences): File {
 }
 
 @Database(
-    version = 5,
+    version = 6,
     entities = [
         TransactionBasket::class,
-        TransactionBasketItem::class,
         Item::class,
         Product::class,
         ProductAltName::class,
@@ -115,6 +116,7 @@ abstract class AppDatabase: RoomDatabase() {
                 name
             )
                 .addMigrations(MIGRATION_3_4)
+                .addMigrations(MIGRATION_5_6)
         }
 
         /**
@@ -400,3 +402,59 @@ val MIGRATION_3_4 = object: Migration(
     "date"
 )
 class MIGRATION_4_5_SPEC: AutoMigrationSpec
+
+val MIGRATION_5_6 = object: Migration(
+    5,
+    6
+) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE tmp_item (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                transactionBasketId INTEGER NOT NULL,
+                productId INTEGER NOT NULL,
+                variantId INTEGER,
+                quantity INTEGER NOT NULL,
+                price INTEGER NOT NULL,
+                FOREIGN KEY(transactionBasketId) REFERENCES TransactionBasket(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+                FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+                FOREIGN KEY(variantId) REFERENCES ProductVariant(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+                INSERT INTO tmp_item (transactionBasketId, productId, variantId, quantity, price)
+                SELECT TransactionBasketItem.transactionBasketId, productId, variantId, quantity, price
+                FROM Item
+                JOIN TransactionBasketItem ON Item.id = TransactionBasketItem.itemId
+            """.trimIndent()
+        )
+
+        db.execSQL("""
+            DROP TABLE Item
+        """.trimIndent())
+
+        db.execSQL("""
+            DROP TABLE TransactionBasketItem
+        """.trimIndent())
+
+        db.execSQL("""
+            ALTER TABLE tmp_item RENAME TO Item
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE INDEX IF NOT EXISTS index_Item_transactionBasketId ON Item (transactionBasketId)
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE INDEX IF NOT EXISTS index_Item_productId ON Item (productId)
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE INDEX IF NOT EXISTS index_Item_variantId ON Item (variantId)
+        """.trimIndent())
+    }
+}
