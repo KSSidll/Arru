@@ -436,34 +436,48 @@ val MIGRATION_5_6 = object: Migration(
             """.trimIndent()
         )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             DROP TABLE Item
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             DROP TABLE TransactionBasketItem
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE INDEX IF NOT EXISTS index_ItemEntity_transactionId ON tmp_item (transactionId)
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE INDEX IF NOT EXISTS index_ItemEntity_productId ON tmp_item (productId)
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE INDEX IF NOT EXISTS index_ItemEntity_variantId ON tmp_item (variantId)
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         /// Stage 2: Rename tables
 
-        db.execSQL("""
+        db.execSQL(
+            """
             ALTER TABLE tmp_item RENAME TO ItemEntity
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             ALTER TABLE TransactionBasket RENAME TO TransactionEntity
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }

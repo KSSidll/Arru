@@ -1,8 +1,8 @@
 package com.kssidll.arru.ui.theme.schema
 
-import androidx.compose.material3.*
-import androidx.compose.ui.graphics.*
-import com.kssidll.arru.ui.theme.*
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
+import com.kssidll.arru.ui.theme.colorSpace
 
 /**
  * Default application light color scheme

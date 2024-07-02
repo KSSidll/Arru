@@ -1,26 +1,36 @@
 package com.kssidll.arru.ui.screen.search.shared
 
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.component.field.*
-import com.kssidll.arru.ui.screen.search.component.*
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
+import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
+import com.kssidll.arru.ui.screen.search.component.SearchItem
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import com.kssidll.arru.ui.theme.optionalAlpha
 
 /**
  * Fuzzy searchable list component

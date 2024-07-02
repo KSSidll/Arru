@@ -1,17 +1,21 @@
 package com.kssidll.arru.ui.screen.home.component
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.screen.home.*
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.ui.screen.home.HomeRouteLocations
+import com.kssidll.arru.ui.screen.home.getTranslation
+import com.kssidll.arru.ui.theme.ArrugarqTheme
 
 /**
  * Rail navigation bar for home screen

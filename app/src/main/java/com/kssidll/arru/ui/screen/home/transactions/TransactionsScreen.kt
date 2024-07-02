@@ -1,31 +1,39 @@
 package com.kssidll.arru.ui.screen.home.transactions
 
 
-import android.annotation.*
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import androidx.paging.*
-import androidx.paging.compose.*
-import com.kssidll.arru.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.component.list.*
-import com.kssidll.arru.ui.screen.home.component.*
-import com.kssidll.arru.ui.theme.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.Transaction
+import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.ui.component.list.transactionBasketCard
+import com.kssidll.arru.ui.component.list.transactionBasketCardHeaderPlaceholder
+import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
 private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
 

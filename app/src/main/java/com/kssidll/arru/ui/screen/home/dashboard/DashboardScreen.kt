@@ -1,27 +1,38 @@
 package com.kssidll.arru.ui.screen.home.dashboard
 
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.input.nestedscroll.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.component.*
-import com.kssidll.arru.ui.component.list.*
-import com.kssidll.arru.ui.screen.home.component.*
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.loadedData
+import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.ui.component.SpendingSummaryComponent
+import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
+import com.kssidll.arru.ui.component.list.RankingList
+import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.theme.ArrugarqTheme
 
 private val TileOuterPadding: Dp = 8.dp
 private val TileInnerPadding: Dp = 12.dp

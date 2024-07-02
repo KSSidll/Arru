@@ -2,25 +2,35 @@ package com.kssidll.arru.ui.screen.modify.item
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.text.input.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import com.kssidll.arru.ui.component.dialog.*
-import com.kssidll.arru.ui.component.field.*
-import com.kssidll.arru.ui.screen.modify.*
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.helper.RegexHelper
+import com.kssidll.arru.helper.StringHelper
+import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
+import com.kssidll.arru.ui.component.field.SearchField
+import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
+import com.kssidll.arru.ui.screen.modify.ModifyScreen
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.disabledAlpha
 
 private val ItemHorizontalPadding: Dp = 20.dp
 

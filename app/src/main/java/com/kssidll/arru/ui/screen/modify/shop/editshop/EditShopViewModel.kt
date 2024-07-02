@@ -1,20 +1,24 @@
 package com.kssidll.arru.ui.screen.modify.shop.editshop
 
 
-import android.util.*
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.shop.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.shop.ModifyShopViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 @HiltViewModel
 class EditShopViewModel @Inject constructor(

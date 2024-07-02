@@ -1,12 +1,14 @@
 package com.kssidll.arru.ui.screen.modify.category.editcategory
 
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.screen.modify.category.*
-import dev.olshevski.navigation.reimagined.hilt.*
-import kotlinx.coroutines.*
+import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryScreenImpl
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditCategoryRoute(

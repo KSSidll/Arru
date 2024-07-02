@@ -1,23 +1,27 @@
 package com.kssidll.arru.ui.screen.search
 
 
-import android.os.*
+import android.os.Parcelable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.platform.*
-import androidx.compose.ui.tooling.preview.*
-import com.kssidll.arru.*
-import com.kssidll.arru.ui.component.other.*
-import com.kssidll.arru.ui.screen.search.categorylist.*
-import com.kssidll.arru.ui.screen.search.producerlist.*
-import com.kssidll.arru.ui.screen.search.productlist.*
-import com.kssidll.arru.ui.screen.search.shoplist.*
-import com.kssidll.arru.ui.screen.search.start.*
-import com.kssidll.arru.ui.theme.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.defaultNavigateContentTransformation
+import com.kssidll.arru.defaultPopContentTransformation
+import com.kssidll.arru.ui.component.other.SecondaryAppBar
+import com.kssidll.arru.ui.screen.search.categorylist.CategoryListRoute
+import com.kssidll.arru.ui.screen.search.producerlist.ProducerListRoute
+import com.kssidll.arru.ui.screen.search.productlist.ProductListRoute
+import com.kssidll.arru.ui.screen.search.shoplist.ShopListRoute
+import com.kssidll.arru.ui.screen.search.start.StartRoute
+import com.kssidll.arru.ui.theme.ArrugarqTheme
 import dev.olshevski.navigation.reimagined.*
-import kotlinx.parcelize.*
+import kotlinx.parcelize.Parcelize
 
 /**
  * @param onBack Called to request a back navigation
