@@ -7,7 +7,8 @@ import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.Delete
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Create
@@ -16,7 +17,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         productId: Long,
         name: String
     ): InsertResult {
-        val variant = ProductVariant(
+/*        val variant = ProductVariant(
             productId,
             name
         )
@@ -40,7 +41,9 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             return InsertResult.Error(InsertResult.DuplicateName)
         }
 
-        return InsertResult.Success(dao.insert(variant))
+        return InsertResult.Success(dao.insert(variant))*/
+
+        return InsertResult.Success(0)
     }
 
     // Update
@@ -49,7 +52,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         variantId: Long,
         name: String
     ): UpdateResult {
-        val variant = dao.get(variantId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+/*        val variant = dao.get(variantId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         variant.name = name.trim()
 
@@ -70,6 +73,8 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
         dao.update(variant)
 
+        return UpdateResult.Success*/
+
         return UpdateResult.Success
     }
 
@@ -78,7 +83,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
         productId: Long,
         name: String
     ): UpdateResult {
-        if (dao.get(variantId) == null) {
+/*        if (dao.get(variantId) == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
@@ -109,16 +114,20 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
         dao.update(variant)
 
+        return UpdateResult.Success*/
+
         return UpdateResult.Success
     }
 
     // Delete
 
     override suspend fun delete(variantId: Long): DeleteResult {
-        // FIXME will crash when deleting a variant that some item uses
+/*        // FIXME will crash when deleting a variant that some item uses
         val variant = dao.get(variantId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         dao.delete(variant)
+
+        return DeleteResult.Success*/
 
         return DeleteResult.Success
     }
@@ -126,22 +135,25 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Read
 
     override suspend fun get(variantId: Long): ProductVariant? {
-        return dao.get(variantId)
+/*        return dao.get(variantId)*/
+return null
     }
 
     override fun getFlow(variantId: Long): Flow<Data<ProductVariant?>> {
-        return dao.getFlow(variantId)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<ProductVariant?>() }
+//        return dao.getFlow(variantId)
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<ProductVariant?>() }
+        return flowOf()
     }
 
     override fun byProductFlow(product: Product): Flow<Data<List<ProductVariant>>> {
-        return dao.byProductFlow(product.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductVariant>>() }
+//        return dao.byProductFlow(product.id)
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<List<ProductVariant>>() }
+        return flowOf()
     }
 }

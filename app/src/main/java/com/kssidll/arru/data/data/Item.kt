@@ -25,20 +25,12 @@ import kotlin.math.log10
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE,
         ),
-        ForeignKey(
-            entity = ProductVariant::class,
-            parentColumns = ["id"],
-            childColumns = ["variantId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE,
-        )
     ]
 )
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var transactionId: Long,
     @ColumnInfo(index = true) var productId: Long,
-    @ColumnInfo(index = true) var variantId: Long?,
     var quantity: Long,
     var price: Long,
 ) {
@@ -46,14 +38,12 @@ data class ItemEntity(
     constructor(
         transactionId: Long,
         productId: Long,
-        variantId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
         transactionId,
         productId,
-        variantId,
         quantity,
         price,
     )
@@ -104,7 +94,6 @@ data class ItemEntity(
                 id = itemId,
                 transactionId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
-                variantId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
             )
@@ -213,7 +202,6 @@ data class Item(
     val quantity: Long,
     val price: Long,
     val product: Product,
-    val variant: ProductVariant?,
     val category: ProductCategory,
     val producer: ProductProducer?,
     val date: Long,
@@ -234,7 +222,6 @@ data class Item(
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
                 product = Product.generate(),
-                variant = ProductVariant.generate(),
                 category = ProductCategory.generate(),
                 producer = ProductProducer.generate(),
                 date = generateRandomDate().time,

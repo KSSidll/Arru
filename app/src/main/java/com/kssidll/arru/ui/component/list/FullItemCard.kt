@@ -90,12 +90,12 @@ fun FullItemCard(
                         contentDescription = null,
                         modifier = Modifier.size(17.dp),
                     )
-                    Text(
-                        text = item.variant?.name
-                            ?: stringResource(R.string.item_product_variant_default_value),
-                        textAlign = TextAlign.Center,
-                        style = Typography.labelMedium,
-                    )
+//                    Text(
+//                        text = item.variant?.name
+//                            ?: stringResource(R.string.item_product_variant_default_value),
+//                        textAlign = TextAlign.Center,
+//                        style = Typography.labelMedium,
+//                    )
                 }
             }
 

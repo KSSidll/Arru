@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.*
 import com.kssidll.arru.data.repository.CategoryRepositorySource
+import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +20,7 @@ class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
     private val categoryRepository: CategoryRepositorySource,
     private val shopRepository: ShopRepositorySource,
+    private val itemRepository: ItemRepositorySource,
 ): ViewModel() {
     private val mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<TransactionSpentByTime>>> =
         TimePeriodFlowHandler(
@@ -35,6 +38,12 @@ class DashboardViewModel @Inject constructor(
                 transactionRepository.totalSpentByYearFlow()
             },
         )
+
+    init {
+        viewModelScope.launch {
+            itemRepository.get()
+        }
+    }
 
     /**
      * List of items representing [ItemEntity] spending in time as flow

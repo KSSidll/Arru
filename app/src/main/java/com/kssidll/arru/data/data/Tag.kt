@@ -10,8 +10,8 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 enum class TagColor {
-    // THIS WORKS ON ORDINALS
-    // NEVER CHANGE THE ORDER OF DECLARATION
+    // **THIS WORKS ON ORDINALS**
+    // **NEVER CHANGE THE ORDER OF DECLARATION**
     Primary,
     Secondary,
 
@@ -70,6 +70,34 @@ data class TagEntity(
 
     companion object {
         const val TAG = "TAG_ENTITY"
+    }
+
+    /**
+     * Special/system [TagEntity] reserved by the app to be able to provide additional functionality
+     *
+     * @param id **immutable**, id reference to the database [TagEntity], starts at 9999 and goes down to 0
+     * @param color **mutable, can be changed by user**, [TagColor] the tag will be displayed in
+     */
+    enum class System(val id: Long, val color: TagColor) {
+        // **NEVER CHANGE ANY OF THOSE ITEMS, YOU CAN ONLY ADD NEW ONES**
+
+        /**
+         * [TagEntity] shop:* group tag
+         * @since version 3.0.0
+         */
+        SHOP(9999, TagColor.Primary),
+
+        /**
+         * [TagEntity] variant:* group tag
+         * @since version 3.0.0
+         */
+        VARIANT(9998, TagColor.Secondary),
+
+        /**
+         * [TagEntity] producer:* group tag
+         * @since version 3.0.0
+         */
+        PRODUCER(9997, TagColor.Secondary),
     }
 }
 

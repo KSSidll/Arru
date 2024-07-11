@@ -1,11 +1,8 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltInsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltUpdateResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
@@ -13,7 +10,8 @@ import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.Insert
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
     // Create
@@ -23,7 +21,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         categoryId: Long,
         producerId: Long?
     ): InsertResult {
-        val product = Product(
+/*        val product = Product(
             categoryId,
             producerId,
             name
@@ -49,14 +47,16 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             return InsertResult.Error(InsertResult.DuplicateName)
         }
 
-        return InsertResult.Success(dao.insert(product))
+        return InsertResult.Success(dao.insert(product))*/
+
+        return InsertResult.Success(0)
     }
 
     override suspend fun insertAltName(
         product: Product,
         alternativeName: String
     ): AltInsertResult {
-        if (dao.get(product.id) != product) {
+/*        if (dao.get(product.id) != product) {
             return AltInsertResult.Error(AltInsertResult.InvalidId)
         }
 
@@ -77,7 +77,9 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             return AltInsertResult.Error(AltInsertResult.DuplicateName)
         }
 
-        return AltInsertResult.Success(dao.insertAltName(productAltName))
+        return AltInsertResult.Success(dao.insertAltName(productAltName))*/
+
+        return AltInsertResult.Success(0)
     }
 
     // Update
@@ -88,7 +90,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         categoryId: Long,
         producerId: Long?
     ): UpdateResult {
-        if (dao.get(productId) == null) {
+/*        if (dao.get(productId) == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
@@ -121,6 +123,8 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
 
         dao.update(product)
 
+        return UpdateResult.Success*/
+
         return UpdateResult.Success
     }
 
@@ -129,7 +133,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         productId: Long,
         name: String
     ): AltUpdateResult {
-        if (dao.getAltName(alternativeNameId) == null) {
+/*        if (dao.getAltName(alternativeNameId) == null) {
             return AltUpdateResult.Error(AltUpdateResult.InvalidId)
         }
 
@@ -157,6 +161,8 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
 
         dao.updateAltName(alternativeName)
 
+        return AltUpdateResult.Success*/
+
         return AltUpdateResult.Success
     }
 
@@ -164,7 +170,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         product: Product,
         mergingInto: Product
     ): MergeResult {
-        if (dao.get(product.id) == null) {
+/*        if (dao.get(product.id) == null) {
             return MergeResult.Error(MergeResult.InvalidProduct)
         }
 
@@ -201,6 +207,8 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         dao.deleteVariants(duplicateVariants)
         dao.delete(product)
 
+        return MergeResult.Success*/
+
         return MergeResult.Success
     }
 
@@ -210,7 +218,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         productId: Long,
         force: Boolean
     ): DeleteResult {
-        val product = dao.get(productId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+/*        val product = dao.get(productId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val variants = dao.variants(productId)
         val altNames = dao.altNames(productId)
@@ -225,14 +233,18 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             dao.delete(product)
         }
 
+        return DeleteResult.Success*/
+
         return DeleteResult.Success
     }
 
     override suspend fun deleteAltName(alternativeNameId: Long): DeleteResult {
-        val altName =
+/*        val altName =
             dao.getAltName(alternativeNameId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         dao.deleteAltName(altName)
+
+        return DeleteResult.Success*/
 
         return DeleteResult.Success
     }
@@ -240,19 +252,23 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
     // Read
 
     override suspend fun get(productId: Long): Product? {
-        return dao.get(productId)
+/*        return dao.get(productId)*/
+
+        return null
     }
 
     override fun getFlow(productId: Long): Flow<Data<Product?>> {
-        return dao.getFlow(productId)
+/*        return dao.getFlow(productId)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<Product?>() }
+            .onStart { Data.Loading<Product?>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentFlow(product: Product): Flow<Data<Float?>> {
-        return dao.totalSpentFlow(product.id)
+/*        return dao.totalSpentFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
             .map {
@@ -261,43 +277,53 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
                         ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
-            .onStart { Data.Loading<Long>() }
+            .onStart { Data.Loading<Long>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByDayFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByDayFlow(product.id)
+/*        return dao.totalSpentByDayFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByWeekFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByWeekFlow(product.id)
+/*        return dao.totalSpentByWeekFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByMonthFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByMonthFlow(product.id)
+/*        return dao.totalSpentByMonthFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByYearFlow(product: Product): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByYearFlow(product.id)
+/*        return dao.totalSpentByYearFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun fullItemsPagedFlow(product: Product): Flow<PagingData<Item>> {
-        return Pager(
+/*        return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,
             pagingSourceFactory = {
@@ -324,34 +350,44 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
                 )
             }
         )
-            .flow
+            .flow*/
+
+        return flowOf()
     }
 
     override suspend fun newestItem(product: Product): ItemEntity? {
-        return dao.newestItem(product.id)
+/*        return dao.newestItem(product.id)*/
+
+        return null
     }
 
     override fun allWithAltNamesFlow(): Flow<Data<List<ProductWithAltNames>>> {
-        return dao.allWithAltNamesFlow()
+/*        return dao.allWithAltNamesFlow()
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductCategoryWithAltNames>>() }
+            .onStart { Data.Loading<List<ProductCategoryWithAltNames>>() }*/
+
+        return flowOf()
     }
 
     override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<List<ProductPriceByShopByTime>>> {
-        return dao.averagePriceByVariantByShopByMonthFlow(product.id)
+/*        return dao.averagePriceByVariantByShopByMonthFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductPriceByShopByTime>>() }
+            .onStart { Data.Loading<List<ProductPriceByShopByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun allFlow(): Flow<Data<List<Product>>> {
-        return dao.allFlow()
+/*        return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<Product>>() }
+            .onStart { Data.Loading<List<Product>>() }*/
+
+        return flowOf()
     }
 }

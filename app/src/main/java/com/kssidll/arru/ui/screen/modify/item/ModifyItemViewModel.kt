@@ -121,24 +121,24 @@ abstract class ModifyItemViewModel: ViewModel() {
     }
 
     private suspend fun loadLastItemDataForProduct(product: Product?) {
-        screenState.selectedVariant.apply { value = value.toLoading() }
-        screenState.price.apply { value = value.toLoading() }
-        screenState.quantity.apply { value = value.toLoading() }
-
-        val lastItem: ItemEntity? = product?.let {
-            productRepository.newestItem(it)
-        }
-
-        val variant: ProductVariant? = lastItem?.variantId?.let { variantsRepository.get(it) }
-        val price: String? = lastItem?.actualPrice()
-            ?.toString()
-        val quantity: String? = lastItem?.actualQuantity()
-            ?.toString()
-
-        onNewVariantSelected(variant)
-
-        screenState.price.value = Field.Loaded(price)
-        screenState.quantity.value = Field.Loaded(quantity)
+//        screenState.selectedVariant.apply { value = value.toLoading() }
+//        screenState.price.apply { value = value.toLoading() }
+//        screenState.quantity.apply { value = value.toLoading() }
+//
+//        val lastItem: ItemEntity? = product?.let {
+//            productRepository.newestItem(it)
+//        }
+//
+//        val variant: ProductVariant? = lastItem?.variantId?.let { variantsRepository.get(it) }
+//        val price: String? = lastItem?.actualPrice()
+//            ?.toString()
+//        val quantity: String? = lastItem?.actualQuantity()
+//            ?.toString()
+//
+//        onNewVariantSelected(variant)
+//
+//        screenState.price.value = Field.Loaded(price)
+//        screenState.quantity.value = Field.Loaded(quantity)
     }
 
     /**
@@ -182,20 +182,20 @@ abstract class ModifyItemViewModel: ViewModel() {
     protected suspend fun updateStateForItem(
         item: ItemEntity?,
     ) {
-        val product: Product? = item?.productId?.let { productRepository.get(it) }
-        val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }
-        val price: String? = item?.actualPrice()
-            ?.toString()
-        val quantity: String? = item?.actualQuantity()
-            ?.toString()
-
-        onNewProductSelected(
-            product,
-            false
-        )
-        onNewVariantSelected(variant)
-        screenState.price.value = Field.Loaded(price)
-        screenState.quantity.value = Field.Loaded(quantity)
+//        val product: Product? = item?.productId?.let { productRepository.get(it) }
+//        val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }
+//        val price: String? = item?.actualPrice()
+//            ?.toString()
+//        val quantity: String? = item?.actualQuantity()
+//            ?.toString()
+//
+//        onNewProductSelected(
+//            product,
+//            false
+//        )
+//        onNewVariantSelected(variant)
+//        screenState.price.value = Field.Loaded(price)
+//        screenState.quantity.value = Field.Loaded(quantity)
     }
 }
 

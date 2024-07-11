@@ -1,8 +1,11 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface ItemRepositorySource {
     companion object {
@@ -54,6 +57,8 @@ interface ItemRepositorySource {
             data object InvalidId: Errors()
         }
     }
+
+    suspend fun get(): Long
 
     // Create
 

@@ -415,6 +415,7 @@ val MIGRATION_5_6 = object: Migration(
     override fun migrate(db: SupportSQLiteDatabase) {
 
         /// Stage 1: Remove TransactionBasketItem
+        /// Move transactionId to Item
 
         db.execSQL(
             """
@@ -471,6 +472,8 @@ val MIGRATION_5_6 = object: Migration(
         """.trimIndent()
         )
 
+        /// Stage 1.5: Rename Item to ItemEntity
+
         db.execSQL(
             """
             ALTER TABLE tmp_item RENAME TO ItemEntity
@@ -478,6 +481,7 @@ val MIGRATION_5_6 = object: Migration(
         )
 
         /// Stage 2: Change constraints
+        /// Using Restrict was bug prone and Cascade should work better with a tag system
 
         db.execSQL(
             """
@@ -517,14 +521,16 @@ val MIGRATION_5_6 = object: Migration(
         """.trimIndent()
         )
 
+        /// Stage 2.5: Rename TransactionBasket to TransactionEntity
+
         db.execSQL(
             """
             ALTER TABLE tmp_transactions RENAME TO TransactionEntity
         """.trimIndent()
         )
 
-
         /// Stage 3: Add tag tables
+        /// TagEntity, ItemTagEntity, TransactionTagEntity and TagTagEntity
 
         db.execSQL(
             """
@@ -607,5 +613,169 @@ val MIGRATION_5_6 = object: Migration(
             CREATE INDEX IF NOT EXISTS index_TagTagEntity_subTagId ON TagTagEntity (subTagId)
         """.trimIndent()
         )
+
+        /// Stage 4: Migrate Shop data
+
+        // Add special/system shop tag
+
+        db.execSQL("""
+            INSERT INTO TagEntity (id, name, colorOrdinal)
+            SELECT ${TagEntity.System.SHOP.id}, '${TagEntity.System.SHOP.name}', ${TagEntity.System.SHOP.color.ordinal}
+        """.trimIndent())
+
+        // Add shop tags
+
+        db.execSQL("""
+            INSERT INTO TagEntity (name, colorOrdinal)
+            SELECT name, ${TagEntity.System.SHOP.color.ordinal}
+            FROM Shop
+        """.trimIndent())
+
+        // Set shop tags as subtags of system shop tag
+
+        db.execSQL("""
+            INSERT INTO TagTagEntity (mainTagId, subTagId)
+            SELECT ${TagEntity.System.SHOP.id}, TagEntity.id
+            FROM TagEntity WHERE name IN (SELECT name FROM Shop)
+        """.trimIndent())
+
+        // Add shop tags to the associated transactions
+
+        val shopTagsCursor = db.query("""
+            SELECT Shop.id, TagEntity.id
+            FROM TagEntity
+            JOIN Shop ON Shop.name = TagEntity.name
+        """.trimIndent())
+
+        if (shopTagsCursor.moveToFirst()) {
+            do {
+                val shopId = shopTagsCursor.getLong(0)
+                val tagId = shopTagsCursor.getLong(1)
+
+                db.execSQL("""
+                    INSERT INTO TransactionTagEntity (transactionId, tagId)
+                    SELECT id, $tagId FROM TransactionEntity WHERE shopId = $shopId
+                """.trimIndent())
+            } while (shopTagsCursor.moveToNext())
+        }
+
+        shopTagsCursor.close()
+
+        /// Stage 5: Migrate Variant data
+
+        // Add special/system variant tag
+
+        db.execSQL("""
+            INSERT INTO TagEntity (id, name, colorOrdinal)
+            SELECT ${TagEntity.System.VARIANT.id}, '${TagEntity.System.VARIANT.name}', ${TagEntity.System.VARIANT.color.ordinal}
+        """.trimIndent())
+
+        // Add variant tags
+
+        db.execSQL("""
+            INSERT INTO TagEntity (name, colorOrdinal)
+            SELECT DISTINCT(name), ${TagColor.Secondary.ordinal}
+            FROM ProductVariant
+        """.trimIndent())
+
+        // Set variant tags as subtags of system variant tag
+
+        db.execSQL("""
+            INSERT INTO TagTagEntity (mainTagId, subTagId)
+            SELECT ${TagEntity.System.VARIANT.id}, TagEntity.id
+            FROM TagEntity WHERE name IN (SELECT name FROM ProductVariant)
+                AND TagEntity.id NOT IN (
+                    SELECT TagEntity.id
+                    FROM TagEntity
+                    JOIN TagTagEntity
+                    ON TagTagEntity.subTagId = TagEntity.id
+                        OR TagTagEntity.mainTagId = TagEntity.id
+                )
+        """.trimIndent())
+
+        // Add variant tags to the associated Items
+
+        val variantTagsCursor = db.query("""
+            SELECT ProductVariant.id, TagEntity.id
+            FROM ProductVariant
+            JOIN TagEntity ON TagEntity.name = ProductVariant.name
+            AND TagEntity.id IN (
+                SELECT TagTagEntity.subTagId
+                FROM TagTagEntity
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.VARIANT.id}
+            )
+        """.trimIndent())
+
+        if (variantTagsCursor.moveToFirst()) {
+            do {
+                val variantId = variantTagsCursor.getLong(0)
+                val tagId = variantTagsCursor.getLong(1)
+
+                db.execSQL("""
+                    INSERT INTO ItemTagEntity (itemId, tagId)
+                    SELECT id, $tagId FROM ItemEntity WHERE variantId = $variantId
+                """.trimIndent())
+            } while (variantTagsCursor.moveToNext())
+        }
+
+        variantTagsCursor.close()
+
+        // Remove redundant variantId column from ItemEntity
+
+        db.execSQL(
+            """
+            CREATE TABLE tmp_item (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                transactionId INTEGER NOT NULL,
+                productId INTEGER NOT NULL,
+                quantity INTEGER NOT NULL,
+                price INTEGER NOT NULL,
+                FOREIGN KEY(transactionId) REFERENCES TransactionEntity(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+                INSERT INTO tmp_item (transactionId, productId, quantity, price)
+                SELECT transactionId, productId, quantity, price
+                FROM ItemEntity
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE ItemEntity
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_transactionId ON tmp_item (transactionId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ItemEntity_productId ON tmp_item (productId)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE tmp_item RENAME TO ItemEntity
+        """.trimIndent()
+        )
+
+        /// Stage 6: Migrate Producer data
+
+        // Add special/system variant tag
+
+        db.execSQL("""
+            INSERT INTO TagEntity (id, name, colorOrdinal)
+            SELECT ${TagEntity.System.PRODUCER.id}, '${TagEntity.System.PRODUCER.name}', ${TagEntity.System.PRODUCER.color.ordinal}
+        """.trimIndent())
+
     }
 }
