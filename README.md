@@ -26,7 +26,7 @@
 
 # Tech Stack & Libraries
 
-- Android Studio Koala 2024.1.1
+- Android Studio Koala 2024.1.1 Patch 1
 
 - [Kotlin](https://kotlinlang.org/) based
 
