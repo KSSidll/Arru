@@ -661,6 +661,18 @@ val MIGRATION_5_6 = object: Migration(
 
         shopTagsCursor.close()
 
+        /// Remove unused tags
+        db.execSQL("""
+            DELETE FROM TagEntity
+            WHERE id IN (
+                SELECT TagEntity.id FROM TagEntity
+                JOIN TagTagEntity ON TagTagEntity.subTagId = TagEntity.id
+                LEFT JOIN TransactionTagEntity ON TransactionTagEntity.tagId = TagEntity.id
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.SHOP.id}
+                AND TransactionTagEntity.tagId IS NULL
+            )
+        """.trimIndent())
+
         /// Stage 5: Migrate Variant data
 
         // Add special/system variant tag
@@ -720,6 +732,18 @@ val MIGRATION_5_6 = object: Migration(
 
         variantTagsCursor.close()
 
+        /// Remove unused tags
+        db.execSQL("""
+            DELETE FROM TagEntity
+            WHERE id IN (
+                SELECT TagEntity.id FROM TagEntity
+                JOIN TagTagEntity ON TagTagEntity.subTagId = TagEntity.id
+                LEFT JOIN ItemTagEntity ON ItemTagEntity.tagId = TagEntity.id
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.VARIANT.id}
+                AND ItemTagEntity.tagId IS NULL
+            )
+        """.trimIndent())
+
         // Remove redundant variantId column from ItemEntity
 
         db.execSQL(
@@ -770,12 +794,79 @@ val MIGRATION_5_6 = object: Migration(
 
         /// Stage 6: Migrate Producer data
 
-        // Add special/system variant tag
+        // Add special/system producer tag
 
         db.execSQL("""
             INSERT INTO TagEntity (id, name, colorOrdinal)
             SELECT ${TagEntity.System.PRODUCER.id}, '${TagEntity.System.PRODUCER.name}', ${TagEntity.System.PRODUCER.color.ordinal}
         """.trimIndent())
 
+        // Add producer tags
+
+        db.execSQL("""
+            INSERT INTO TagEntity (name, colorOrdinal)
+            SELECT DISTINCT(name), ${TagColor.Secondary.ordinal}
+            FROM ProductProducer
+        """.trimIndent())
+
+        // Set producer tags as subtags of system producer tag
+
+        db.execSQL("""
+            INSERT INTO TagTagEntity (mainTagId, subTagId)
+            SELECT ${TagEntity.System.PRODUCER.id}, TagEntity.id
+            FROM TagEntity WHERE name IN (SELECT name FROM ProductProducer)
+                AND TagEntity.id NOT IN (
+                    SELECT TagEntity.id
+                    FROM TagEntity
+                    JOIN TagTagEntity
+                    ON TagTagEntity.subTagId = TagEntity.id
+                        OR TagTagEntity.mainTagId = TagEntity.id
+                )
+        """.trimIndent())
+
+        // Add producer tags to the associated Items
+
+        val producerTagsCursor = db.query("""
+            SELECT ProductProducer.id, TagEntity.id
+            FROM ProductProducer
+            JOIN TagEntity ON TagEntity.name = ProductProducer.name
+            AND TagEntity.id IN (
+                SELECT TagTagEntity.subTagId
+                FROM TagTagEntity
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.PRODUCER.id}
+            )
+        """.trimIndent())
+
+        if (producerTagsCursor.moveToFirst()) {
+            do {
+                val producerId = producerTagsCursor.getLong(0)
+                val tagId = producerTagsCursor.getLong(1)
+
+                db.execSQL("""
+                    INSERT INTO ItemTagEntity (itemId, tagId)
+                    SELECT ItemEntity.id, $tagId
+                    FROM ItemEntity
+                    JOIN Product ON Product.id = ItemEntity.productId
+                    JOIN ProductProducer ON ProductProducer.id = Product.producerId
+                    WHERE ProductProducer.id = $producerId
+                """.trimIndent())
+            } while (producerTagsCursor.moveToNext())
+        }
+
+        producerTagsCursor.close()
+
+        /// Remove unused tags
+        db.execSQL("""
+            DELETE FROM TagEntity
+            WHERE id IN (
+                SELECT TagEntity.id FROM TagEntity
+                JOIN TagTagEntity ON TagTagEntity.subTagId = TagEntity.id
+                LEFT JOIN ItemTagEntity ON ItemTagEntity.tagId = TagEntity.id
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.PRODUCER.id}
+                AND ItemTagEntity.tagId IS NULL
+            )
+        """.trimIndent())
+
+        // TODO category tags (not system tags?)
     }
 }
