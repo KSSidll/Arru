@@ -1,15 +1,18 @@
 package com.kssidll.arru.ui.screen.modify.item.additem
 
-import android.util.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.item.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import javax.inject.Inject
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
@@ -24,7 +27,7 @@ class AddItemViewModel @Inject constructor(
 
     /**
      * Tries to add an item to the repository
-     * @param transactionId id of the [TransactionBasket] to add the item to
+     * @param transactionId id of the [TransactionEntity] to add the item to
      * @return resulting [InsertResult]
      */
     suspend fun addItem(transactionId: Long) = viewModelScope.async {
@@ -32,12 +35,12 @@ class AddItemViewModel @Inject constructor(
 
         val result = itemRepository.insert(
             transactionId = transactionId,
-            productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
+            productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
-            quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
-                ?: Item.INVALID_QUANTITY,
-            price = screenState.price.value.data?.let { Item.priceFromString(it) }
-                ?: Item.INVALID_PRICE,
+            quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }
+                ?: ItemEntity.INVALID_QUANTITY,
+            price = screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
+                ?: ItemEntity.INVALID_PRICE,
         )
 
         if (result.isError()) {

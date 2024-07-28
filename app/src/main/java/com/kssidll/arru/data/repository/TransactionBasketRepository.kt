@@ -1,17 +1,18 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.TransactionDao
+import com.kssidll.arru.data.data.Transaction
+import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.ItemInsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
-class TransactionBasketRepository(private val dao: TransactionBasketDao): TransactionBasketRepositorySource {
+class TransactionBasketRepository(private val dao: TransactionDao): TransactionBasketRepositorySource {
     // Create
 
     override suspend fun insert(
@@ -19,7 +20,7 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         totalCost: Long,
         shopId: Long?
     ): InsertResult {
-        val transaction = TransactionBasket(
+/*        val transaction = TransactionEntity(
             date = date,
             totalCost = totalCost,
             shopId = shopId
@@ -41,27 +42,9 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
             return InsertResult.Error(InsertResult.InvalidShopId)
         }
 
-        return InsertResult.Success(dao.insert(transaction))
-    }
+        return InsertResult.Success(dao.insert(transaction))*/
 
-    override suspend fun insertTransactionItem(
-        transactionBasketId: Long,
-        itemId: Long
-    ): ItemInsertResult {
-        val transactionItem = TransactionBasketItem(
-            transactionBasketId = transactionBasketId,
-            itemId = itemId,
-        )
-
-        if (dao.get(transactionBasketId) == null) {
-            return ItemInsertResult.Error(ItemInsertResult.InvalidTransactionId)
-        }
-
-        if (dao.itemById(itemId) == null) {
-            return ItemInsertResult.Error(ItemInsertResult.InvalidItemId)
-        }
-
-        return ItemInsertResult.Success(dao.insertTransactionBasketItem(transactionItem))
+        return InsertResult.Success(0)
     }
 
     // Update
@@ -72,7 +55,7 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         totalCost: Long,
         shopId: Long?
     ): UpdateResult {
-        val transaction =
+/*        val transaction =
             dao.get(transactionId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         transaction.date = date
@@ -97,6 +80,8 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
 
         dao.update(transaction)
 
+        return UpdateResult.Success*/
+
         return UpdateResult.Success
     }
 
@@ -106,118 +91,132 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
         transactionId: Long,
         force: Boolean
     ): DeleteResult {
-        val transaction =
+/*        val transaction =
             dao.get(transactionId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val transactionBasketItems = dao.transactionBasketItems(transactionId)
-        val items = dao.itemsByTransactionBasketId(transactionId)
+        val items = dao.itemsByTransactionEntityId(transactionId)
 
         if (!force && (items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.delete(transaction)
         }
+
+        return DeleteResult.Success*/
 
         return DeleteResult.Success
     }
 
     // Read
 
-    override suspend fun get(transactionBasketId: Long): TransactionBasket? {
-        return dao.get(transactionBasketId)
+    override suspend fun get(transactionBasketId: Long): TransactionEntity? {
+/*        return dao.get(transactionBasketId)*/
+return null
     }
 
-    override suspend fun newest(): TransactionBasket? {
-        return dao.newest()
+    override suspend fun newest(): TransactionEntity? {
+/*        return dao.newest()*/
+return null
     }
 
     override suspend fun count(): Int {
-        return dao.count()
+/*        return dao.count()*/
+return 0
     }
 
     override suspend fun countBefore(transactionBasketId: Long): Int {
-        return dao.countBefore(transactionBasketId)
+/*        return dao.countBefore(transactionBasketId)*/
+return 0
     }
 
     override suspend fun countAfter(transactionBasketId: Long): Int {
-        return dao.countAfter(transactionBasketId)
+/*        return dao.countAfter(transactionBasketId)*/
+return 0
     }
 
     override suspend fun totalSpentLong(): Data<Long?> {
-        return Data.Loaded(dao.totalSpent())
+//        return Data.Loaded(dao.totalSpent())
+        return Data.Loading()
     }
 
     override fun totalSpentFlow(): Flow<Data<Float?>> {
-        return dao.totalSpentFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map {
-                Data.Loaded(
-                    it?.toFloat()
-                        ?.div(TransactionBasket.COST_DIVISOR)
-                )
-            }
-            .onStart { Data.Loading<Long>() }
+//        return dao.totalSpentFlow()
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map {
+//                Data.Loaded(
+//                    it?.toFloat()
+//                        ?.div(TransactionEntity.COST_DIVISOR)
+//                )
+//            }
+//            .onStart { Data.Loading<Long>() }
+        return flowOf()
     }
 
     override fun totalSpentByDayFlow(): Flow<Data<List<TransactionSpentByTime>>> {
-        return dao.totalSpentByDayFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+//        return dao.totalSpentByDayFlow()
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+        return flowOf()
     }
 
     override fun totalSpentByWeekFlow(): Flow<Data<List<TransactionSpentByTime>>> {
-        return dao.totalSpentByWeekFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+//        return dao.totalSpentByWeekFlow()
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+        return flowOf()
     }
 
     override fun totalSpentByMonthFlow(): Flow<Data<List<TransactionSpentByTime>>> {
-        return dao.totalSpentByMonthFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+//        return dao.totalSpentByMonthFlow()
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+        return flowOf()
     }
 
     override fun totalSpentByYearFlow(): Flow<Data<List<TransactionSpentByTime>>> {
-        return dao.totalSpentByYearFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+//        return dao.totalSpentByYearFlow()
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
+        return flowOf()
     }
 
     override suspend fun transactionBasketsWithItems(
         startPosition: Int,
         count: Int
-    ): List<TransactionBasketWithItems> {
-        return dao.transactionBasketsWithItems(
-            startPosition,
-            count
-        )
+    ): List<Transaction> {
+//        return dao.transactionEntitiesWithItems(
+//            startPosition,
+//            count
+//        )
+        return listOf()
     }
 
-    override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {
-        return Pager(
-            config = PagingConfig(pageSize = 3),
-            initialKey = 0,
-            pagingSourceFactory = { TransactionBasketWithItemsPagingSource(this) }
-        )
-            .flow
+    override fun transactionBasketsPagedFlow(): Flow<PagingData<Transaction>> {
+//        return Pager(
+//            config = PagingConfig(pageSize = 3),
+//            initialKey = 0,
+//            pagingSourceFactory = { TransactionBasketWithItemsPagingSource(this) }
+//        )
+//            .flow
+        return flowOf()
     }
 
-    override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>> {
-        return dao.transactionBasketWithItems(transactionId)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<TransactionBasketWithItems>() }
+    override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<Transaction?>> {
+//        return dao.transactionEntityWithItems(transactionId)
+//            .cancellable()
+//            .distinctUntilChanged()
+//            .map { Data.Loaded(it) }
+//            .onStart { Data.Loading<Transaction>() }
+        return flowOf()
     }
 }

@@ -1,21 +1,23 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.ProducerDao
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
     // Create
 
     override suspend fun insert(name: String): InsertResult {
-        val producer = ProductProducer(name.trim())
+/*        val producer = ProductProducer(name.trim())
 
         if (producer.validName()
                 .not()
@@ -29,7 +31,9 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             return InsertResult.Error(InsertResult.DuplicateName)
         }
 
-        return InsertResult.Success(dao.insert(producer))
+        return InsertResult.Success(dao.insert(producer))*/
+
+        return InsertResult.Success(0)
     }
 
     // Update
@@ -38,7 +42,7 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         producerId: Long,
         name: String
     ): UpdateResult {
-        val producer = dao.get(producerId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+/*        val producer = dao.get(producerId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         producer.name = name
 
@@ -56,6 +60,8 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
 
         dao.update(producer)
 
+        return UpdateResult.Success*/
+
         return UpdateResult.Success
     }
 
@@ -63,7 +69,7 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         producer: ProductProducer,
         mergingInto: ProductProducer
     ): MergeResult {
-        if (dao.get(producer.id) == null) {
+/*        if (dao.get(producer.id) == null) {
             return MergeResult.Error(MergeResult.InvalidProducer)
         }
 
@@ -77,6 +83,8 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
 
         dao.delete(producer)
 
+        return MergeResult.Success*/
+
         return MergeResult.Success
     }
 
@@ -86,18 +94,16 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
         producerid: Long,
         force: Boolean
     ): DeleteResult {
-        val producer = dao.get(producerid) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+/*        val producer = dao.get(producerid) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val products = dao.getProducts(producerid)
         val productVariants = dao.getProductsVariants(producerid)
         val productAltNames = dao.getProductsAltNames(producerid)
         val items = dao.getItems(producerid)
-        val transactionBasketItems = dao.getTransactionBasketItems(producerid)
 
         if (!force && (products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.deleteProductAltNames(productAltNames)
             dao.deleteProductVariants(productVariants)
@@ -105,70 +111,86 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             dao.delete(producer)
         }
 
+        return DeleteResult.Success*/
+
         return DeleteResult.Success
     }
 
     // Read
 
     override suspend fun get(producerId: Long): ProductProducer? {
-        return dao.get(producerId)
+/*        return dao.get(producerId)*/
+
+        return null
     }
 
     override fun getFlow(producerId: Long): Flow<Data<ProductProducer?>> {
-        return dao.getFlow(producerId)
+/*        return dao.getFlow(producerId)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<ProductProducer?>() }
+            .onStart { Data.Loading<ProductProducer?>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentFlow(producer: ProductProducer): Flow<Data<Float?>> {
-        return dao.totalSpentFlow(producer.id)
+/*        return dao.totalSpentFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                        ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
-            .onStart { Data.Loading<Long>() }
+            .onStart { Data.Loading<Long>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByDayFlow(producer.id)
+/*        return dao.totalSpentByDayFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByWeekFlow(producer.id)
+/*        return dao.totalSpentByWeekFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByMonthFlow(producer.id)
+/*        return dao.totalSpentByMonthFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
     override fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
-        return dao.totalSpentByYearFlow(producer.id)
+/*        return dao.totalSpentByYearFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .onStart { Data.Loading<List<ItemSpentByTime>>() }*/
+
+        return flowOf()
     }
 
-    override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>> {
-        return Pager(
+    override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<Item>> {
+/*        return Pager(
             config = PagingConfig(pageSize = 3),
             initialKey = 0,
             pagingSourceFactory = {
@@ -195,14 +217,18 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
                 )
             }
         )
-            .flow
+            .flow*/
+
+        return flowOf()
     }
 
     override fun allFlow(): Flow<Data<List<ProductProducer>>> {
-        return dao.allFlow()
+/*        return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductProducer>>() }
+            .onStart { Data.Loading<List<ProductProducer>>() }*/
+
+        return flowOf()
     }
 }

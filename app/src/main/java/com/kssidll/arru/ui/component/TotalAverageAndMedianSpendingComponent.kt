@@ -1,26 +1,32 @@
 package com.kssidll.arru.ui.component
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.domain.utils.*
-import com.kssidll.arru.helper.*
-import com.kssidll.arru.ui.component.chart.*
-import com.kssidll.arru.ui.theme.*
-import com.patrykandpatrick.vico.compose.chart.*
-import com.patrykandpatrick.vico.compose.chart.line.*
-import com.patrykandpatrick.vico.compose.chart.scroll.*
-import com.patrykandpatrick.vico.core.entry.*
-import com.patrykandpatrick.vico.core.scroll.*
-import kotlinx.coroutines.*
+import com.kssidll.arru.domain.utils.formatToCurrency
+import com.kssidll.arru.helper.generateRandomFloatValue
+import com.kssidll.arru.ui.component.chart.rememberMarker
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.scroll.InitialScroll
+import kotlinx.coroutines.delay
 
 private val HALF_CHART_TOP_PADDING: Dp = 36.dp
 private val FULL_CHART_TOP_PADDING: Dp = 18.dp

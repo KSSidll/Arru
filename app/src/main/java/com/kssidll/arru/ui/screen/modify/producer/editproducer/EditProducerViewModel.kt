@@ -1,20 +1,24 @@
 package com.kssidll.arru.ui.screen.modify.producer.editproducer
 
 
-import android.util.*
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.producer.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 @HiltViewModel
 class EditProducerViewModel @Inject constructor(

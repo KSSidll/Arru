@@ -1,61 +1,46 @@
 package com.kssidll.arru.data.dao
 
-import androidx.room.*
-import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import androidx.room.Dao
+import androidx.room.Query
 
 @Dao
 interface ItemDao {
-    // Create
-
-    @Insert
-    suspend fun insert(item: Item): Long
-
-    // Update
-
-    @Update
-    suspend fun update(item: Item)
-
-    // Delete
-
-    @Delete
-    suspend fun delete(item: Item)
-
-    // Helper
-
-    @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.id = :transactionId")
-    suspend fun getTransactionBasket(transactionId: Long): TransactionBasket?
-
-    @Query("SELECT product.* FROM product WHERE product.id = :productId")
-    suspend fun getProduct(productId: Long): Product?
-
-    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
-    suspend fun getVariant(variantId: Long): ProductVariant?
-
-    @Query(
-        """
-        SELECT transactionbasketitem.*
-        FROM transactionbasketitem
-        JOIN item ON item.id = transactionbasketitem.itemId
-        WHERE item.id = :itemId
-    """
-    )
-    suspend fun getTransactionBasketItems(itemId: Long): List<TransactionBasketItem>
-
-    @Delete
-    suspend fun deleteTransactionBasketItems(items: List<TransactionBasketItem>)
-
-    @Insert
-    suspend fun insertTransactionItem(transactionItem: TransactionBasketItem)
-
-    // Read
-
-    @Query("SELECT item.* FROM item WHERE item.id = :itemId")
-    suspend fun get(itemId: Long): Item?
-
-    @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    suspend fun newest(): Item?
-
-    @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    fun newestFlow(): Flow<Item?>
+    @Query("SELECT 1 FROM ItemEntity")
+    suspend fun get(): Long
+//    // Create
+//
+//    @Insert
+//    suspend fun insert(item: ItemEntity): Long
+//
+//    // Update
+//
+//    @Update
+//    suspend fun update(item: ItemEntity)
+//
+//    // Delete
+//
+//    @Delete
+//    suspend fun delete(item: ItemEntity)
+//
+//    // Helper
+//
+//    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.id = :transactionId")
+//    suspend fun getTransactionBasket(transactionId: Long): TransactionEntity?
+//
+//    @Query("SELECT product.* FROM product WHERE product.id = :productId")
+//    suspend fun getProduct(productId: Long): Product?
+//
+//    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
+//    suspend fun getVariant(variantId: Long): ProductVariant?
+//
+//    // Read
+//
+//    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.id = :itemId")
+//    suspend fun get(itemId: Long): ItemEntity?
+//
+//    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
+//    suspend fun newest(): ItemEntity?
+//
+//    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
+//    fun newestFlow(): Flow<ItemEntity?>
 }

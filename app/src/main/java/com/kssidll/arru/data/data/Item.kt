@@ -1,47 +1,49 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.domain.utils.*
+import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.data.RankSource
+import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.*
-import com.patrykandpatrick.vico.core.entry.*
-import kotlin.math.*
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import kotlin.math.log10
 
 @Entity(
     foreignKeys = [
         ForeignKey(
+            entity = TransactionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["transactionId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+        ForeignKey(
             entity = Product::class,
             parentColumns = ["id"],
             childColumns = ["productId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
         ),
-        ForeignKey(
-            entity = ProductVariant::class,
-            parentColumns = ["id"],
-            childColumns = ["variantId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        )
     ]
 )
-data class Item(
+data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) var transactionId: Long,
     @ColumnInfo(index = true) var productId: Long,
-    @ColumnInfo(index = true) var variantId: Long?,
     var quantity: Long,
     var price: Long,
 ) {
     @Ignore
     constructor(
+        transactionId: Long,
         productId: Long,
-        variantId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
+        transactionId,
         productId,
-        variantId,
         quantity,
         price,
     )
@@ -87,11 +89,11 @@ data class Item(
         }
 
         @Ignore
-        fun generate(itemId: Long = 0): Item {
-            return Item(
+        fun generate(itemId: Long = 0): ItemEntity {
+            return ItemEntity(
                 id = itemId,
+                transactionId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
-                variantId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
             )
@@ -146,7 +148,7 @@ data class Item(
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<Item> {
+        fun generateList(amount: Int = 10): List<ItemEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -170,33 +172,56 @@ data class Item(
     }
 }
 
-data class FullItem(
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = ItemEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["itemId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+        ForeignKey(
+            entity = TagEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["tagId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        ),
+    ]
+)
+data class ItemTagEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) val itemId: Long,
+    @ColumnInfo(index = true) val tagId: Long,
+)
+
+
+data class Item(
     val id: Long,
     val quantity: Long,
     val price: Long,
     val product: Product,
-    val variant: ProductVariant?,
     val category: ProductCategory,
     val producer: ProductProducer?,
     val date: Long,
     val shop: Shop?,
 ) {
     fun actualQuantity(): Float {
-        return Item.actualQuantity(quantity)
+        return ItemEntity.actualQuantity(quantity)
     }
 
     fun actualPrice(): Float {
-        return Item.actualPrice(price)
+        return ItemEntity.actualPrice(price)
     }
 
     companion object {
-        fun generate(itemId: Long = 0): FullItem {
-            return FullItem(
+        fun generate(itemId: Long = 0): Item {
+            return Item(
                 id = itemId,
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
                 product = Product.generate(),
-                variant = ProductVariant.generate(),
                 category = ProductCategory.generate(),
                 producer = ProductProducer.generate(),
                 date = generateRandomDate().time,
@@ -204,7 +229,7 @@ data class FullItem(
             )
         }
 
-        fun generateList(amount: Int = 10): List<FullItem> {
+        fun generateList(amount: Int = 10): List<Item> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -234,7 +259,7 @@ data class ItemSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -286,7 +311,7 @@ data class TransactionTotalSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -338,7 +363,7 @@ data class TransactionTotalSpentByShop(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -379,7 +404,7 @@ data class ItemSpentByCategory(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {

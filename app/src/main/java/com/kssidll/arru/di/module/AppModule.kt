@@ -1,8 +1,8 @@
 package com.kssidll.arru.di.module
 
-import dagger.*
-import dagger.hilt.*
-import dagger.hilt.components.*
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)

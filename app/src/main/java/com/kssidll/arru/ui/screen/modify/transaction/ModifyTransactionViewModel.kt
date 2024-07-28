@@ -1,13 +1,18 @@
 package com.kssidll.arru.ui.screen.modify.transaction
 
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 abstract class ModifyTransactionViewModel: ViewModel() {
     protected abstract val shopRepository: ShopRepositorySource
