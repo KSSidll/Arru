@@ -1,6 +1,9 @@
 <h1 align="center">Arru</h1>
 <h2 align="center">Your expenses tracker</h2>
 
+<h3 align="center">THIS IS A DEVELOPMENT VERSION AND SHOULDN'T BE USED</h3>
+<h3 align="center">If you want to use this version, backup your data every time you update</h3>
+
 <br />
 
 <p align="center">
