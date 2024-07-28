@@ -1,6 +1,8 @@
 <h1 align="center">Arru</h1>
 <h2 align="center">Your expenses tracker</h2>
 
+<h3 align="center">This version has been abandoned in favour of tag based v3, if you don't like tags you can still use this, but it will most likely not be supported</h3>
+
 <br />
 
 <p align="center">
@@ -36,15 +38,6 @@
 - Comparisons between prices at different shops
 - Ranking of categories and shops based on total money spent
 - Merging capabilities for categories, shops, products and producers
-
-# Plans for the future updates (Roadmap)
-
-- Alternative names for Products and Product Categories for easier searching
-- Filtering for easier searching
-- Groups to aggregate data for easier analysis
-- Cloud backups (most likely Google Drive)
-- Option to use an online database (most likely Firebase)
-- Exporting and importing app data as CSV (currently can only perform a backup in the app folder)
 
 # Tech Stack & Libraries
 
