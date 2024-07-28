@@ -1,33 +1,18 @@
 package com.kssidll.arru.ui.screen.home.transactions
 
-
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
-import androidx.paging.map
-import com.kssidll.arru.data.data.Transaction
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.domain.model.TransactionPreview
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-
-data class TransactionBasketDisplayData(
-    val basket: Transaction,
-    var itemsVisible: MutableState<Boolean> = mutableStateOf(false)
-)
-
-fun Flow<PagingData<Transaction>>.toDisplayData(): Flow<PagingData<TransactionBasketDisplayData>> {
-    return map { flow -> flow.map { TransactionBasketDisplayData(it) } }
-}
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
-    private val transactionBasketRepository: TransactionBasketRepositorySource
+    private val transactionRepository: TransactionRepositorySource
 ): ViewModel() {
-    fun transactions(): Flow<PagingData<TransactionBasketDisplayData>> {
-        return transactionBasketRepository.transactionBasketsPagedFlow()
-            .toDisplayData()
+    fun transactions(): Flow<PagingData<TransactionPreview>> {
+        return transactionRepository.allPagedAsPreview()
     }
 }

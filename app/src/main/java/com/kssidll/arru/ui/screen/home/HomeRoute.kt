@@ -30,19 +30,10 @@ import kotlinx.coroutines.launch
 fun HomeRoute(
     isExpandedScreen: Boolean,
     navigateSettings: () -> Unit,
-    navigateSearch: () -> Unit,
-    navigateProduct: (productId: Long) -> Unit,
-    navigateCategory: (categoryId: Long) -> Unit,
-    navigateProducer: (producerId: Long) -> Unit,
-    navigateShop: (shopId: Long) -> Unit,
     navigateItemAdd: (transactionId: Long) -> Unit,
+    navigateItemEdit: (itemId: Long) -> Unit,
     navigateTransactionAdd: () -> Unit,
     navigateTransactionEdit: (transactionId: Long) -> Unit,
-    navigateItemEdit: (itemId: Long) -> Unit,
-    navigateCategoryRanking: () -> Unit,
-    navigateShopRanking: () -> Unit,
-    navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
-    navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
@@ -66,18 +57,9 @@ fun HomeRoute(
                 isExpandedScreen = true,
                 pagerState = pagerState,
                 navigateSettings = navigateSettings,
-                navigateSearch = navigateSearch,
-                navigateProduct = navigateProduct,
-                navigateCategory = navigateCategory,
-                navigateProducer = navigateProducer,
-                navigateShop = navigateShop,
                 navigateItemAdd = navigateItemAdd,
                 navigateTransactionEdit = navigateTransactionEdit,
                 navigateItemEdit = navigateItemEdit,
-                navigateCategoryRanking = navigateCategoryRanking,
-                navigateShopRanking = navigateShopRanking,
-                navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                navigateShopSpendingComparison = navigateShopSpendingComparison,
             )
         }
     } else {
@@ -94,18 +76,9 @@ fun HomeRoute(
                 isExpandedScreen = false,
                 pagerState = pagerState,
                 navigateSettings = navigateSettings,
-                navigateSearch = navigateSearch,
-                navigateProduct = navigateProduct,
-                navigateCategory = navigateCategory,
-                navigateProducer = navigateProducer,
-                navigateShop = navigateShop,
                 navigateItemAdd = navigateItemAdd,
                 navigateTransactionEdit = navigateTransactionEdit,
                 navigateItemEdit = navigateItemEdit,
-                navigateCategoryRanking = navigateCategoryRanking,
-                navigateShopRanking = navigateShopRanking,
-                navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                navigateShopSpendingComparison = navigateShopSpendingComparison,
             )
         }
     }
@@ -168,18 +141,9 @@ private fun HomeRouteContent(
     isExpandedScreen: Boolean,
     pagerState: PagerState,
     navigateSettings: () -> Unit,
-    navigateSearch: () -> Unit,
-    navigateProduct: (productId: Long) -> Unit,
-    navigateCategory: (categoryId: Long) -> Unit,
-    navigateProducer: (producerId: Long) -> Unit,
-    navigateShop: (shopId: Long) -> Unit,
     navigateItemAdd: (transactionId: Long) -> Unit,
     navigateTransactionEdit: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
-    navigateCategoryRanking: () -> Unit,
-    navigateShopRanking: () -> Unit,
-    navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
-    navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
 ) {
     HorizontalPager(
         state = pagerState,
@@ -191,27 +155,18 @@ private fun HomeRouteContent(
                 DashboardRoute(
                     isExpandedScreen = isExpandedScreen,
                     navigateSettings = navigateSettings,
-                    navigateCategoryRanking = navigateCategoryRanking,
-                    navigateShopRanking = navigateShopRanking,
                 )
             }
 
             HomeRouteLocations.Analysis -> {
                 AnalysisRoute(
                     isExpandedScreen = isExpandedScreen,
-                    navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                    navigateShopSpendingComparison = navigateShopSpendingComparison,
                 )
             }
 
             HomeRouteLocations.Transactions -> {
                 TransactionsRoute(
                     isExpandedScreen = isExpandedScreen,
-                    navigateSearch = navigateSearch,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
                     navigateItemAdd = navigateItemAdd,
                     navigateItemEdit = navigateItemEdit,
                     navigateTransactionEdit = navigateTransactionEdit,

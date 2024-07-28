@@ -1,7 +1,7 @@
 package com.kssidll.arru.domain.data
 
-import androidx.paging.*
-import androidx.paging.compose.*
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 
 /**
  * A generic abstraction for repository data with loaded and loading states

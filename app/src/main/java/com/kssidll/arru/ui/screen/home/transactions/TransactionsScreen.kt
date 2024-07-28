@@ -25,10 +25,10 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Transaction
 import com.kssidll.arru.domain.data.loadedEmpty
-import com.kssidll.arru.ui.component.list.transactionBasketCard
-import com.kssidll.arru.ui.component.list.transactionBasketCardHeaderPlaceholder
+import com.kssidll.arru.domain.model.TransactionPreview
+import com.kssidll.arru.ui.component.model.transactionBasketCardHeaderPlaceholder
+import com.kssidll.arru.ui.component.model.transactionPreviewCard
 import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -42,26 +42,16 @@ private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
  * @param onSearchAction Callback called when the 'search' action is triggered
  * @param onTransactionLongClick Callback called when the transaction is long clicked/pressed. Provides transaction id as parameter
  * @param onItemAddClick Callback called when the transaction item add button is clicked. Provides transaction id as parameter
- * @param onItemClick Callback called when the transaction item is clicked. Provides product id as parameter
- * @param onItemLongClick Callback called when the transaction item is long clicked/pressed. Provides item id as parameter
- * @param onItemCategoryClick Callback called when the transaction item category label is clicked. Provides category id as parameter
- * @param onItemProducerClick Callback called when the transaction item producer label is clicked. Provides producer id as parameter
- * @param onItemShopClick Callback called when the transaction item shop label is clicked. Provides shop id as parameter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionsScreen(
     isExpandedScreen: Boolean,
-    transactions: LazyPagingItems<TransactionBasketDisplayData>,
+    transactions: LazyPagingItems<TransactionPreview>,
     onSearchAction: () -> Unit,
     onTransactionLongClick: (transactionId: Long) -> Unit,
     onTransactionLongClickLabel: String,
     onItemAddClick: (transactionId: Long) -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
 ) {
     Box {
         // overlay displayed when there is no data available
@@ -88,11 +78,6 @@ internal fun TransactionsScreen(
                     onTransactionLongClick = onTransactionLongClick,
                     onTransactionLongClickLabel = onTransactionLongClickLabel,
                     onItemAddClick = onItemAddClick,
-                    onItemClick = onItemClick,
-                    onItemLongClick = onItemLongClick,
-                    onItemCategoryClick = onItemCategoryClick,
-                    onItemProducerClick = onItemProducerClick,
-                    onItemShopClick = onItemShopClick,
                 )
 
                 Box(
@@ -163,11 +148,6 @@ internal fun TransactionsScreen(
                             onTransactionLongClick = onTransactionLongClick,
                             onTransactionLongClickLabel = onTransactionLongClickLabel,
                             onItemAddClick = onItemAddClick,
-                            onItemClick = onItemClick,
-                            onItemLongClick = onItemLongClick,
-                            onItemCategoryClick = onItemCategoryClick,
-                            onItemProducerClick = onItemProducerClick,
-                            onItemShopClick = onItemShopClick,
                         )
                     }
                 }
@@ -178,16 +158,10 @@ internal fun TransactionsScreen(
 
 @Composable
 fun TransactionScreenContent(
-    transactions: LazyPagingItems<TransactionBasketDisplayData>,
+    transactions: LazyPagingItems<TransactionPreview>,
     onTransactionLongClick: (transactionId: Long) -> Unit,
     onTransactionLongClickLabel: String,
     onItemAddClick: (transactionId: Long) -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
     val headerColor = MaterialTheme.colorScheme.background
@@ -258,59 +232,54 @@ fun TransactionScreenContent(
             }
         },
         contentWindowInsets = WindowInsets(0),
-        modifier = modifier
     ) { paddingValues ->
-        Column(
+        LazyColumn(
+            state = listState,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(paddingValues)
                 .consumeWindowInsets(paddingValues)
+                .fillMaxWidth()
         ) {
-            LazyColumn(
-                state = listState,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                val transactionCount = transactions.itemCount
+            val transactionCount = transactions.itemCount
 
-                // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
-                for (index in 0 until transactionCount) {
-                    val etherealTransaction = transactions.peek(index)
+            // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
+            for (index in 0 until transactionCount) {
+                val etherealTransaction = transactions.peek(index)
 
-                    if (etherealTransaction == null) {
-                        transactionBasketCardHeaderPlaceholder(modifier = Modifier.widthIn(max = 600.dp))
-                    }
-
-                    if (etherealTransaction != null) {
-                        val transaction = transactions[index]!!
-
-                        transactionBasketCard(
-                            transaction = transaction.basket,
-                            itemsVisible = transaction.itemsVisible.value,
-                            onTransactionClick = {
-                                transaction.itemsVisible.value = !transaction.itemsVisible.value
-                                scope.launch {
-                                    // the transaction basket card has 2 separate lazy list scope DSL calls
-                                    if (listState.firstVisibleItemIndex > index.times(2)) {
-                                        listState.animateScrollToItem(index.times(2))
-                                    }
-                                }
-                            },
-                            onTransactionClickLabel = onTransactionClickLabel,
-                            onTransactionLongClick = onTransactionLongClick,
-                            onTransactionLongClickLabel = onTransactionLongClickLabel,
-                            onItemAddClick = onItemAddClick,
-                            onItemClick = onItemClick,
-                            onItemLongClick = onItemLongClick,
-                            onItemCategoryClick = onItemCategoryClick,
-                            onItemProducerClick = onItemProducerClick,
-                            onItemShopClick = onItemShopClick,
-                            headerColor = headerColor,
-                            modifier = Modifier.widthIn(max = 600.dp)
-                        )
-                    }
+                if (etherealTransaction == null) {
+                    transactionBasketCardHeaderPlaceholder(modifier = Modifier.widthIn(max = 600.dp))
                 }
+
+                if (etherealTransaction != null) {
+                    val transaction = transactions[index]!!
+
+                    transactionPreviewCard(
+                        transaction = transaction,
+                        itemsVisible = transaction.itemsVisible.value,
+                        onTransactionClick = {
+                            transaction.itemsVisible.value = !transaction.itemsVisible.value
+                            scope.launch {
+                                // the transaction preview card has 2 separate lazy list scope DSL calls
+                                // the header and the item list
+                                if (listState.firstVisibleItemIndex > index.times(2)) {
+                                    listState.animateScrollToItem(index.times(2))
+                                }
+                            }
+                        },
+                        onTransactionClickLabel = onTransactionClickLabel,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onTransactionLongClickLabel = onTransactionLongClickLabel,
+                        onItemAddClick = onItemAddClick,
+                        headerColor = headerColor,
+                        modifier = Modifier.widthIn(max = 600.dp)
+                    )
+                }
+            }
+
+            // Offset the bottom sheet so it doesn't hide the last transaction card
+            item {
+                Box(modifier = Modifier.height(BOTTOM_SHEET_PEEK_HEIGHT))
             }
         }
     }
@@ -324,16 +293,10 @@ private fun TransactionsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
                 isExpandedScreen = false,
-                transactions = flowOf(PagingData.from(Transaction.generateList())).toDisplayData()
-                    .collectAsLazyPagingItems(),
+                transactions = flowOf(PagingData.from(TransactionPreview.generateList())).collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
                 onTransactionLongClickLabel = String(),
                 onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
                 onSearchAction = {},
             )
         }
@@ -348,16 +311,10 @@ private fun ExpandedTransactionsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
                 isExpandedScreen = true,
-                transactions = flowOf(PagingData.from(Transaction.generateList())).toDisplayData()
-                    .collectAsLazyPagingItems(),
+                transactions = flowOf(PagingData.from(TransactionPreview.generateList())).collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
                 onTransactionLongClickLabel = String(),
                 onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
                 onSearchAction = {},
             )
         }
@@ -372,16 +329,10 @@ private fun EmptyTransactionsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
                 isExpandedScreen = false,
-                transactions = flowOf(PagingData.from(emptyList<TransactionBasketDisplayData>()))
-                    .collectAsLazyPagingItems(),
+                transactions = flowOf(PagingData.from(emptyList<TransactionPreview>())).collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
                 onTransactionLongClickLabel = String(),
                 onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
                 onSearchAction = {},
             )
         }
@@ -397,16 +348,10 @@ private fun ExpandedEmptyTransactionsScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
                 isExpandedScreen = true,
-                transactions = flowOf(PagingData.from(emptyList<TransactionBasketDisplayData>()))
-                    .collectAsLazyPagingItems(),
+                transactions = flowOf(PagingData.from(emptyList<TransactionPreview>())).collectAsLazyPagingItems(),
                 onTransactionLongClick = {},
                 onTransactionLongClickLabel = String(),
                 onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
                 onSearchAction = {},
             )
         }

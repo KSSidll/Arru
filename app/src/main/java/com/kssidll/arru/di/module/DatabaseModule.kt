@@ -3,12 +3,16 @@ package com.kssidll.arru.di.module
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import com.kssidll.arru.Arru
-import com.kssidll.arru.data.dao.*
+import com.kssidll.arru.data.dao.ItemDao
+import com.kssidll.arru.data.dao.TransactionDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.externalDbFile
 import com.kssidll.arru.data.database.internalDbFile
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.data.repository.*
+import com.kssidll.arru.data.repository.ItemRepository
+import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepository
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,8 +82,8 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideTransactionEntityRepository(transactionBasketDao: TransactionDao): TransactionBasketRepositorySource {
-        return TransactionBasketRepository(transactionBasketDao)
+    fun provideTransactionRepository(transactionBasketDao: TransactionDao): TransactionRepositorySource {
+        return TransactionRepository(transactionBasketDao)
     }
 
     @Provides
@@ -90,56 +94,5 @@ class DatabaseModule {
     @Provides
     fun provideItemRepository(itemDao: ItemDao): ItemRepositorySource {
         return ItemRepository(itemDao)
-    }
-
-    @Provides
-    fun provideProductDao(appDatabase: AppDatabase): ProductDao {
-        return appDatabase.getProductDao()
-    }
-
-    @Provides
-    fun provideProductRepository(productDao: ProductDao): ProductRepositorySource {
-        return ProductRepository(productDao)
-    }
-
-    @Provides
-    fun provideVariantDao(appDatabase: AppDatabase): VariantDao {
-        return appDatabase.getVariantDao()
-    }
-
-    @Provides
-    fun provideVariantRepository(productVariantDao: VariantDao): VariantRepositorySource {
-        return VariantRepository(productVariantDao)
-    }
-
-    @Provides
-    fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
-        return appDatabase.getCategoryDao()
-    }
-
-
-    @Provides
-    fun provideCategoryRepository(productCategoryDao: CategoryDao): CategoryRepositorySource {
-        return CategoryRepository(productCategoryDao)
-    }
-
-    @Provides
-    fun provideShopDao(appDatabase: AppDatabase): ShopDao {
-        return appDatabase.getShopDao()
-    }
-
-    @Provides
-    fun provideShopRepository(shopDao: ShopDao): ShopRepositorySource {
-        return ShopRepository(shopDao)
-    }
-
-    @Provides
-    fun provideProducerDao(appDatabase: AppDatabase): ProducerDao {
-        return appDatabase.getProducerDao()
-    }
-
-    @Provides
-    fun provideProducerRepository(productProducerDao: ProducerDao): ProducerRepositorySource {
-        return ProducerRepository(productProducerDao)
     }
 }

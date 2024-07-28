@@ -1,7 +1,7 @@
 [versions]
 ## Libraries
 # AndroidX
-androidx-activity = "1.9.0"
+androidx-activity = "1.9.1"
 androidx-splashscreen-core = "1.0.1"
 androidx-appcompat = "1.7.0"
 androidx-datastore-preferences = "1.1.1"
@@ -19,7 +19,7 @@ google-hilt = "2.48"
 androidx-room = "2.6.1"
 
 # Paging
-androidx-paging = "3.3.0"
+androidx-paging = "3.3.1"
 
 # Text fuzzy search
 dev-text-search-fuzzywuzzy = "1.4.0"
@@ -59,6 +59,7 @@ google-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", ve
 # Room
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
 
 # Paging
 androidx-paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "androidx-paging" }

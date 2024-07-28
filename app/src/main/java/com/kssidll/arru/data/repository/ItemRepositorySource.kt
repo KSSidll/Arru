@@ -1,8 +1,6 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.Flow
@@ -21,8 +19,6 @@ interface ItemRepositorySource {
 
             sealed class Errors
             data object InvalidTransactionId: Errors()
-            data object InvalidProductId: Errors()
-            data object InvalidVariantId: Errors()
             data object InvalidQuantity: Errors()
             data object InvalidPrice: Errors()
         }
@@ -38,8 +34,6 @@ interface ItemRepositorySource {
 
             sealed class Errors
             data object InvalidId: Errors()
-            data object InvalidProductId: Errors()
-            data object InvalidVariantId: Errors()
             data object InvalidQuantity: Errors()
             data object InvalidPrice: Errors()
         }
@@ -58,23 +52,17 @@ interface ItemRepositorySource {
         }
     }
 
-    suspend fun get(): Long
-
     // Create
 
     /**
      * Inserts [ItemEntity]
      * @param transactionId id of the [TransactionEntity] to add the [ItemEntity] to
-     * @param productId id of the [Product] in the [ItemEntity]
-     * @param variantId id of the [ProductVariant] in the [ItemEntity]
      * @param quantity quantity of the [ItemEntity]
      * @param price price of the [ItemEntity]
      * @return [InsertResult] with id of the newly inserted [ItemEntity] or an error if any
      */
     suspend fun insert(
         transactionId: Long,
-        productId: Long,
-        variantId: Long?,
         quantity: Long,
         price: Long
     ): InsertResult
@@ -82,18 +70,14 @@ interface ItemRepositorySource {
     // Update
 
     /**
-     * Updates [ItemEntity] with [itemId] to provided [productId], [variantId], [quantity] and [price]
+     * Updates [ItemEntity] with [itemId] to provided [quantity] and [price]
      * @param itemId id to match [ItemEntity]
-     * @param productId [Product] id to update the matching [ItemEntity] to
-     * @param variantId [ProductVariant] id to update the matching [ItemEntity] to
      * @param quantity quantity to update the matching [ItemEntity] to
      * @param price price to update the matching [ItemEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
         itemId: Long,
-        productId: Long,
-        variantId: Long?,
         quantity: Long,
         price: Long
     ): UpdateResult
@@ -108,17 +92,6 @@ interface ItemRepositorySource {
     suspend fun delete(itemId: Long): DeleteResult
 
     // Read
-
-    /**
-     * @param itemId id of the [ItemEntity]
-     * @return [ItemEntity] with [itemId] id or null if none match
-     */
-    suspend fun get(itemId: Long): ItemEntity?
-
-    /**
-     * @return newest [ItemEntity], null if none found
-     */
-    suspend fun newest(): ItemEntity?
 
     /**
      * @return newest [ItemEntity] as flow

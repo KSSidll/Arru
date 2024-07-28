@@ -1,12 +1,8 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.ChartSource
-import com.kssidll.arru.domain.data.RankSource
-import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.helper.*
-import com.patrykandpatrick.vico.core.entry.ChartEntry
-import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.kssidll.arru.helper.RegexHelper
+import com.kssidll.arru.helper.generateRandomLongValue
 import kotlin.math.log10
 
 @Entity(
@@ -18,32 +14,22 @@ import kotlin.math.log10
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE,
         ),
-        ForeignKey(
-            entity = Product::class,
-            parentColumns = ["id"],
-            childColumns = ["productId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE,
-        ),
     ]
 )
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var transactionId: Long,
-    @ColumnInfo(index = true) var productId: Long,
     var quantity: Long,
     var price: Long,
 ) {
     @Ignore
     constructor(
         transactionId: Long,
-        productId: Long,
         quantity: Long,
         price: Long,
     ): this(
         0,
         transactionId,
-        productId,
         quantity,
         price,
     )
@@ -93,7 +79,6 @@ data class ItemEntity(
             return ItemEntity(
                 id = itemId,
                 transactionId = generateRandomLongValue(),
-                productId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
             )
@@ -195,260 +180,3 @@ data class ItemTagEntity(
     @ColumnInfo(index = true) val itemId: Long,
     @ColumnInfo(index = true) val tagId: Long,
 )
-
-
-data class Item(
-    val id: Long,
-    val quantity: Long,
-    val price: Long,
-    val product: Product,
-    val category: ProductCategory,
-    val producer: ProductProducer?,
-    val date: Long,
-    val shop: Shop?,
-) {
-    fun actualQuantity(): Float {
-        return ItemEntity.actualQuantity(quantity)
-    }
-
-    fun actualPrice(): Float {
-        return ItemEntity.actualPrice(price)
-    }
-
-    companion object {
-        fun generate(itemId: Long = 0): Item {
-            return Item(
-                id = itemId,
-                quantity = generateRandomLongValue(),
-                price = generateRandomLongValue(),
-                product = Product.generate(),
-                category = ProductCategory.generate(),
-                producer = ProductProducer.generate(),
-                date = generateRandomDate().time,
-                shop = Shop.generate(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<Item> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
-    }
-}
-
-
-data class ItemSpentByTime(
-    val time: String,
-    val total: Long,
-): ChartSource {
-    companion object {
-        fun generate(): ItemSpentByTime {
-            return ItemSpentByTime(
-                time = generateRandomDateString(),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<ItemSpentByTime> {
-            return List(amount) {
-                generate()
-            }
-        }
-    }
-
-    override fun value(): Float {
-        return total.toFloat()
-            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun chartEntry(x: Int): ChartEntry {
-        return FloatEntry(
-            x.toFloat(),
-            value()
-        )
-    }
-
-    override fun startAxisLabel(): String? {
-        return null
-    }
-
-    override fun topAxisLabel(): String {
-        return value().formatToCurrency(dropDecimal = true)
-    }
-
-    override fun bottomAxisLabel(): String {
-        return time
-    }
-
-    override fun endAxisLabel(): String? {
-        return null
-    }
-}
-
-data class TransactionTotalSpentByTime(
-    val time: String,
-    val total: Long,
-): ChartSource {
-    companion object {
-        fun generate(): TransactionTotalSpentByTime {
-            return TransactionTotalSpentByTime(
-                time = generateRandomDateString(),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<TransactionTotalSpentByTime> {
-            return List(amount) {
-                generate()
-            }
-        }
-    }
-
-    override fun value(): Float {
-        return total.toFloat()
-            .div(TransactionEntity.COST_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun chartEntry(x: Int): ChartEntry {
-        return FloatEntry(
-            x.toFloat(),
-            value()
-        )
-    }
-
-    override fun startAxisLabel(): String? {
-        return null
-    }
-
-    override fun topAxisLabel(): String {
-        return value().formatToCurrency(dropDecimal = true)
-    }
-
-    override fun bottomAxisLabel(): String {
-        return time
-    }
-
-    override fun endAxisLabel(): String? {
-        return null
-    }
-}
-
-data class TransactionTotalSpentByShop(
-    @Embedded val shop: Shop,
-    val total: Long,
-): RankSource {
-    companion object {
-        fun generate(shopId: Long = 0): TransactionTotalSpentByShop {
-            return TransactionTotalSpentByShop(
-                shop = Shop.generate(shopId),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<TransactionTotalSpentByShop> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
-    }
-
-    override fun value(): Float {
-        return total.toFloat()
-            .div(TransactionEntity.COST_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun displayName(): String {
-        return shop.name
-    }
-
-    override fun displayValue(): String {
-        return value().formatToCurrency(dropDecimal = true)
-    }
-
-    override fun identificator(): Long {
-        return shop.id
-    }
-}
-
-data class ItemSpentByCategory(
-    @Embedded val category: ProductCategory,
-    val total: Long,
-): RankSource {
-    companion object {
-        fun generate(categoryId: Long = 0): ItemSpentByCategory {
-            return ItemSpentByCategory(
-                category = ProductCategory.generate(categoryId),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<ItemSpentByCategory> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
-    }
-
-    override fun value(): Float {
-        return total.toFloat()
-            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun displayName(): String {
-        return category.name
-    }
-
-    override fun displayValue(): String {
-        return value()
-            .formatToCurrency(dropDecimal = true)
-    }
-
-    override fun identificator(): Long {
-        return category.id
-    }
-}
-
-data class ProductPriceByShopByTime(
-    @Embedded val product: Product?,
-    val variantName: String?,
-    val producerName: String?,
-    val price: Long?,
-    val shopName: String?,
-    val time: String,
-) {
-    companion object {
-        fun generate(productId: Long = 0): ProductPriceByShopByTime {
-            return ProductPriceByShopByTime(
-                product = Product.generate(productId),
-                variantName = generateRandomStringValue(),
-                producerName = generateRandomStringValue(),
-                price = generateRandomLongValue(),
-                shopName = generateRandomStringValue(),
-                time = generateRandomDateString(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<ProductPriceByShopByTime> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
-    }
-}

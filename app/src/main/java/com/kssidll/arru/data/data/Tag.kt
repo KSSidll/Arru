@@ -98,32 +98,47 @@ data class TagEntity(
      * @param id **immutable**, id reference to the database [TagEntity], starts at 9999 and goes down to 0
      * @param color **mutable, can be changed by user**, [TagColor] the tag will be displayed in
      */
-    enum class System(val id: Long, val color: TagColor) {
+    enum class System(
+        val id: Long,
+        val color: TagColor
+    ) {
         // **NEVER CHANGE ANY OF THOSE ITEMS, YOU CAN ONLY ADD NEW ONES**
 
         /**
          * [TagEntity] shop:* group tag
          * @since version 3.0.0
          */
-        SHOP(9999, TagColor.Primary),
+        SHOP(
+            9999,
+            TagColor.Primary
+        ),
 
         /**
          * [TagEntity] variant:* group tag
          * @since version 3.0.0
          */
-        VARIANT(9998, TagColor.Secondary),
+        VARIANT(
+            9998,
+            TagColor.Secondary
+        ),
 
         /**
          * [TagEntity] producer:* group tag
          * @since version 3.0.0
          */
-        PRODUCER(9997, TagColor.Secondary),
+        PRODUCER(
+            9997,
+            TagColor.Secondary
+        ),
 
         /**
          * [TagEntity] product:* group tag
          * @since version 3.0.0
          */
-        PRODUCT(9996, TagColor.Tertiary),
+        PRODUCT(
+            9996,
+            TagColor.Tertiary
+        ),
     }
 }
 

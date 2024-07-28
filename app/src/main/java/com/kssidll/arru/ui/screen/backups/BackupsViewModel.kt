@@ -8,8 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.database.AppDatabase
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class BackupsViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val preferences: Preferences,
-    private val transactionBasketRepository: TransactionBasketRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
 ): ViewModel() {
     val availableBackups: SnapshotStateList<DatabaseBackup> = mutableStateListOf()
 
@@ -48,17 +47,16 @@ class BackupsViewModel @Inject constructor(
     fun createDbBackup() = viewModelScope.launch {
         Dispatchers.IO.invoke {
             // TODO add notification when you create maybe?
-            val totalTransactions = transactionBasketRepository.count()
-            val totalSpending = transactionBasketRepository.totalSpentLong()
+            val totalTransactions = transactionRepository.count()
+            val totalSpending = transactionRepository.totalRawSpent()
 
-            if (totalSpending is Data.Loaded) {
-                AppDatabase.saveDbBackup(
-                    context = appContext,
-                    preferences = preferences,
-                    totalTransactions = totalTransactions,
-                    totalSpending = totalSpending.data ?: 0,
-                )
-            }
+            AppDatabase.saveDbBackup(
+                context = appContext,
+                preferences = preferences,
+                totalTransactions = totalTransactions,
+                totalSpending = totalSpending,
+            )
+
             refreshAvailableBackups()
         }
     }
