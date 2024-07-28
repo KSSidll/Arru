@@ -12,8 +12,24 @@ import androidx.room.PrimaryKey
 enum class TagColor {
     // **THIS WORKS ON ORDINALS**
     // **NEVER CHANGE THE ORDER OF DECLARATION**
+
+    /**
+     * [TagColor] Primary material theme tag color
+     * @since version 3.0.0
+     */
     Primary,
+
+    /**
+     * [TagColor] Secondary material theme tag color
+     * @since version 3.0.0
+     */
     Secondary,
+
+    /**
+     * [TagColor] Tertiary material theme tag color
+     * @since version 3.0.0
+     */
+    Tertiary,
 
     ;
 
@@ -26,6 +42,10 @@ enum class TagColor {
 
             Secondary -> {
                 MaterialTheme.colorScheme.secondary
+            }
+
+            Tertiary -> {
+                MaterialTheme.colorScheme.tertiary
             }
         }
     }
@@ -98,6 +118,12 @@ data class TagEntity(
          * @since version 3.0.0
          */
         PRODUCER(9997, TagColor.Secondary),
+
+        /**
+         * [TagEntity] product:* group tag
+         * @since version 3.0.0
+         */
+        PRODUCT(9996, TagColor.Tertiary),
     }
 }
 

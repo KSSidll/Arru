@@ -673,7 +673,7 @@ val MIGRATION_5_6 = object: Migration(
             )
         """.trimIndent())
 
-        /// Stage 5: Migrate Variant data
+        /// Stage 5: Migrate ProductVariant data
 
         // Add special/system variant tag
 
@@ -686,7 +686,7 @@ val MIGRATION_5_6 = object: Migration(
 
         db.execSQL("""
             INSERT INTO TagEntity (name, colorOrdinal)
-            SELECT DISTINCT(name), ${TagColor.Secondary.ordinal}
+            SELECT DISTINCT(name), ${TagEntity.System.VARIANT.color.ordinal}
             FROM ProductVariant
         """.trimIndent())
 
@@ -705,7 +705,7 @@ val MIGRATION_5_6 = object: Migration(
                 )
         """.trimIndent())
 
-        // Add variant tags to the associated Items
+        // Add variant tags to the associated items
 
         val variantTagsCursor = db.query("""
             SELECT ProductVariant.id, TagEntity.id
@@ -792,7 +792,7 @@ val MIGRATION_5_6 = object: Migration(
         """.trimIndent()
         )
 
-        /// Stage 6: Migrate Producer data
+        /// Stage 6: Migrate ProductProducer data
 
         // Add special/system producer tag
 
@@ -805,7 +805,7 @@ val MIGRATION_5_6 = object: Migration(
 
         db.execSQL("""
             INSERT INTO TagEntity (name, colorOrdinal)
-            SELECT DISTINCT(name), ${TagColor.Secondary.ordinal}
+            SELECT DISTINCT(name), ${TagEntity.System.PRODUCER.color.ordinal}
             FROM ProductProducer
         """.trimIndent())
 
@@ -824,7 +824,7 @@ val MIGRATION_5_6 = object: Migration(
                 )
         """.trimIndent())
 
-        // Add producer tags to the associated Items
+        // Add producer tags to the associated items
 
         val producerTagsCursor = db.query("""
             SELECT ProductProducer.id, TagEntity.id
@@ -867,6 +867,84 @@ val MIGRATION_5_6 = object: Migration(
             )
         """.trimIndent())
 
-        // TODO category tags (not system tags?)
+        /// Stage 7: Migrate Product data
+
+        // Add special/system product tag
+
+        db.execSQL("""
+            INSERT INTO TagEntity (id, name, colorOrdinal)
+            SELECT ${TagEntity.System.PRODUCT.id}, '${TagEntity.System.PRODUCT.name}', ${TagEntity.System.PRODUCT.color.ordinal}
+        """.trimIndent())
+
+        // Add product tags
+
+        db.execSQL("""
+            INSERT INTO TagEntity (name, colorOrdinal)
+            SELECT DISTINCT(name), ${TagEntity.System.PRODUCT.color.ordinal}
+            FROM Product
+        """.trimIndent())
+
+        // Set product tags as subtags of system product tag
+
+        db.execSQL("""
+            INSERT INTO TagTagEntity (mainTagId, subTagId)
+            SELECT ${TagEntity.System.PRODUCER.id}, TagEntity.id
+            FROM TagEntity WHERE name IN (SELECT name FROM Product)
+                AND TagEntity.id NOT IN (
+                    SELECT TagEntity.id
+                    FROM TagEntity
+                    JOIN TagTagEntity
+                    ON TagTagEntity.subTagId = TagEntity.id
+                        OR TagTagEntity.mainTagId = TagEntity.id
+                )
+        """.trimIndent())
+
+        // Add product tags to the associated items
+
+        val productTagsCursor = db.query("""
+            SELECT Product.id, TagEntity.id
+            FROM Product
+            JOIN TagEntity ON TagEntity.name = Product.name
+            AND TagEntity.id IN (
+                SELECT TagTagEntity.subTagId
+                FROM TagTagEntity
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.PRODUCER.id}
+            )
+        """.trimIndent())
+
+        if (productTagsCursor.moveToFirst()) {
+            do {
+                val productId = productTagsCursor.getLong(0)
+                val tagId = productTagsCursor.getLong(1)
+
+                db.execSQL("""
+                    INSERT INTO ItemTagEntity (itemId, tagId)
+                    SELECT ItemEntity.id, $tagId
+                    FROM ItemEntity
+                    JOIN Product ON Product.id = ItemEntity.productId
+                    WHERE Product.id = $productId
+                """.trimIndent())
+            } while (productTagsCursor.moveToNext())
+        }
+
+        productTagsCursor.close()
+
+        /// Remove unused tags
+        db.execSQL("""
+            DELETE FROM TagEntity
+            WHERE id IN (
+                SELECT TagEntity.id FROM TagEntity
+                JOIN TagTagEntity ON TagTagEntity.subTagId = TagEntity.id
+                LEFT JOIN ItemTagEntity ON ItemTagEntity.tagId = TagEntity.id
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.PRODUCT.id}
+                AND ItemTagEntity.tagId IS NULL
+            )
+        """.trimIndent())
+
+        /// Stage 8: Migrate ProductCategory data
+        // TODO (not system tags?)
+
+        /// Stage 9: Delete redundant tables
+        // TODO
     }
 }
