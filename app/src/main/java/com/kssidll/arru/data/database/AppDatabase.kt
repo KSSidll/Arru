@@ -888,7 +888,7 @@ val MIGRATION_5_6 = object: Migration(
 
         db.execSQL("""
             INSERT INTO TagTagEntity (mainTagId, subTagId)
-            SELECT ${TagEntity.System.PRODUCER.id}, TagEntity.id
+            SELECT ${TagEntity.System.PRODUCT.id}, TagEntity.id
             FROM TagEntity WHERE name IN (SELECT name FROM Product)
                 AND TagEntity.id NOT IN (
                     SELECT TagEntity.id
@@ -908,7 +908,7 @@ val MIGRATION_5_6 = object: Migration(
             AND TagEntity.id IN (
                 SELECT TagTagEntity.subTagId
                 FROM TagTagEntity
-                WHERE TagTagEntity.mainTagId = ${TagEntity.System.PRODUCER.id}
+                WHERE TagTagEntity.mainTagId = ${TagEntity.System.PRODUCT.id}
             )
         """.trimIndent())
 
@@ -942,7 +942,62 @@ val MIGRATION_5_6 = object: Migration(
         """.trimIndent())
 
         /// Stage 8: Migrate ProductCategory data
-        // TODO (not system tags?)
+
+        // Add category tags
+
+        db.execSQL("""
+            INSERT INTO TagEntity (name, colorOrdinal)
+            SELECT DISTINCT(name), ${TagColor.Secondary.ordinal}
+            FROM ProductCategory
+        """.trimIndent())
+
+        // Add category tags to the associated items
+
+        val categoryTagsCursor = db.query("""
+            SELECT ProductCategory.id, TagEntity.id
+            FROM ProductCategory
+            JOIN TagEntity ON TagEntity.name = ProductCategory.name
+            AND TagEntity.id NOT IN (
+                SELECT TagTagEntity.subTagId
+                FROM TagTagEntity
+            )
+        """.trimIndent())
+
+        if (categoryTagsCursor.moveToFirst()) {
+            do {
+                val categoryId = categoryTagsCursor.getLong(0)
+                val tagId = categoryTagsCursor.getLong(1)
+
+                db.execSQL("""
+                    INSERT INTO ItemTagEntity (itemId, tagId)
+                    SELECT ItemEntity.id, $tagId
+                    FROM ItemEntity
+                    JOIN Product ON Product.id = ItemEntity.productId
+                    JOIN ProductCategory ON ProductCategory.id = Product.categoryId
+                    WHERE ProductCategory.id = $categoryId
+                """.trimIndent())
+            } while (categoryTagsCursor.moveToNext())
+        }
+
+        categoryTagsCursor.close()
+
+        /// Remove unused tags
+        db.execSQL("""
+            DELETE FROM TagEntity
+            WHERE id IN (
+                SELECT TagEntity.id FROM TagEntity
+                LEFT JOIN ItemTagEntity ON ItemTagEntity.tagId = TagEntity.id
+                WHERE TagEntity.id NOT IN (
+                    SELECT TagTagEntity.subTagId
+                    FROM TagTagEntity
+                )
+                AND TagEntity.id NOT IN (
+                    SELECT TagTagEntity.mainTagId
+                    FROM TagTagEntity
+                )
+                AND ItemTagEntity.tagId IS NULL
+            )
+        """.trimIndent())
 
         /// Stage 9: Delete redundant tables
         // TODO
