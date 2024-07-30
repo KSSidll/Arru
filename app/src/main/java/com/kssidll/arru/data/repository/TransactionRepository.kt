@@ -138,7 +138,8 @@ class TransactionRepository(private val dao: TransactionDao): TransactionReposit
                     TransactionPreview(
                         id = it.id,
                         date = it.date,
-                        totalCost = it.totalCost
+                        totalCost = it.totalCost,
+                        tags = emptyList()
                     )
                 }
             }

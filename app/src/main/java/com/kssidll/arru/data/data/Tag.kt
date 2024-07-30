@@ -1,6 +1,5 @@
 package com.kssidll.arru.data.data
 
-import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -8,6 +7,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlin.random.Random
+
+data class ColorPair(
+    val containerColor: Color,
+    val contentColor: Color
+)
 
 enum class TagColor {
     // **THIS WORKS ON ORDINALS**
@@ -34,18 +39,27 @@ enum class TagColor {
     ;
 
     @Composable
-    fun asColor(): Color {
+    fun asColor(): ColorPair {
         return when (this) {
             Primary -> {
-                MaterialTheme.colorScheme.primary
+                ColorPair(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             }
 
             Secondary -> {
-                MaterialTheme.colorScheme.secondary
+                ColorPair(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                )
             }
 
             Tertiary -> {
-                MaterialTheme.colorScheme.tertiary
+                ColorPair(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary
+                )
             }
         }
     }
@@ -53,6 +67,15 @@ enum class TagColor {
     companion object {
         private val idMap = TagColor.entries.associateBy { it.ordinal }
         fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+
+        fun random(): TagColor {
+            return this.getByOrdinal(
+                Random.nextInt(
+                    from = TagColor.idMap.keys.first(),
+                    until = TagColor.idMap.keys.last() + 1,
+                )
+            )!!
+        }
     }
 }
 
@@ -70,23 +93,6 @@ data class TagEntity(
         name = name,
         colorOrdinal = color.ordinal
     )
-
-    fun asTag(): Tag {
-        val color = TagColor.getByOrdinal(colorOrdinal)
-
-        if (color == null) {
-            Log.e(
-                TAG,
-                "No color with ordinal ${colorOrdinal}. The color saved in the database doesn't exist"
-            )
-        }
-
-        return Tag(
-            id = id,
-            name = name,
-            color = color ?: TagColor.getByOrdinal(0)!!,
-        )
-    }
 
     companion object {
         const val TAG = "TAG_ENTITY"
@@ -164,10 +170,4 @@ data class TagTagEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val mainTagId: Long,
     @ColumnInfo(index = true) val subTagId: Long,
-)
-
-data class Tag(
-    val id: Long,
-    val name: String,
-    val color: TagColor,
 )
