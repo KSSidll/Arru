@@ -1,12 +1,13 @@
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.daggerHiltAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.hilt)
     kotlin("kapt")
     id("kotlin-parcelize")
-    alias(libs.plugins.devtoolsKSP)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -70,8 +71,8 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+    composeCompiler {
+        enableStrongSkippingMode = true
     }
     packaging {
         resources {

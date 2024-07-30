@@ -29,9 +29,9 @@ dev-chart-vico-compose = "1.14.0"
 
 ## Plugins
 agp = "8.5.1"
-kotlin = "1.9.22"
+kotlin = "2.0.0"
 # hilt plugin has same version as hilt library so it is declared in the library section
-ksp = "1.9.22-1.0.17"
+ksp = "2.0.0-1.0.21"
 
 [libraries]
 # AndroidX
@@ -73,7 +73,8 @@ dev-chart-vico-compose = { group = "com.patrykandpatrick.vico", name = "compose"
 dev-chart-vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "dev-chart-vico-compose" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-daggerHiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "google-hilt" }
-devtoolsKSP = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
