@@ -4,13 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.kssidll.arru.helper.generateRandomDate
+import com.kssidll.arru.helper.generateRandomIntValue
 import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomStringValue
 
 data class TransactionPreview(
     val id: Long,
     val date: Long,
     val totalCost: Long,
-    val tags: List<Tag>,
+    val firstShopTagName: String?,
+    val shopTagAmount: Int,
+    val otherTagAmount: Int,
     val itemsVisible: MutableState<Boolean> = mutableStateOf(false)
 ) {
     companion object {
@@ -20,7 +24,15 @@ data class TransactionPreview(
                 id = generateRandomLongValue(),
                 date = generateRandomDate().time,
                 totalCost = generateRandomLongValue(),
-                tags = Tag.generateList()
+                firstShopTagName = generateRandomStringValue(),
+                shopTagAmount = generateRandomIntValue(
+                    1,
+                    99
+                ),
+                otherTagAmount = generateRandomIntValue(
+                    1,
+                    99
+                ),
             )
         }
 

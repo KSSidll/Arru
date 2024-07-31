@@ -113,7 +113,7 @@ interface TransactionRepositorySource {
     // Read
 
     /**
-     * @return sum of all totalCost of [TransactionEntity] objects if any
+     * @return sum of all totalCost of [TransactionEntity] objects
      */
     suspend fun totalRawSpent(): Long
 

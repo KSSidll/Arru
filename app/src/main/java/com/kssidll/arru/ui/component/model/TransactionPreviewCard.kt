@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Payment
 import androidx.compose.material.icons.rounded.Label
-import androidx.compose.material.icons.rounded.PrecisionManufacturing
 import androidx.compose.material.icons.rounded.Store
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,7 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.data.data.TagEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.model.TransactionPreview
 import com.kssidll.arru.domain.utils.formatToCurrency
@@ -114,13 +112,6 @@ fun LazyListScope.transactionPreviewCardHeader(
     onItemAddClick: (transactionId: Long) -> Unit,
     headerColor: Color,
 ) {
-
-    val shopTag = transaction.tags.find { it.id == TagEntity.System.SHOP.id }
-    val producerTag = transaction.tags.find { it.id == TagEntity.System.PRODUCER.id }
-    val otherTags = transaction.tags.filterNot {
-        it.id == TagEntity.System.SHOP.id || it.id == TagEntity.System.PRODUCER.id
-    }
-
     stickyHeader(
         key = transaction.id,
         contentType = TransactionPreview
@@ -164,24 +155,7 @@ fun LazyListScope.transactionPreviewCardHeader(
                             )
                     ) {
                         Box(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = SimpleDateFormat(
-                                    "d MMMM, yyyy",
-                                    Locale.getDefault()
-                                ).format(transaction.date),
-                                style = Typography.titleMedium,
-                            )
-                        }
-
-                        Box {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(
-                                        end = 20.dp,
-                                    )
-                                    .align(Alignment.BottomEnd)
-                            ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = TransactionEntity.actualTotalCost(transaction.totalCost)
                                         .formatToCurrency(),
@@ -198,22 +172,32 @@ fun LazyListScope.transactionPreviewCardHeader(
                                 )
                             }
                         }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = SimpleDateFormat(
+                                    "d MMMM, yyyy",
+                                    Locale.getDefault()
+                                ).format(transaction.date),
+                                style = Typography.titleMedium,
+                            )
+                        }
                     }
 
                     Spacer(Modifier.height(5.dp))
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.Top,
                         modifier = Modifier
                             .padding(
-                                start = 24.dp,
+                                start = 20.dp,
                                 end = 8.dp
                             )
                     ) {
                         Row(
                             modifier = Modifier.weight(1f)
                         ) {
-                            if (shopTag != null && shopTag.childrenTags.isNotEmpty()) {
+                            if (transaction.firstShopTagName != null && transaction.shopTagAmount != 0) {
                                 Spacer(modifier = Modifier.width(3.dp))
 
                                 Button(
@@ -229,11 +213,13 @@ fun LazyListScope.transactionPreviewCardHeader(
                                         contentColor = MaterialTheme.colorScheme.onTertiary,
                                     ),
                                 ) {
-                                    if (shopTag.childrenTags.size > 1) {
+                                    if (transaction.shopTagAmount > 1) {
                                         Text(
-                                            text = shopTag.childrenTags.size.toString(),
+                                            text = transaction.shopTagAmount.toString(),
                                             style = Typography.labelLarge,
                                         )
+
+                                        Spacer(modifier = Modifier.width(2.dp))
                                     }
 
                                     Icon(
@@ -245,47 +231,7 @@ fun LazyListScope.transactionPreviewCardHeader(
                                     Spacer(modifier = Modifier.width(4.dp))
 
                                     Text(
-                                        text = shopTag.childrenTags.first().name,
-                                        style = Typography.labelMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                            }
-
-                            if (producerTag != null && producerTag.childrenTags.isNotEmpty()) {
-                                Spacer(modifier = Modifier.width(3.dp))
-
-                                Button(
-                                    onClick = {
-                                        // TODO
-                                    },
-                                    contentPadding = PaddingValues(
-                                        vertical = 0.dp,
-                                        horizontal = 12.dp
-                                    ),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.tertiary,
-                                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                                    ),
-                                ) {
-                                    if (producerTag.childrenTags.size > 1) {
-                                        Text(
-                                            text = producerTag.childrenTags.size.toString(),
-                                            style = Typography.labelLarge,
-                                        )
-                                    }
-
-                                    Icon(
-                                        imageVector = Icons.Rounded.PrecisionManufacturing,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp),
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
-                                    Text(
-                                        text = producerTag.childrenTags.first().name,
+                                        text = transaction.firstShopTagName,
                                         style = Typography.labelMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -294,38 +240,36 @@ fun LazyListScope.transactionPreviewCardHeader(
                             }
                         }
 
-                        Box(
-                            modifier = Modifier
-                                .padding(
-                                    start = 3.dp,
-                                    end = 20.dp
+                        if (transaction.otherTagAmount != 0) {
+                            Button(
+                                onClick = {
+                                    // TODO
+                                },
+                                contentPadding = PaddingValues(
+                                    vertical = 0.dp,
+                                    horizontal = 0.dp
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                                ),
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .height(32.dp)
+                                    .width(48.dp)
+                            ) {
+                                Text(
+                                    text = transaction.otherTagAmount.toString(),
+                                    style = Typography.labelSmall,
                                 )
-                        ) {
-                            if (otherTags.isNotEmpty()) {
-                                Button(
-                                    onClick = {
-                                        // TODO
-                                    },
-                                    contentPadding = PaddingValues(
-                                        vertical = 0.dp,
-                                        horizontal = 12.dp
-                                    ),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.tertiary,
-                                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                                    ),
-                                ) {
-                                    Text(
-                                        text = otherTags.size.toString(),
-                                        style = Typography.labelLarge,
-                                    )
 
-                                    Icon(
-                                        imageVector = Icons.Rounded.Label,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp),
-                                    )
-                                }
+                                Spacer(modifier = Modifier.width(2.dp))
+
+                                Icon(
+                                    imageVector = Icons.Rounded.Label,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(12.5.dp)
+                                )
                             }
                         }
                     }

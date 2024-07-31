@@ -18,6 +18,8 @@ private const val defaultStringLengthUntil: Int = 12
 private const val defaultStringAllowedCharacters: String = "pyfgcrlaoeuidhtnsqjkxbmwvz"
 private const val defaultLongValueFrom: Long = 10000
 private const val defaultLongValueUntil: Long = 100000
+private const val defaultIntValueFrom: Int = 1
+private const val defaultIntValueUntil: Int = 1000
 private const val defaultFloatDivisionFactor: Long = 100
 
 fun generateRandomTime(
@@ -88,6 +90,16 @@ fun generateRandomLongValue(
     valueUntil: Long = defaultLongValueUntil,
 ): Long {
     return Random.nextLong(
+        from = valueFrom,
+        until = valueUntil,
+    )
+}
+
+fun generateRandomIntValue(
+    valueFrom: Int = defaultIntValueFrom,
+    valueUntil: Int = defaultIntValueUntil,
+): Int {
+    return Random.nextInt(
         from = valueFrom,
         until = valueUntil,
     )

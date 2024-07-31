@@ -5,7 +5,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.kssidll.arru.data.dao.TransactionDao
-import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
@@ -48,25 +47,16 @@ class TransactionRepository(private val dao: TransactionDao): TransactionReposit
 
     // Read
 
-    /**
-     * @return sum of all totalCost of [TransactionEntity] objects if any
-     */
     override suspend fun totalRawSpent(): Long {
         return dao.totalSpent()
             .firstOrNull() ?: 0
     }
 
-    /**
-     * @return count of [TransactionEntity] objects
-     */
     override suspend fun count(): Int {
         return dao.count()
             .firstOrNull() ?: 0
     }
 
-    /**
-     * @return sum of all totalCost of [TransactionEntity] objects as [Flow] of [Data]
-     */
     override fun totalSpentFlow(): Flow<Data<Float?>> {
         //        return dao.totalSpentFlow()
         //            .cancellable()
@@ -117,9 +107,6 @@ class TransactionRepository(private val dao: TransactionDao): TransactionReposit
         return flowOf()
     }
 
-    /**
-     * @return all [TransactionEntity] objects mapped to [TransactionPreview] as [Flow] of [PagingData]
-     */
     override fun allPagedAsPreview(): Flow<PagingData<TransactionPreview>> {
         return Pager(
             config = PagingConfig(
@@ -139,7 +126,9 @@ class TransactionRepository(private val dao: TransactionDao): TransactionReposit
                         id = it.id,
                         date = it.date,
                         totalCost = it.totalCost,
-                        tags = emptyList()
+                        firstShopTagName = dao.firstShopTag(it.id)?.name,
+                        shopTagAmount = dao.countShopTag(it.id),
+                        otherTagAmount = 5,
                     )
                 }
             }
