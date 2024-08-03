@@ -2,7 +2,7 @@
 <h2 align="center">Your expenses tracker</h2>
 
 <h3 align="center">This version has been "abandoned" in favour of tag based v3, if you don't like tags you can still use this, but it will not receive major updates</h3>
-<h2 align="center">v3 has no current release schedule and might be released as ArruTag</h2>
+<h3 align="center">v3 has no current release schedule and might be released as ArruTag</h3>
 
 <br />
 
@@ -14,7 +14,13 @@
 
 </p>
 
-<h4 align="center">Arru is an app for expenditure tracking/analysis</h4>
+<p align="center">
+  <a href="https://apt.izzysoft.de/fdroid/index/apk/com.kssidll.arru">
+    <img alt="IzzyOnDroid" src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.kssidll.arru"/>
+  </a>
+</p>
+
+<h3 align="center">Arru is an app for expenditure tracking/analysis</h3>
 
 <p align="middle">
     <img src="images/dashboard.jpg" width="30%"/>
@@ -27,6 +33,14 @@
     <img src="images/transaction_add_item.jpg" width="30%"/>
     <img src="images/transaction_add_select.jpg" width="30%"/>
     <img src="images/transaction_add.jpg" width="30%"/>
+</p>
+
+<br/>
+
+<p align="center">
+  <a href="https://apt.izzysoft.de/fdroid/index/apk/com.kssidll.arru">
+    <img alt="IzzyOnDroid" src="images/IzzyOnDroidButton.svg"/>
+  </a>
 </p>
 
 # Features
