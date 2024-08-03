@@ -16,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
@@ -53,13 +54,18 @@ internal fun TransactionsScreen(
     onTransactionLongClickLabel: String,
     onItemAddClick: (transactionId: Long) -> Unit,
 ) {
-    Box {
+    Scaffold { paddingValues ->
         // overlay displayed when there is no data available
-        Box(modifier = Modifier.fillMaxSize()) {
-            AnimatedVisibility(
-                visible = transactions.loadedEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
+        AnimatedVisibility(
+            visible = transactions.loadedEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
             ) {
                 if (isExpandedScreen) {
                     ExpandedHomeScreenNothingToDisplayOverlay()
@@ -69,50 +75,60 @@ internal fun TransactionsScreen(
             }
         }
 
-        if (isExpandedScreen) {
-            Box(
-                modifier = Modifier
-            ) {
-                TransactionScreenContent(
-                    transactions = transactions,
-                    onTransactionLongClick = onTransactionLongClick,
-                    onTransactionLongClickLabel = onTransactionLongClickLabel,
-                    onItemAddClick = onItemAddClick,
+        AnimatedVisibility(
+            visible = transactions.itemCount != 0,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            val layoutDirection = LocalLayoutDirection.current
+
+            if (isExpandedScreen) {
+                val horizontalPaddingValues = PaddingValues(
+                    start = paddingValues.calculateStartPadding(layoutDirection),
+                    end = paddingValues.calculateEndPadding(layoutDirection)
                 )
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                ) {
-                    IconButton(
-                        onClick = {
-                            onSearchAction()
-                        }
+                Box {
+                    TransactionScreenContent(
+                        transactions = transactions,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onTransactionLongClickLabel = onTransactionLongClickLabel,
+                        onItemAddClick = onItemAddClick,
+                        modifier = Modifier
+                            // apply padding only for horizontal insets because we want vertical edge to edge
+                            .padding(horizontalPaddingValues)
+                            .consumeWindowInsets(paddingValues)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(paddingValues)
+                            .consumeWindowInsets(paddingValues)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(R.string.navigate_to_search_description),
-                        )
+                        IconButton(
+                            onClick = {
+                                onSearchAction()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = stringResource(R.string.navigate_to_search_description),
+                            )
+                        }
                     }
                 }
-            }
-        } else {
-            val scaffoldState = rememberBottomSheetScaffoldState()
+            } else {
+                val scaffoldState = rememberBottomSheetScaffoldState()
 
-            // For some reason the sheet sometimes hides even if it has skip hidden set to true
-            // so when it does, we want to partially expand it
-            LaunchedEffect(scaffoldState.bottomSheetState.isVisible) {
-                if (!scaffoldState.bottomSheetState.isVisible) {
-                    scaffoldState.bottomSheetState.partialExpand()
+                // For some reason the sheet sometimes hides even if it has skip hidden set to true
+                // so when it does, we want to partially expand it
+                LaunchedEffect(scaffoldState.bottomSheetState.isVisible) {
+                    if (!scaffoldState.bottomSheetState.isVisible) {
+                        scaffoldState.bottomSheetState.partialExpand()
+                    }
                 }
-            }
 
-            AnimatedVisibility(
-                visible = transactions.itemCount != 0,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
                 BottomSheetScaffold(
                     scaffoldState = scaffoldState,
                     sheetContainerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -137,19 +153,21 @@ internal fun TransactionsScreen(
                         }
                     },
                     sheetPeekHeight = BOTTOM_SHEET_PEEK_HEIGHT,
-                ) { paddingValues ->
-                    Box(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .consumeWindowInsets(paddingValues)
+                ) { innerPaddingValues ->
+                    TransactionScreenContent(
+                        transactions = transactions,
+                        onTransactionLongClick = onTransactionLongClick,
+                        onTransactionLongClickLabel = onTransactionLongClickLabel,
+                        onItemAddClick = onItemAddClick,
+                        // apply inner insets as padding to fab so it doesn't hide under the bottom sheet
+                        fabPadding = innerPaddingValues,
                         modifier = Modifier
-                            .consumeWindowInsets(paddingValues)
-                            .windowInsetsPadding(WindowInsets.statusBars)
-                    ) {
-                        TransactionScreenContent(
-                            transactions = transactions,
-                            onTransactionLongClick = onTransactionLongClick,
-                            onTransactionLongClickLabel = onTransactionLongClickLabel,
-                            onItemAddClick = onItemAddClick,
-                        )
-                    }
+                            // don't add padding for inner insets to allow edge to edge over the bottom sheet
+                            .consumeWindowInsets(innerPaddingValues)
+                    )
                 }
             }
         }
@@ -162,6 +180,8 @@ fun TransactionScreenContent(
     onTransactionLongClick: (transactionId: Long) -> Unit,
     onTransactionLongClickLabel: String,
     onItemAddClick: (transactionId: Long) -> Unit,
+    modifier: Modifier = Modifier,
+    fabPadding: PaddingValues = PaddingValues(),
 ) {
     val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
     val headerColor = MaterialTheme.colorScheme.background
@@ -212,8 +232,7 @@ fun TransactionScreenContent(
                     targetOffsetX = { it }
                 )
             ) {
-                // ignores orientation but works well enough on landscape imo
-                Box(modifier = Modifier.padding(bottom = BOTTOM_SHEET_PEEK_HEIGHT)) {
+                Box(modifier = Modifier.padding(fabPadding)) {
                     FloatingActionButton(
                         onClick = {
                             scope.launch {
@@ -231,7 +250,7 @@ fun TransactionScreenContent(
                 }
             }
         },
-        contentWindowInsets = WindowInsets(0),
+        modifier = modifier
     ) { paddingValues ->
         LazyColumn(
             state = listState,
@@ -241,6 +260,13 @@ fun TransactionScreenContent(
                 .consumeWindowInsets(paddingValues)
                 .fillMaxWidth()
         ) {
+            // Offset the fab top padding for the list so edge to edge doesn't hide any transaction cards
+            if (fabPadding.calculateTopPadding() != 0.dp) {
+                item {
+                    Box(modifier = Modifier.height(fabPadding.calculateTopPadding()))
+                }
+            }
+
             val transactionCount = transactions.itemCount
 
             // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
@@ -277,9 +303,11 @@ fun TransactionScreenContent(
                 }
             }
 
-            // Offset the bottom sheet so it doesn't hide the last transaction card
-            item {
-                Box(modifier = Modifier.height(BOTTOM_SHEET_PEEK_HEIGHT))
+            // Offset the fab bottom padding for the list so edge to edge doesn't hide any transaction cards
+            if (fabPadding.calculateBottomPadding() != 0.dp) {
+                item {
+                    Box(modifier = Modifier.height(fabPadding.calculateBottomPadding()))
+                }
             }
         }
     }
