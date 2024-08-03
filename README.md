@@ -1,7 +1,8 @@
 <h1 align="center">Arru</h1>
 <h2 align="center">Your expenses tracker</h2>
 
-<h3 align="center">This version has been abandoned in favour of tag based v3, if you don't like tags you can still use this, but it will most likely not be supported</h3>
+<h3 align="center">This version has been "abandoned" in favour of tag based v3, if you don't like tags you can still use this, but it will not receive major updates</h3>
+<h2 align="center">v3 has no current release schedule and might be released as ArruTag</h2>
 
 <br />
 
