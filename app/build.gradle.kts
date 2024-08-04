@@ -5,9 +5,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
     kotlin("kapt")
     id("kotlin-parcelize")
-    alias(libs.plugins.ksp)
 }
 
 android {
@@ -23,6 +23,7 @@ android {
             keyAlias = properties.getProperty("keyAlias")
         }
     }
+
     namespace = "com.kssidll.arru"
     compileSdk = 34
 
@@ -60,20 +61,25 @@ android {
             isJniDebuggable = true
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
     }
+
     composeCompiler {
         enableStrongSkippingMode = true
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -121,6 +127,9 @@ dependencies {
     // Chart
     implementation(libs.dev.chart.vico.compose)
     implementation(libs.dev.chart.vico.compose.m3)
+
+    // Linting
+    lintChecks(libs.slack.compose.lint)
 }
 
 ksp {
