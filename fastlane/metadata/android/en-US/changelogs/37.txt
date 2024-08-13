@@ -1,0 +1,2 @@
+- Fixed transaction screen not taking up the full available space
+- Improved transaction date auto selection logic
