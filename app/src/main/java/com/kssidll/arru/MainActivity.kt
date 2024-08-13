@@ -1,20 +1,24 @@
 package com.kssidll.arru
 
-import android.os.*
-import androidx.activity.*
-import androidx.activity.compose.*
-import androidx.appcompat.app.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.*
-import androidx.compose.ui.*
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.datastore.preferences.core.*
-import com.kssidll.arru.data.preference.*
-import com.kssidll.arru.ui.theme.*
-import dagger.hilt.android.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import androidx.datastore.preferences.core.Preferences
+import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.setNullToDefault
+import com.kssidll.arru.data.preference.setResettableToDefault
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
@@ -29,6 +33,7 @@ class MainActivity: AppCompatActivity() {
 
         runBlocking {
             preferences.setNullToDefault(applicationContext)
+            AppPreferences.setResettableToDefault(applicationContext)
         }
 
         enableEdgeToEdge()

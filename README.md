@@ -53,7 +53,7 @@
 
 # Tech Stack & Libraries
 
-- Android Studio Jellyfish 2023.3.1
+- Android Studio Jellyfish 2024.1.1 Patch 2
 
 - [Kotlin](https://kotlinlang.org/) based
 

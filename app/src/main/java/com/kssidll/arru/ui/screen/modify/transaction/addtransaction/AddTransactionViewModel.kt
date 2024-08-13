@@ -1,17 +1,29 @@
 package com.kssidll.arru.ui.screen.modify.transaction.addtransaction
 
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.getTransactionDate
+import com.kssidll.arru.data.preference.setTransactionDate
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.transaction.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.util.Calendar
+import javax.inject.Inject
 
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
+    private val preferences: Preferences,
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
@@ -33,10 +45,21 @@ class AddTransactionViewModel @Inject constructor(
             val shop = latest.shopId?.let { shopRepository.get(it) }
 
             screenState.selectedShop.value = Field.Loaded(shop)
-            screenState.date.value = Field.Loaded(latest.date)
+
+            screenState.date.apply {
+                value = when (preferences.getTransactionDate()) {
+                    AppPreferences.Transaction.Date.Values.CURRENT -> {
+                        Field.Loaded(Calendar.getInstance().timeInMillis)
+                    }
+
+                    AppPreferences.Transaction.Date.Values.LAST -> {
+                        Field.Loaded(latest.date)
+                    }
+                }
+            }
         } else {
             screenState.selectedShop.apply { value = value.toLoaded() }
-            screenState.date.apply { value = value.toLoaded() }
+            screenState.date.apply { value = Field.Loaded(Calendar.getInstance().timeInMillis) }
         }
     }
 
@@ -75,6 +98,8 @@ class AddTransactionViewModel @Inject constructor(
                 }
             }
         }
+
+        AppPreferences.setTransactionDate(appContext, AppPreferences.Transaction.Date.Values.LAST)
 
         return@async result
     }
