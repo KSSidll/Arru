@@ -1,16 +1,17 @@
 package com.kssidll.arru.data.database
 
-import android.content.*
-import androidx.datastore.preferences.core.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.*
-import androidx.room.migration.*
-import androidx.sqlite.db.*
-import com.kssidll.arru.*
+import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.kssidll.arru.Arru
 import com.kssidll.arru.data.dao.*
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.preference.*
-import java.io.*
-import java.util.*
+import com.kssidll.arru.data.preference.AppPreferences
+import java.io.File
+import java.util.Calendar
 
 /**
  * default database name
@@ -123,11 +124,6 @@ abstract class AppDatabase: RoomDatabase() {
          */
         fun buildInternal(context: Context): AppDatabase {
             val builder = builder(context)
-
-            // use version 1 database file to check if migrations work properly
-            if (BuildConfig.DEBUG) {
-                builder.createFromAsset("database/arru.db")
-            }
 
             return builder.build()
         }
