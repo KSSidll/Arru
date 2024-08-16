@@ -3,6 +3,19 @@
           xmlns:tools="http://schemas.android.com/tools"
     >
 
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        android:minSdkVersion="33"
+        />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        android:minSdkVersion="33"
+        />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
+        android:minSdkVersion="33"
+        />
+
     <application
         android:name=".Arru"
         android:allowBackup="true"
@@ -34,6 +47,18 @@
                 android:value="true"
                 />
         </service>
+
+        <service
+            android:name=".service.DataExportService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            />
+
+        <receiver
+            android:name=".broadcast.DataExportServiceStopActionReceiver"
+            android:exported="false"
+            />
 
     </application>
 

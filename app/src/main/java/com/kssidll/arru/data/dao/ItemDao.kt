@@ -2,7 +2,7 @@ package com.kssidll.arru.data.dao
 
 import androidx.room.*
 import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemDao {
@@ -58,4 +58,13 @@ interface ItemDao {
 
     @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
     fun newestFlow(): Flow<Item?>
+
+    @Query("SELECT COUNT(*) FROM item")
+    suspend fun totalCount(): Int
+
+    @Query("SELECT item.* FROM item ORDER BY id LIMIT :limit OFFSET :offset")
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<Item>
 }

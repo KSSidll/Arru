@@ -1,11 +1,14 @@
 package com.kssidll.arru
 
-import android.app.*
-import android.content.*
-import android.content.res.Configuration.*
-import androidx.compose.ui.tooling.preview.*
-import dagger.hilt.android.*
-import kotlin.system.*
+import android.app.Application
+import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.HiltAndroidApp
+import kotlin.system.exitProcess
 
 @HiltAndroidApp
 class Arru: Application() {
@@ -25,6 +28,8 @@ class Arru: Application() {
 }
 
 const val DAY_IN_MILIS: Long = 86400000
+
+const val APPLICATION_NAME = "Arru"
 
 @Preview(
     group = "Expanded",

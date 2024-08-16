@@ -2,25 +2,29 @@ package com.kssidll.arru.ui.screen.settings
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.*
-import com.kssidll.arru.ui.component.other.*
-import com.kssidll.arru.ui.screen.settings.component.*
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.domain.AppLocale
+import com.kssidll.arru.ui.component.other.SecondaryAppBar
+import com.kssidll.arru.ui.screen.settings.component.LanguageExposedDropdown
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
 
 /**
  * @param setLocale Callback called as request to change current Locale. Provides requested locale as parameter
  * @param onBack Called to request a back navigation
  * @param onBackupsClick Called when the backups button is clicked
+ * @param onExportClick Called when the export button is clicked
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +32,7 @@ internal fun SettingsScreen(
     setLocale: (locale: AppLocale?) -> Unit,
     onBack: () -> Unit,
     onBackupsClick: () -> Unit,
+    onExportClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -89,6 +94,33 @@ internal fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                Button(
+                    onClick = {
+                        onExportClick()
+                    }
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .width(210.dp)
+                    ) {
+                        Text(
+                            text = "TEST EXPORT",
+                            style = Typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Icon(
+                            imageVector = Icons.Default.ImportExport,
+                            contentDescription = null,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 LanguageExposedDropdown(setLocale = setLocale)
             }
         }
@@ -105,6 +137,7 @@ private fun SettingsScreenPreview() {
                 setLocale = {},
                 onBack = {},
                 onBackupsClick = {},
+                onExportClick = {},
             )
         }
     }
