@@ -111,4 +111,5 @@
     <string name="merge_action_chose_candidate">Wybierz to jako kandydata do operacji połączenia</string>
     <string name="no_data_to_display_text">Nie ma jeszcze nic do wyświetlenia :(</string>
     <string name="no_data_to_display_add_transaction_hint">Spróbuj dodać transakcje</string>
+    <string name="export">Eksport</string>
 </resources>

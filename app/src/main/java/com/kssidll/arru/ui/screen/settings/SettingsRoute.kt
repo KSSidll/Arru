@@ -57,6 +57,10 @@ fun SettingsRoute(
         onBackupsClick = navigateBackups,
         onExportClick = {
             exportFolderPickerLauncher.launch(null)
+        },
+        currentExportType = viewModel.currentExportType.value,
+        onExportTypeChange = {
+            viewModel.setExportType(it)
         }
     )
 }

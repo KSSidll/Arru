@@ -111,4 +111,5 @@
     <string name="merge_action_chose_candidate">Choose this as the candidate for merge operation</string>
     <string name="no_data_to_display_text">There is nothing to display yet :(</string>
     <string name="no_data_to_display_add_transaction_hint">Try adding a transaction</string>
+    <string name="export">Export</string>
 </resources>

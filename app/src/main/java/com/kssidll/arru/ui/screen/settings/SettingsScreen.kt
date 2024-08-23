@@ -2,18 +2,25 @@ package com.kssidll.arru.ui.screen.settings
 
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Backup
-import androidx.compose.material.icons.filled.ImportExport
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
+import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.domain.AppLocale
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.screen.settings.component.LanguageExposedDropdown
@@ -33,6 +40,8 @@ internal fun SettingsScreen(
     onBack: () -> Unit,
     onBackupsClick: () -> Unit,
     onExportClick: () -> Unit,
+    currentExportType: AppPreferences.Export.Type.Values,
+    onExportTypeChange: (AppPreferences.Export.Type.Values) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -94,28 +103,126 @@ internal fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = {
-                        onExportClick()
-                    }
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
+                val layoutDirection = LocalLayoutDirection.current
+
+                val buttonStartPadding =
+                    ButtonDefaults.ContentPadding.calculateStartPadding(layoutDirection)
+                val buttonEndPadding =
+                    ButtonDefaults.ContentPadding.calculateEndPadding(layoutDirection)
+
+                val exportTypeExpanded = remember {
+                    mutableStateOf(false)
+                }
+
+                Row {
+                    Button(
+                        shape = RoundedCornerShape(
+                            topStartPercent = 50,
+                            bottomStartPercent = 50,
+                        ),
+                        onClick = {
+
+                        },
+                        contentPadding = PaddingValues(0.dp),
                         modifier = Modifier
-                            .padding(vertical = 4.dp)
-                            .width(210.dp)
+                            .width(180.dp + buttonStartPadding)
+                            .height(ButtonDefaults.MinHeight + 4.dp)
                     ) {
                         Text(
-                            text = "TEST EXPORT",
+                            text = stringResource(id = R.string.export),
                             style = Typography.titleMedium
                         )
+                    }
 
-                        Spacer(modifier = Modifier.width(10.dp))
-
+                    Button(
+                        shape = RoundedCornerShape(
+                            topEndPercent = 50,
+                            bottomEndPercent = 50,
+                        ),
+                        onClick = {
+                            exportTypeExpanded.value = true
+                        },
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        modifier = Modifier
+                            .width(30.dp + buttonEndPadding)
+                            .height(ButtonDefaults.MinHeight + 4.dp)
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.ImportExport,
+                            imageVector = Icons.Default.ArrowDownward,
                             contentDescription = null,
+                            modifier = Modifier.padding(12.dp)
                         )
+
+                        DropdownMenu(
+                            expanded = exportTypeExpanded.value,
+                            onDismissRequest = {
+                                exportTypeExpanded.value = false
+                            },
+                            offset = DpOffset(
+                                x = 30.dp,
+                                y = 0.dp
+                            )
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (currentExportType == AppPreferences.Export.Type.Values.CompactCSV) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        } else {
+                                            Spacer(modifier = Modifier.width(24.dp))
+                                        }
+
+                                        Spacer(modifier = Modifier.width(4.dp))
+
+                                        Text(
+                                            text = "Compact CSV"
+                                        )
+                                    }
+                                },
+                                onClick = {
+                                    exportTypeExpanded.value = false
+                                    onExportTypeChange(AppPreferences.Export.Type.Values.CompactCSV)
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (currentExportType == AppPreferences.Export.Type.Values.RawCSV) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        } else {
+                                            Spacer(modifier = Modifier.width(24.dp))
+                                        }
+
+                                        Spacer(modifier = Modifier.width(4.dp))
+
+                                        Text(
+                                            text = "Raw CSV"
+                                        )
+                                    }
+                                },
+                                onClick = {
+                                    exportTypeExpanded.value = false
+                                    onExportTypeChange(AppPreferences.Export.Type.Values.RawCSV)
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -138,6 +245,8 @@ private fun SettingsScreenPreview() {
                 onBack = {},
                 onBackupsClick = {},
                 onExportClick = {},
+                currentExportType = AppPreferences.Export.Type.Values.CompactCSV,
+                onExportTypeChange = {}
             )
         }
     }

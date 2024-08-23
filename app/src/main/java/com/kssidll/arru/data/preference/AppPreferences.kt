@@ -80,6 +80,45 @@ data object AppPreferences {
             }
         }
     }
+
+    /**
+     * Data associated with export datastore preferences
+     */
+    data object Export {
+        /**
+         * Data associated with export type datastore preference
+         */
+        data object Type {
+            /**
+             * Key for export type preference key-value pair
+             */
+            val key: Preferences.Key<Int> = intPreferencesKey("exporttype")
+
+            /**
+             * Value for default export type
+             */
+            val DEFAULT = Values.CompactCSV
+
+            enum class Values {
+                /**
+                 * Value for compact csv export
+                 */
+                CompactCSV,
+
+                /**
+                 * Value for raw csv export
+                 */
+                RawCSV,
+
+                ;
+
+                companion object {
+                    private val idMap = Values.entries.associateBy { it.ordinal }
+                    fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -98,6 +137,12 @@ suspend fun Preferences.setNullToDefault(context: Context) {
     if (this[AppPreferences.Transaction.Date.key] == null) {
         context.dataStore.edit {
             it[AppPreferences.Transaction.Date.key] = AppPreferences.Transaction.Date.DEFAULT.ordinal
+        }
+    }
+
+    if (this[AppPreferences.Export.Type.key] == null) {
+        context.dataStore.edit {
+            it[AppPreferences.Export.Type.key] = AppPreferences.Export.Type.DEFAULT.ordinal
         }
     }
 }
@@ -127,4 +172,27 @@ suspend fun AppPreferences.setTransactionDate(context: Context, newDatePreferenc
  */
 fun Preferences.getTransactionDate(): AppPreferences.Transaction.Date.Values {
     return this[AppPreferences.Transaction.Date.key]?.let { AppPreferences.Transaction.Date.Values.getByOrdinal(it) } ?: AppPreferences.Transaction.Date.DEFAULT
+}
+
+/**
+ * Sets the export type preference to a new value
+ * @param context App context
+ * @param newExportType Value to set the export type preference to
+ */
+suspend fun AppPreferences.setExportType(
+    context: Context,
+    newExportType: AppPreferences.Export.Type.Values
+) {
+    context.dataStore.edit {
+        it[AppPreferences.Export.Type.key] = newExportType.ordinal
+    }
+}
+
+/**
+ * Returns the export type preference value
+ * @return The export type preference value
+ */
+fun Preferences.getExportType(): AppPreferences.Export.Type.Values {
+    return this[AppPreferences.Export.Type.key]?.let { AppPreferences.Export.Type.Values.getByOrdinal(it) }
+        ?: AppPreferences.Export.Type.DEFAULT
 }
