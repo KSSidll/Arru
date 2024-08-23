@@ -1,9 +1,11 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import me.xdrop.fuzzywuzzy.*
+import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.NameSource
+import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomStringValue
+import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
     foreignKeys = [
@@ -47,9 +49,29 @@ data class Product(
         name.trim()
     )
 
+    /**
+     * Converts the [Product] data to a string with csv format
+     *
+     * Doesn't include the csv headers
+     * @return [Product] data as [String] with csv format
+     */
+    @Ignore
+    fun formatAsCsvString(): String {
+        return "${id};${categoryId};${producerId};${name}"
+    }
+
     companion object {
         @Ignore
         const val INVALID_CATEGORY_ID: Long = Long.MIN_VALUE
+
+        /**
+         * Returns the [String] representing the [Product] csv format headers
+         * @return [String] representing the [Product] csv format headers
+         */
+        @Ignore
+        fun csvHeaders(): String {
+            return "id;categoryId;producerId"
+        }
 
         @Ignore
         fun generate(productId: Long = 0): Product {
@@ -83,6 +105,23 @@ data class Product(
     @Ignore
     fun validName(): Boolean {
         return name.isNotBlank()
+    }
+}
+
+/**
+ * Converts a list of [Product] data to a list of strings with csv format
+ * @param includeHeaders whether to include the csv headers
+ * @return [Product] data as list of string with csv format
+ */
+fun List<Product>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+    // Add headers
+    if (includeHeaders) {
+        add(Product.csvHeaders() + "\n")
+    }
+
+    // Add rows
+    this@asCsvList.forEach {
+        add(it.formatAsCsvString() + "\n")
     }
 }
 

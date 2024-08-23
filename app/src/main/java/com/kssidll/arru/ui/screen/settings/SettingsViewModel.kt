@@ -34,7 +34,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun exportWithService(uri: Uri) = viewModelScope.launch {
-        DataExportService.startExportCsv(
+        DataExportService.startExportCsvRaw(
             appContext,
             uri
         )

@@ -1,9 +1,9 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
+import androidx.paging.PagingData
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface ProductRepositorySource {
     companion object {
@@ -259,4 +259,17 @@ interface ProductRepositorySource {
      * @return list of all [Product] as flow
      */
     fun allFlow(): Flow<Data<List<Product>>>
+
+    /**
+     * @return total count of [Product]
+     */
+    suspend fun totalCount(): Int
+
+    /**
+     * @return list of at most [limit] products offset by [offset]
+     */
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<Product>
 }

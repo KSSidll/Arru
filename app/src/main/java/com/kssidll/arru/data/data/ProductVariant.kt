@@ -1,9 +1,10 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import me.xdrop.fuzzywuzzy.*
+import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomStringValue
+import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
     foreignKeys = [
@@ -32,7 +33,28 @@ data class ProductVariant(
         name.trim()
     )
 
+    /**
+     * Converts the [ProductVariant] data to a string with csv format
+     *
+     * Doesn't include the csv headers
+     * @return [ProductVariant] data as [String] with csv format
+     */
+    @Ignore
+    fun formatAsCsvString(): String {
+        return "${id};${productId};${name}"
+    }
+
+
     companion object {
+        /**
+         * Returns the [String] representing the [ProductVariant] csv format headers
+         * @return [String] representing the [ProductVariant] csv format headers
+         */
+        @Ignore
+        fun csvHeaders(): String {
+            return "id;productId;name"
+        }
+
         @Ignore
         fun generate(variantId: Long = 0): ProductVariant {
             return ProductVariant(
@@ -64,5 +86,22 @@ data class ProductVariant(
     @Ignore
     fun validName(): Boolean {
         return name.isNotBlank()
+    }
+}
+
+/**
+ * Converts a list of [ProductVariant] data to a list of strings with csv format
+ * @param includeHeaders whether to include the csv headers
+ * @return [ProductVariant] data as list of string with csv format
+ */
+fun List<ProductVariant>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+    // Add headers
+    if (includeHeaders) {
+        add(ProductVariant.csvHeaders() + "\n")
+    }
+
+    // Add rows
+    this@asCsvList.forEach {
+        add(it.formatAsCsvString() + "\n")
     }
 }

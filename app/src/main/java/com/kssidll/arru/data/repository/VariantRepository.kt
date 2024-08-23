@@ -1,11 +1,12 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.dao.VariantDao
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
@@ -141,5 +142,19 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
             .onStart { Data.Loading<List<ProductVariant>>() }
+    }
+
+    override suspend fun totalCount(): Int {
+        return dao.totalCount()
+    }
+
+    override suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<ProductVariant> {
+        return dao.getPagedList(
+            limit,
+            offset
+        )
     }
 }

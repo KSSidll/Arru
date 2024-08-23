@@ -21,8 +21,8 @@ import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.MainActivity
 import com.kssidll.arru.R
 import com.kssidll.arru.broadcast.DataExportServiceStopActionReceiver
-import com.kssidll.arru.data.database.exportDataToCsv
-import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.database.exportDataAsRawCsv
+import com.kssidll.arru.data.repository.*
 import com.kssidll.arru.helper.checkPermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +35,7 @@ import javax.inject.Inject
  * Possible actions that the [DataExportService] can perform
  */
 enum class DataExportServiceActions {
-    START_EXPORT_CSV,
+    START_EXPORT_CSV_RAW,
     STOP
 }
 
@@ -46,7 +46,24 @@ class DataExportService: Service() {
     private lateinit var serviceScope: CoroutineScope
 
     @Inject
+    lateinit var categoryRepository: CategoryRepositorySource
+    @Inject
     lateinit var itemRepository: ItemRepositorySource
+
+    @Inject
+    lateinit var producerRepository: ProducerRepositorySource
+
+    @Inject
+    lateinit var productRepository: ProductRepositorySource
+
+    @Inject
+    lateinit var shopRepository: ShopRepositorySource
+
+    @Inject
+    lateinit var transactionRepository: TransactionBasketRepositorySource
+
+    @Inject
+    lateinit var variantRepository: VariantRepositorySource
 
     /**
      * How much data is there to export
@@ -74,7 +91,7 @@ class DataExportService: Service() {
 
         if (intent != null) {
             when (intent.action) {
-                DataExportServiceActions.START_EXPORT_CSV.name -> startExportCsvAction(intent)
+                DataExportServiceActions.START_EXPORT_CSV_RAW.name -> startExportCsvRawAction(intent)
                 DataExportServiceActions.STOP.name -> stopAction(intent)
                 else -> Log.e(
                     TAG,
@@ -115,17 +132,17 @@ class DataExportService: Service() {
         serviceJob.cancel()
     }
 
-    private fun startExportCsvAction(intent: Intent) {
+    private fun startExportCsvRawAction(intent: Intent) {
         Log.d(
             TAG,
-            "startExportCsvAction: Attempting to start"
+            "startExportCsvRawAction: Attempting to start"
         )
 
         // early return if already started
         if (getServiceState(SERVICE_NAME) == ServiceState.STARTED) {
             Log.d(
                 TAG,
-                "startExportCsvAction: Service already set as running"
+                "startExportCsvRawAction: Service already set as running"
             )
             return
         }
@@ -135,9 +152,10 @@ class DataExportService: Service() {
             SERVICE_NAME,
             ServiceState.STARTED
         )
+
         Log.d(
             TAG,
-            "startExportCsvAction: Started"
+            "startExportCsvRawAction: Started"
         )
 
         createNotificationChannel()
@@ -161,10 +179,16 @@ class DataExportService: Service() {
 
         serviceScope.launch {
             if (uri != null) {
-                exportDataToCsv(
+                exportDataAsRawCsv(
                     context = applicationContext,
                     uri = uri,
+                    categoryRepository = categoryRepository,
                     itemRepository = itemRepository,
+                    producerRepository = producerRepository,
+                    productRepository = productRepository,
+                    shopRepository = shopRepository,
+                    transactionRepository = transactionRepository,
+                    variantRepository = variantRepository,
                     onMaxProgressChange = {
                         totalDataSize = it
                         updateNotification(false)
@@ -180,7 +204,7 @@ class DataExportService: Service() {
             } else {
                 Log.d(
                     TAG,
-                    "startExportCsvAction: Didn't receive uri"
+                    "startExportCsvRawAction: Didn't receive uri"
                 )
             }
 
@@ -430,11 +454,11 @@ class DataExportService: Service() {
         private const val URI_ID_KEY = "${TAG}_URI"
 
         /**
-         * Helper function to start the service with csv export
+         * Helper function to start the service with raw csv export
          * @param context context
-         * @param uri Uri of the zip file to export the data into
+         * @param uri Uri of the directory to save the files into
          */
-        fun startExportCsv(
+        fun startExportCsvRaw(
             context: Context,
             uri: Uri,
         ) {
@@ -442,7 +466,7 @@ class DataExportService: Service() {
                 context,
                 DataExportService::class.java
             ).also { intent ->
-                intent.action = DataExportServiceActions.START_EXPORT_CSV.name
+                intent.action = DataExportServiceActions.START_EXPORT_CSV_RAW.name
 
                 intent.putExtra(
                     URI_ID_KEY,

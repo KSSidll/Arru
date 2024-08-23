@@ -1,9 +1,13 @@
 package com.kssidll.arru.data.data
 
-import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import me.xdrop.fuzzywuzzy.*
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.NameSource
+import com.kssidll.arru.helper.generateRandomStringValue
+import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
     indices = [
@@ -17,7 +21,27 @@ data class Shop(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
 ): FuzzySearchSource, NameSource {
+    /**
+     * Converts the [Shop] data to a string with csv format
+     *
+     * Doesn't include the csv headers
+     * @return [Shop] data as [String] with csv format
+     */
+    @Ignore
+    fun formatAsCsvString(): String {
+        return "${id};${name}"
+    }
+
     companion object {
+        /**
+         * Returns the [String] representing the [Shop] csv format headers
+         * @return [String] representing the [Shop] csv format headers
+         */
+        @Ignore
+        fun csvHeaders(): String {
+            return "id;name"
+        }
+
         @Ignore
         fun generate(shopId: Long = 0): Shop {
             return Shop(
@@ -61,5 +85,22 @@ data class Shop(
     @Ignore
     override fun name(): String {
         return name
+    }
+}
+
+/**
+ * Converts a list of [Shop] data to a list of strings with csv format
+ * @param includeHeaders whether to include the csv headers
+ * @return [Shop] data as list of string with csv format
+ */
+fun List<Shop>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+    // Add headers
+    if (includeHeaders) {
+        add(Shop.csvHeaders() + "\n")
+    }
+
+    // Add rows
+    this@asCsvList.forEach {
+        add(it.formatAsCsvString() + "\n")
     }
 }

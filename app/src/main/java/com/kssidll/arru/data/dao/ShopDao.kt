@@ -2,7 +2,7 @@ package com.kssidll.arru.data.dao
 
 import androidx.room.*
 import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShopDao {
@@ -309,4 +309,13 @@ interface ShopDao {
 
     @Query("SELECT shop.* FROM shop ORDER BY shop.id DESC")
     fun allFlow(): Flow<List<Shop>>
+
+    @Query("SELECT COUNT(*) FROM shop")
+    suspend fun totalCount(): Int
+
+    @Query("SELECT shop.* FROM shop ORDER BY id LIMIT :limit OFFSET :offset")
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<Shop>
 }

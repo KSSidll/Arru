@@ -1,8 +1,9 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface VariantRepositorySource {
     companion object {
@@ -119,4 +120,17 @@ interface VariantRepositorySource {
      * @return list of [ProductVariant] matching [product] as flow
      */
     fun byProductFlow(product: Product): Flow<Data<List<ProductVariant>>>
+
+    /**
+     * @return total count of [ProductVariant]
+     */
+    suspend fun totalCount(): Int
+
+    /**
+     * @return list of at most [limit] variants offset by [offset]
+     */
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<ProductVariant>
 }

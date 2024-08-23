@@ -1,14 +1,19 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.TransactionBasketDao
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionBasketItem
+import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionSpentByTime
+import com.kssidll.arru.data.paging.TransactionBasketWithItemsPagingSource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.ItemInsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class TransactionBasketRepository(private val dao: TransactionBasketDao): TransactionBasketRepositorySource {
@@ -219,5 +224,29 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao): Transa
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
             .onStart { Data.Loading<TransactionBasketWithItems>() }
+    }
+
+    override suspend fun totalCount(): Int {
+        return dao.totalCount()
+    }
+
+    override suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<TransactionBasket> {
+        return dao.getPagedList(
+            limit,
+            offset
+        )
+    }
+
+    override suspend fun getPagedItemList(
+        limit: Int,
+        offset: Int
+    ): List<TransactionBasketItem> {
+        return dao.getPagedItemList(
+            limit,
+            offset
+        )
     }
 }
