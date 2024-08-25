@@ -4,8 +4,10 @@ import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
@@ -31,6 +33,7 @@ import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.data.repository.VariantRepositorySource
 import com.kssidll.arru.helper.checkPermission
+import com.kssidll.arru.helper.getLocalizedString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -83,6 +86,19 @@ class DataExportService: Service() {
      */
     private var exportedDataSize = 0
 
+    private fun registerLocaleChangeReceiver() {
+        val filter = IntentFilter(Intent.ACTION_LOCALE_CHANGED)
+        registerReceiver(localeChangeReceiver, filter)
+    }
+
+    private val localeChangeReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == Intent.ACTION_LOCALE_CHANGED) {
+                updateNotificationChannel()
+            }
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -130,6 +146,9 @@ class DataExportService: Service() {
         // Initialize the scope
         serviceJob = Job()
         serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+
+        // Initialize receivers
+        registerLocaleChangeReceiver()
     }
 
     override fun onDestroy() {
@@ -140,6 +159,7 @@ class DataExportService: Service() {
             "onDestroy: Service destroyed"
         )
 
+        unregisterReceiver(localeChangeReceiver)
         serviceJob.cancel()
     }
 
@@ -353,17 +373,43 @@ class DataExportService: Service() {
 
         val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-        val channel = NotificationChannelCompat.Builder(
+        notificationManager.createNotificationChannel(makeNotificationChannel())
+    }
+
+    /**
+     * Updates the notification channel for the service
+     *
+     * Changes the name and the description to current locale
+     */
+    private fun updateNotificationChannel() {
+        Log.d(
+            TAG,
+            "updateNotificationChannel: updating"
+        )
+
+        val notificationManager = NotificationManagerCompat.from(applicationContext)
+
+        notificationManager.createNotificationChannel(makeNotificationChannel())
+    }
+
+    /**
+     * @return notification channel for the service
+     */
+    private fun makeNotificationChannel(): NotificationChannelCompat {
+        Log.d(
+            TAG,
+            "makeNotificationChannel: making"
+        )
+
+        return NotificationChannelCompat.Builder(
             NOTIFICATION_CHANNEL_ID,
             NotificationManagerCompat.IMPORTANCE_LOW
         )
-            .setName("Data Export") // TODO localization
-            .setDescription("Data Export") // TODO localization
+            .setName(getLocalizedString(R.string.service_data_export_name))
+            .setDescription(getLocalizedString(R.string.service_data_export_description))
             .setLightsEnabled(false)
             .setVibrationEnabled(false)
             .build()
-
-        notificationManager.createNotificationChannel(channel)
     }
 
     /**
@@ -415,14 +461,14 @@ class DataExportService: Service() {
 
         val stopServiceAction = NotificationCompat.Action.Builder(
             R.drawable.close,
-            "Cancel",
+            getLocalizedString(R.string.service_data_export_cancel),
             stopServicePendingIntent
         )
             .build()
 
         return builder
             .setContentTitle(APPLICATION_NAME)
-            .setContentText("Exporting Data: $exportedDataSize/$totalDataSize") // TODO localization
+            .setContentText("${getLocalizedString(R.string.service_data_export_notification_progress)}: $exportedDataSize/$totalDataSize")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .addAction(stopServiceAction)
@@ -451,7 +497,7 @@ class DataExportService: Service() {
             NOTIFICATION_CHANNEL_ID
         )
             .setContentTitle(APPLICATION_NAME)
-            .setContentText("Finished Exporting Data") // TODO localization
+            .setContentText(getLocalizedString(R.string.service_data_export_notification_finished))
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setSilent(true)
             .setAutoCancel(true)

@@ -86,6 +86,13 @@
     <string name="month">Miesiąc</string>
     <string name="year">Rok</string>
 
+    <string name="export">Eksport</string>
+    <string name="service_data_export_name">Eksport danych</string>
+    <string name="service_data_export_description">Eksport danych</string>
+    <string name="service_data_export_notification_finished">Zakończono eksportowanie danych</string>
+    <string name="service_data_export_notification_progress">Eksport danych</string>
+    <string name="service_data_export_cancel">Anuluj</string>
+
     <string name="categories">Kategorie</string>
     <string name="shops">Sklepy</string>
     <string name="delete">Usuń</string>
@@ -111,5 +118,4 @@
     <string name="merge_action_chose_candidate">Wybierz to jako kandydata do operacji połączenia</string>
     <string name="no_data_to_display_text">Nie ma jeszcze nic do wyświetlenia :(</string>
     <string name="no_data_to_display_add_transaction_hint">Spróbuj dodać transakcje</string>
-    <string name="export">Eksport</string>
 </resources>
