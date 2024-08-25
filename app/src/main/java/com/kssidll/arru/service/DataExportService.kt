@@ -414,7 +414,7 @@ class DataExportService: Service() {
         )
 
         val stopServiceAction = NotificationCompat.Action.Builder(
-            R.drawable.ic_launcher_foreground, // TODO change to icon
+            R.drawable.close,
             "Cancel",
             stopServicePendingIntent
         )
