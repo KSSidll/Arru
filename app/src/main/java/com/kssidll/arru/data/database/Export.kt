@@ -416,7 +416,7 @@ suspend fun exportDataAsCompactCsv(
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
-    batchSize: Int = 100,
+    batchSize: Int = 20,
 ) {
     context.contentResolver.takePersistableUriPermission(
         uri,
