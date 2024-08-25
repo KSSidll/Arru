@@ -1,7 +1,15 @@
 package com.kssidll.arru.data.dao
 
-import androidx.room.*
-import com.kssidll.arru.data.data.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionBasketItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -67,4 +75,7 @@ interface ItemDao {
         limit: Int,
         offset: Int
     ): List<Item>
+
+    @Query("SELECT item.* FROM item JOIN transactionbasketitem ON item.id = transactionbasketitem.itemId WHERE transactionBasketId = :transactionId")
+    suspend fun getByTransaction(transactionId: Long): List<Item>
 }

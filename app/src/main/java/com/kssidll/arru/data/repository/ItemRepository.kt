@@ -7,7 +7,11 @@ import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteRes
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     // Create
@@ -146,5 +150,9 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
             limit,
             offset
         )
+    }
+
+    override suspend fun getByTransaction(transactionId: Long): List<Item> {
+        return dao.getByTransaction(transactionId)
     }
 }

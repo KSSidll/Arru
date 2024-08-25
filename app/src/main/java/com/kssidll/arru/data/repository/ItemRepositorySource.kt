@@ -135,4 +135,9 @@ interface ItemRepositorySource {
         limit: Int,
         offset: Int
     ): List<Item>
+
+    /**
+     * @return list of [Item] contained within the [TransactionBasket] matching the [transactionId]
+     */
+    suspend fun getByTransaction(transactionId: Long): List<Item>
 }

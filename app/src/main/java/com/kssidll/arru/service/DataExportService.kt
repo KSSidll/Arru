@@ -21,8 +21,15 @@ import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.MainActivity
 import com.kssidll.arru.R
 import com.kssidll.arru.broadcast.DataExportServiceStopActionReceiver
+import com.kssidll.arru.data.database.exportDataAsCompactCsv
 import com.kssidll.arru.data.database.exportDataAsRawCsv
-import com.kssidll.arru.data.repository.*
+import com.kssidll.arru.data.repository.CategoryRepositorySource
+import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
+import com.kssidll.arru.data.repository.VariantRepositorySource
 import com.kssidll.arru.helper.checkPermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +43,7 @@ import javax.inject.Inject
  */
 enum class DataExportServiceActions {
     START_EXPORT_CSV_RAW,
+    START_EXPORT_CSV_COMPACT,
     STOP
 }
 
@@ -92,6 +100,9 @@ class DataExportService: Service() {
         if (intent != null) {
             when (intent.action) {
                 DataExportServiceActions.START_EXPORT_CSV_RAW.name -> startExportCsvRawAction(intent)
+                DataExportServiceActions.START_EXPORT_CSV_COMPACT.name -> startExportCsvCompactAction(
+                    intent
+                )
                 DataExportServiceActions.STOP.name -> stopAction(intent)
                 else -> Log.e(
                     TAG,
@@ -132,6 +143,90 @@ class DataExportService: Service() {
         serviceJob.cancel()
     }
 
+    private fun init() {
+        createNotificationChannel()
+
+        ServiceCompat.startForeground(
+            this,
+            SERVICE_NOTIFICATION_ID,
+            createNotification(),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            } else {
+                0
+            }
+        )
+    }
+
+    private fun startExportCsvCompactAction(intent: Intent) {
+        Log.d(
+            TAG,
+            "startExportCsvCompactAction: Attempting to start"
+        )
+
+        // early return if already started
+        if (getServiceState(SERVICE_NAME) == ServiceState.STARTED) {
+            Log.d(
+                TAG,
+                "startExportCsvCompactAction: Service already set as running"
+            )
+            return
+        }
+
+        // set as started
+        setServiceState(
+            SERVICE_NAME,
+            ServiceState.STARTED
+        )
+
+        Log.d(
+            TAG,
+            "startExportCsvCompactAction: Started"
+        )
+
+        init()
+
+        val uri = IntentCompat.getParcelableExtra(
+            intent,
+            URI_ID_KEY,
+            Uri::class.java
+        )
+
+        serviceScope.launch {
+            if (uri != null) {
+                exportDataAsCompactCsv(
+                    context = applicationContext,
+                    uri = uri,
+                    categoryRepository = categoryRepository,
+                    itemRepository = itemRepository,
+                    producerRepository = producerRepository,
+                    productRepository = productRepository,
+                    shopRepository = shopRepository,
+                    transactionRepository = transactionRepository,
+                    variantRepository = variantRepository,
+                    onMaxProgressChange = {
+                        totalDataSize = it
+                        updateNotification(false)
+                    },
+                    onProgressChange = {
+                        exportedDataSize = it
+                        updateNotification(false)
+                    },
+                    onFinished = {
+                        updateNotification(true)
+                    }
+                )
+            } else {
+                Log.d(
+                    TAG,
+                    "startExportCsvCompactAction: Didn't receive uri"
+                )
+            }
+
+            stop(false)
+        }
+    }
+
     private fun startExportCsvRawAction(intent: Intent) {
         Log.d(
             TAG,
@@ -158,18 +253,7 @@ class DataExportService: Service() {
             "startExportCsvRawAction: Started"
         )
 
-        createNotificationChannel()
-
-        ServiceCompat.startForeground(
-            this,
-            SERVICE_NOTIFICATION_ID,
-            createNotification(),
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-            } else {
-                0
-            }
-        )
+        init()
 
         val uri = IntentCompat.getParcelableExtra(
             intent,
@@ -453,20 +537,16 @@ class DataExportService: Service() {
         const val NOTIFICATION_CHANNEL_ID = "Data export"
         private const val URI_ID_KEY = "${TAG}_URI"
 
-        /**
-         * Helper function to start the service with raw csv export
-         * @param context context
-         * @param uri Uri of the directory to save the files into
-         */
-        fun startExportCsvRaw(
+        internal fun start(
             context: Context,
             uri: Uri,
+            action: DataExportServiceActions
         ) {
             Intent(
                 context,
                 DataExportService::class.java
             ).also { intent ->
-                intent.action = DataExportServiceActions.START_EXPORT_CSV_RAW.name
+                intent.action = action.name
 
                 intent.putExtra(
                     URI_ID_KEY,
@@ -479,6 +559,38 @@ class DataExportService: Service() {
                     context.startService(intent)
                 }
             }
+        }
+
+        /**
+         * Helper function to start the service with compact csv export
+         * @param context context
+         * @param uri Uri of the directory to save the files into
+         */
+        fun startExportCsvCompact(
+            context: Context,
+            uri: Uri,
+        ) {
+            start(
+                context,
+                uri,
+                DataExportServiceActions.START_EXPORT_CSV_COMPACT
+            )
+        }
+
+        /**
+         * Helper function to start the service with raw csv export
+         * @param context context
+         * @param uri Uri of the directory to save the files into
+         */
+        fun startExportCsvRaw(
+            context: Context,
+            uri: Uri,
+        ) {
+            start(
+                context,
+                uri,
+                DataExportServiceActions.START_EXPORT_CSV_RAW
+            )
         }
 
         /**

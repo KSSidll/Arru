@@ -6,6 +6,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.kssidll.arru.di.module.dataStore
+import com.kssidll.arru.di.module.getPreferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Data associated with datastore preferences
@@ -168,10 +171,18 @@ suspend fun AppPreferences.setTransactionDate(context: Context, newDatePreferenc
 
 /**
  * Returns the transaction date preference value
+ * @param context App context
  * @return The transaction date preference value
  */
-fun Preferences.getTransactionDate(): AppPreferences.Transaction.Date.Values {
-    return this[AppPreferences.Transaction.Date.key]?.let { AppPreferences.Transaction.Date.Values.getByOrdinal(it) } ?: AppPreferences.Transaction.Date.DEFAULT
+fun AppPreferences.getTransactionDate(context: Context): Flow<AppPreferences.Transaction.Date.Values> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Transaction.Date.key]?.let {
+            AppPreferences.Transaction.Date.Values.getByOrdinal(
+                it
+            )
+        }
+            ?: AppPreferences.Transaction.Date.DEFAULT
+    }
 }
 
 /**
@@ -183,16 +194,23 @@ suspend fun AppPreferences.setExportType(
     context: Context,
     newExportType: AppPreferences.Export.Type.Values
 ) {
-    context.dataStore.edit {
+    getPreferencesDataStore(context).edit {
         it[AppPreferences.Export.Type.key] = newExportType.ordinal
     }
 }
 
 /**
  * Returns the export type preference value
+ * @param context App context
  * @return The export type preference value
  */
-fun Preferences.getExportType(): AppPreferences.Export.Type.Values {
-    return this[AppPreferences.Export.Type.key]?.let { AppPreferences.Export.Type.Values.getByOrdinal(it) }
-        ?: AppPreferences.Export.Type.DEFAULT
+fun AppPreferences.getExportType(context: Context): Flow<AppPreferences.Export.Type.Values> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Export.Type.key]?.let {
+            AppPreferences.Export.Type.Values.getByOrdinal(
+                it
+            )
+        }
+            ?: AppPreferences.Export.Type.DEFAULT
+    }
 }

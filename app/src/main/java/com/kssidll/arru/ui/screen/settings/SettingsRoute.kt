@@ -6,10 +6,12 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.service.DataExportService
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
@@ -58,7 +60,7 @@ fun SettingsRoute(
         onExportClick = {
             exportFolderPickerLauncher.launch(null)
         },
-        currentExportType = viewModel.currentExportType.value,
+        currentExportType = viewModel.currentExportType.collectAsState(initial = AppPreferences.Export.Type.DEFAULT).value,
         onExportTypeChange = {
             viewModel.setExportType(it)
         }

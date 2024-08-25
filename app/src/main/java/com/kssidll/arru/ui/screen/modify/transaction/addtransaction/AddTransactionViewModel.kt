@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.transaction.addtransaction
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.data.preference.AppPreferences
@@ -16,6 +15,7 @@ import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -23,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
-    private val preferences: Preferences,
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
@@ -47,7 +46,8 @@ class AddTransactionViewModel @Inject constructor(
             screenState.selectedShop.value = Field.Loaded(shop)
 
             screenState.date.apply {
-                value = when (preferences.getTransactionDate()) {
+                value = when (AppPreferences.getTransactionDate(appContext)
+                    .first()) {
                     AppPreferences.Transaction.Date.Values.CURRENT -> {
                         Field.Loaded(Calendar.getInstance().timeInMillis)
                     }

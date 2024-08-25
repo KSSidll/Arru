@@ -5,10 +5,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatDelegate.setApplicationLocales
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.os.LocaleListCompat
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.preference.AppPreferences
@@ -18,23 +15,23 @@ import com.kssidll.arru.domain.AppLocale
 import com.kssidll.arru.service.DataExportService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    @ApplicationContext private val appContext: Context,
-    preferences: Preferences
+    @ApplicationContext private val appContext: Context
 ): ViewModel() {
-    val currentExportType: MutableState<AppPreferences.Export.Type.Values> =
-        mutableStateOf(preferences.getExportType())
+    val currentExportType: Flow<AppPreferences.Export.Type.Values> =
+        AppPreferences.getExportType(appContext)
 
     fun setExportType(newType: AppPreferences.Export.Type.Values) = viewModelScope.launch {
         AppPreferences.setExportType(
             appContext,
             newType
         )
-        currentExportType.value = newType
     }
 
     /**
@@ -51,9 +48,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun exportWithService(uri: Uri) = viewModelScope.launch {
-        when (currentExportType.value) {
+        when (AppPreferences.getExportType(appContext).first()) {
             AppPreferences.Export.Type.Values.CompactCSV -> {
-
+                DataExportService.startExportCsvCompact(
+                    appContext,
+                    uri
+                )
             }
 
             AppPreferences.Export.Type.Values.RawCSV -> {
