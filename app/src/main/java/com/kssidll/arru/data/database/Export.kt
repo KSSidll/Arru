@@ -471,7 +471,7 @@ suspend fun exportDataAsCompactCsv(
         ?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity".toByteArray()
+                    "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity\n".toByteArray()
                 )
 
                 var offset = 0
@@ -481,7 +481,6 @@ suspend fun exportDataAsCompactCsv(
                         offset = offset
                     )
 
-                    outputStream.write("\n".toByteArray())
                     transactions.forEach { transactionData ->
                         val shop =
                             transactionData.shopId?.let { shopRepository.get(it) }?.name ?: "null"
