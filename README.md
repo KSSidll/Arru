@@ -45,6 +45,7 @@
 - Light/Dark mode
 - Wide screen support
 - Local backups
+- Data Export ([documentation](docs/export.md))
 - Polish and English localization
 - Transaction baskets tracking your total expenditure with optional product, category, shop and producer spending tracking
 - Comparisons between prices at different shops
