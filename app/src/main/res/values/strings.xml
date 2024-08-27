@@ -86,6 +86,8 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
 
+    <string name="export_location">Export location</string>
+    <string name="export_type">Export type</string>
     <string name="export">Export</string>
     <string name="service_data_export_name">Data Export</string>
     <string name="service_data_export_description">Data Export</string>

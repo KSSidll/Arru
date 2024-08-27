@@ -1,7 +1,6 @@
 package com.kssidll.arru.data.database
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.provider.DocumentsContractCompat
@@ -50,11 +49,6 @@ suspend fun exportDataAsRawCsv(
     onFinished: () -> Unit,
     batchSize: Int = 5000,
 ) {
-    context.contentResolver.takePersistableUriPermission(
-        uri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-    )
-
     var maxProgress = 0
     var progress = 0
 
@@ -76,11 +70,6 @@ suspend fun exportDataAsRawCsv(
     addMaxProgress(transactionRepository.totalCount())
     addMaxProgress(variantRepository.totalCount())
 
-    val parentUri = DocumentsContractCompat.buildDocumentUriUsingTree(
-        uri,
-        DocumentsContractCompat.getTreeDocumentId(uri)!!
-    )!!
-
     val timeNow = Calendar.getInstance().time
 
     val timeFormatted = SimpleDateFormat(
@@ -90,7 +79,7 @@ suspend fun exportDataAsRawCsv(
 
     val exportDirUri = DocumentsContractCompat.createDocument(
         context.contentResolver,
-        parentUri,
+        uri,
         DocumentsContract.Document.MIME_TYPE_DIR,
         "export-raw-csv-${timeFormatted}"
     )!!
@@ -418,11 +407,6 @@ suspend fun exportDataAsCompactCsv(
     onFinished: () -> Unit,
     batchSize: Int = 20,
 ) {
-    context.contentResolver.takePersistableUriPermission(
-        uri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-    )
-
     var maxProgress = 0
     var progress = 0
 
@@ -438,17 +422,17 @@ suspend fun exportDataAsCompactCsv(
 
     addMaxProgress(transactionRepository.totalCount())
 
-    val parentUri = DocumentsContractCompat.buildDocumentUriUsingTree(
-        uri,
-        DocumentsContractCompat.getTreeDocumentId(uri)!!
-    )!!
-
     val timeNow = Calendar.getInstance().time
 
     val timeFormatted = SimpleDateFormat(
         "dd-MM-yyyy-HH-mm-ss",
         Locale.US
     ).format(timeNow)
+
+    val parentUri = DocumentsContractCompat.buildDocumentUriUsingTree(
+        uri,
+        DocumentsContractCompat.getTreeDocumentId(uri)!!
+    )!!
 
     val exportDirUri = DocumentsContractCompat.createDocument(
         context.contentResolver,

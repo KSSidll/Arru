@@ -1,6 +1,7 @@
 package com.kssidll.arru.data.preference
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -121,6 +122,16 @@ data object AppPreferences {
                 }
             }
         }
+
+        /**
+         * Data associated with export location datastore preference
+         */
+        data object Location {
+            /**
+             * Key for export location preference key-value pair
+             */
+            val key: Preferences.Key<String> = stringPreferencesKey("exportlocation")
+        }
     }
 }
 
@@ -212,5 +223,32 @@ fun AppPreferences.getExportType(context: Context): Flow<AppPreferences.Export.T
             )
         }
             ?: AppPreferences.Export.Type.DEFAULT
+    }
+}
+
+/**
+ * Sets the export location preference to a new value
+ * @param context App context
+ * @param newExportLocation Value to set the export location preference to
+ */
+suspend fun AppPreferences.setExportLocation(
+    context: Context,
+    newExportLocation: Uri
+) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Export.Location.key] = newExportLocation.toString()
+    }
+}
+
+/**
+ * Returns the export location preference value if any
+ * @param context App context
+ * @return The export location preference value if any
+ */
+fun AppPreferences.getExportLocation(context: Context): Flow<Uri?> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Export.Location.key]?.let {
+            Uri.parse(it)
+        }
     }
 }
