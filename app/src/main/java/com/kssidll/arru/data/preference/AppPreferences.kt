@@ -2,10 +2,14 @@ package com.kssidll.arru.data.preference
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.res.stringResource
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.kssidll.arru.R
 import com.kssidll.arru.di.module.dataStore
 import com.kssidll.arru.di.module.getPreferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -115,6 +119,15 @@ data object AppPreferences {
                 RawCSV,
 
                 ;
+
+                @Composable
+                @ReadOnlyComposable
+                fun getTranslation(): String {
+                    return when (this) {
+                        CompactCSV -> stringResource(R.string.export_compact_csv)
+                        RawCSV -> stringResource(R.string.export_raw_csv)
+                    }
+                }
 
                 companion object {
                     private val idMap = Values.entries.associateBy { it.ordinal }

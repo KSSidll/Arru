@@ -204,6 +204,8 @@ class DataExportService: Service() {
             "startExportCsvCompactAction: Started"
         )
 
+        // TODO show snackbar with information that the export started
+
         init()
 
         val uri = IntentCompat.getParcelableExtra(
@@ -272,6 +274,8 @@ class DataExportService: Service() {
             TAG,
             "startExportCsvRawAction: Started"
         )
+
+        // TODO show snackbar with information that the export started
 
         init()
 
@@ -461,7 +465,7 @@ class DataExportService: Service() {
 
         val stopServiceAction = NotificationCompat.Action.Builder(
             R.drawable.close,
-            getLocalizedString(R.string.service_data_export_cancel),
+            getLocalizedString(R.string.data_export_cancel),
             stopServicePendingIntent
         )
             .build()
@@ -522,7 +526,7 @@ class DataExportService: Service() {
             "updateNotification: checking for permisson"
         )
 
-        if (checkPermission(
+        if ((Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) || checkPermission(
                 this,
                 Permissions.NOTIFICATIONS
             )

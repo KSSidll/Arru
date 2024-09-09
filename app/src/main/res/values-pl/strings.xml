@@ -89,11 +89,13 @@
     <string name="export_location">Lokalizacja eksportu</string>
     <string name="export_type">Rodzaj eksportu</string>
     <string name="export">Eksport</string>
+    <string name="export_compact_csv">Kompaktowy CSV</string>
+    <string name="export_raw_csv">Nieprzetworzony CSV</string>
     <string name="service_data_export_name">Eksport danych</string>
     <string name="service_data_export_description">Eksport danych</string>
     <string name="service_data_export_notification_finished">Zakończono eksportowanie danych</string>
     <string name="service_data_export_notification_progress">Eksport danych</string>
-    <string name="service_data_export_cancel">Anuluj</string>
+    <string name="data_export_cancel">Anuluj</string>
 
     <string name="categories">Kategorie</string>
     <string name="shops">Sklepy</string>

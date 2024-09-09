@@ -40,14 +40,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -106,23 +102,6 @@ internal fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState,
-                snackbar = {
-                    SwipeToDismissBox(
-                        state = rememberSwipeToDismissBoxState(),
-                        backgroundContent = {}
-                    ) {
-                        Snackbar(
-                            snackbarData = it,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            contentColor = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
-            )
-        },
         topBar = {
             SecondaryAppBar(
                 onBack = onBack,
@@ -190,14 +169,6 @@ internal fun SettingsScreen(
                         ),
                         onClick = {
                             onExportClick(currentExportType)
-//                            TODO show snackbar after export starts if it's in the background
-//                            scope.launch {
-//                                if (snackbarHostState.currentSnackbarData == null) {
-//                                    snackbarHostState.showSnackbar(
-//                                        message = "Exporting"
-//                                    )
-//                                }
-//                            }
                         },
                         contentPadding = PaddingValues(0.dp),
                         modifier = Modifier
@@ -271,7 +242,8 @@ internal fun SettingsScreen(
                                     ) {
                                         Column(modifier = Modifier.padding(24.dp)) {
                                             Text(
-                                                text = "${stringResource(id = R.string.export_location)}:"
+                                                text = "${stringResource(id = R.string.export_location)}:",
+                                                style = Typography.labelLarge
                                             )
 
                                             Text(
@@ -287,7 +259,8 @@ internal fun SettingsScreen(
 
                                 Column(modifier = Modifier.padding(24.dp)) {
                                     Text(
-                                        text = "${stringResource(id = R.string.export_type)}:"
+                                        text = "${stringResource(id = R.string.export_type)}:",
+                                        style = Typography.labelLarge
                                     )
 
                                     AppPreferences.Export.Type.Values.entries.forEach {
@@ -306,7 +279,8 @@ internal fun SettingsScreen(
                                                 )
                                             ) {
                                                 Text(
-                                                    text = it.name
+                                                    text = it.getTranslation(),
+                                                    style = Typography.labelMedium
                                                 )
 
                                                 Spacer(modifier = Modifier.width(4.dp))
