@@ -1,7 +1,7 @@
 [versions]
 ## Libraries
 # AndroidX
-androidx-activity = "1.9.1"
+androidx-activity = "1.9.2"
 androidx-splashscreen-core = "1.0.1"
 androidx-appcompat = "1.7.0"
 androidx-datastore-preferences = "1.1.1"
@@ -10,7 +10,7 @@ androidx-datastore-preferences = "1.1.1"
 dev-navigation-reimagined = "1.5.0"
 
 # Compose
-androidx-compose-bom = "2024.08.00"
+androidx-compose-bom = "2024.09.00"
 
 # DI
 google-hilt = "2.48"
