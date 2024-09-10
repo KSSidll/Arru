@@ -54,8 +54,6 @@
 
 # Tech Stack & Libraries
 
-- Android Studio Jellyfish 2024.1.1 Patch 2
-
 - [Kotlin](https://kotlinlang.org/) based
 
 - [Coroutines](https://github.com/Kotlin/kotlinx.coroutines) for asynchronous computing
