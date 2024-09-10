@@ -24,6 +24,7 @@ import com.kssidll.arru.MainActivity
 import com.kssidll.arru.R
 import com.kssidll.arru.broadcast.DataExportServiceStopActionReceiver
 import com.kssidll.arru.data.database.exportDataAsCompactCsv
+import com.kssidll.arru.data.database.exportDataAsJson
 import com.kssidll.arru.data.database.exportDataAsRawCsv
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource
@@ -47,6 +48,7 @@ import javax.inject.Inject
 enum class DataExportServiceActions {
     START_EXPORT_CSV_RAW,
     START_EXPORT_CSV_COMPACT,
+    START_EXPORT_JSON,
     STOP
 }
 
@@ -119,6 +121,8 @@ class DataExportService: Service() {
                 DataExportServiceActions.START_EXPORT_CSV_COMPACT.name -> startExportCsvCompactAction(
                     intent
                 )
+
+                DataExportServiceActions.START_EXPORT_JSON.name -> startExportJsonAction(intent)
                 DataExportServiceActions.STOP.name -> stopAction(intent)
                 else -> Log.e(
                     TAG,
@@ -176,6 +180,77 @@ class DataExportService: Service() {
                 0
             }
         )
+    }
+
+    private fun startExportCsvRawAction(intent: Intent) {
+        Log.d(
+            TAG,
+            "startExportCsvRawAction: Attempting to start"
+        )
+
+        // early return if already started
+        if (getServiceState(SERVICE_NAME) == ServiceState.STARTED) {
+            Log.d(
+                TAG,
+                "startExportCsvRawAction: Service already set as running"
+            )
+            return
+        }
+
+        // set as started
+        setServiceState(
+            SERVICE_NAME,
+            ServiceState.STARTED
+        )
+
+        Log.d(
+            TAG,
+            "startExportCsvRawAction: Started"
+        )
+
+        // TODO show snackbar with information that the export started
+
+        init()
+
+        val uri = IntentCompat.getParcelableExtra(
+            intent,
+            URI_ID_KEY,
+            Uri::class.java
+        )
+
+        serviceScope.launch {
+            if (uri != null) {
+                exportDataAsRawCsv(
+                    context = applicationContext,
+                    uri = uri,
+                    categoryRepository = categoryRepository,
+                    itemRepository = itemRepository,
+                    producerRepository = producerRepository,
+                    productRepository = productRepository,
+                    shopRepository = shopRepository,
+                    transactionRepository = transactionRepository,
+                    variantRepository = variantRepository,
+                    onMaxProgressChange = {
+                        totalDataSize = it
+                        updateNotification(false)
+                    },
+                    onProgressChange = {
+                        exportedDataSize = it
+                        updateNotification(false)
+                    },
+                    onFinished = {
+                        updateNotification(true)
+                    }
+                )
+            } else {
+                Log.d(
+                    TAG,
+                    "startExportCsvRawAction: Didn't receive uri"
+                )
+            }
+
+            stop(false)
+        }
     }
 
     private fun startExportCsvCompactAction(intent: Intent) {
@@ -249,17 +324,17 @@ class DataExportService: Service() {
         }
     }
 
-    private fun startExportCsvRawAction(intent: Intent) {
+    private fun startExportJsonAction(intent: Intent) {
         Log.d(
             TAG,
-            "startExportCsvRawAction: Attempting to start"
+            "startExportJsonAction: Attempting to start"
         )
 
         // early return if already started
         if (getServiceState(SERVICE_NAME) == ServiceState.STARTED) {
             Log.d(
                 TAG,
-                "startExportCsvRawAction: Service already set as running"
+                "startExportJsonAction: Service already set as running"
             )
             return
         }
@@ -272,7 +347,7 @@ class DataExportService: Service() {
 
         Log.d(
             TAG,
-            "startExportCsvRawAction: Started"
+            "startExportJsonAction: Started"
         )
 
         // TODO show snackbar with information that the export started
@@ -287,7 +362,7 @@ class DataExportService: Service() {
 
         serviceScope.launch {
             if (uri != null) {
-                exportDataAsRawCsv(
+                exportDataAsJson(
                     context = applicationContext,
                     uri = uri,
                     categoryRepository = categoryRepository,
@@ -312,7 +387,7 @@ class DataExportService: Service() {
             } else {
                 Log.d(
                     TAG,
-                    "startExportCsvRawAction: Didn't receive uri"
+                    "startExportJsonAction: Didn't receive uri"
                 )
             }
 
@@ -612,6 +687,22 @@ class DataExportService: Service() {
         }
 
         /**
+         * Helper function to start the service with raw csv export
+         * @param context context
+         * @param uri Uri of the directory to save the files into
+         */
+        fun startExportCsvRaw(
+            context: Context,
+            uri: Uri,
+        ) {
+            start(
+                context,
+                uri,
+                DataExportServiceActions.START_EXPORT_CSV_RAW
+            )
+        }
+
+        /**
          * Helper function to start the service with compact csv export
          * @param context context
          * @param uri Uri of the directory to save the files into
@@ -628,18 +719,18 @@ class DataExportService: Service() {
         }
 
         /**
-         * Helper function to start the service with raw csv export
+         * Helper function to start the service with json export
          * @param context context
          * @param uri Uri of the directory to save the files into
          */
-        fun startExportCsvRaw(
+        fun startExportJson(
             context: Context,
             uri: Uri,
         ) {
             start(
                 context,
                 uri,
-                DataExportServiceActions.START_EXPORT_CSV_RAW
+                DataExportServiceActions.START_EXPORT_JSON
             )
         }
 

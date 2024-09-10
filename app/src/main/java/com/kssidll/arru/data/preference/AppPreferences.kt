@@ -118,6 +118,11 @@ data object AppPreferences {
                  */
                 RawCSV,
 
+                /**
+                 * Value for json export
+                 */
+                JSON,
+
                 ;
 
                 @Composable
@@ -126,6 +131,7 @@ data object AppPreferences {
                     return when (this) {
                         CompactCSV -> stringResource(R.string.export_compact_csv)
                         RawCSV -> stringResource(R.string.export_raw_csv)
+                        JSON -> stringResource(R.string.export_json)
                     }
                 }
 

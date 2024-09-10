@@ -1,6 +1,6 @@
 # Export Functionality Documentation
 
-This document outlines the export functionality, which provides two distinct export structures: Compact CSV and Raw CSV.
+This document outlines the export functionality, which provides distinct export structures: Compact CSV, Raw CSV and JSON.
 
 The default selected export structure is Compact CSV, which compresses multiple tables into a single file.
 
@@ -9,6 +9,7 @@ The default selected export structure is Compact CSV, which compresses multiple 
 - Choose the export structure based on your specific needs and the tools you plan to use with the exported data.
   - The Raw CSV export maintains table separation, which may be useful for direct database imports or when working with large datasets.
   - The Compact CSV export provides a denormalized view of the data, which can be convenient for data analysis or when a single-file export is preferred.
+  - The JSON export provides a denormalized view of the data, which can be convenient for data analysis or when a single-file export is preferred.
 
 ## Export Structures
 
@@ -199,4 +200,65 @@ Example `variant.csv`:
 id;productId;name
 0;0;568 ml
 1;1;16 Rolls
+```
+
+### 3. JSON
+
+The JSON export combines all data into a single JSON file.
+
+#### File Structure:
+
+- `export.json`: Contains data from all tables
+
+#### Data Format:
+
+Example `export.json`:
+
+```json
+[
+  {
+    "id": 0,
+    "date": 1639353600000,
+    "cost": 72.57,
+    "shop": null,
+    "items": [
+      {
+        "id": 0,
+        "price": 4.5,
+        "quantity": 1.0,
+        "product": {
+          "id": 0,
+          "name": "Monster",
+          "category": {
+            "id": 0,
+            "name": "Energy Drink"
+          },
+          "producer": null
+        },
+        "variant": {
+          "id": 0,
+          "name": "568 ml"
+        }
+      },
+      {
+        "id": 0,
+        "price": 12.0,
+        "quantity": 1.0,
+        "product": {
+          "id": 1,
+          "name": "Paper",
+          "category": {
+            "id": 1,
+            "name": "Utility"
+          },
+          "producer": null
+        },
+        "variant": {
+          "id": 1,
+          "name": "16 Rolls"
+        }
+      }
+    ]
+  }
+]
 ```

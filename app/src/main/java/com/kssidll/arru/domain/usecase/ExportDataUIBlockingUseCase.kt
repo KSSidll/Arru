@@ -3,6 +3,7 @@ package com.kssidll.arru.domain.usecase
 import android.content.Context
 import android.net.Uri
 import com.kssidll.arru.data.database.exportDataAsCompactCsv
+import com.kssidll.arru.data.database.exportDataAsJson
 import com.kssidll.arru.data.database.exportDataAsRawCsv
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getExportType
@@ -56,6 +57,23 @@ class ExportDataUIBlockingUseCase(
 
             AppPreferences.Export.Type.Values.RawCSV -> {
                 exportDataAsRawCsv(
+                    appContext,
+                    uri,
+                    categoryRepository,
+                    itemRepository,
+                    producerRepository,
+                    productRepository,
+                    shopRepository,
+                    transactionRepository,
+                    variantRepository,
+                    onMaxProgressChange,
+                    onProgressChange,
+                    onFinished,
+                )
+            }
+
+            AppPreferences.Export.Type.Values.JSON -> {
+                exportDataAsJson(
                     appContext,
                     uri,
                     categoryRepository,

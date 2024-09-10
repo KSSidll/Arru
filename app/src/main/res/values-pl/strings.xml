@@ -91,6 +91,7 @@
     <string name="export">Eksport</string>
     <string name="export_compact_csv">Kompaktowy CSV</string>
     <string name="export_raw_csv">Nieprzetworzony CSV</string>
+    <string name="export_json">JSON</string>
     <string name="service_data_export_name">Eksport danych</string>
     <string name="service_data_export_description">Eksport danych</string>
     <string name="service_data_export_notification_finished">Zakończono eksportowanie danych</string>

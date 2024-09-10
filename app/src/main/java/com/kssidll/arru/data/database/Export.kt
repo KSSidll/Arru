@@ -3,6 +3,7 @@ package com.kssidll.arru.data.database
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.util.JsonWriter
 import androidx.core.provider.DocumentsContractCompat
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
@@ -21,6 +22,7 @@ import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.data.repository.VariantRepositorySource
 import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -384,7 +386,7 @@ suspend fun exportDataAsRawCsv(
 }
 
 /**
- * Function that exports compact data from the database to csv files in the [uri] as single file
+ * Function that exports compact data from the database to csv file in the [uri] as single file
  * @param context application context
  * @param uri location to save the data in
  * @param onMaxProgressChange event called when the total export amount changes. Provides new total export amount as parameter
@@ -497,6 +499,181 @@ suspend fun exportDataAsCompactCsv(
                     offset += batchSize
                     addProgress(transactions.size)
                 } while (transactions.isNotEmpty())
+            }
+        }
+
+    onFinished()
+}
+
+/**
+ * Function that exports compact data from the database to json file in the [uri] as single file
+ * @param context application context
+ * @param uri location to save the data in
+ * @param onMaxProgressChange event called when the total export amount changes. Provides new total export amount as parameter
+ * @param onProgressChange event called when the export progress changes. Provides new progress value as parameter
+ * @param onFinished event called when the export finishes
+ * @param batchSize batch size of a single export operation
+ */
+suspend fun exportDataAsJson(
+    context: Context,
+    uri: Uri,
+    categoryRepository: CategoryRepositorySource,
+    itemRepository: ItemRepositorySource,
+    producerRepository: ProducerRepositorySource,
+    productRepository: ProductRepositorySource,
+    shopRepository: ShopRepositorySource,
+    transactionRepository: TransactionBasketRepositorySource,
+    variantRepository: VariantRepositorySource,
+    onMaxProgressChange: (newMaxProgress: Int) -> Unit,
+    onProgressChange: (newProgress: Int) -> Unit,
+    onFinished: () -> Unit,
+    batchSize: Int = 20,
+) {
+    var maxProgress = 0
+    var progress = 0
+
+    val addMaxProgress: (Int) -> Unit = {
+        maxProgress += it
+        onMaxProgressChange(maxProgress)
+    }
+
+    val addProgress: (Int) -> Unit = {
+        progress += it
+        onProgressChange(progress)
+    }
+
+    addMaxProgress(transactionRepository.totalCount())
+
+    val timeNow = Calendar.getInstance().time
+
+    val timeFormatted = SimpleDateFormat(
+        "dd-MM-yyyy-HH-mm-ss",
+        Locale.US
+    ).format(timeNow)
+
+    val parentUri = DocumentsContractCompat.buildDocumentUriUsingTree(
+        uri,
+        DocumentsContractCompat.getTreeDocumentId(uri)!!
+    )!!
+
+    val exportDirUri = DocumentsContractCompat.createDocument(
+        context.contentResolver,
+        parentUri,
+        DocumentsContract.Document.MIME_TYPE_DIR,
+        "export-json-${timeFormatted}"
+    )!!
+
+    val exportJsonFileUri = DocumentsContractCompat.createDocument(
+        context.contentResolver,
+        exportDirUri,
+        "application/json",
+        "export.json"
+    )!!
+
+    context.contentResolver.openOutputStream(
+        exportJsonFileUri,
+        "w"
+    )
+        ?.use { outputStream ->
+            JsonWriter(OutputStreamWriter(outputStream)).use { writer ->
+                writer.setIndent("  ")
+                writer.beginArray()
+
+                var offset = 0
+                do {
+                    val transactions = transactionRepository.getPagedList(
+                        limit = batchSize,
+                        offset = offset
+                    )
+
+                    transactions.forEach { transactionData ->
+                        val shop =
+                            transactionData.shopId?.let { shopRepository.get(it) }
+                        val items = itemRepository.getByTransaction(transactionData.id)
+
+                        writer.beginObject()
+                        writer.name("id").value(transactionData.id)
+                        writer.name("date").value(transactionData.date)
+                        writer.name("cost").value(transactionData.actualTotalCost())
+
+                        writer.name("shop")
+                        if (shop == null) writer.nullValue()
+                        else {
+                            writer.beginObject()
+                            writer.name("id").value(shop.id)
+                            writer.name("name").value(shop.name)
+                            writer.endObject()
+                        }
+
+                        writer.name("items")
+                        if (items.isEmpty()) {
+                            writer.nullValue()
+                        } else {
+                            writer.beginArray()
+                            items.forEach { item ->
+                                val product = productRepository.get(item.productId)
+                                val category =
+                                    product?.categoryId?.let { categoryRepository.get(it) }
+                                val producer =
+                                    product?.producerId?.let { producerRepository.get(it) }
+                                val variant = item.variantId?.let { variantRepository.get(it) }
+
+                                writer.beginObject()
+
+                                writer.name("id").value(item.id)
+                                writer.name("price").value(item.actualPrice())
+                                writer.name("quantity").value(item.actualQuantity())
+
+                                writer.name("product")
+                                if (product == null) writer.nullValue()
+                                else {
+                                    writer.beginObject()
+                                    writer.name("id").value(product.id)
+                                    writer.name("name").value(product.name)
+
+                                    writer.name("category")
+                                    if (category == null) writer.nullValue()
+                                    else {
+                                        writer.beginObject()
+                                        writer.name("id").value(category.id)
+                                        writer.name("name").value(category.name)
+                                        writer.endObject()
+                                    }
+
+                                    writer.name("producer")
+                                    if (producer == null) writer.nullValue()
+                                    else {
+                                        writer.beginObject()
+                                        writer.name("id").value(producer.id)
+                                        writer.name("name").value(producer.name)
+                                        writer.endObject()
+                                    }
+
+                                    writer.endObject()
+                                }
+
+                                writer.name("variant")
+                                if (variant == null) writer.nullValue()
+                                else {
+                                    writer.beginObject()
+                                    writer.name("id").value(variant.id)
+                                    writer.name("name").value(variant.name)
+                                    writer.endObject()
+                                }
+
+                                writer.endObject()
+                            }
+                            writer.endArray()
+                        }
+
+                        writer.endObject()
+                    }
+
+                    offset += batchSize
+                    addProgress(transactions.size)
+                } while (transactions.isNotEmpty())
+
+                writer.endArray()
             }
         }
 

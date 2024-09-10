@@ -30,6 +30,13 @@ class ExportDataWithServiceUseCase(
                     uri
                 )
             }
+
+            AppPreferences.Export.Type.Values.JSON -> {
+                DataExportService.startExportJson(
+                    appContext,
+                    uri
+                )
+            }
         }
     }
 }
