@@ -16,6 +16,7 @@ captures/
 *.apk
 output.json
 /app/release
+.kotlin
 
 # IntelliJ
 *.iml
