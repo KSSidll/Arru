@@ -1,9 +1,12 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import androidx.paging.PagingData
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface ProducerRepositorySource {
     companion object {
@@ -165,4 +168,17 @@ interface ProducerRepositorySource {
      * @return list of all [ProductProducer] as flow
      */
     fun allFlow(): Flow<Data<List<ProductProducer>>>
+
+    /**
+     * @return total count of [ProductProducer]
+     */
+    suspend fun totalCount(): Int
+
+    /**
+     * @return list of at most [limit] producers offset by [offset]
+     */
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<ProductProducer>
 }

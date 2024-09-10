@@ -2,7 +2,8 @@ package com.kssidll.arru.data.dao
 
 import androidx.room.*
 import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Dao
 interface CategoryDao {
@@ -418,4 +419,13 @@ interface CategoryDao {
             }
         }
     }
+
+    @Query("SELECT COUNT(*) FROM productcategory")
+    suspend fun totalCount(): Int
+
+    @Query("SELECT productcategory.* FROM productcategory ORDER BY id LIMIT :limit OFFSET :offset")
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<ProductCategory>
 }

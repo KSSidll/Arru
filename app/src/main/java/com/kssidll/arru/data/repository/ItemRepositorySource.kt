@@ -1,8 +1,11 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface ItemRepositorySource {
     companion object {
@@ -118,5 +121,23 @@ interface ItemRepositorySource {
     /**
      * @return newest [Item] as flow
      */
-    suspend fun newestFlow(): Flow<Data<Item?>>
+    fun newestFlow(): Flow<Data<Item?>>
+
+    /**
+     * @return total count of [Item]
+     */
+    suspend fun totalCount(): Int
+
+    /**
+     * @return list of at most [limit] items offset by [offset]
+     */
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<Item>
+
+    /**
+     * @return list of [Item] contained within the [TransactionBasket] matching the [transactionId]
+     */
+    suspend fun getByTransaction(transactionId: Long): List<Item>
 }

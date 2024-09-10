@@ -1,11 +1,13 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.domain.utils.*
+import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.data.RankSource
+import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.*
-import com.patrykandpatrick.vico.core.entry.*
-import kotlin.math.*
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import kotlin.math.log10
 
 @Entity(
     foreignKeys = [
@@ -58,6 +60,17 @@ data class Item(
             .div(PRICE_DIVISOR)
     }
 
+    /**
+     * Converts the [Item] data to a string with csv format
+     *
+     * Doesn't include the csv headers
+     * @return [Item] data as [String] with csv format
+     */
+    @Ignore
+    fun formatAsCsvString(): String {
+        return "${id};${productId};${variantId};${actualQuantity()};${actualPrice()}"
+    }
+
     companion object {
         @Ignore
         const val PRICE_DIVISOR: Long = 100
@@ -84,6 +97,15 @@ data class Item(
         fun actualPrice(price: Long): Float {
             return price.toFloat()
                 .div(PRICE_DIVISOR)
+        }
+
+        /**
+         * Returns the [String] representing the [Item] csv format headers
+         * @return [String] representing the [Item] csv format headers
+         */
+        @Ignore
+        fun csvHeaders(): String {
+            return "id;productId;variantId;quantity;price"
         }
 
         @Ignore
@@ -167,6 +189,23 @@ data class Item(
     @Ignore
     fun validPrice(): Boolean {
         return price != INVALID_PRICE
+    }
+}
+
+/**
+ * Converts a list of [Item] data to a list of strings with csv format
+ * @param includeHeaders whether to include the csv headers
+ * @return [Item] data as list of string with csv format
+ */
+fun List<Item>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+    // Add headers
+    if (includeHeaders) {
+        add(Item.csvHeaders() + "\n")
+    }
+
+    // Add rows
+    this@asCsvList.forEach {
+        add(it.formatAsCsvString() + "\n")
     }
 }
 

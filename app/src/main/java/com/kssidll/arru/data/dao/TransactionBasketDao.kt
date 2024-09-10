@@ -2,7 +2,8 @@ package com.kssidll.arru.data.dao
 
 import androidx.room.*
 import com.kssidll.arru.data.data.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Dao
 interface TransactionBasketDao {
@@ -288,4 +289,19 @@ interface TransactionBasketDao {
             } else return@map null
         }
     }
+
+    @Query("SELECT COUNT(*) FROM transactionbasket")
+    suspend fun totalCount(): Int
+
+    @Query("SELECT transactionbasket.* FROM transactionbasket ORDER BY id LIMIT :limit OFFSET :offset")
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<TransactionBasket>
+
+    @Query("SELECT transactionbasketitem.* FROM transactionbasketitem ORDER BY id LIMIT :limit OFFSET :offset")
+    suspend fun getPagedItemList(
+        limit: Int,
+        offset: Int
+    ): List<TransactionBasketItem>
 }

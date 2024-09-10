@@ -86,6 +86,18 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
 
+    <string name="export_location">Export location</string>
+    <string name="export_type">Export type</string>
+    <string name="export">Export</string>
+    <string name="export_compact_csv">Compact CSV</string>
+    <string name="export_raw_csv">Raw CSV</string>
+    <string name="export_json">JSON</string>
+    <string name="service_data_export_name">Data Export</string>
+    <string name="service_data_export_description">Data Export</string>
+    <string name="service_data_export_notification_finished">Finished Exporting Data</string>
+    <string name="service_data_export_notification_progress">Exporting Data</string>
+    <string name="data_export_cancel">Cancel</string>
+
     <string name="categories">Categories</string>
     <string name="shops">Shops</string>
     <string name="delete">Delete</string>

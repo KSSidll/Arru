@@ -1,12 +1,17 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.dao.ItemDao
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.TransactionBasketItem
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     // Create
@@ -125,11 +130,29 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         return dao.newest()
     }
 
-    override suspend fun newestFlow(): Flow<Data<Item?>> {
+    override fun newestFlow(): Flow<Data<Item?>> {
         return dao.newestFlow()
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
             .onStart { Data.Loading<Item>() }
+    }
+
+    override suspend fun totalCount(): Int {
+        return dao.totalCount()
+    }
+
+    override suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<Item> {
+        return dao.getPagedList(
+            limit,
+            offset
+        )
+    }
+
+    override suspend fun getByTransaction(transactionId: Long): List<Item> {
+        return dao.getByTransaction(transactionId)
     }
 }

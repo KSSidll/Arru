@@ -1,9 +1,9 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
+import androidx.paging.PagingData
 import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.domain.data.Data
+import kotlinx.coroutines.flow.Flow
 
 interface TransactionBasketRepositorySource {
     companion object {
@@ -206,4 +206,25 @@ interface TransactionBasketRepositorySource {
      * @return [TransactionBasketWithItems] matching [transactionId] as flow
      */
     fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>>
+
+    /**
+     * @return total count of [TransactionBasket]
+     */
+    suspend fun totalCount(): Int
+
+    /**
+     * @return list of at most [limit] baskets offset by [offset]
+     */
+    suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<TransactionBasket>
+
+    /**
+     * @return list of at most [limit] basket items offset by [offset]
+     */
+    suspend fun getPagedItemList(
+        limit: Int,
+        offset: Int
+    ): List<TransactionBasketItem>
 }

@@ -1,11 +1,19 @@
 package com.kssidll.arru.data.preference
 
 import android.content.Context
+import android.net.Uri
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.res.stringResource
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.kssidll.arru.R
 import com.kssidll.arru.di.module.dataStore
+import com.kssidll.arru.di.module.getPreferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Data associated with datastore preferences
@@ -80,6 +88,70 @@ data object AppPreferences {
             }
         }
     }
+
+    /**
+     * Data associated with export datastore preferences
+     */
+    data object Export {
+        /**
+         * Data associated with export type datastore preference
+         */
+        data object Type {
+            /**
+             * Key for export type preference key-value pair
+             */
+            val key: Preferences.Key<Int> = intPreferencesKey("exporttype")
+
+            /**
+             * Value for default export type
+             */
+            val DEFAULT = Values.CompactCSV
+
+            enum class Values {
+                /**
+                 * Value for compact csv export
+                 */
+                CompactCSV,
+
+                /**
+                 * Value for raw csv export
+                 */
+                RawCSV,
+
+                /**
+                 * Value for json export
+                 */
+                JSON,
+
+                ;
+
+                @Composable
+                @ReadOnlyComposable
+                fun getTranslation(): String {
+                    return when (this) {
+                        CompactCSV -> stringResource(R.string.export_compact_csv)
+                        RawCSV -> stringResource(R.string.export_raw_csv)
+                        JSON -> stringResource(R.string.export_json)
+                    }
+                }
+
+                companion object {
+                    private val idMap = Values.entries.associateBy { it.ordinal }
+                    fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+                }
+            }
+        }
+
+        /**
+         * Data associated with export location datastore preference
+         */
+        data object Location {
+            /**
+             * Key for export location preference key-value pair
+             */
+            val key: Preferences.Key<String> = stringPreferencesKey("exportlocation")
+        }
+    }
 }
 
 /**
@@ -98,6 +170,12 @@ suspend fun Preferences.setNullToDefault(context: Context) {
     if (this[AppPreferences.Transaction.Date.key] == null) {
         context.dataStore.edit {
             it[AppPreferences.Transaction.Date.key] = AppPreferences.Transaction.Date.DEFAULT.ordinal
+        }
+    }
+
+    if (this[AppPreferences.Export.Type.key] == null) {
+        context.dataStore.edit {
+            it[AppPreferences.Export.Type.key] = AppPreferences.Export.Type.DEFAULT.ordinal
         }
     }
 }
@@ -123,8 +201,73 @@ suspend fun AppPreferences.setTransactionDate(context: Context, newDatePreferenc
 
 /**
  * Returns the transaction date preference value
+ * @param context App context
  * @return The transaction date preference value
  */
-fun Preferences.getTransactionDate(): AppPreferences.Transaction.Date.Values {
-    return this[AppPreferences.Transaction.Date.key]?.let { AppPreferences.Transaction.Date.Values.getByOrdinal(it) } ?: AppPreferences.Transaction.Date.DEFAULT
+fun AppPreferences.getTransactionDate(context: Context): Flow<AppPreferences.Transaction.Date.Values> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Transaction.Date.key]?.let {
+            AppPreferences.Transaction.Date.Values.getByOrdinal(
+                it
+            )
+        }
+            ?: AppPreferences.Transaction.Date.DEFAULT
+    }
+}
+
+/**
+ * Sets the export type preference to a new value
+ * @param context App context
+ * @param newExportType Value to set the export type preference to
+ */
+suspend fun AppPreferences.setExportType(
+    context: Context,
+    newExportType: AppPreferences.Export.Type.Values
+) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Export.Type.key] = newExportType.ordinal
+    }
+}
+
+/**
+ * Returns the export type preference value
+ * @param context App context
+ * @return The export type preference value
+ */
+fun AppPreferences.getExportType(context: Context): Flow<AppPreferences.Export.Type.Values> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Export.Type.key]?.let {
+            AppPreferences.Export.Type.Values.getByOrdinal(
+                it
+            )
+        }
+            ?: AppPreferences.Export.Type.DEFAULT
+    }
+}
+
+/**
+ * Sets the export location preference to a new value
+ * @param context App context
+ * @param newExportLocation Value to set the export location preference to
+ */
+suspend fun AppPreferences.setExportLocation(
+    context: Context,
+    newExportLocation: Uri
+) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Export.Location.key] = newExportLocation.toString()
+    }
+}
+
+/**
+ * Returns the export location preference value if any
+ * @param context App context
+ * @return The export location preference value if any
+ */
+fun AppPreferences.getExportLocation(context: Context): Flow<Uri?> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Export.Location.key]?.let {
+            Uri.parse(it)
+        }
+    }
 }

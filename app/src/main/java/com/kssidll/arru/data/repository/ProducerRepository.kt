@@ -1,14 +1,19 @@
 package com.kssidll.arru.data.repository
 
-import androidx.paging.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.kssidll.arru.data.dao.ProducerDao
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
+import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.*
 
 class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource {
@@ -204,5 +209,19 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
             .onStart { Data.Loading<List<ProductProducer>>() }
+    }
+
+    override suspend fun totalCount(): Int {
+        return dao.totalCount()
+    }
+
+    override suspend fun getPagedList(
+        limit: Int,
+        offset: Int
+    ): List<ProductProducer> {
+        return dao.getPagedList(
+            limit,
+            offset
+        )
     }
 }

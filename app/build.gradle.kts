@@ -120,6 +120,9 @@ dependencies {
     ksp(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    // Helpers
+    implementation(libs.google.accompanist)
+
     // Paging
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)

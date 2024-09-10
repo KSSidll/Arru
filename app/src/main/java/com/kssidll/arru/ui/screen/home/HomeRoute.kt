@@ -1,22 +1,37 @@
 package com.kssidll.arru.ui.screen.home
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.automirrored.rounded.*
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.vector.*
-import androidx.compose.ui.res.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Notes
+import androidx.compose.material.icons.rounded.Analytics
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.screen.home.analysis.*
-import com.kssidll.arru.ui.screen.home.component.*
-import com.kssidll.arru.ui.screen.home.dashboard.*
-import com.kssidll.arru.ui.screen.home.transactions.*
-import kotlinx.coroutines.*
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisRoute
+import com.kssidll.arru.ui.screen.home.component.HomeBottomNavBar
+import com.kssidll.arru.ui.screen.home.component.HomeRailNavBar
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardRoute
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsRoute
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -177,7 +192,7 @@ private fun HomeRouteContent(
     HorizontalPager(
         state = pagerState,
         userScrollEnabled = false,
-        beyondBoundsPageCount = HomeRouteLocations.entries.size,
+        beyondViewportPageCount = HomeRouteLocations.entries.size,
     ) { location ->
         when (HomeRouteLocations.getByOrdinal(location)!!) {
             HomeRouteLocations.Dashboard -> {

@@ -15,6 +15,9 @@ import androidx.datastore.preferences.core.Preferences
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.setNullToDefault
 import com.kssidll.arru.data.preference.setResettableToDefault
+import com.kssidll.arru.service.DataExportService
+import com.kssidll.arru.service.getServiceStateCold
+import com.kssidll.arru.service.setServiceState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
@@ -34,7 +37,13 @@ class MainActivity: AppCompatActivity() {
         runBlocking {
             preferences.setNullToDefault(applicationContext)
             AppPreferences.setResettableToDefault(applicationContext)
+
+            applicationContext.setServiceState(
+                DataExportService.SERVICE_NAME,
+                applicationContext.getServiceStateCold(DataExportService::class.java)
+            )
         }
+
 
         enableEdgeToEdge()
 
