@@ -1,7 +1,21 @@
 package com.kssidll.arru.data.dao
 
-import androidx.room.*
-import com.kssidll.arru.data.data.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionSpentByTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -12,9 +26,6 @@ interface TransactionBasketDao {
     @Insert
     suspend fun insert(transactionBasket: TransactionBasket): Long
 
-    @Insert
-    suspend fun insertTransactionBasketItem(transactionBasketItem: TransactionBasketItem): Long
-
     // Update
 
     @Update
@@ -24,9 +35,6 @@ interface TransactionBasketDao {
 
     @Delete
     suspend fun delete(transactionBasket: TransactionBasket)
-
-    @Delete
-    suspend fun deleteTransactionBasketItem(transactionBasketItem: TransactionBasketItem)
 
     // Helper
 
@@ -48,10 +56,10 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer?
 
-    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    @Query("SELECT item.* FROM item WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
     suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
 
-    @Query("SELECT item.* FROM transactionbasketitem JOIN item ON item.id = transactionbasketitem.itemId WHERE transactionbasketitem.transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    @Query("SELECT item.* FROM item WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
     fun itemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<Item>>
 
     @Transaction
@@ -110,12 +118,6 @@ interface TransactionBasketDao {
             }
         }
     }
-
-    @Query("SELECT * FROM transactionbasketitem WHERE transactionBasketId = :transactionBasketId")
-    suspend fun transactionBasketItems(transactionBasketId: Long): List<TransactionBasketItem>
-
-    @Delete
-    suspend fun deleteTransactionBasketItems(transactionBasketItems: List<TransactionBasketItem>)
 
     @Delete
     suspend fun deleteItems(items: List<Item>)
@@ -298,10 +300,4 @@ interface TransactionBasketDao {
         limit: Int,
         offset: Int
     ): List<TransactionBasket>
-
-    @Query("SELECT transactionbasketitem.* FROM transactionbasketitem ORDER BY id LIMIT :limit OFFSET :offset")
-    suspend fun getPagedItemList(
-        limit: Int,
-        offset: Int
-    ): List<TransactionBasketItem>
 }

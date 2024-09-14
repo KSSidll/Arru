@@ -48,7 +48,6 @@ The Raw CSV export is a literal database dump, with each table exported to a sep
 - `product.csv`: Contains all data from the Product table
 - `shop.csv`: Contains all data from the Shop table
 - `transaction.csv`: Contains all data from the TransactionBasket table
-- `transaction-item.csv`: Contains all data from the TransactionBasketItem table (will be removed in the future in favor of transactionId field in Item table)
 - `variant.csv`: Contains all data from the ProductVariant table
 
 #### Tables and Their Relationships
@@ -63,12 +62,13 @@ The Raw CSV export is a literal database dump, with each table exported to a sep
 
 - Primary Key: `id`
 - Foreign Keys:
+  - `transactionBasketId` references TransactionBasket.id
   - `productId` references Product.id
   - `variantId` references Variant.id (nullable)
 - Relationships:
   - Many-to-One with Product
   - Many-to-One with Variant (optional)
-  - One-to-Many with Transaction (through TransactionItem, structure allows for Many-to-Many but is actually used as One-to-Many)
+  - One-to-Many with Transaction
 
 ##### 3. Producer
 
@@ -101,19 +101,9 @@ The Raw CSV export is a literal database dump, with each table exported to a sep
   - `shopId` references Shop.id (nullable)
 - Relationships:
   - Many-to-One with Shop (optional)
-  - Many-to-One with Item (through TransactionItem, structure allows for Many-to-Many but is actually used as Many-to-One)
-
-##### 7. Transaction-Item (Junction Table, will be removed in the future in favor of transactionId field in Item table)
-
-- Primary Key: `id`
-- Foreign Keys:
-  - `transactionBasketId` references Transaction.id
-  - `itemId` references Item.id
-- Relationships:
-  - Many-to-One with Transaction
   - Many-to-One with Item
 
-##### 8. Variant
+##### 7. Variant
 
 - Primary Key: `id`
 - Foreign Key:
@@ -128,7 +118,6 @@ The Raw CSV export is a literal database dump, with each table exported to a sep
 2. Items represent specific instances of products, potentially with variants.
 3. Variants are specific versions or types of products.
 4. Transactions occur at shops and consist of multiple items.
-5. The TransactionItem table serves as a junction table to create a many-to-many relationship between Transactions and Items. It is planned to be removed in favor of transactionId field in Item table
 
 #### Data Format:
 
@@ -147,10 +136,10 @@ id;name
 Example `item.csv`:
 
 ```
-id;productId;variantId;quantity;price
-0;0;0;1;4.5
-1;1;1;1;12
-2;2;null;0.253;16
+id;transactionBasketId;productId;variantId;quantity;price
+0;0;0;0;1;4.5
+1;0;1;1;1;12
+2;1;2;null;0.253;16
 ```
 
 Example `producer.csv`:
@@ -183,15 +172,6 @@ id;date;shopId;totalCost
 0;1639353600000;null;75.57
 2;1644451200000;3;29.11
 7;1644451200000;5;129.37
-```
-
-Example `transaction-item.csv`:
-
-```
-id;transactionBasketId;itemId
-0;0;0
-1;0;1
-2;1;2
 ```
 
 Example `variant.csv`:

@@ -1,16 +1,32 @@
 package com.kssidll.arru.data.data
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.domain.data.RankSource
 import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.helper.*
+import com.kssidll.arru.helper.RegexHelper
+import com.kssidll.arru.helper.generateRandomDate
+import com.kssidll.arru.helper.generateRandomDateString
+import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomStringValue
 import com.patrykandpatrick.vico.core.entry.ChartEntry
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import kotlin.math.log10
 
 @Entity(
     foreignKeys = [
+        ForeignKey(
+            entity = TransactionBasket::class,
+            parentColumns = ["id"],
+            childColumns = ["transactionBasketId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
         ForeignKey(
             entity = Product::class,
             parentColumns = ["id"],
@@ -29,6 +45,7 @@ import kotlin.math.log10
 )
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(index = true) var transactionBasketId: Long,
     @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) var variantId: Long?,
     var quantity: Long,
@@ -36,12 +53,14 @@ data class Item(
 ) {
     @Ignore
     constructor(
+        transactionBasketId: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
+        transactionBasketId,
         productId,
         variantId,
         quantity,
@@ -68,7 +87,7 @@ data class Item(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${productId};${variantId};${actualQuantity()};${actualPrice()}"
+        return "${id};${transactionBasketId};${productId};${variantId};${actualQuantity()};${actualPrice()}"
     }
 
     companion object {
@@ -105,13 +124,14 @@ data class Item(
          */
         @Ignore
         fun csvHeaders(): String {
-            return "id;productId;variantId;quantity;price"
+            return "id;transactionBasketId;productId;variantId;quantity;price"
         }
 
         @Ignore
         fun generate(itemId: Long = 0): Item {
             return Item(
                 id = itemId,
+                transactionBasketId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
                 variantId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),

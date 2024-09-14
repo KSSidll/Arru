@@ -97,12 +97,10 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
 
         val transactionBaskets = dao.getTransactionBaskets(shopId)
         val items = dao.getItems(shopId)
-        val transactionBasketItems = dao.getTransactionBasketItems(shopId)
 
         if (!force && transactionBaskets.isNotEmpty()) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
-            dao.deleteTransactionBasketItems(transactionBasketItems)
             dao.deleteItems(items)
             dao.deleteTransactionBaskets(transactionBaskets)
             dao.delete(shop)
