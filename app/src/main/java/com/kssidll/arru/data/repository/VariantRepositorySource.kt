@@ -2,6 +2,7 @@ package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult.Errors
 import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.Flow
 
@@ -50,6 +51,7 @@ interface VariantRepositorySource {
 
             sealed class Errors
             data object InvalidId: Errors()
+            data object DangerousDelete: Errors()
         }
     }
 
@@ -97,9 +99,13 @@ interface VariantRepositorySource {
     /**
      * Deletes [ProductVariant]
      * @param variantId id of the [ProductVariant] to delete
+     * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
-    suspend fun delete(variantId: Long): DeleteResult
+    suspend fun delete(
+        variantId: Long,
+        force: Boolean
+    ): DeleteResult
 
     // Read
 

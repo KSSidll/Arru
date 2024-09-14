@@ -1,17 +1,18 @@
 package com.kssidll.arru.ui.screen.modify.variant.editvariant
 
 
-import android.util.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.repository.VariantRepositorySource
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.variant.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.variant.ModifyVariantViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import javax.inject.Inject
 
 @HiltViewModel
 class EditVariantViewModel @Inject constructor(
@@ -96,7 +97,10 @@ class EditVariantViewModel @Inject constructor(
      */
     suspend fun deleteVariant(variantId: Long) = viewModelScope.async {
 
-        val result = variantRepository.delete(variantId)
+        val result = variantRepository.delete(
+            variantId,
+            screenState.deleteWarningConfirmed.value
+        )
 
         if (result.isError()) {
             when (result.error!!) {
@@ -106,6 +110,10 @@ class EditVariantViewModel @Inject constructor(
                         "Tried to delete variant with invalid variant id in EditVariantViewModel"
                     )
                     return@async DeleteResult.Success
+                }
+
+                DeleteResult.DangerousDelete -> {
+                    screenState.showDeleteWarning.value = true
                 }
             }
         }

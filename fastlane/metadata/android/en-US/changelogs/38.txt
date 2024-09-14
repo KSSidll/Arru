@@ -1,1 +1,2 @@
 - Added data export
+- Fixed crash when attempting to delete a variant used in an existing item

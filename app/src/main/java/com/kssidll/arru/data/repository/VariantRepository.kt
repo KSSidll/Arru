@@ -7,7 +7,11 @@ import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.Delete
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Create
@@ -114,11 +118,20 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
     // Delete
 
-    override suspend fun delete(variantId: Long): DeleteResult {
-        // FIXME will crash when deleting a variant that some item uses
+    override suspend fun delete(
+        variantId: Long,
+        force: Boolean
+    ): DeleteResult {
         val variant = dao.get(variantId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        dao.delete(variant)
+        val items = dao.getItems(variantId)
+
+        if (!force && items.isNotEmpty()) {
+            return DeleteResult.Error(DeleteResult.DangerousDelete)
+        } else {
+            dao.deleteItems(items)
+            dao.delete(variant)
+        }
 
         return DeleteResult.Success
     }
