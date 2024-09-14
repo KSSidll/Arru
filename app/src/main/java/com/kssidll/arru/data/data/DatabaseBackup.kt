@@ -1,6 +1,6 @@
 package com.kssidll.arru.data.data
 
-import java.io.*
+import java.io.File
 
 
 /**
@@ -12,6 +12,9 @@ data class DatabaseBackup(
     val time: Long,
     val totalTransactions: Int,
     val totalSpending: Long,
+    val locked: Boolean,
+
+    val hasLockMarkInName: Boolean,
 ) {
     companion object {
         private const val FILE_NAME_SEPARATOR: Char = '_'
@@ -25,12 +28,14 @@ data class DatabaseBackup(
          * @param time interpreted as database backup creation time
          * @param totalTransactions interpreted as the amount of transactions in the database
          * @param totalSpending interpreted as the total spent from the transactions in the database
+         * @param locked interpreted as whether the backup is locked or not
          * @return name of the database stamped with [time] and [totalTransactions]
          */
         fun makeName(
             time: Long,
             totalTransactions: Int,
-            totalSpending: Long
+            totalSpending: Long,
+            locked: Boolean,
         ): String {
             return StringBuilder().apply {
                 append(FILE_PREFIX)
@@ -40,6 +45,8 @@ data class DatabaseBackup(
                 append(totalSpending.toString())
                 append(FILE_NAME_SEPARATOR)
                 append(time.toString())
+                append(FILE_NAME_SEPARATOR)
+                append(locked.toString())
             }
                 .toString()
         }
@@ -63,27 +70,37 @@ data class DatabaseBackup(
                     ?: error("couldn't parse transactions from name, naming schema must have changed without updating parsing logic"),
                 totalSpending = spendingFromName(name)
                     ?: error("couldn't parse spending from name, naming schema must have changed without updating parsing logic"),
+                locked = lockedFromName(name) ?: false,
+                hasLockMarkInName = lockedFromName(name) != null
             )
-        }
-
-        private fun timeFromName(name: String): Long? {
-            return name.substringAfterLast(FILE_NAME_SEPARATOR)
-                .toLongOrNull()
-        }
-
-        private fun spendingFromName(name: String): Long? {
-            return name
-                .substringBeforeLast(FILE_NAME_SEPARATOR)
-                .substringAfterLast(FILE_NAME_SEPARATOR)
-                .toLongOrNull()
         }
 
         private fun transactionsFromName(name: String): Int? {
             return name
-                .substringBeforeLast(FILE_NAME_SEPARATOR)
-                .substringBeforeLast(FILE_NAME_SEPARATOR)
-                .substringAfterLast(FILE_NAME_SEPARATOR)
-                .toIntOrNull()
+                .split(FILE_NAME_SEPARATOR)
+                .getOrNull(3)
+                ?.toIntOrNull()
+        }
+
+        private fun spendingFromName(name: String): Long? {
+            return name
+                .split(FILE_NAME_SEPARATOR)
+                .getOrNull(4)
+                ?.toLongOrNull()
+        }
+
+        private fun timeFromName(name: String): Long? {
+            return name
+                .split(FILE_NAME_SEPARATOR)
+                .getOrNull(5)
+                ?.toLongOrNull()
+        }
+
+        private fun lockedFromName(name: String): Boolean? {
+            return name
+                .split(FILE_NAME_SEPARATOR)
+                .getOrNull(6)
+                ?.toBooleanStrictOrNull()
         }
     }
 }

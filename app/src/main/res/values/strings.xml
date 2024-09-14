@@ -78,6 +78,8 @@
     <string name="backup_create">Create Backup</string>
     <string name="backup_load">Load Backup</string>
     <string name="backup_delete">Delete Backup</string>
+    <string name="backup_lock">Lock Backup</string>
+    <string name="backup_unlock">Unlock Backup</string>
     <string name="no_data_to_display_add_backup_hint">Try adding a backup</string>
     <string name="backups_upload_not_implemented_snackbar_message">You will be able to upload the backup to the cloud in future updates!</string>
 

@@ -1,2 +1,3 @@
-- Added data export
-- Fixed crash when attempting to delete a variant used in an existing item
+- Add data export
+- Add backup locking to prevent accidental deletions
+- Fix crash when attempting to delete a variant used in an existing item

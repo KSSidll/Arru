@@ -1,18 +1,21 @@
 package com.kssidll.arru.ui.screen.backups
 
-import android.content.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
-import androidx.datastore.preferences.core.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.database.*
-import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.data.*
-import dagger.hilt.android.lifecycle.*
-import dagger.hilt.android.qualifiers.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.DatabaseBackup
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
+import com.kssidll.arru.domain.data.Data
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.invoke
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class BackupsViewModel @Inject constructor(
@@ -37,6 +40,26 @@ class BackupsViewModel @Inject constructor(
 
         availableBackups.clear()
         availableBackups.addAll(newAvailableBackups)
+    }
+
+    private fun lockDbBackup(dbBackup: DatabaseBackup) = viewModelScope.launch {
+        AppDatabase.lockDbBackup(dbBackup)
+
+        refreshAvailableBackups()
+    }
+
+    private fun unlockDbBackup(dbBackup: DatabaseBackup) = viewModelScope.launch {
+        AppDatabase.unlockDbBackup(dbBackup)
+
+        refreshAvailableBackups()
+    }
+
+    fun toggleLockDbBackup(dbBackup: DatabaseBackup) = viewModelScope.launch {
+        if (dbBackup.locked) {
+            unlockDbBackup(dbBackup)
+        } else {
+            lockDbBackup(dbBackup)
+        }
     }
 
     /**

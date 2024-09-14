@@ -1,15 +1,34 @@
 package com.kssidll.arru.data.database
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.Preferences
-import androidx.room.*
+import androidx.room.AutoMigration
+import androidx.room.Database
+import androidx.room.DeleteColumn
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arru.Arru
-import androidx.room.migration.Migration
-import com.kssidll.arru.BuildConfig
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.dao.CategoryDao
+import com.kssidll.arru.data.dao.ItemDao
+import com.kssidll.arru.data.dao.ProducerDao
+import com.kssidll.arru.data.dao.ProductDao
+import com.kssidll.arru.data.dao.ShopDao
+import com.kssidll.arru.data.dao.TransactionBasketDao
+import com.kssidll.arru.data.dao.VariantDao
+import com.kssidll.arru.data.data.DatabaseBackup
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductAltName
+import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryAltName
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.data.preference.AppPreferences
 import java.io.File
 import java.util.Calendar
@@ -243,6 +262,42 @@ abstract class AppDatabase: RoomDatabase() {
             )
         }
 
+        fun lockDbBackup(databaseBackup: DatabaseBackup) {
+            if (databaseBackup.file.parent == null) {
+                Log.d("APP_DATABASE", "lockDbBackup: failed to get file parent, aborting")
+                return
+            }
+
+            val newName = DatabaseBackup.makeName(
+                time = databaseBackup.time,
+                totalTransactions = databaseBackup.totalTransactions,
+                totalSpending = databaseBackup.totalSpending,
+                locked = true
+            ).plus(".db")
+
+            databaseBackup.file.renameTo(
+                File(databaseBackup.file.parent, newName)
+            )
+        }
+
+        fun unlockDbBackup(databaseBackup: DatabaseBackup) {
+            if (databaseBackup.file.parent == null) {
+                Log.d("APP_DATABASE", "unlockDbBackup: failed to get file parent, aborting")
+                return
+            }
+
+            val newName = DatabaseBackup.makeName(
+                time = databaseBackup.time,
+                totalTransactions = databaseBackup.totalTransactions,
+                totalSpending = databaseBackup.totalSpending,
+                locked = false
+            ).plus(".db")
+
+            databaseBackup.file.renameTo(
+                File(databaseBackup.file.parent, newName)
+            )
+        }
+
         /**
          * creates a database backup in current database location at set [time]
          * @param context app context
@@ -267,7 +322,8 @@ abstract class AppDatabase: RoomDatabase() {
                         DatabaseBackup.makeName(
                             time,
                             totalTransactions,
-                            totalSpending
+                            totalSpending,
+                            false
                         )
                     }.db"
                 )
@@ -345,8 +401,19 @@ abstract class AppDatabase: RoomDatabase() {
                         }
                     }
 
-                    return dbFiles.toList()
-                        .sortedByDescending { it.time }
+                    var changed = false
+                    dbFiles.forEach {
+                        if (!it.hasLockMarkInName) {
+                            unlockDbBackup(it) // unlock backup files that don't have lock status in the name
+                            changed = true
+                        }
+                    }
+
+                    return if (changed) {
+                        availableBackups(context, preferences)
+                    } else {
+                        dbFiles.toList().sortedByDescending { it.time }
+                    }
                 }
             }
 

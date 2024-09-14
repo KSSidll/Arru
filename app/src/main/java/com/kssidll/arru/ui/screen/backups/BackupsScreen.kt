@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.screen.backups
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
@@ -25,8 +26,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.outlined.Payment
 import androidx.compose.material.icons.outlined.ShoppingBasket
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,16 +37,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
@@ -64,7 +59,6 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.disabledAlpha
 import com.kssidll.arru.ui.theme.optionalAlpha
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -78,31 +72,11 @@ fun BackupsScreen(
     createBackup: () -> Unit,
     loadBackup: (dbFile: DatabaseBackup) -> Unit,
     deleteBackup: (dbFile: DatabaseBackup) -> Unit,
+    toggleLockBackup: (dbFile: DatabaseBackup) -> Unit,
     availableBackups: List<DatabaseBackup>,
     onBack: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-
     Scaffold(
-        snackbarHost = {
-            // TODO remove when upload is implemented
-            SnackbarHost(
-                hostState = snackbarHostState,
-                snackbar = {
-                    SwipeToDismissBox(
-                        state = rememberSwipeToDismissBoxState(),
-                        backgroundContent = {}
-                    ) {
-                        Snackbar(
-                            snackbarData = it,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            contentColor = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
-            )
-        },
         topBar = {
             SecondaryAppBar(
                 onBack = onBack,
@@ -212,14 +186,33 @@ fun BackupsScreen(
 
                                     IconButton(
                                         onClick = {
-                                            deleteBackup(it)
+                                            if (!it.locked) {
+                                                deleteBackup(it)
+                                            }
                                         }
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.DeleteOutline,
-                                            contentDescription = stringResource(id = R.string.backup_delete),
-                                            tint = MaterialTheme.colorScheme.error.copy(optionalAlpha),
-                                        )
+                                        Crossfade(
+                                            targetState = it.locked,
+                                            label = "delete'ability due to lock change animation"
+                                        ) { locked ->
+                                            if (locked) {
+                                                Icon(
+                                                    imageVector = Icons.Default.DeleteOutline,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.error.copy(
+                                                        disabledAlpha
+                                                    ),
+                                                )
+                                            } else {
+                                                Icon(
+                                                    imageVector = Icons.Default.DeleteOutline,
+                                                    contentDescription = stringResource(id = R.string.backup_delete),
+                                                    tint = MaterialTheme.colorScheme.error.copy(
+                                                        optionalAlpha
+                                                    ),
+                                                )
+                                            }
+                                        }
                                     }
 
                                     Box(
@@ -291,25 +284,31 @@ fun BackupsScreen(
                                         }
                                     }
 
-                                    val snackbarUploadNotImplementedMessage =
-                                        stringResource(id = R.string.backups_upload_not_implemented_snackbar_message)
                                     IconButton(
                                         onClick = {
-                                            // TODO upload to cloud, set uploaded to 1f alpha, not uploaded to disabled
-                                            scope.launch {
-                                                if (snackbarHostState.currentSnackbarData == null) {
-                                                    snackbarHostState.showSnackbar(
-                                                        message = snackbarUploadNotImplementedMessage,
-                                                    )
-                                                }
-                                            }
+                                            toggleLockBackup(it)
                                         }
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.CloudUpload,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
-                                        )
+                                        Crossfade(
+                                            targetState = it.locked,
+                                            label = "lock status change animation"
+                                        ) { locked ->
+                                            if (locked) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Lock,
+                                                    contentDescription = stringResource(id = R.string.backup_unlock),
+                                                    tint = MaterialTheme.colorScheme.tertiary,
+                                                )
+                                            } else {
+                                                Icon(
+                                                    imageVector = Icons.Default.LockOpen,
+                                                    contentDescription = stringResource(id = R.string.backup_lock),
+                                                    tint = MaterialTheme.colorScheme.tertiary.copy(
+                                                        disabledAlpha
+                                                    ),
+                                                )
+                                            }
+                                        }
                                     }
 
                                     Spacer(modifier = Modifier.width(10.dp))
@@ -367,20 +366,6 @@ fun BackupsScreenNothingToDisplayOverlay() {
                         curveEndX,
                         curveEndY
                     )
-
-                    // temporarily disabled arrow as it looks too weird on wide screens
-                    //                    relativeLineTo(
-                    //                        -32.dp.toPx(),
-                    //                        6.dp.toPx()
-                    //                    )
-                    //                    relativeMoveTo(
-                    //                        34.dp.toPx(),
-                    //                        -6.dp.toPx()
-                    //                    )
-                    //                    relativeLineTo(
-                    //                        -6.dp.toPx(),
-                    //                        -33.dp.toPx()
-                    //                    )
                 },
                 style = Stroke(width = lineWidth),
                 color = pathColor
@@ -399,6 +384,7 @@ private fun BackupsScreenPreview() {
                 createBackup = {},
                 loadBackup = {},
                 deleteBackup = {},
+                toggleLockBackup = {},
                 availableBackups = emptyList(),
                 onBack = {},
             )
