@@ -18,5 +18,9 @@ enum class AppLocale(
     EN_US(
         "eng",
         "en-US"
+    ),
+    TR(
+        "tur",
+        "tr-TR"
     )
 }

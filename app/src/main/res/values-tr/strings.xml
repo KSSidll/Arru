@@ -1,6 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name" translatable="false">Arru</string>
-
     <string name="navigate_to_previous_screen">Önceki ekrana dön</string>
 
     <string name="dashboard_nav_label">Kontrol Paneli</string>
