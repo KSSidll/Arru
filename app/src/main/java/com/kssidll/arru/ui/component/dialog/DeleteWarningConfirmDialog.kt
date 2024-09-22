@@ -107,8 +107,12 @@ fun DeleteWarningConfirmDialog(
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            disabledContainerColor = MaterialTheme.colorScheme.errorContainer.copy(disabledAlpha),
-                            disabledContentColor = MaterialTheme.colorScheme.onErrorContainer.copy(disabledAlpha),
+                            disabledContainerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                                disabledAlpha
+                            ),
+                            disabledContentColor = MaterialTheme.colorScheme.onErrorContainer.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()

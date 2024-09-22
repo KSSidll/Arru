@@ -60,6 +60,7 @@ class DataExportService: Service() {
 
     @Inject
     lateinit var categoryRepository: CategoryRepositorySource
+
     @Inject
     lateinit var itemRepository: ItemRepositorySource
 

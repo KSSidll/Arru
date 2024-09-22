@@ -1,33 +1,45 @@
 package com.kssidll.arru.ui.component.chart
 
 
-import android.graphics.*
-import android.text.*
-import android.text.style.*
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.style.ForegroundColorSpan
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.utils.*
-import com.kssidll.arru.ui.theme.*
-import com.patrykandpatrick.vico.compose.chart.*
-import com.patrykandpatrick.vico.compose.chart.line.*
-import com.patrykandpatrick.vico.compose.chart.scroll.*
-import com.patrykandpatrick.vico.compose.component.*
-import com.patrykandpatrick.vico.compose.dimensions.*
-import com.patrykandpatrick.vico.compose.legend.*
-import com.patrykandpatrick.vico.compose.style.*
-import com.patrykandpatrick.vico.core.component.shape.*
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ProductPriceByShopByTime
+import com.kssidll.arru.domain.utils.formatToCurrency
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
+import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollState
+import com.patrykandpatrick.vico.compose.component.textComponent
+import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
+import com.patrykandpatrick.vico.compose.legend.verticalLegend
+import com.patrykandpatrick.vico.compose.style.currentChartStyle
+import com.patrykandpatrick.vico.core.component.shape.ShapeComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
-import com.patrykandpatrick.vico.core.entry.*
-import com.patrykandpatrick.vico.core.extension.*
-import com.patrykandpatrick.vico.core.legend.*
-import com.patrykandpatrick.vico.core.scroll.*
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.patrykandpatrick.vico.core.extension.appendCompat
+import com.patrykandpatrick.vico.core.extension.orZero
+import com.patrykandpatrick.vico.core.extension.transformToSpannable
+import com.patrykandpatrick.vico.core.legend.LegendItem
+import com.patrykandpatrick.vico.core.scroll.AutoScrollCondition
+import com.patrykandpatrick.vico.core.scroll.InitialScroll
 
 @Composable
 fun ShopPriceCompareChart(
@@ -118,7 +130,9 @@ fun ShopPriceCompareChart(
                         LegendItem(
                             icon = ShapeComponent(
                                 shape = Shapes.pillShape,
-                                color = currentChartStyle.lineChart.lines[index.mod(currentChartStyle.lineChart.lines.size)].lineColor,
+                                color = currentChartStyle.lineChart.lines[index.mod(
+                                    currentChartStyle.lineChart.lines.size
+                                )].lineColor,
                             ),
                             label = textComponent(
                                 color = currentChartStyle.axis.axisLabelColor,

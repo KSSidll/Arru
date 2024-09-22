@@ -1,6 +1,7 @@
 package com.kssidll.arru.domain.data
 
-import com.patrykandpatrick.vico.core.entry.*
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.FloatEntry
 
 interface SortSource {
     fun sortValue(): Long

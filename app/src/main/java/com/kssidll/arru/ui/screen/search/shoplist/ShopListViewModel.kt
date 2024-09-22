@@ -1,11 +1,13 @@
 package com.kssidll.arru.ui.screen.search.shoplist
 
 
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.repository.*
-import dagger.hilt.android.lifecycle.*
-import javax.inject.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @HiltViewModel
 class ShopListViewModel @Inject constructor(

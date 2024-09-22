@@ -1,6 +1,6 @@
 package com.kssidll.arru.domain.data
 
-import com.patrykandpatrick.vico.core.entry.*
+import com.patrykandpatrick.vico.core.entry.ChartEntry
 
 interface ChartSource: FloatSource, SortSource {
     fun chartEntry(x: Int): ChartEntry

@@ -205,6 +205,14 @@ fun SettingsRoute(
                 .collectAsState(initial = null).value,
             onChangeExportUri = { currentExportUri ->
                 exportFolderPickerLauncher.launch(currentExportUri)
+            },
+            currentTheme = viewModel.currentTheme.collectAsState(initial = AppPreferences.Theme.ColorScheme.DEFAULT).value,
+            setTheme = {
+                viewModel.setTheme(it)
+            },
+            isInDynamicColor = viewModel.isInDynamicColor.collectAsState(initial = AppPreferences.Theme.DynamicColor.DEFAULT).value,
+            setDynamicColor = {
+                viewModel.setDynamicColor(it)
             }
         )
 

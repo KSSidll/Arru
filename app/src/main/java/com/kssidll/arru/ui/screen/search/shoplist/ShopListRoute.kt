@@ -1,10 +1,11 @@
 package com.kssidll.arru.ui.screen.search.shoplist
 
 
-import androidx.compose.runtime.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.search.shared.*
-import dev.olshevski.navigation.reimagined.hilt.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.ui.screen.search.shared.SearchList
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
 internal fun ShopListRoute(

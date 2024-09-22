@@ -428,7 +428,11 @@ private fun ExpandedModifyTransactionScreenContent(
                                 state.totalCost.value = Field.Loaded("%.2f".format(0f))
                             } else {
                                 val value =
-                                    state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+                                    state.totalCost.value.data!!.let {
+                                        StringHelper.toDoubleOrNull(
+                                            it
+                                        )
+                                    }
 
                                 if (value != null) {
                                     state.totalCost.value =
@@ -438,7 +442,9 @@ private fun ExpandedModifyTransactionScreenContent(
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()
@@ -456,7 +462,11 @@ private fun ExpandedModifyTransactionScreenContent(
                                 state.totalCost.value = Field.Loaded("%.2f".format(0f))
                             } else {
                                 val value =
-                                    state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+                                    state.totalCost.value.data!!.let {
+                                        StringHelper.toDoubleOrNull(
+                                            it
+                                        )
+                                    }
 
                                 if (value != null) {
                                     state.totalCost.value = Field.Loaded(
@@ -471,7 +481,9 @@ private fun ExpandedModifyTransactionScreenContent(
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()

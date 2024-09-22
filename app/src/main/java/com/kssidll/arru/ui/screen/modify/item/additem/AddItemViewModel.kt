@@ -1,15 +1,18 @@
 package com.kssidll.arru.ui.screen.modify.item.additem
 
-import android.util.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.item.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import javax.inject.Inject
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(

@@ -69,23 +69,43 @@ fun StyledTextFieldColors.toTextFieldColors(optional: Boolean = false): TextFiel
 fun styledTextFieldColorDefaults(
     focusedText: Color = MaterialTheme.colorScheme.onSurface,
     unfocusedText: Color = focusedText,
-    disabledText: Color = with(unfocusedText) { if (this == Color.Transparent) this else copy(disabledAlpha) },
+    disabledText: Color = with(unfocusedText) {
+        if (this == Color.Transparent) this else copy(
+            disabledAlpha
+        )
+    },
     errorText: Color = MaterialTheme.colorScheme.error,
     focusedIndicator: Color = MaterialTheme.colorScheme.primary,
     unfocusedIndicator: Color = focusedIndicator,
-    disabledIndicator: Color = with(unfocusedIndicator) { if (this == Color.Transparent) this else copy(disabledAlpha) },
+    disabledIndicator: Color = with(unfocusedIndicator) {
+        if (this == Color.Transparent) this else copy(
+            disabledAlpha
+        )
+    },
     errorIndicator: Color = MaterialTheme.colorScheme.error,
     focusedTrailingIcon: Color = MaterialTheme.colorScheme.tertiary,
     unfocusedTrailingIcon: Color = focusedTrailingIcon,
-    disabledTrailingIcon: Color = with(unfocusedTrailingIcon) { if (this == Color.Transparent) this else copy(disabledAlpha) },
+    disabledTrailingIcon: Color = with(unfocusedTrailingIcon) {
+        if (this == Color.Transparent) this else copy(
+            disabledAlpha
+        )
+    },
     errorTrailingIcon: Color = focusedTrailingIcon,
     focusedLabel: Color = MaterialTheme.colorScheme.primary,
     unfocusedLabel: Color = focusedLabel,
-    disabledLabel: Color = with(unfocusedLabel) { if (this == Color.Transparent) this else copy(disabledAlpha) },
+    disabledLabel: Color = with(unfocusedLabel) {
+        if (this == Color.Transparent) this else copy(
+            disabledAlpha
+        )
+    },
     errorLabel: Color = MaterialTheme.colorScheme.error,
     focusedContainer: Color = Color.Transparent,
     unfocusedContainer: Color = focusedContainer,
-    disabledContainer: Color = with(unfocusedContainer) { if (this == Color.Transparent) this else copy(disabledAlpha) },
+    disabledContainer: Color = with(unfocusedContainer) {
+        if (this == Color.Transparent) this else copy(
+            disabledAlpha
+        )
+    },
     errorContainer: Color = focusedContainer,
     cursor: Color = MaterialTheme.colorScheme.primary,
     errorCursor: Color = MaterialTheme.colorScheme.error,
@@ -93,14 +113,46 @@ fun styledTextFieldColorDefaults(
         handleColor = cursor,
         backgroundColor = MaterialTheme.colorScheme.primaryContainer,
     ),
-    optionalFocusedText: Color = with(focusedText) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalUnfocusedText: Color = with(unfocusedText) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalFocusedIndicator: Color = with(focusedIndicator) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalUnfocusedIndicator: Color = with(unfocusedIndicator) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalFocusedTrailingIcon: Color = with(focusedTrailingIcon) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalUnfocusedTrailingIcon: Color = with(unfocusedTrailingIcon) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalFocusedLabel: Color = with(focusedLabel) { if (this == Color.Transparent) this else copy(optionalAlpha) },
-    optionalUnfocusedLabel: Color = with(unfocusedLabel) { if (this == Color.Transparent) this else copy(optionalAlpha) },
+    optionalFocusedText: Color = with(focusedText) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalUnfocusedText: Color = with(unfocusedText) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalFocusedIndicator: Color = with(focusedIndicator) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalUnfocusedIndicator: Color = with(unfocusedIndicator) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalFocusedTrailingIcon: Color = with(focusedTrailingIcon) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalUnfocusedTrailingIcon: Color = with(unfocusedTrailingIcon) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalFocusedLabel: Color = with(focusedLabel) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
+    optionalUnfocusedLabel: Color = with(unfocusedLabel) {
+        if (this == Color.Transparent) this else copy(
+            optionalAlpha
+        )
+    },
 ): StyledTextFieldColors {
     return StyledTextFieldColors(
         colors = TextFieldDefaults.colors(

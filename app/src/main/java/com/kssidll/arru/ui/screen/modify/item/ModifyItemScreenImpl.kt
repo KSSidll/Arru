@@ -208,7 +208,9 @@ fun ModifyItemScreenImpl(
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()
@@ -241,7 +243,9 @@ fun ModifyItemScreenImpl(
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()
@@ -319,7 +323,9 @@ fun ModifyItemScreenImpl(
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()
@@ -352,7 +358,9 @@ fun ModifyItemScreenImpl(
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()

@@ -9,8 +9,12 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.getColorScheme
+import com.kssidll.arru.data.preference.getDynamicColor
 import com.kssidll.arru.data.preference.getExportType
 import com.kssidll.arru.data.preference.setExportType
+import com.kssidll.arru.data.preference.setThemeColorScheme
+import com.kssidll.arru.data.preference.setThemeDynamicColor
 import com.kssidll.arru.domain.AppLocale
 import com.kssidll.arru.domain.usecase.ExportDataUIBlockingUseCase
 import com.kssidll.arru.domain.usecase.ExportDataWithServiceUseCase
@@ -29,10 +33,29 @@ class SettingsViewModel @Inject constructor(
     val currentExportType: Flow<AppPreferences.Export.Type.Values> =
         AppPreferences.getExportType(appContext)
 
+    val currentTheme: Flow<AppPreferences.Theme.ColorScheme.Values> =
+        AppPreferences.getColorScheme(appContext)
+
+    val isInDynamicColor: Flow<Boolean> = AppPreferences.getDynamicColor(appContext)
+
     fun setExportType(newType: AppPreferences.Export.Type.Values) = viewModelScope.launch {
         AppPreferences.setExportType(
             appContext,
             newType
+        )
+    }
+
+    fun setTheme(newTheme: AppPreferences.Theme.ColorScheme.Values) = viewModelScope.launch {
+        AppPreferences.setThemeColorScheme(
+            appContext,
+            newTheme
+        )
+    }
+
+    fun setDynamicColor(newDynamicColor: Boolean) = viewModelScope.launch {
+        AppPreferences.setThemeDynamicColor(
+            appContext,
+            newDynamicColor
         )
     }
 

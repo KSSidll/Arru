@@ -1,6 +1,13 @@
 package com.kssidll.arru.data.data
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.domain.data.NameSource
 import com.kssidll.arru.helper.generateRandomLongValue

@@ -495,28 +495,40 @@ val MIGRATION_5_6 = object: Migration(
             """.trimIndent()
         )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             DROP TABLE Item
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             DROP TABLE TransactionBasketItem
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             ALTER TABLE tmp_item RENAME TO Item
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE INDEX IF NOT EXISTS index_Item_transactionBasketId ON Item (transactionBasketId)
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE INDEX IF NOT EXISTS index_Item_productId ON Item (productId)
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE INDEX IF NOT EXISTS index_Item_variantId ON Item (variantId)
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }
