@@ -130,4 +130,5 @@
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="theme">Theme</string>
+    <string name="settings_dynamic_theme">Dynamic Theme</string>
 </resources>

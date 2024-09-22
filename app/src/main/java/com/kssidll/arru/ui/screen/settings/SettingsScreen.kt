@@ -355,7 +355,7 @@ internal fun SettingsScreen(
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = "test",
+                                text = stringResource(R.string.settings_dynamic_theme),
                                 style = Typography.labelMedium
                             )
                         }
