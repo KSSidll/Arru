@@ -1,0 +1,2 @@
+- Add in-app theme picking
+- Improve theme compatibility on older devices
