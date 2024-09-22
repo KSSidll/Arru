@@ -90,7 +90,7 @@ fun <T> SearchList(
                                         .width(600.dp)
                                         .align(Alignment.Center)
                                 ) {
-                                    HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
+                                    HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer)
 
                                     StyledOutlinedTextField(
                                         value = filter,
@@ -101,14 +101,14 @@ fun <T> SearchList(
                                             Text(
                                                 text = stringResource(id = R.string.search),
                                                 style = Typography.bodyLarge,
-                                                color = MaterialTheme.colorScheme.tertiary.copy(optionalAlpha),
+                                                color = MaterialTheme.colorScheme.primary.copy(optionalAlpha),
                                             )
                                         },
                                         leadingIcon = {
                                             Icon(
                                                 imageVector = Icons.Rounded.Search,
                                                 contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.tertiary
+                                                tint = MaterialTheme.colorScheme.primary
                                             )
                                         },
                                         colors = styledTextFieldColorDefaults(
@@ -139,7 +139,7 @@ fun <T> SearchList(
                                                 .width(600.dp)
                                                 .align(Alignment.Center)
                                         ) {
-                                            HorizontalDivider(color = MaterialTheme.colorScheme.tertiaryContainer)
+                                            HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer)
 
                                             SearchItem(
                                                 text = item.name(),

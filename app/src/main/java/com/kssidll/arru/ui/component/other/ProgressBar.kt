@@ -36,7 +36,7 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 fun ProgressBar(
     progressValue: Float,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.tertiary,
+    color: Color = MaterialTheme.colorScheme.primary,
     shape: Shape = ShapeDefaults.Medium,
     animationSpec: AnimationSpec<Float> = tween(1200),
 ) {

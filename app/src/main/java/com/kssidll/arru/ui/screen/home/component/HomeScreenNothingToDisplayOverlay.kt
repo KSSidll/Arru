@@ -45,7 +45,7 @@ fun HomeScreenNothingToDisplayOverlay() {
             )
         }
 
-        val pathColor = MaterialTheme.colorScheme.tertiary
+        val pathColor = MaterialTheme.colorScheme.primary
         Canvas(
             modifier = Modifier
                 .weight(1f)
@@ -91,7 +91,7 @@ fun HomeScreenNothingToDisplayOverlay() {
 @Composable
 fun ExpandedHomeScreenNothingToDisplayOverlay() {
     Column {
-        val pathColor = MaterialTheme.colorScheme.tertiary
+        val pathColor = MaterialTheme.colorScheme.primary
         Canvas(
             modifier = Modifier
                 .weight(1f)
