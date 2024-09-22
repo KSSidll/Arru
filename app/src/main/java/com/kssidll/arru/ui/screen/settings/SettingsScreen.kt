@@ -2,11 +2,13 @@ package com.kssidll.arru.ui.screen.settings
 
 
 import android.net.Uri
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,12 +37,12 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -62,6 +64,7 @@ import com.kssidll.arru.domain.AppLocale
 import com.kssidll.arru.helper.getReadablePathFromUri
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.screen.settings.component.LanguageExposedDropdown
+import com.kssidll.arru.ui.screen.settings.component.ThemeExposedDropdown
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 
@@ -73,6 +76,11 @@ import com.kssidll.arru.ui.theme.Typography
  * @param currentExportType Current export type
  * @param onExportTypeChange Called when the export type changes. Provides new export type as parameter
  * @param exportUri Uri of the export location if any
+ * @param onChangeExportUri Callback to call to request export uri change. Provides requested uri as parameter
+ * @param currentTheme Currently selected theme
+ * @param setTheme Callback to call to request theme change. Provides requested theme as parameter
+ * @param isInDynamicColor Whether the app is in dynamic color
+ * @param setDynamicColor Callback to request a toggle of dynamic color. Provides requested value as parameter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,6 +93,10 @@ internal fun SettingsScreen(
     onExportTypeChange: (AppPreferences.Export.Type.Values) -> Unit,
     exportUri: Uri?,
     onChangeExportUri: (Uri?) -> Unit,
+    currentTheme: AppPreferences.Theme.ColorScheme.Values,
+    setTheme: (newTheme: AppPreferences.Theme.ColorScheme.Values) -> Unit,
+    isInDynamicColor: Boolean,
+    setDynamicColor: (newDynamicColor: Boolean) -> Unit
 ) {
     var exportOptionsExpanded: Boolean by remember {
         mutableStateOf(false)
@@ -98,8 +110,6 @@ internal fun SettingsScreen(
         ButtonDefaults.ContentPadding.calculateEndPadding(layoutDirection)
 
     val buttonHorizontalPadding = buttonStartPadding + buttonEndPadding
-
-    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         topBar = {
@@ -191,8 +201,8 @@ internal fun SettingsScreen(
                         },
                         contentPadding = PaddingValues(0.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         ),
                         modifier = Modifier
                             .width(30.dp + buttonStartPadding)
@@ -306,6 +316,51 @@ internal fun SettingsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 LanguageExposedDropdown(setLocale = setLocale)
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                ThemeExposedDropdown(
+                    currentTheme = currentTheme,
+                    setTheme = setTheme
+                )
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val dynamicThemeInteractionSource = remember {
+                        MutableInteractionSource()
+                    }
+
+                    Surface(
+                        shape = ShapeDefaults.Large,
+                        tonalElevation = 2.dp,
+                        interactionSource = dynamicThemeInteractionSource,
+                        onClick = {
+                            setDynamicColor(!isInDynamicColor)
+                        },
+                        modifier = Modifier
+                            .width(TextFieldDefaults.MinWidth)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Checkbox(
+                                checked = isInDynamicColor,
+                                interactionSource = dynamicThemeInteractionSource,
+                                onCheckedChange = {
+                                    setDynamicColor(!isInDynamicColor)
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = stringResource(R.string.settings_dynamic_theme),
+                                style = Typography.labelMedium
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -325,7 +380,11 @@ private fun SettingsScreenPreview() {
                 currentExportType = AppPreferences.Export.Type.Values.CompactCSV,
                 onExportTypeChange = {},
                 exportUri = null,
-                onChangeExportUri = {}
+                onChangeExportUri = {},
+                currentTheme = AppPreferences.Theme.ColorScheme.DEFAULT,
+                setTheme = {},
+                isInDynamicColor = true,
+                setDynamicColor = {}
             )
         }
     }

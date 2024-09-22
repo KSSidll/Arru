@@ -1,10 +1,19 @@
 package com.kssidll.arru.domain
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
 /**
  * Defines available time periods and handles flow managment when changing time periods

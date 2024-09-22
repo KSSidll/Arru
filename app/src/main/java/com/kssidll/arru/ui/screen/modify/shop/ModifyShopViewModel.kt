@@ -1,10 +1,11 @@
 package com.kssidll.arru.ui.screen.modify.shop
 
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 
 /**
  * Base [ViewModel] class for Shop modification view models

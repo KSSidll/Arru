@@ -1,22 +1,39 @@
 package com.kssidll.arru.ui.screen.modify.product
 
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.component.dialog.*
-import com.kssidll.arru.ui.component.field.*
-import com.kssidll.arru.ui.screen.modify.*
-import com.kssidll.arru.ui.theme.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryWithAltNames
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.loadedData
+import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
+import com.kssidll.arru.ui.component.field.SearchField
+import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
+import com.kssidll.arru.ui.screen.modify.ModifyScreen
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import androidx.compose.material3.Surface as Surface1
 
 private val ItemHorizontalPadding: Dp = 20.dp

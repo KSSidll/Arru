@@ -1,7 +1,21 @@
 package com.kssidll.arru.data.dao
 
-import androidx.room.*
-import com.kssidll.arru.data.data.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionTotalSpentByShop
+import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import kotlinx.coroutines.flow.Flow
 
 @Dao

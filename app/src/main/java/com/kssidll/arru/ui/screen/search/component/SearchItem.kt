@@ -1,18 +1,26 @@
 package com.kssidll.arru.ui.screen.search.component
 
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.semantics.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
 
 private val DefaultItemHeight: Dp = 80.dp
 

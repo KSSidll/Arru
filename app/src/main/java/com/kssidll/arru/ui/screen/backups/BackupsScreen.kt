@@ -257,13 +257,15 @@ fun BackupsScreen(
                                                             imageVector = Icons.Outlined.ShoppingBasket,
                                                             contentDescription = null,
                                                             modifier = Modifier.size(20.dp),
-                                                            tint = MaterialTheme.colorScheme.tertiary,
+                                                            tint = MaterialTheme.colorScheme.primary
                                                         )
                                                     }
 
                                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                                         Text(
-                                                            text = TransactionBasket.actualTotalCost(it.totalSpending)
+                                                            text = TransactionBasket.actualTotalCost(
+                                                                it.totalSpending
+                                                            )
                                                                 .formatToCurrency(),
                                                             style = Typography.titleMedium,
                                                         )
@@ -274,7 +276,7 @@ fun BackupsScreen(
                                                             imageVector = Icons.Outlined.Payment,
                                                             contentDescription = null,
                                                             modifier = Modifier.size(20.dp),
-                                                            tint = MaterialTheme.colorScheme.tertiary,
+                                                            tint = MaterialTheme.colorScheme.primary
                                                         )
                                                     }
                                                 }
@@ -297,13 +299,13 @@ fun BackupsScreen(
                                                 Icon(
                                                     imageVector = Icons.Default.Lock,
                                                     contentDescription = stringResource(id = R.string.backup_unlock),
-                                                    tint = MaterialTheme.colorScheme.tertiary,
+                                                    tint = MaterialTheme.colorScheme.primary,
                                                 )
                                             } else {
                                                 Icon(
                                                     imageVector = Icons.Default.LockOpen,
                                                     contentDescription = stringResource(id = R.string.backup_lock),
-                                                    tint = MaterialTheme.colorScheme.tertiary.copy(
+                                                    tint = MaterialTheme.colorScheme.primary.copy(
                                                         disabledAlpha
                                                     ),
                                                 )
@@ -343,7 +345,7 @@ fun BackupsScreenNothingToDisplayOverlay() {
             )
         }
 
-        val pathColor = MaterialTheme.colorScheme.tertiary
+        val pathColor = MaterialTheme.colorScheme.primary
         Canvas(
             modifier = Modifier
                 .weight(1f)

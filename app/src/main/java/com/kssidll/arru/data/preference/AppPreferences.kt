@@ -1,11 +1,16 @@
 package com.kssidll.arru.data.preference
 
 import android.content.Context
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -81,6 +86,7 @@ data object AppPreferences {
                 LAST,
 
                 ;
+
                 companion object {
                     private val idMap = Values.entries.associateBy { it.ordinal }
                     fun getByOrdinal(ordinal: Int) = idMap[ordinal]
@@ -152,6 +158,77 @@ data object AppPreferences {
             val key: Preferences.Key<String> = stringPreferencesKey("exportlocation")
         }
     }
+
+    /**
+     * Data associated with theme datastore preferences
+     */
+    data object Theme {
+        /**
+         * Data associated with theme color scheme datastore preference
+         */
+        data object ColorScheme {
+            /**
+             * Key for theme color scheme preference key-value pair
+             */
+            val key: Preferences.Key<Int> = intPreferencesKey("themecolorscheme")
+
+            /**
+             * Value for default color scheme
+             */
+            val DEFAULT = Values.SYSTEM
+
+
+            enum class Values {
+                /**
+                 * Value for system color scheme
+                 */
+                SYSTEM,
+
+                /**
+                 * Value for dark color scheme
+                 */
+                DARK,
+
+                /**
+                 * Value for light color scheme
+                 */
+                LIGHT
+
+                ;
+
+                @Composable
+                @ReadOnlyComposable
+                fun getTranslation(): String {
+                    return when (this) {
+                        SYSTEM -> stringResource(R.string.system)
+                        DARK -> stringResource(R.string.dark)
+                        LIGHT -> stringResource(R.string.light)
+                    }
+                }
+
+                companion object {
+                    private val idMap = Values.entries.associateBy { it.ordinal }
+                    fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+                }
+            }
+        }
+
+        /**
+         * Data associated with dynamic color datastore preference
+         */
+        data object DynamicColor {
+            /**
+             * Key for dynamic color preference key-value pair
+             */
+            @RequiresApi(Build.VERSION_CODES.S)
+            val key: Preferences.Key<Boolean> = booleanPreferencesKey("themedynamiccolor")
+
+            /**
+             * Default value for dynamic color
+             */
+            val DEFAULT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        }
+    }
 }
 
 /**
@@ -169,13 +246,29 @@ suspend fun Preferences.setNullToDefault(context: Context) {
 
     if (this[AppPreferences.Transaction.Date.key] == null) {
         context.dataStore.edit {
-            it[AppPreferences.Transaction.Date.key] = AppPreferences.Transaction.Date.DEFAULT.ordinal
+            it[AppPreferences.Transaction.Date.key] =
+                AppPreferences.Transaction.Date.DEFAULT.ordinal
         }
     }
 
     if (this[AppPreferences.Export.Type.key] == null) {
         context.dataStore.edit {
             it[AppPreferences.Export.Type.key] = AppPreferences.Export.Type.DEFAULT.ordinal
+        }
+    }
+
+    if (this[AppPreferences.Theme.ColorScheme.key] == null) {
+        context.dataStore.edit {
+            it[AppPreferences.Theme.ColorScheme.key] =
+                AppPreferences.Theme.ColorScheme.DEFAULT.ordinal
+        }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (this[AppPreferences.Theme.DynamicColor.key] == null) {
+            context.dataStore.edit {
+                it[AppPreferences.Theme.DynamicColor.key] = true
+            }
         }
     }
 }
@@ -193,7 +286,10 @@ suspend fun AppPreferences.setResettableToDefault(context: Context) {
  * @param context App context
  * @param newDatePreference Value to set the date preference to
  */
-suspend fun AppPreferences.setTransactionDate(context: Context, newDatePreference: AppPreferences.Transaction.Date.Values) {
+suspend fun AppPreferences.setTransactionDate(
+    context: Context,
+    newDatePreference: AppPreferences.Transaction.Date.Values
+) {
     context.dataStore.edit {
         it[AppPreferences.Transaction.Date.key] = newDatePreference.ordinal
     }
@@ -269,5 +365,72 @@ fun AppPreferences.getExportLocation(context: Context): Flow<Uri?> {
         preferences[AppPreferences.Export.Location.key]?.let {
             Uri.parse(it)
         }
+    }
+}
+
+/**
+ * Sets the theme color scheme preference to a new value
+ * @param context App context
+ * @param newColorScheme Value to set the theme color scheme preference to
+ */
+suspend fun AppPreferences.setThemeColorScheme(
+    context: Context,
+    newColorScheme: AppPreferences.Theme.ColorScheme.Values
+) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Theme.ColorScheme.key] = newColorScheme.ordinal
+    }
+}
+
+/**
+ * Returns the theme color scheme preference value
+ * @param context App context
+ * @return The color scheme preference value
+ */
+fun AppPreferences.getColorScheme(context: Context): Flow<AppPreferences.Theme.ColorScheme.Values> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Theme.ColorScheme.key]?.let {
+            AppPreferences.Theme.ColorScheme.Values.getByOrdinal(it)
+        }
+            ?: AppPreferences.Theme.ColorScheme.DEFAULT
+    }
+}
+
+fun AppPreferences.Theme.ColorScheme.Values.detectDarkMode(): (Resources) -> Boolean =
+    { resources ->
+        when (this) {
+            AppPreferences.Theme.ColorScheme.Values.SYSTEM -> (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            AppPreferences.Theme.ColorScheme.Values.DARK -> true
+            AppPreferences.Theme.ColorScheme.Values.LIGHT -> false
+        }
+    }
+
+/**
+ * Sets the theme dynamic color preference to a new value
+ * @param context App context
+ * @param isDynamicColor Value to set the theme dynamic color preference to
+ */
+suspend fun AppPreferences.setThemeDynamicColor(
+    context: Context,
+    isDynamicColor: Boolean
+) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        getPreferencesDataStore(context).edit {
+            it[AppPreferences.Theme.DynamicColor.key] = isDynamicColor
+        }
+    }
+}
+
+/**
+ * Returns the theme dynamic color preference value
+ * @param context App context
+ * @return The dynamic color preference value
+ */
+fun AppPreferences.getDynamicColor(context: Context): Flow<Boolean> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            preferences[AppPreferences.Theme.DynamicColor.key]
+                ?: AppPreferences.Theme.DynamicColor.DEFAULT
+        } else false
     }
 }

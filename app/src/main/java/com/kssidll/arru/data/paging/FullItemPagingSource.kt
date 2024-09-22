@@ -1,7 +1,8 @@
 package com.kssidll.arru.data.paging
 
-import androidx.paging.*
-import com.kssidll.arru.data.data.*
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import com.kssidll.arru.data.data.FullItem
 
 class FullItemPagingSource(
     private val query: suspend (start: Int, loadSize: Int) -> List<FullItem>,

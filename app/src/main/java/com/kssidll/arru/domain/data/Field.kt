@@ -1,10 +1,10 @@
 package com.kssidll.arru.domain.data
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.theme.*
+import com.kssidll.arru.ui.theme.Typography
 
 /**
  * Generic abstraction for data and its status

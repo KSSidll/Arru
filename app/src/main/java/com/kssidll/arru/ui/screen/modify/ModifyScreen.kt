@@ -1,22 +1,59 @@
 package com.kssidll.arru.ui.screen.modify
 
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.Merge
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.component.dialog.*
-import com.kssidll.arru.ui.component.other.*
-import com.kssidll.arru.ui.theme.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.ui.component.dialog.DeleteWarningConfirmDialog
+import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
+import com.kssidll.arru.ui.component.dialog.MergeConfirmDialog
+import com.kssidll.arru.ui.component.other.SecondaryAppBar
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 abstract class ModifyScreenState(
     val attemptedToSubmit: MutableState<Boolean> = mutableStateOf(false),
@@ -139,7 +176,7 @@ fun <T> ModifyScreen(
                                 Icon(
                                     imageVector = Icons.Rounded.Merge,
                                     contentDescription = stringResource(id = R.string.merge_action),
-                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(27.dp),
                                 )
                             }

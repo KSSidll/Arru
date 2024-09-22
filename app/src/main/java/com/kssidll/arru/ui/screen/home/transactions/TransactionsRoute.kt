@@ -1,11 +1,11 @@
 package com.kssidll.arru.ui.screen.home.transactions
 
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
-import androidx.paging.compose.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.R
-import dev.olshevski.navigation.reimagined.hilt.*
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
 internal fun TransactionsRoute(

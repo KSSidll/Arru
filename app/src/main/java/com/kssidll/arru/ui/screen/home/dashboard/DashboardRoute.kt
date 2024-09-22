@@ -1,9 +1,10 @@
 package com.kssidll.arru.ui.screen.home.dashboard
 
 
-import androidx.compose.runtime.*
-import com.kssidll.arru.domain.data.*
-import dev.olshevski.navigation.reimagined.hilt.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import com.kssidll.arru.domain.data.Data
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
 internal fun DashboardRoute(

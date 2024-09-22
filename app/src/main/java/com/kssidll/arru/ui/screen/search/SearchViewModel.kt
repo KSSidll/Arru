@@ -1,9 +1,9 @@
 package com.kssidll.arru.ui.screen.search
 
 
-import androidx.lifecycle.*
-import dagger.hilt.android.lifecycle.*
-import javax.inject.*
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(

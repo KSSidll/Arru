@@ -1,12 +1,15 @@
 package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.transaction.*
-import dev.olshevski.navigation.reimagined.hilt.*
-import kotlinx.coroutines.*
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionScreenImpl
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditTransactionRoute(

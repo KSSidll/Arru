@@ -1,13 +1,13 @@
 package com.kssidll.arru.ui.screen.modify.category.addcategory
 
-import androidx.lifecycle.*
-import com.kssidll.arru.data.repository.*
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.InsertResult
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.category.*
-import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
-import javax.inject.*
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import javax.inject.Inject
 
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(

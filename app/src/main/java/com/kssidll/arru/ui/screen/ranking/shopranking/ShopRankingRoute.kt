@@ -1,11 +1,12 @@
 package com.kssidll.arru.ui.screen.ranking.shopranking
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.res.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.ranking.*
-import dev.olshevski.navigation.reimagined.hilt.*
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.ui.screen.ranking.RankingScreen
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
 fun ShopRankingRoute(

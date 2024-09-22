@@ -4,7 +4,14 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductDao
-import com.kssidll.arru.data.data.*
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductAltName
+import com.kssidll.arru.data.data.ProductCategoryWithAltNames
+import com.kssidll.arru.data.data.ProductPriceByShopByTime
+import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltInsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltUpdateResult
@@ -13,7 +20,11 @@ import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.Insert
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
     // Create

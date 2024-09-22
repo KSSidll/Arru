@@ -1,7 +1,7 @@
 package com.kssidll.arru.ui.screen.search.start
 
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 
 @Composable
 internal fun StartRoute(

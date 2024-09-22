@@ -1,13 +1,25 @@
 package com.kssidll.arru.ui.screen.modify.item
 
-import androidx.compose.runtime.*
-import androidx.lifecycle.*
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.data.repository.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.ui.screen.modify.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductWithAltNames
+import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 /**
  * Base [ViewModel] class for Item modification view models

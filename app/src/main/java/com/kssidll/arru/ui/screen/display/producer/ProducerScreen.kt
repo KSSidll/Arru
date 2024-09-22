@@ -1,34 +1,82 @@
 package com.kssidll.arru.ui.screen.display.producer
 
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import androidx.paging.*
-import androidx.paging.compose.*
-import com.kssidll.arru.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import com.kssidll.arru.ui.component.*
-import com.kssidll.arru.ui.component.list.*
-import com.kssidll.arru.ui.component.other.*
-import com.kssidll.arru.ui.theme.*
-import com.patrykandpatrick.vico.core.entry.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.loadedData
+import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.helper.generateRandomFloatValue
+import com.kssidll.arru.ui.component.SpendingSummaryComponent
+import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
+import com.kssidll.arru.ui.component.list.fullItemListContent
+import com.kssidll.arru.ui.component.other.SecondaryAppBar
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.Typography
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
 /**
  * @param onBack Called to request a back navigation
@@ -82,7 +130,7 @@ internal fun ProducerScreen(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(27.dp),
                         )
                     }
@@ -203,8 +251,8 @@ private fun ProducerScreenContent(
                             listState.animateScrollToItem(0)
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.ArrowUpward,

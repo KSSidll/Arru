@@ -1,29 +1,63 @@
 package com.kssidll.arru.ui.screen.modify.transaction
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.text.input.*
-import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.*
-import com.kssidll.arru.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.*
-import com.kssidll.arru.domain.data.*
-import com.kssidll.arru.helper.*
-import com.kssidll.arru.ui.component.dialog.*
-import com.kssidll.arru.ui.component.field.*
-import com.kssidll.arru.ui.screen.modify.*
-import com.kssidll.arru.ui.screen.modify.producer.*
-import com.kssidll.arru.ui.theme.*
-import java.text.*
-import java.util.*
+import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.loadedData
+import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.helper.RegexHelper
+import com.kssidll.arru.helper.StringHelper
+import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
+import com.kssidll.arru.ui.component.field.SearchField
+import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
+import com.kssidll.arru.ui.screen.modify.ModifyScreen
+import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerScreenState
+import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.disabledAlpha
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -227,8 +261,8 @@ private fun ModifyTransactionScreenContent(
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
                     ),
                     modifier = Modifier
                         .minimumInteractiveComponentSize()
@@ -260,8 +294,8 @@ private fun ModifyTransactionScreenContent(
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
                     ),
                     modifier = Modifier
                         .minimumInteractiveComponentSize()
@@ -394,7 +428,11 @@ private fun ExpandedModifyTransactionScreenContent(
                                 state.totalCost.value = Field.Loaded("%.2f".format(0f))
                             } else {
                                 val value =
-                                    state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+                                    state.totalCost.value.data!!.let {
+                                        StringHelper.toDoubleOrNull(
+                                            it
+                                        )
+                                    }
 
                                 if (value != null) {
                                     state.totalCost.value =
@@ -403,8 +441,10 @@ private fun ExpandedModifyTransactionScreenContent(
                             }
                         },
                         colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()
@@ -422,7 +462,11 @@ private fun ExpandedModifyTransactionScreenContent(
                                 state.totalCost.value = Field.Loaded("%.2f".format(0f))
                             } else {
                                 val value =
-                                    state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+                                    state.totalCost.value.data!!.let {
+                                        StringHelper.toDoubleOrNull(
+                                            it
+                                        )
+                                    }
 
                                 if (value != null) {
                                     state.totalCost.value = Field.Loaded(
@@ -436,8 +480,10 @@ private fun ExpandedModifyTransactionScreenContent(
                             }
                         },
                         colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                            disabledContentColor = MaterialTheme.colorScheme.tertiary.copy(disabledAlpha),
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
+                                disabledAlpha
+                            ),
                         ),
                         modifier = Modifier
                             .minimumInteractiveComponentSize()

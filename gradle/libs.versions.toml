@@ -10,10 +10,10 @@ androidx-datastore-preferences = "1.1.1"
 dev-navigation-reimagined = "1.5.0"
 
 # Compose
-androidx-compose-bom = "2024.09.00"
+androidx-compose-bom = "2024.09.02"
 
 # DI
-google-hilt = "2.48"
+google-hilt = "2.51.1"
 
 # Room
 androidx-room = "2.6.1"
@@ -31,10 +31,10 @@ dev-text-search-fuzzywuzzy = "1.4.0"
 dev-chart-vico-compose = "1.14.0"
 
 ## Plugins
-agp = "8.6.0"
-kotlin = "2.0.0"
+agp = "8.6.1"
+kotlin = "2.0.20"
 # hilt plugin has same version as hilt library so it is declared in the library section
-ksp = "2.0.0-1.0.21"
+ksp = "2.0.20-1.0.25"
 
 [libraries]
 # AndroidX

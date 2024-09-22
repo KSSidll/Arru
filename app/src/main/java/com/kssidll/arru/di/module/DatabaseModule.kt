@@ -1,17 +1,39 @@
 package com.kssidll.arru.di.module
 
-import android.content.*
-import androidx.datastore.preferences.core.*
-import com.kssidll.arru.*
-import com.kssidll.arru.data.dao.*
-import com.kssidll.arru.data.database.*
-import com.kssidll.arru.data.preference.*
-import com.kssidll.arru.data.repository.*
-import dagger.*
-import dagger.hilt.*
-import dagger.hilt.android.qualifiers.*
-import dagger.hilt.components.*
-import javax.inject.*
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
+import com.kssidll.arru.Arru
+import com.kssidll.arru.data.dao.CategoryDao
+import com.kssidll.arru.data.dao.ItemDao
+import com.kssidll.arru.data.dao.ProducerDao
+import com.kssidll.arru.data.dao.ProductDao
+import com.kssidll.arru.data.dao.ShopDao
+import com.kssidll.arru.data.dao.TransactionBasketDao
+import com.kssidll.arru.data.dao.VariantDao
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.database.externalDbFile
+import com.kssidll.arru.data.database.internalDbFile
+import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.repository.CategoryRepository
+import com.kssidll.arru.data.repository.CategoryRepositorySource
+import com.kssidll.arru.data.repository.ItemRepository
+import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ProducerRepository
+import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductRepository
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ShopRepository
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.data.repository.TransactionBasketRepository
+import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
+import com.kssidll.arru.data.repository.VariantRepository
+import com.kssidll.arru.data.repository.VariantRepositorySource
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

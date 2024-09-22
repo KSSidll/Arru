@@ -72,7 +72,11 @@ class AddTransactionViewModel @Inject constructor(
 
         val result = transactionRepository.insert(
             date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
-            totalCost = screenState.totalCost.value.data?.let { TransactionBasket.totalCostFromString(it) }
+            totalCost = screenState.totalCost.value.data?.let {
+                TransactionBasket.totalCostFromString(
+                    it
+                )
+            }
                 ?: TransactionBasket.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id
         )

@@ -1,9 +1,9 @@
 package com.kssidll.arru.helper
 
-import android.annotation.*
+import android.annotation.SuppressLint
 import java.sql.Date
-import java.text.*
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.random.Random
 
 private val defaultTimeFrom: Long = Date.valueOf("2020-01-01").time

@@ -2,8 +2,8 @@
 
 package com.kssidll.arru.domain.utils
 
-import java.text.*
-import java.util.*
+import java.text.NumberFormat
+import java.util.Locale
 
 fun Float.formatToCurrency(
     locale: Locale = Locale.getDefault(),

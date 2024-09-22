@@ -124,4 +124,8 @@
     <string name="merge_action_chose_candidate">Birleştirme işlemi için bunu aday olarak seçin</string>
     <string name="no_data_to_display_text">Henüz gösterilecek bir şey yok :(</string>
     <string name="no_data_to_display_add_transaction_hint">İşlem eklemeyi deneyin</string>
+    <string name="dark">Karanlık</string>
+    <string name="light">Açık</string>
+    <string name="theme">Tema</string>
+    <string name="settings_dynamic_theme">Dinamik tema</string>
 </resources>
