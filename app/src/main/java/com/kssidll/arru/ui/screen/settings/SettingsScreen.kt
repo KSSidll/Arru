@@ -156,6 +156,7 @@ internal fun SettingsScreen(
         ) {
             if (isCurrencyFormatSearchExpanded) {
                 SearchableListDialog(
+                    showAddButton = false,
                     items = Data.Loaded(
                         NumberFormat.getAvailableLocales().map { it.toLanguageTag() }
                             .groupBy { 1.0f.formatToCurrency(Locale.forLanguageTag(it)) }.toList()
