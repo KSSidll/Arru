@@ -30,6 +30,9 @@ dev-text-search-fuzzywuzzy = "1.4.0"
 # Chart
 dev-chart-vico-compose = "1.14.0"
 
+# Service
+google-service-auto = "1.1.1"
+
 ## Plugins
 agp = "8.6.1"
 kotlin = "2.0.20"
@@ -73,13 +76,18 @@ androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", 
 # Text
 dev-text-search-fuzzywuzzy = { group = "me.xdrop", name = "fuzzywuzzy", version.ref = "dev-text-search-fuzzywuzzy" }
 
-# chart
+# Chart
 dev-chart-vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "dev-chart-vico-compose" }
 dev-chart-vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "dev-chart-vico-compose" }
+
+# KSP
+google-ksp-spa = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

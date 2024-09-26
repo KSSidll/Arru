@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
@@ -50,6 +51,8 @@ fun ShopPriceCompareChart(
     val data: MutableMap<String, MutableList<ChartEntry>> = remember { mutableMapOf() }
 
     val defaultVariantName = stringResource(id = R.string.item_product_variant_default_value)
+
+    val currencyLocale = LocalCurrencyFormatLocale.current
 
     LaunchedEffect(items.size) {
         val dateMap: MutableMap<String, Int> = mutableMapOf()
@@ -117,7 +120,7 @@ fun ShopPriceCompareChart(
                     markedEntries.transformToSpannable { model ->
                         appendCompat(
                             model.entry.y.div(Item.PRICE_DIVISOR)
-                                .formatToCurrency(),
+                                .formatToCurrency(currencyLocale),
                             ForegroundColorSpan(model.color),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
                         )

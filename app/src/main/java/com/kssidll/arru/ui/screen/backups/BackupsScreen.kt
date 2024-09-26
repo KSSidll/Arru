@@ -49,6 +49,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.DAY_IN_MILIS
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.DatabaseBackup
@@ -76,6 +77,8 @@ fun BackupsScreen(
     availableBackups: List<DatabaseBackup>,
     onBack: () -> Unit,
 ) {
+    val currencyLocale = LocalCurrencyFormatLocale.current
+
     Scaffold(
         topBar = {
             SecondaryAppBar(
@@ -266,7 +269,7 @@ fun BackupsScreen(
                                                             text = TransactionBasket.actualTotalCost(
                                                                 it.totalSpending
                                                             )
-                                                                .formatToCurrency(),
+                                                                .formatToCurrency(currencyLocale),
                                                             style = Typography.titleMedium,
                                                         )
 

@@ -40,7 +40,7 @@ import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.domain.data.NameSource
-import com.kssidll.arru.domain.data.fuzzySearchSort
+import com.kssidll.arru.domain.data.searchSort
 import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
@@ -97,7 +97,7 @@ fun <T> SearchList(
                 filter
             ) {
                 if (items is Data.Loaded) {
-                    val newItems = items.data.fuzzySearchSort(filter)
+                    val newItems = items.data.searchSort(filter)
 
                     displayItems.clear()
                     displayItems.addAll(newItems)

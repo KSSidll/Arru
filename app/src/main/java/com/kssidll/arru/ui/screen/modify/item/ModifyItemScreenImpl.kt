@@ -44,7 +44,7 @@ import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
-import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
+import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
@@ -93,7 +93,7 @@ fun ModifyItemScreenImpl(
         submitButtonText = submitButtonText,
     ) {
         if (state.isProductSearchDialogExpanded.value) {
-            FuzzySearchableListDialog(
+            SearchableListDialog(
                 onDismissRequest = {
                     state.isProductSearchDialogExpanded.value = false
                 },
@@ -111,9 +111,12 @@ fun ModifyItemScreenImpl(
                 itemText = { it.product.name },
                 onAddButtonClick = onProductAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_add_description),
+                calculateScore = { item, query ->
+                    item.fuzzyScore(query)
+                }
             )
         } else if (state.isVariantSearchDialogExpanded.value) {
-            FuzzySearchableListDialog(
+            SearchableListDialog(
                 onDismissRequest = {
                     state.isVariantSearchDialogExpanded.value = false
                 },
@@ -140,6 +143,9 @@ fun ModifyItemScreenImpl(
                 addButtonDescription = stringResource(R.string.item_product_variant_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.item_product_variant_default_value),
+                calculateScore = { item, query ->
+                    item.fuzzyScore(query)
+                }
             )
         }
 

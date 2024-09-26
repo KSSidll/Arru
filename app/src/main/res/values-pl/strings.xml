@@ -129,4 +129,5 @@
     <string name="light">Jasny</string>
     <string name="theme">Motyw</string>
     <string name="settings_dynamic_theme">Dynamiczny motyw</string>
+    <string name="settings_currency_format">Format waluty</string>
 </resources>

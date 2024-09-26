@@ -47,8 +47,8 @@ import com.kssidll.arru.R
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.ui.component.dialog.DeleteWarningConfirmDialog
-import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
 import com.kssidll.arru.ui.component.dialog.MergeConfirmDialog
+import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -120,7 +120,7 @@ fun <T> ModifyScreen(
                 },
             )
         } else if (showMergeSearchDialog) {
-            FuzzySearchableListDialog(
+            SearchableListDialog(
                 onDismissRequest = {
                     showMergeSearchDialog = false
                 },
@@ -136,6 +136,9 @@ fun <T> ModifyScreen(
                 },
                 onItemClickLabel = stringResource(id = R.string.merge_action_chose_candidate),
                 showAddButton = false,
+                calculateScore = { item, query ->
+                    item.fuzzyScore(query)
+                }
             )
         } else if (showMergeConfirmDialog) {
             MergeConfirmDialog(

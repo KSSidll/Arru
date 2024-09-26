@@ -131,4 +131,5 @@
     <string name="light">Light</string>
     <string name="theme">Theme</string>
     <string name="settings_dynamic_theme">Dynamic Theme</string>
+    <string name="settings_currency_format">Currency Format</string>
 </resources>

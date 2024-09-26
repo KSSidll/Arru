@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.data.ChartSource
@@ -70,6 +71,7 @@ fun TotalAverageAndMedianSpendingComponent(
     val totalStartValue = if (skipAnimation) totalSpentData else 0f
     val averageStartValue = if (skipAnimation) spentByTimeData.avg() else 0f
     val medianStartValue = if (skipAnimation) spentByTimeData.median() else 0f
+    val currencyLocale = LocalCurrencyFormatLocale.current
 
     Column(modifier) {
         Card(
@@ -122,7 +124,7 @@ fun TotalAverageAndMedianSpendingComponent(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = animatedValue.value.formatToCurrency(),
+                        text = animatedValue.value.formatToCurrency(currencyLocale),
                         style = Typography.headlineLarge,
                     )
                 }
@@ -197,7 +199,7 @@ fun TotalAverageAndMedianSpendingComponent(
                         )
 
                         Text(
-                            text = animatedAverageValue.value.formatToCurrency(),
+                            text = animatedAverageValue.value.formatToCurrency(currencyLocale),
                             style = Typography.headlineSmall,
                         )
                     }
@@ -270,7 +272,7 @@ fun TotalAverageAndMedianSpendingComponent(
                         )
 
                         Text(
-                            text = animatedMedianValue.value.formatToCurrency(),
+                            text = animatedMedianValue.value.formatToCurrency(currencyLocale),
                             style = Typography.headlineSmall,
                         )
                     }

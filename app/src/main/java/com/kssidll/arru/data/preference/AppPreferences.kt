@@ -19,6 +19,7 @@ import com.kssidll.arru.di.module.dataStore
 import com.kssidll.arru.di.module.getPreferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 
 /**
  * Data associated with datastore preferences
@@ -229,46 +230,12 @@ data object AppPreferences {
             val DEFAULT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         }
     }
-}
 
-/**
- * Sets preferences that aren't set to their default value
- *
- * Should be called before any preference is read
- * @param context App context
- */
-suspend fun Preferences.setNullToDefault(context: Context) {
-    if (this[AppPreferences.Database.Location.key] == null) {
-        context.dataStore.edit {
-            it[AppPreferences.Database.Location.key] = AppPreferences.Database.Location.DEFAULT
-        }
-    }
+    data object Locale {
+        data object Currency {
+            val key: Preferences.Key<String> = stringPreferencesKey("localecurrency")
 
-    if (this[AppPreferences.Transaction.Date.key] == null) {
-        context.dataStore.edit {
-            it[AppPreferences.Transaction.Date.key] =
-                AppPreferences.Transaction.Date.DEFAULT.ordinal
-        }
-    }
-
-    if (this[AppPreferences.Export.Type.key] == null) {
-        context.dataStore.edit {
-            it[AppPreferences.Export.Type.key] = AppPreferences.Export.Type.DEFAULT.ordinal
-        }
-    }
-
-    if (this[AppPreferences.Theme.ColorScheme.key] == null) {
-        context.dataStore.edit {
-            it[AppPreferences.Theme.ColorScheme.key] =
-                AppPreferences.Theme.ColorScheme.DEFAULT.ordinal
-        }
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        if (this[AppPreferences.Theme.DynamicColor.key] == null) {
-            context.dataStore.edit {
-                it[AppPreferences.Theme.DynamicColor.key] = true
-            }
+            const val DEFAULT = "DEFAULT"
         }
     }
 }
@@ -432,5 +399,31 @@ fun AppPreferences.getDynamicColor(context: Context): Flow<Boolean> {
             preferences[AppPreferences.Theme.DynamicColor.key]
                 ?: AppPreferences.Theme.DynamicColor.DEFAULT
         } else false
+    }
+}
+
+suspend fun AppPreferences.setCurrencyFormatLocale(
+    context: Context,
+    newCurrencyLocale: Locale?
+) {
+    getPreferencesDataStore(context).edit {
+        if (newCurrencyLocale == null) {
+            it[AppPreferences.Locale.Currency.key] = AppPreferences.Locale.Currency.DEFAULT
+        } else {
+            it[AppPreferences.Locale.Currency.key] = newCurrencyLocale.toLanguageTag()
+        }
+    }
+}
+
+fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Locale.Currency.key]?.let {
+            if (it == AppPreferences.Locale.Currency.DEFAULT) {
+                Locale.getDefault()
+            } else {
+                Locale.forLanguageTag(it)
+            }
+        }
+            ?: Locale.getDefault()
     }
 }

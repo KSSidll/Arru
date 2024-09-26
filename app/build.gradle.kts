@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import java.util.Properties
 
 plugins {
@@ -76,7 +77,11 @@ android {
     }
 
     composeCompiler {
-        enableStrongSkippingMode = true
+        includeSourceInformation = true
+
+        featureFlags = setOf(
+            ComposeFeatureFlag.OptimizeNonSkippingGroups
+        )
     }
 
     packaging {
@@ -91,7 +96,15 @@ android {
     }
 }
 
+kotlin.sourceSets.main {
+    kotlin.srcDirs(
+        file("${projectDir}/generated/ksp/main/kotlin")
+    )
+}
+
 dependencies {
+    ksp(project(":processor"))
+
     // AndroidX
     implementation(libs.androidx.activity)
     implementation(libs.androidx.splashscreen.core)

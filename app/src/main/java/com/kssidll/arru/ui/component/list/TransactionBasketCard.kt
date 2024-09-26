@@ -64,6 +64,7 @@ fun LazyListScope.transactionBasketCard(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
     headerColor: Color,
+    currencyLocale: Locale,
 ) {
     transactionBasketCardHeader(
         modifier = modifier,
@@ -76,6 +77,7 @@ fun LazyListScope.transactionBasketCard(
         onItemAddClick = onItemAddClick,
         onItemShopClick = onItemShopClick,
         headerColor = headerColor,
+        currencyLocale = currencyLocale,
     )
 
     item(
@@ -130,6 +132,7 @@ fun LazyListScope.transactionBasketCardHeader(
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
     headerColor: Color,
+    currencyLocale: Locale
 ) {
     stickyHeader(
         key = transaction.id,
@@ -228,7 +231,7 @@ fun LazyListScope.transactionBasketCardHeader(
                     ) {
                         Text(
                             text = TransactionBasket.actualTotalCost(transaction.totalCost)
-                                .formatToCurrency(),
+                                .formatToCurrency(currencyLocale),
                             style = Typography.titleLarge,
                         )
 
@@ -318,6 +321,7 @@ private fun TransactionBasketCardPreview() {
                     onItemProducerClick = {},
                     onItemShopClick = {},
                     headerColor = color,
+                    currencyLocale = Locale.getDefault()
                 )
             }
         }
@@ -337,6 +341,7 @@ private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
                     onItemAddClick = {},
                     onItemShopClick = {},
                     headerColor = color,
+                    currencyLocale = Locale.getDefault(),
                     modifier = Modifier.height(HEADER_HEIGHT)
                 )
             }

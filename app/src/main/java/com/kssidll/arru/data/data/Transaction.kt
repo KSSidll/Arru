@@ -13,6 +13,7 @@ import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomTime
 import com.patrykandpatrick.vico.core.entry.ChartEntry
 import com.patrykandpatrick.vico.core.entry.FloatEntry
+import java.util.Locale
 import kotlin.math.log10
 
 @Entity(
@@ -222,19 +223,19 @@ data class TransactionSpentByTime(
         )
     }
 
-    override fun startAxisLabel(): String? {
+    override fun startAxisLabel(locale: Locale): String? {
         return null
     }
 
-    override fun topAxisLabel(): String {
-        return value().formatToCurrency(dropDecimal = true)
+    override fun topAxisLabel(locale: Locale): String? {
+        return value().formatToCurrency(locale, dropDecimal = true)
     }
 
-    override fun bottomAxisLabel(): String {
+    override fun bottomAxisLabel(locale: Locale): String? {
         return time
     }
 
-    override fun endAxisLabel(): String? {
+    override fun endAxisLabel(locale: Locale): String? {
         return null
     }
 }

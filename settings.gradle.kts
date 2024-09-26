@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Arru"
 include(":app")
+include(":processor")

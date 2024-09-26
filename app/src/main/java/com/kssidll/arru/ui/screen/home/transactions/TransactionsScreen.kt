@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.TransactionBasketWithItems
@@ -236,6 +237,8 @@ fun TransactionScreenContent(
     modifier: Modifier = Modifier,
     fabPadding: PaddingValues = PaddingValues(),
 ) {
+    val currencyLocale = LocalCurrencyFormatLocale.current
+
     val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
     val headerColor = MaterialTheme.colorScheme.background
 
@@ -355,6 +358,7 @@ fun TransactionScreenContent(
                         onItemProducerClick = onItemProducerClick,
                         onItemShopClick = onItemShopClick,
                         headerColor = headerColor,
+                        currencyLocale = currencyLocale,
                         modifier = Modifier.widthIn(max = 600.dp)
                     )
                 }

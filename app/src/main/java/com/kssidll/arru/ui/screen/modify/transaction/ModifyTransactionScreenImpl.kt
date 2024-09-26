@@ -49,7 +49,7 @@ import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
-import com.kssidll.arru.ui.component.dialog.FuzzySearchableListDialog
+import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
@@ -126,7 +126,7 @@ fun ModifyTransactionScreenImpl(
                 DatePicker(state = datePickerState)
             }
         } else if (state.isShopSearchDialogExpanded.value) {
-            FuzzySearchableListDialog(
+            SearchableListDialog(
                 onDismissRequest = {
                     state.isShopSearchDialogExpanded.value = false
                 },
@@ -145,7 +145,10 @@ fun ModifyTransactionScreenImpl(
                 onAddButtonClick = onShopAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_shop_add_description),
                 showDefaultValueItem = true,
-                defaultItemText = stringResource(R.string.no_value)
+                defaultItemText = stringResource(R.string.no_value),
+                calculateScore = { item, query ->
+                    item.fuzzyScore(query)
+                }
             )
         }
 
