@@ -4,13 +4,13 @@ interface FuzzySearchSource {
     fun fuzzyScore(query: String): Int
 }
 
-fun <E> List<E>.fuzzySearchSort(query: String): List<E> where E: FuzzySearchSource {
+fun <E> List<E>.searchSort(query: String): List<E> where E: FuzzySearchSource {
     if (query.isBlank()) return this
 
-    return fuzzySearchSort { it.fuzzyScore(query) }
+    return searchSort { it.fuzzyScore(query) }
 }
 
-fun <E> List<E>.fuzzySearchSort(
+fun <E> List<E>.searchSort(
     calculateScore: (E) -> Int
 ): List<E> {
     if (this.isEmpty()) return this

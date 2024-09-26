@@ -45,9 +45,9 @@ import androidx.compose.ui.window.Dialog
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.Data
-import com.kssidll.arru.domain.data.fuzzySearchSort
 import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.domain.data.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.component.list.BaseClickableListItem
@@ -128,18 +128,22 @@ fun <T> SearchableListDialog(
                 exit = fadeOut(),
             ) {
                 if (items is Data.Loaded) {
-
                     LaunchedEffect(
                         items,
                         query
                     ) {
-                        displayedItems = items.data.fuzzySearchSort { calculateScore(it, query) }
+                        displayedItems = if (query.isNotBlank()) items.data.searchSort {
+                            calculateScore(
+                                it,
+                                query
+                            )
+                        } else items.data
                     }
 
                     Column {
                         LazyColumn(
                             modifier = Modifier.weight(1f),
-                            reverseLayout = true
+                            reverseLayout = true,
                         ) {
                             items(items = displayedItems) {
                                 BaseClickableListItem(
@@ -156,7 +160,6 @@ fun <T> SearchableListDialog(
                                 HorizontalDivider()
                             }
                         }
-
 
                         if (showDefaultValueItem) {
                             HorizontalDivider()

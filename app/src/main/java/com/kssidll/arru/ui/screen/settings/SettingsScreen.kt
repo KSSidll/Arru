@@ -74,6 +74,7 @@ import com.kssidll.arru.ui.screen.settings.component.LanguageExposedDropdown
 import com.kssidll.arru.ui.screen.settings.component.ThemeExposedDropdown
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
+import com.kssidll.compiled.CurrencyLocaleData
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.text.NumberFormat
 import java.util.Locale
@@ -157,10 +158,7 @@ internal fun SettingsScreen(
             if (isCurrencyFormatSearchExpanded) {
                 SearchableListDialog(
                     showAddButton = false,
-                    items = Data.Loaded(
-                        NumberFormat.getAvailableLocales().map { it.toLanguageTag() }
-                            .groupBy { 1.0f.formatToCurrency(Locale.forLanguageTag(it)) }.toList()
-                    ),
+                    items = Data.Loaded(CurrencyLocaleData.items),
                     itemText = {
                         buildString {
                             append(it.first)
