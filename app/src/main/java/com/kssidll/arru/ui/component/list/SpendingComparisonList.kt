@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.domain.data.RankSource
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -51,6 +52,8 @@ fun <T> SpendingComparisonList(
     modifier: Modifier = Modifier,
     itemDisplayLimit: Int? = null,
 ) where T: RankSource {
+    val currencyLocale = LocalCurrencyFormatLocale.current
+
     Row(modifier = modifier) {
         val leftGroupped = leftSideItems.groupBy { it.displayName() }
         val rightSorted = rightSideItems.sortedByDescending { it.sortValue() }
@@ -128,7 +131,7 @@ fun <T> SpendingComparisonList(
                     val item = leftGroupped[it]
                     if (item != null) {
                         Text(
-                            text = item[0].displayValue(),
+                            text = item[0].displayValue(currencyLocale),
                             style = Typography.bodyLarge,
                             modifier = Modifier.align(Alignment.Center)
                         )
@@ -163,7 +166,7 @@ fun <T> SpendingComparisonList(
                     val otherItem = leftGroupped[it]
                     if (item != null) {
                         Text(
-                            text = item[0].displayValue(),
+                            text = item[0].displayValue(currencyLocale),
                             style = Typography.bodyLarge,
                             modifier = Modifier.align(Alignment.Center)
                         )

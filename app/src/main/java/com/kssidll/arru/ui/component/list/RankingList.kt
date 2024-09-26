@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.domain.data.RankSource
 import com.kssidll.arru.ui.component.other.ProgressBar
@@ -115,6 +116,8 @@ fun <T> RankingList(
 ) where T: RankSource {
     val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
+
+    val currencyLocale = LocalCurrencyFormatLocale.current
 
     LaunchedEffect(items) {
         if (items.isNotEmpty()) {
@@ -201,7 +204,7 @@ fun <T> RankingList(
                     ) {
                         Text(
                             modifier = Modifier.align(Alignment.Center),
-                            text = it.displayValue(),
+                            text = it.displayValue(currencyLocale),
                             style = getTextStyle(
                                 index,
                                 scaleByRank

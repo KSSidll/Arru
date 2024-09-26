@@ -11,15 +11,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.Preferences
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.detectDarkMode
 import com.kssidll.arru.data.preference.getColorScheme
+import com.kssidll.arru.data.preference.getCurrencyFormatLocale
 import com.kssidll.arru.data.preference.getDynamicColor
-import com.kssidll.arru.data.preference.setNullToDefault
 import com.kssidll.arru.data.preference.setResettableToDefault
 import com.kssidll.arru.service.DataExportService
 import com.kssidll.arru.service.getServiceStateCold
@@ -28,7 +30,10 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.util.Locale
 import javax.inject.Inject
+
+val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
 
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
@@ -45,7 +50,6 @@ class MainActivity: AppCompatActivity() {
         var isInDynamicColor: Boolean
 
         runBlocking {
-            preferences.setNullToDefault(applicationContext)
             AppPreferences.setResettableToDefault(applicationContext)
 
             applicationContext.setServiceState(
@@ -84,7 +88,13 @@ class MainActivity: AppCompatActivity() {
                     calculateWindowSizeClass(activity = this).widthSizeClass == WindowWidthSizeClass.Expanded
 
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Navigation(isExpandedScreen)
+                    CompositionLocalProvider(
+                        LocalCurrencyFormatLocale provides AppPreferences.getCurrencyFormatLocale(
+                            applicationContext
+                        ).collectAsState(Locale.getDefault()).value
+                    ) {
+                        Navigation(isExpandedScreen)
+                    }
                 }
             }
         }

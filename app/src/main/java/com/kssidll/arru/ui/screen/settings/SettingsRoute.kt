@@ -56,6 +56,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -213,6 +214,10 @@ fun SettingsRoute(
             isInDynamicColor = viewModel.isInDynamicColor.collectAsState(initial = AppPreferences.Theme.DynamicColor.DEFAULT).value,
             setDynamicColor = {
                 viewModel.setDynamicColor(it)
+            },
+            currentCurrencyFormat = viewModel.currencyFormatLocale.collectAsState(Locale.getDefault()).value,
+            setCurrencyFormat = {
+                viewModel.setCurrencyFormatLocale(it)
             }
         )
 

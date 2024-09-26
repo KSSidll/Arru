@@ -40,6 +40,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ProductCategory
@@ -62,6 +63,8 @@ fun FullItemCard(
     onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
     onShopClick: ((shop: Shop) -> Unit)? = null,
 ) {
+    val currencyLocale = LocalCurrencyFormatLocale.current
+
     val itemModifier =
         if (onItemClick != null || onItemLongClick != null)
             Modifier.combinedClickable(
@@ -154,7 +157,7 @@ fun FullItemCard(
                 ) {
                     Text(
                         text = item.actualPrice()
-                            .formatToCurrency(),
+                            .formatToCurrency(currencyLocale),
                         style = Typography.bodyLarge,
                     )
 
@@ -178,7 +181,9 @@ fun FullItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = (item.actualQuantity() * item.actualPrice()).formatToCurrency(),
+                        text = (item.actualQuantity() * item.actualPrice()).formatToCurrency(
+                            currencyLocale
+                        ),
                         style = Typography.bodyLarge,
                     )
 

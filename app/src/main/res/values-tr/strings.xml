@@ -128,4 +128,5 @@
     <string name="light">Açık</string>
     <string name="theme">Tema</string>
     <string name="settings_dynamic_theme">Dinamik tema</string>
+    <string name="settings_currency_format">Para birimi biçimi</string>
 </resources>

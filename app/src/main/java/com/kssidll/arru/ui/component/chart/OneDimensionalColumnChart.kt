@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -44,6 +45,7 @@ fun OneDimensionalColumnChart(
     initialScroll: InitialScroll = InitialScroll.End,
 ) {
     val defaultColumns = currentChartStyle.columnChart.columns
+    val currencyLocale = LocalCurrencyFormatLocale.current
 
     val chart = columnChart(
         remember(defaultColumns) {
@@ -81,14 +83,14 @@ fun OneDimensionalColumnChart(
         topAxis = rememberTopAxis(
             valueFormatter = { value, _ ->
                 data.getOrNull(value.toInt())
-                    ?.topAxisLabel()
+                    ?.topAxisLabel(currencyLocale)
                     .orEmpty()
             },
         ),
         bottomAxis = rememberBottomAxis(
             valueFormatter = { value, _ ->
                 data.getOrNull(value.toInt())
-                    ?.bottomAxisLabel()
+                    ?.bottomAxisLabel(currencyLocale)
                     .orEmpty()
             },
         ),

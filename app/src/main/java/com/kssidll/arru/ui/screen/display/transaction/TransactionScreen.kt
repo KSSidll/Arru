@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.TransactionBasketWithItems
@@ -51,6 +52,7 @@ internal fun TransactionScreen(
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
 ) {
+    val currencyLocale = LocalCurrencyFormatLocale.current
     val headerColor = MaterialTheme.colorScheme.background
 
     Scaffold(
@@ -101,6 +103,7 @@ internal fun TransactionScreen(
                         onItemProducerClick = onItemProducerClick,
                         onItemShopClick = onItemShopClick,
                         headerColor = headerColor,
+                        currencyLocale = currencyLocale,
                         modifier = Modifier.width(600.dp)
                     )
                 }
