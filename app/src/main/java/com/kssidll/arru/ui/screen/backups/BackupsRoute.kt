@@ -6,9 +6,8 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 @Composable
 fun BackupsRoute(
     navigateBack: () -> Unit,
+    viewModel: BackupsViewModel = hiltViewModel()
 ) {
-    val viewModel: BackupsViewModel = hiltViewModel()
-
     BackupsScreen(
         createBackup = {
             viewModel.createDbBackup()

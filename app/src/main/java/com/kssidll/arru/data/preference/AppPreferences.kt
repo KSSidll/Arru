@@ -38,22 +38,31 @@ data object AppPreferences {
             /**
              * Key for database location preference key-value pair
              */
-            val key: Preferences.Key<String> = stringPreferencesKey("databaselocation")
-
-            /**
-             * Value for internal location
-             */
-            const val INTERNAL: String = "internal"
-
-            /**
-             * Value for external location
-             */
-            const val EXTERNAL: String = "external"
+            val key: Preferences.Key<Int> = intPreferencesKey("databaselocation2") // databaselocation was used for a string prior, not sure if that's changeable
 
             /**
              * Value for default location
              */
-            const val DEFAULT: String = EXTERNAL
+            val DEFAULT = Values.EXTERNAL
+
+            enum class Values {
+                /**
+                 * Value for internal location
+                 */
+                INTERNAL,
+
+                /**
+                 * Value for external location
+                 */
+                EXTERNAL,
+
+                ;
+
+                companion object {
+                    private val idMap = Values.entries.associateBy { it.ordinal }
+                    fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+                }
+            }
         }
     }
 
@@ -425,5 +434,23 @@ fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale> {
             }
         }
             ?: Locale.getDefault()
+    }
+}
+
+suspend fun AppPreferences.setDatabaseLocation(
+    context: Context,
+    newDatabaseLocation: AppPreferences.Database.Location.Values
+) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Database.Location.key] = newDatabaseLocation.ordinal
+    }
+}
+
+fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Database.Location.Values> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Database.Location.key]?.let {
+            AppPreferences.Database.Location.Values.getByOrdinal(it)
+        }
+            ?: AppPreferences.Database.Location.DEFAULT
     }
 }

@@ -2,7 +2,6 @@ package com.kssidll.arru.data.database
 
 import android.content.Context
 import android.util.Log
-import androidx.datastore.preferences.core.Preferences
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
@@ -30,6 +29,8 @@ import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.getDatabaseLocation
+import kotlinx.coroutines.flow.first
 import java.io.File
 import java.util.Calendar
 
@@ -57,22 +58,22 @@ fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
 /**
  * @return absolute path to currently used database file as [File]
  */
-fun Context.currentDbFile(preferences: Preferences): File {
-    return when (preferences[AppPreferences.Database.Location.key]) {
-        AppPreferences.Database.Location.EXTERNAL -> {
+suspend fun Context.currentDbFile(): File {
+    val databaseLocation = AppPreferences.getDatabaseLocation(this@currentDbFile).first()
+
+    return when (databaseLocation) {
+        AppPreferences.Database.Location.Values.EXTERNAL -> {
             externalDbFile()
         }
 
-        AppPreferences.Database.Location.INTERNAL -> {
+        AppPreferences.Database.Location.Values.INTERNAL -> {
             internalDbFile()
         }
-
-        else -> error("The database location preference key isn't set to a valid value")
     }
 }
 
-fun Context.currentDbBackupDirectory(preferences: Preferences): File {
-    val parent = currentDbFile(preferences).parentFile!!.absolutePath
+suspend fun Context.currentDbBackupDirectory(): File {
+    val parent = currentDbFile().parentFile!!.absolutePath
     val dbBackup = File(parent.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
 
     // create in case it doesn't exist
@@ -301,21 +302,19 @@ abstract class AppDatabase: RoomDatabase() {
         /**
          * creates a database backup in current database location at set [time]
          * @param context app context
-         * @param preferences app preferences
          * @param totalTransactions total transactions to stamp the database files with
          * @param totalSpending total spending to stamp the database files with
          * @param time time to stamp the database files with, current time by default
          * @return absolute path to created db backup file as [File]
          */
-        fun saveDbBackup(
+        suspend fun saveDbBackup(
             context: Context,
-            preferences: Preferences,
             totalTransactions: Int,
             totalSpending: Long,
             time: Long = Calendar.getInstance().timeInMillis
         ): File {
-            val backupDir = context.currentDbBackupDirectory(preferences)
-            val currentDbFile = context.currentDbFile(preferences)
+            val backupDir = context.currentDbBackupDirectory()
+            val currentDbFile = context.currentDbFile()
             val backupDbFile = File(
                 backupDir.absolutePath.plus(
                     "/${
@@ -343,15 +342,14 @@ abstract class AppDatabase: RoomDatabase() {
          * @param preferences app preferences
          * @param backupDbFile database backup file to load
          */
-        fun loadDbBackup(
+        suspend fun loadDbBackup(
             context: Context,
-            preferences: Preferences,
             backupDbFile: DatabaseBackup
         ) {
             // TODO ensure that what we are loading is actually the database file
             val file = backupDbFile.file
             if (file.exists()) {
-                val currentDbFile = context.currentDbFile(preferences)
+                val currentDbFile = context.currentDbFile()
                 copy(
                     file,
                     currentDbFile
@@ -376,14 +374,12 @@ abstract class AppDatabase: RoomDatabase() {
 
         /**
          * @param context app context
-         * @param preferences app preferences
          * @return all available backups as a list of [File], sorted newest to oldest
          */
-        fun availableBackups(
+        suspend fun availableBackups(
             context: Context,
-            preferences: Preferences
         ): List<DatabaseBackup> {
-            val directory = context.currentDbBackupDirectory(preferences)
+            val directory = context.currentDbBackupDirectory()
 
             if (directory.exists() && directory.isDirectory) {
                 val files = directory.listFiles { file ->
@@ -410,7 +406,7 @@ abstract class AppDatabase: RoomDatabase() {
                     }
 
                     return if (changed) {
-                        availableBackups(context, preferences)
+                        availableBackups(context)
                     } else {
                         dbFiles.toList().sortedByDescending { it.time }
                     }

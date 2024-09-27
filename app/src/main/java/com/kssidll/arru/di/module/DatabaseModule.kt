@@ -1,7 +1,6 @@
 package com.kssidll.arru.di.module
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import com.kssidll.arru.Arru
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ItemDao
@@ -14,6 +13,7 @@ import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.externalDbFile
 import com.kssidll.arru.data.database.internalDbFile
 import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.repository.CategoryRepository
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ItemRepository
@@ -33,6 +33,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import javax.inject.Singleton
 
 @Module
@@ -41,53 +43,53 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(
-        @ApplicationContext appContext: Context,
-        preferences: Preferences
+        @ApplicationContext context: Context
     ): AppDatabase {
-        val location = preferences[AppPreferences.Database.Location.key]
+        var databaseLocation: AppPreferences.Database.Location.Values
+        runBlocking {
+            databaseLocation = AppPreferences.getDatabaseLocation(context).first()
+        }
 
         // if it's not internal and doesn't exist, create it so it can be moved
-        if (location != AppPreferences.Database.Location.INTERNAL) {
-            if (!appContext.internalDbFile()
+        if (databaseLocation != AppPreferences.Database.Location.Values.INTERNAL) {
+            if (!context.internalDbFile()
                     .exists()
             ) {
                 // simple query to ensure database creation
-                AppDatabase.buildInternal(appContext)
+                AppDatabase.buildInternal(context)
                     .query(
                         "SELECT 1",
                         null
                     )
                     .close()
-                Arru.restart(appContext)
+                Arru.restart(context)
             }
         }
 
-        return when (preferences[AppPreferences.Database.Location.key]) {
-            AppPreferences.Database.Location.EXTERNAL -> {
-                if (!appContext.externalDbFile()
+        return when (databaseLocation) {
+            AppPreferences.Database.Location.Values.EXTERNAL -> {
+                if (!context.externalDbFile()
                         .exists()
                 ) {
-                    AppDatabase.moveInternalToExternal(appContext)
+                    AppDatabase.moveInternalToExternal(context)
                 }
 
-                AppDatabase.buildExternal(appContext)
+                AppDatabase.buildExternal(context)
             }
 
-            AppPreferences.Database.Location.INTERNAL -> {
-                if (!appContext.internalDbFile()
+            AppPreferences.Database.Location.Values.INTERNAL -> {
+                if (!context.internalDbFile()
                         .exists()
                 ) {
-                    if (appContext.externalDbFile()
+                    if (context.externalDbFile()
                             .exists()
                     ) {
-                        AppDatabase.moveExternalToInternal(appContext)
+                        AppDatabase.moveExternalToInternal(context)
                     }
                 }
 
-                AppDatabase.buildInternal(appContext)
+                AppDatabase.buildInternal(context)
             }
-
-            else -> error("The database location preference key isn't set to a valid value")
         }
     }
 
