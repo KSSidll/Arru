@@ -613,7 +613,6 @@ fun Navigation(
         when (screen) {
             is Screen.Home -> {
                 HomeRoute(
-                    isExpandedScreen = isExpandedScreen,
                     navigateSettings = navigateSettings,
                     navigateSearch = navigateSearch,
                     navigateProduct = navigateProduct,

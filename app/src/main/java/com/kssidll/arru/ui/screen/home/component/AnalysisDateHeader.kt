@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.home.analysis.components
+package com.kssidll.arru.ui.screen.home.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,16 +31,17 @@ import java.util.Locale
  * @param onMonthDecrement Callback called to request [month] decrement, should handle underflow and decrease year
  */
 @Composable
-fun DateHeader(
+fun AnalysisDateHeader(
     year: Int,
     month: Int,
     onMonthIncrement: () -> Unit,
     onMonthDecrement: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         val cal = Calendar.getInstance()
         cal.clear()
@@ -87,10 +88,10 @@ fun DateHeader(
 
 @PreviewLightDark
 @Composable
-private fun DateHeaderPreview() {
+private fun AnalysisDateHeaderPreview() {
     ArrugarqTheme {
         Surface {
-            DateHeader(
+            AnalysisDateHeader(
                 year = 2021,
                 month = 12,
                 onMonthIncrement = {},

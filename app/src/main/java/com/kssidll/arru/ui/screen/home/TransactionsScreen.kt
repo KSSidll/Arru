@@ -1,7 +1,6 @@
-package com.kssidll.arru.ui.screen.home.transactions
+package com.kssidll.arru.ui.screen.home
 
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
@@ -23,7 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -35,6 +34,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -53,51 +54,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
 import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.list.transactionBasketCardHeaderPlaceholder
 import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.theme.ArrugarqTheme
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
 
-/**
- * @param transactions Transactions to display in the transactions list
- * @param onSearchAction Callback called when the 'search' action is triggered
- * @param onTransactionLongClick Callback called when the transaction is long clicked/pressed. Provides transaction id as parameter
- * @param onItemAddClick Callback called when the transaction item add button is clicked. Provides transaction id as parameter
- * @param onItemClick Callback called when the transaction item is clicked. Provides product id as parameter
- * @param onItemLongClick Callback called when the transaction item is long clicked/pressed. Provides item id as parameter
- * @param onItemCategoryClick Callback called when the transaction item category label is clicked. Provides category id as parameter
- * @param onItemProducerClick Callback called when the transaction item producer label is clicked. Provides producer id as parameter
- * @param onItemShopClick Callback called when the transaction item shop label is clicked. Provides shop id as parameter
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TransactionsScreen(
-    isExpandedScreen: Boolean,
-    transactions: LazyPagingItems<TransactionBasketDisplayData>,
-    onSearchAction: () -> Unit,
-    onTransactionLongClick: (transactionId: Long) -> Unit,
-    onTransactionLongClickLabel: String,
-    onItemAddClick: (transactionId: Long) -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
+fun TransactionsScreen(
+    uiState: HomeUiState,
+    onEvent: (event: HomeEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Scaffold { paddingValues ->
+    val navSuiteType = BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+        currentWindowAdaptiveInfo()
+    )
+
+    val transactions = uiState.transactions.collectAsLazyPagingItems()
+
+    Scaffold(modifier = modifier) { paddingValues ->
         // overlay displayed when there is no data available
         AnimatedVisibility(
             visible = transactions.loadedEmpty(),
@@ -110,7 +96,7 @@ internal fun TransactionsScreen(
                     .padding(paddingValues)
                     .consumeWindowInsets(paddingValues)
             ) {
-                if (isExpandedScreen) {
+                if (navSuiteType != NavigationSuiteType.NavigationBar) {
                     ExpandedHomeScreenNothingToDisplayOverlay()
                 } else {
                     HomeScreenNothingToDisplayOverlay()
@@ -125,7 +111,7 @@ internal fun TransactionsScreen(
         ) {
             val layoutDirection = LocalLayoutDirection.current
 
-            if (isExpandedScreen) {
+            if (navSuiteType == NavigationSuiteType.NavigationRail) {
                 val horizontalPaddingValues = PaddingValues(
                     start = paddingValues.calculateStartPadding(layoutDirection),
                     end = paddingValues.calculateEndPadding(layoutDirection)
@@ -133,15 +119,9 @@ internal fun TransactionsScreen(
 
                 Box {
                     TransactionScreenContent(
+                        onEvent = onEvent,
+                        listState = uiState.transactionsListState,
                         transactions = transactions,
-                        onTransactionLongClick = onTransactionLongClick,
-                        onTransactionLongClickLabel = onTransactionLongClickLabel,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
                         modifier = Modifier
                             // apply padding only for horizontal insets because we want vertical edge to edge
                             .padding(horizontalPaddingValues)
@@ -156,7 +136,7 @@ internal fun TransactionsScreen(
                     ) {
                         IconButton(
                             onClick = {
-                                onSearchAction()
+                                onEvent(HomeEvent.NavigateSearch)
                             }
                         ) {
                             Icon(
@@ -189,7 +169,7 @@ internal fun TransactionsScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    onSearchAction()
+                                    onEvent(HomeEvent.NavigateSearch)
                                 },
                                 modifier = Modifier.minimumInteractiveComponentSize()
                             ) {
@@ -203,15 +183,9 @@ internal fun TransactionsScreen(
                     sheetPeekHeight = BOTTOM_SHEET_PEEK_HEIGHT,
                 ) { innerPaddingValues ->
                     TransactionScreenContent(
+                        onEvent = onEvent,
+                        listState = uiState.transactionsListState,
                         transactions = transactions,
-                        onTransactionLongClick = onTransactionLongClick,
-                        onTransactionLongClickLabel = onTransactionLongClickLabel,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
                         fabPadding = innerPaddingValues,
                         modifier = Modifier
                             // don't add padding for inner insets to allow edge to edge over the bottom sheet
@@ -225,26 +199,18 @@ internal fun TransactionsScreen(
 
 @Composable
 fun TransactionScreenContent(
+    onEvent: (event: HomeEvent) -> Unit,
+    listState: LazyListState,
     transactions: LazyPagingItems<TransactionBasketDisplayData>,
-    onTransactionLongClick: (transactionId: Long) -> Unit,
-    onTransactionLongClickLabel: String,
-    onItemAddClick: (transactionId: Long) -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
     modifier: Modifier = Modifier,
     fabPadding: PaddingValues = PaddingValues(),
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current
 
-    val onTransactionClickLabel = stringResource(id = R.string.transaction_items_toggle)
     val headerColor = MaterialTheme.colorScheme.background
 
     val scope = rememberCoroutineScope()
 
-    val listState = rememberLazyListState()
     val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
 
     var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
@@ -348,15 +314,27 @@ fun TransactionScreenContent(
                                 }
                             }
                         },
-                        onTransactionClickLabel = onTransactionClickLabel,
-                        onTransactionLongClick = onTransactionLongClick,
-                        onTransactionLongClickLabel = onTransactionLongClickLabel,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
+                        onTransactionLongClick = {
+                            onEvent(HomeEvent.NavigateTransactionEdit(it))
+                        },
+                        onItemAddClick = {
+                            onEvent(HomeEvent.NavigateItemAdd(it))
+                        },
+                        onItemClick = {
+                            onEvent(HomeEvent.NavigateProduct(it))
+                        },
+                        onItemLongClick = {
+                            onEvent(HomeEvent.NavigateItemEdit(it))
+                        },
+                        onItemCategoryClick = {
+                            onEvent(HomeEvent.NavigateCategory(it))
+                        },
+                        onItemProducerClick = {
+                            onEvent(HomeEvent.NavigateProducer(it))
+                        },
+                        onItemShopClick = {
+                            onEvent(HomeEvent.NavigateShop(it))
+                        },
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,
                         modifier = Modifier.widthIn(max = 600.dp)
@@ -374,98 +352,27 @@ fun TransactionScreenContent(
     }
 }
 
-@SuppressLint("FlowOperatorInvokedInComposition")
 @PreviewLightDark
 @Composable
 private fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
-                isExpandedScreen = false,
-                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).toDisplayData()
-                    .collectAsLazyPagingItems(),
-                onTransactionLongClick = {},
-                onTransactionLongClickLabel = String(),
-                onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
-                onSearchAction = {},
+                uiState = HomeUiState(),
+                onEvent = {}
             )
         }
     }
 }
 
-@SuppressLint("FlowOperatorInvokedInComposition")
 @PreviewExpanded
 @Composable
 private fun ExpandedTransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(
-                isExpandedScreen = true,
-                transactions = flowOf(PagingData.from(TransactionBasketWithItems.generateList())).toDisplayData()
-                    .collectAsLazyPagingItems(),
-                onTransactionLongClick = {},
-                onTransactionLongClickLabel = String(),
-                onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
-                onSearchAction = {},
-            )
-        }
-    }
-}
-
-@SuppressLint("FlowOperatorInvokedInComposition")
-@PreviewLightDark
-@Composable
-private fun EmptyTransactionsScreenPreview() {
-    ArrugarqTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            TransactionsScreen(
-                isExpandedScreen = false,
-                transactions = flowOf(PagingData.from(emptyList<TransactionBasketDisplayData>()))
-                    .collectAsLazyPagingItems(),
-                onTransactionLongClick = {},
-                onTransactionLongClickLabel = String(),
-                onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
-                onSearchAction = {},
-            )
-        }
-    }
-}
-
-@SuppressLint("FlowOperatorInvokedInComposition")
-@PreviewLightDark
-@PreviewExpanded
-@Composable
-private fun ExpandedEmptyTransactionsScreenPreview() {
-    ArrugarqTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            TransactionsScreen(
-                isExpandedScreen = true,
-                transactions = flowOf(PagingData.from(emptyList<TransactionBasketDisplayData>()))
-                    .collectAsLazyPagingItems(),
-                onTransactionLongClick = {},
-                onTransactionLongClickLabel = String(),
-                onItemAddClick = {},
-                onItemLongClick = {},
-                onItemProducerClick = {},
-                onItemCategoryClick = {},
-                onItemClick = {},
-                onItemShopClick = {},
-                onSearchAction = {},
+                uiState = HomeUiState(),
+                onEvent = {}
             )
         }
     }

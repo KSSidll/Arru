@@ -232,7 +232,7 @@ interface CategoryRepositorySource {
     /**
      * @return list of [ItemSpentByCategory] representing total spending groupped by category
      */
-    fun totalSpentByCategoryFlow(): Flow<Data<List<ItemSpentByCategory>>>
+    fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>>
 
     /**
      * @param year year to match the data to
@@ -242,7 +242,7 @@ interface CategoryRepositorySource {
     fun totalSpentByCategoryByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<Data<List<ItemSpentByCategory>>>
+    ): Flow<List<ItemSpentByCategory>>
 
     /**
      * @return list of all [ProductCategory] as flow

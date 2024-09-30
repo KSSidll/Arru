@@ -207,9 +207,8 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
             .flow
     }
 
-    override fun totalSpentByShopFlow(): Flow<Data<List<TransactionTotalSpentByShop>>> {
+    override fun totalSpentByShopFlow(): Flow<List<TransactionTotalSpentByShop>> {
         return dao.totalSpentByShopFlow()
-            .map { Data.Loaded(it) }
             .cancellable()
             .distinctUntilChanged()
     }
@@ -217,7 +216,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
     override fun totalSpentByShopByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<Data<List<TransactionTotalSpentByShop>>> {
+    ): Flow<List<TransactionTotalSpentByShop>> {
         val date: String = buildString {
             append(year)
             append("-")
@@ -233,8 +232,6 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         return dao.totalSpentByShopByMonthFlow(date)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionTotalSpentByShop>>() }
     }
 
     override fun allFlow(): Flow<Data<List<Shop>>> {

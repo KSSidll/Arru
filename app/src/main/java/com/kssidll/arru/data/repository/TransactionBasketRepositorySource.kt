@@ -155,27 +155,27 @@ interface TransactionBasketRepositorySource {
     /**
      * @return float representing total spending for the [category] as flow
      */
-    fun totalSpentFlow(): Flow<Data<Float?>>
+    fun totalSpentFlow(): Flow<Float?>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(): Flow<Data<List<TransactionSpentByTime>>>
+    fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(): Flow<Data<List<TransactionSpentByTime>>>
+    fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(): Flow<Data<List<TransactionSpentByTime>>>
+    fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
      * @return list of [TransactionSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(): Flow<Data<List<TransactionSpentByTime>>>
+    fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
 
     /**
      * @param startPosition position, from 0 up, to get next [count] items from

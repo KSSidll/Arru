@@ -26,16 +26,14 @@ class TimePeriodFlowHandler<T>(
     private val yearFlow: () -> Flow<T>,
     startPeriod: Periods = Periods.Month,
 ) {
-    private var mCurrentPeriod: MutableState<Periods>
+    private var mCurrentPeriod: MutableState<Periods> = mutableStateOf(startPeriod)
     val currentPeriod get() = mCurrentPeriod.value
 
     private var mSpentByTimeQuery: Job? = null
-    private var mSpentByTimeData: MutableState<Flow<T>> =
-        mutableStateOf(flowOf())
+    private var mSpentByTimeData: MutableState<Flow<T>> = mutableStateOf(flowOf())
     val spentByTimeData by mSpentByTimeData
 
     init {
-        mCurrentPeriod = mutableStateOf(startPeriod)
         handlePeriodSwitch()
     }
 

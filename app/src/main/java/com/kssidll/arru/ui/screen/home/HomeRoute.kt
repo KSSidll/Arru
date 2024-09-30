@@ -1,272 +1,150 @@
 package com.kssidll.arru.ui.screen.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Notes
-import androidx.compose.material.icons.rounded.Analytics
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material.icons.automirrored.outlined.Notes
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.screen.home.analysis.AnalysisRoute
-import com.kssidll.arru.ui.screen.home.component.HomeBottomNavBar
-import com.kssidll.arru.ui.screen.home.component.HomeRailNavBar
-import com.kssidll.arru.ui.screen.home.dashboard.DashboardRoute
-import com.kssidll.arru.ui.screen.home.transactions.TransactionsRoute
-import kotlinx.coroutines.launch
+import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun HomeRoute(
-    isExpandedScreen: Boolean,
-    navigateSettings: () -> Unit,
-    navigateSearch: () -> Unit,
-    navigateProduct: (productId: Long) -> Unit,
-    navigateCategory: (categoryId: Long) -> Unit,
-    navigateProducer: (producerId: Long) -> Unit,
-    navigateShop: (shopId: Long) -> Unit,
-    navigateItemAdd: (transactionId: Long) -> Unit,
-    navigateTransactionAdd: () -> Unit,
-    navigateTransactionEdit: (transactionId: Long) -> Unit,
-    navigateItemEdit: (itemId: Long) -> Unit,
-    navigateCategoryRanking: () -> Unit,
-    navigateShopRanking: () -> Unit,
-    navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
-    navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
+enum class HomeDestinations(
+    @StringRes val label: Int,
+    val disabledIcon: ImageVector,
+    val enabledIcon: ImageVector,
+    @StringRes val contentDescription: Int
 ) {
-    val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(
-        initialPage = HomeRouteLocations.entries.first { it.initial }.ordinal,
-        initialPageOffsetFraction = 0F,
-        pageCount = { HomeRouteLocations.entries.size },
+    DASHBOARD(
+        R.string.dashboard_nav_label,
+        Icons.Outlined.Home,
+        Icons.Filled.Home,
+        R.string.navigate_to_dashboard_description
+    ),
+    ANALYSIS(
+        R.string.analysis_nav_label,
+        Icons.Outlined.Analytics,
+        Icons.Filled.Analytics,
+        R.string.navigate_to_analysis_description
+    ),
+    TRANSACTIONS(
+        R.string.transactions_nav_label,
+        Icons.AutoMirrored.Outlined.Notes,
+        Icons.AutoMirrored.Filled.Notes,
+        R.string.navigate_to_transactions_description
     )
 
-    if (isExpandedScreen) {
-        ExpandedHomeRouteNavigation(
-            currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
-            onLocationChange = {
-                scope.launch {
-                    pagerState.animateScrollToPage(it.ordinal)
-                }
-            },
-            navigateSettings = navigateSettings,
-            navigateTransactionAdd = navigateTransactionAdd,
-        ) {
-            HomeRouteContent(
-                isExpandedScreen = true,
-                pagerState = pagerState,
-                navigateSettings = navigateSettings,
-                navigateSearch = navigateSearch,
-                navigateProduct = navigateProduct,
-                navigateCategory = navigateCategory,
-                navigateProducer = navigateProducer,
-                navigateShop = navigateShop,
-                navigateItemAdd = navigateItemAdd,
-                navigateTransactionEdit = navigateTransactionEdit,
-                navigateItemEdit = navigateItemEdit,
-                navigateCategoryRanking = navigateCategoryRanking,
-                navigateShopRanking = navigateShopRanking,
-                navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                navigateShopSpendingComparison = navigateShopSpendingComparison,
-            )
-        }
-    } else {
-        HomeRouteNavigation(
-            currentLocation = HomeRouteLocations.getByOrdinal(pagerState.currentPage)!!,
-            onLocationChange = {
-                scope.launch {
-                    pagerState.animateScrollToPage(it.ordinal)
-                }
-            },
-            navigateTransactionAdd = navigateTransactionAdd
-        ) {
-            HomeRouteContent(
-                isExpandedScreen = false,
-                pagerState = pagerState,
-                navigateSettings = navigateSettings,
-                navigateSearch = navigateSearch,
-                navigateProduct = navigateProduct,
-                navigateCategory = navigateCategory,
-                navigateProducer = navigateProducer,
-                navigateShop = navigateShop,
-                navigateItemAdd = navigateItemAdd,
-                navigateTransactionEdit = navigateTransactionEdit,
-                navigateItemEdit = navigateItemEdit,
-                navigateCategoryRanking = navigateCategoryRanking,
-                navigateShopRanking = navigateShopRanking,
-                navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                navigateShopSpendingComparison = navigateShopSpendingComparison,
-            )
-        }
+    ;
+
+    companion object {
+        val DEFAULT = DASHBOARD
+        fun get(index: Int?) = index?.let { entries.getOrElse(it) { DEFAULT } } ?: DEFAULT
     }
 }
 
 @Composable
-fun ExpandedHomeRouteNavigation(
-    currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
-    onLocationChange: (HomeRouteLocations) -> Unit,
-    navigateSettings: () -> Unit,
-    navigateTransactionAdd: () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Row(
-        modifier = Modifier.windowInsetsPadding(
-            WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
-        )
-    ) {
-        HomeRailNavBar(
-            currentLocation = currentLocation,
-            onLocationChange = onLocationChange,
-            onActionButtonClick = navigateTransactionAdd,
-            onSettingsAction = navigateSettings,
-        )
-
-        content()
-    }
-}
-
-@Composable
-fun HomeRouteNavigation(
-    currentLocation: HomeRouteLocations = HomeRouteLocations.entries.first { it.initial },
-    onLocationChange: (HomeRouteLocations) -> Unit,
-    navigateTransactionAdd: () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Scaffold(
-        bottomBar = {
-            HomeBottomNavBar(
-                currentLocation = currentLocation,
-                onLocationChange = onLocationChange,
-                onActionButtonClick = navigateTransactionAdd,
-            )
-        },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(it)
-                .consumeWindowInsets(it)
-        ) {
-            content()
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun HomeRouteContent(
-    isExpandedScreen: Boolean,
-    pagerState: PagerState,
+fun HomeRoute(
     navigateSettings: () -> Unit,
     navigateSearch: () -> Unit,
     navigateProduct: (productId: Long) -> Unit,
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
-    navigateItemAdd: (transactionId: Long) -> Unit,
+    navigateTransactionAdd: () -> Unit,
     navigateTransactionEdit: (transactionId: Long) -> Unit,
+    navigateItemAdd: (transactionId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
     navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
     navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    HorizontalPager(
-        state = pagerState,
-        userScrollEnabled = false,
-        beyondViewportPageCount = HomeRouteLocations.entries.size,
-    ) { location ->
-        when (HomeRouteLocations.getByOrdinal(location)!!) {
-            HomeRouteLocations.Dashboard -> {
-                DashboardRoute(
-                    isExpandedScreen = isExpandedScreen,
-                    navigateSettings = navigateSettings,
-                    navigateCategoryRanking = navigateCategoryRanking,
-                    navigateShopRanking = navigateShopRanking,
-                )
+    HomeScreen(
+        uiState = viewModel.uiState.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED).value,
+        onEvent = { event ->
+            when (event) {
+                is HomeEvent.ChangeScreenDestination -> {
+                    viewModel.handleEvent(event)
+                }
+
+                is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> {
+                    viewModel.handleEvent(event)
+                }
+
+                is HomeEvent.IncrementCurrentAnalysisDate -> {
+                    viewModel.handleEvent(event)
+                }
+
+                is HomeEvent.DecrementCurrentAnalysisDate -> {
+                    viewModel.handleEvent(event)
+                }
+
+                is HomeEvent.NavigateSettings -> {
+                    navigateSettings()
+                }
+
+                is HomeEvent.NavigateSearch -> {
+                    navigateSearch()
+                }
+
+                is HomeEvent.NavigateProduct -> {
+                    navigateProduct(event.productId)
+                }
+
+                is HomeEvent.NavigateCategory -> {
+                    navigateCategory(event.categoryId)
+                }
+
+                is HomeEvent.NavigateProducer -> {
+                    navigateProducer(event.producerId)
+                }
+
+                is HomeEvent.NavigateShop -> {
+                    navigateShop(event.shopId)
+                }
+
+                is HomeEvent.NavigateItemAdd -> {
+                    navigateItemAdd(event.transactionId)
+                }
+
+                is HomeEvent.NavigateItemEdit -> {
+                    navigateItemEdit(event.itemId)
+                }
+
+                is HomeEvent.NavigateTransactionAdd -> {
+                    navigateTransactionAdd()
+                }
+
+                is HomeEvent.NavigateTransactionEdit -> {
+                    navigateTransactionEdit(event.transactionId)
+                }
+
+                is HomeEvent.NavigateCategoryRanking -> {
+                    navigateCategoryRanking()
+                }
+
+                is HomeEvent.NavigateShopRanking -> {
+                    navigateShopRanking()
+                }
+
+                is HomeEvent.NavigateCategorySpendingComparison -> {
+                    navigateCategorySpendingComparison(event.year, event.month)
+                }
+
+                is HomeEvent.NavigateShopSpendingComparison -> {
+                    navigateShopSpendingComparison(event.year, event.month)
+                }
             }
-
-            HomeRouteLocations.Analysis -> {
-                AnalysisRoute(
-                    isExpandedScreen = isExpandedScreen,
-                    navigateCategorySpendingComparison = navigateCategorySpendingComparison,
-                    navigateShopSpendingComparison = navigateShopSpendingComparison,
-                )
-            }
-
-            HomeRouteLocations.Transactions -> {
-                TransactionsRoute(
-                    isExpandedScreen = isExpandedScreen,
-                    navigateSearch = navigateSearch,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
-                    navigateItemAdd = navigateItemAdd,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateTransactionEdit = navigateTransactionEdit,
-                )
-            }
-        }
-    }
-}
-
-enum class HomeRouteLocations(
-    val initial: Boolean = false,
-) {
-    Dashboard(initial = true),
-    Analysis,
-    Transactions,
-    ;
-
-    val description: String
-        @Composable
-        @ReadOnlyComposable
-        get() = when (this) {
-            Dashboard -> stringResource(R.string.navigate_to_dashboard_description)
-            Analysis -> stringResource(R.string.navigate_to_analysis_description)
-            Transactions -> stringResource(R.string.navigate_to_transactions_description)
-        }
-
-    val imageVector: ImageVector
-        @Composable
-        get() = when (this) {
-            Dashboard -> Icons.Rounded.Home
-            Analysis -> Icons.Rounded.Analytics
-            Transactions -> Icons.AutoMirrored.Rounded.Notes
-        }
-
-    companion object {
-        private val idMap = entries.associateBy { it.ordinal }
-        fun getByOrdinal(ordinal: Int) = idMap[ordinal]
-
-    }
-}
-
-@Composable
-@ReadOnlyComposable
-internal fun HomeRouteLocations.getTranslation(): String {
-    return when (this) {
-        HomeRouteLocations.Dashboard -> stringResource(R.string.dashboard_nav_label)
-        HomeRouteLocations.Analysis -> stringResource(R.string.analysis_nav_label)
-        HomeRouteLocations.Transactions -> stringResource(R.string.transactions_nav_label)
-    }
+        },
+        modifier = modifier
+    )
 }

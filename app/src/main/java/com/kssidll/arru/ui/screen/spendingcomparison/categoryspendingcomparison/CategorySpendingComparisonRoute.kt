@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.ui.screen.spendingcomparison.SpendingComparisonScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import java.text.SimpleDateFormat
@@ -42,13 +41,13 @@ fun CategorySpendingComparisonRoute(
             year,
             month
         )
-            .collectAsState(initial = Data.Loading()).value,
+            .collectAsState(initial = emptyList()).value,
         leftSideHeader = stringResource(id = R.string.previous),
         rightSideItems = viewModel.categoryTotalSpentCurrentMonth(
             year,
             month
         )
-            .collectAsState(initial = Data.Loading()).value,
+            .collectAsState(initial = emptyList()).value,
         rightSideHeader = stringResource(id = R.string.current),
     )
 }

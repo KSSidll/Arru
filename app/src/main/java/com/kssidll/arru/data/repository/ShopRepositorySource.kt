@@ -167,7 +167,7 @@ interface ShopRepositorySource {
     /**
      * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop
      */
-    fun totalSpentByShopFlow(): Flow<Data<List<TransactionTotalSpentByShop>>>
+    fun totalSpentByShopFlow(): Flow<List<TransactionTotalSpentByShop>>
 
     /**
      * @param year year to match the data to
@@ -177,7 +177,7 @@ interface ShopRepositorySource {
     fun totalSpentByShopByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<Data<List<TransactionTotalSpentByShop>>>
+    ): Flow<List<TransactionTotalSpentByShop>>
 
     /**
      * @return list of all [Shop] as flow

@@ -34,10 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.RankSource
-import com.kssidll.arru.domain.data.loadedData
-import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.ui.component.list.RankingList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -59,7 +56,7 @@ import com.kssidll.arru.ui.theme.Typography
 fun <T> RankingScreen(
     onBack: () -> Unit,
     title: String,
-    data: Data<List<T>>,
+    data: List<T>,
     onItemClick: ((T) -> Unit)? = null,
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
@@ -85,7 +82,7 @@ fun <T> RankingScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             AnimatedVisibility(
-                visible = data.loadedEmpty(),
+                visible = data.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier.align(Alignment.Center)
@@ -103,28 +100,26 @@ fun <T> RankingScreen(
             }
 
             AnimatedVisibility(
-                visible = data.loadedData(),
+                visible = data.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                if (data is Data.Loaded) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .widthIn(max = 600.dp)
-                        ) {
-                            RankingList(
-                                innerItemPadding = PaddingValues(horizontal = 16.dp),
-                                items = data.data,
-                                displayCount = 0,
-                                scaleByRank = false,
-                                onItemClick = onItemClick,
-                                onItemClickLabel = onItemClickLabel,
-                                onItemLongClick = onItemLongClick,
-                                onItemLongClickLabel = onItemLongClickLabel,
-                            )
-                        }
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .widthIn(max = 600.dp)
+                    ) {
+                        RankingList(
+                            innerItemPadding = PaddingValues(horizontal = 16.dp),
+                            items = data,
+                            displayCount = 0,
+                            scaleByRank = false,
+                            onItemClick = onItemClick,
+                            onItemClickLabel = onItemClickLabel,
+                            onItemLongClick = onItemLongClick,
+                            onItemLongClickLabel = onItemLongClickLabel,
+                        )
                     }
                 }
             }
@@ -140,7 +135,7 @@ private fun RankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = Data.Loaded(ItemSpentByCategory.generateList()),
+                data = ItemSpentByCategory.generateList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -158,7 +153,7 @@ private fun EmptyRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = Data.Loaded(emptyList()),
+                data = emptyList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -176,7 +171,7 @@ private fun ExpandedRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = Data.Loaded(ItemSpentByCategory.generateList()),
+                data = ItemSpentByCategory.generateList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -194,7 +189,7 @@ private fun ExpandedEmptyRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = Data.Loaded(emptyList()),
+                data = emptyList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},

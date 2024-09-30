@@ -292,18 +292,16 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .flow
     }
 
-    override fun totalSpentByCategoryFlow(): Flow<Data<List<ItemSpentByCategory>>> {
+    override fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>> {
         return dao.totalSpentByCategoryFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByCategory>>() }
     }
 
     override fun totalSpentByCategoryByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<Data<List<ItemSpentByCategory>>> {
+    ): Flow<List<ItemSpentByCategory>> {
         val date: String = buildString {
             append(year)
             append("-")
@@ -319,8 +317,6 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         return dao.totalSpentByCategoryByMonthFlow(date)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByCategory>>() }
     }
 
     override fun allFlow(): Flow<Data<List<ProductCategory>>> {

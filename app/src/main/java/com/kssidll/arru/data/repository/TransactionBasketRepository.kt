@@ -135,49 +135,35 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao):
         return Data.Loaded(dao.totalSpent())
     }
 
-    override fun totalSpentFlow(): Flow<Data<Float?>> {
+    override fun totalSpentFlow(): Flow<Float?> {
         return dao.totalSpentFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map {
-                Data.Loaded(
-                    it?.toFloat()
-                        ?.div(TransactionBasket.COST_DIVISOR)
-                )
-            }
-            .onStart { Data.Loading<Long>() }
+            .map { it?.toFloat()?.div(TransactionBasket.COST_DIVISOR) }
     }
 
-    override fun totalSpentByDayFlow(): Flow<Data<List<TransactionSpentByTime>>> {
+    override fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>> {
         return dao.totalSpentByDayFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
     }
 
-    override fun totalSpentByWeekFlow(): Flow<Data<List<TransactionSpentByTime>>> {
+    override fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>> {
         return dao.totalSpentByWeekFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
     }
 
-    override fun totalSpentByMonthFlow(): Flow<Data<List<TransactionSpentByTime>>> {
+    override fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>> {
         return dao.totalSpentByMonthFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
     }
 
-    override fun totalSpentByYearFlow(): Flow<Data<List<TransactionSpentByTime>>> {
+    override fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>> {
         return dao.totalSpentByYearFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<TransactionSpentByTime>>() }
     }
 
     override suspend fun transactionBasketsWithItems(

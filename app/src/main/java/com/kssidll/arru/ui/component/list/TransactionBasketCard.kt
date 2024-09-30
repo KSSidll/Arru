@@ -54,9 +54,7 @@ fun LazyListScope.transactionBasketCard(
     transaction: TransactionBasketWithItems,
     itemsVisible: Boolean,
     onTransactionClick: ((transactionId: Long) -> Unit)? = null,
-    onTransactionClickLabel: String? = null,
     onTransactionLongClick: ((transactionId: Long) -> Unit)? = null,
-    onTransactionLongClickLabel: String? = null,
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
     onItemLongClick: (itemId: Long) -> Unit,
@@ -71,9 +69,7 @@ fun LazyListScope.transactionBasketCard(
         transaction = transaction,
         itemsVisible = itemsVisible,
         onTransactionClick = onTransactionClick,
-        onTransactionClickLabel = onTransactionClickLabel,
         onTransactionLongClick = onTransactionLongClick,
-        onTransactionLongClickLabel = onTransactionLongClickLabel,
         onItemAddClick = onItemAddClick,
         onItemShopClick = onItemShopClick,
         headerColor = headerColor,
@@ -126,9 +122,7 @@ fun LazyListScope.transactionBasketCardHeader(
     transaction: TransactionBasketWithItems,
     itemsVisible: Boolean,
     onTransactionClick: ((transactionId: Long) -> Unit)? = null,
-    onTransactionClickLabel: String? = null,
     onTransactionLongClick: ((transactionId: Long) -> Unit)? = null,
-    onTransactionLongClickLabel: String? = null,
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
     headerColor: Color,
@@ -146,11 +140,9 @@ fun LazyListScope.transactionBasketCardHeader(
                         onClick = {
                             onTransactionClick(transaction.id)
                         },
-                        onClickLabel = onTransactionClickLabel,
                         onLongClick = {
                             onTransactionLongClick(transaction.id)
-                        },
-                        onLongClickLabel = onTransactionLongClickLabel,
+                        }
                     )
                 } else if (onTransactionClick != null) {
                     Modifier.clickable(

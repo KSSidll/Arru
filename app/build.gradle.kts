@@ -121,6 +121,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.material3.window.sizeclass)
     implementation(libs.androidx.compose.material.icons.extended)
 
@@ -132,6 +133,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.paging)
 
     // Helpers
     implementation(libs.google.accompanist)
@@ -142,6 +144,9 @@ dependencies {
 
     // Text fuzzy search
     implementation(libs.dev.text.search.fuzzywuzzy)
+
+    // Lint
+    lintChecks(libs.slack.compose.lint)
 
     // Chart
     implementation(libs.dev.chart.vico.compose)

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.ui.screen.ranking.RankingScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
@@ -20,7 +19,7 @@ fun ShopRankingRoute(
         onBack = navigateBack,
         title = stringResource(R.string.shops),
         data = viewModel.shopTotalSpentFlow()
-            .collectAsState(Data.Loading()).value,
+            .collectAsState(emptyList()).value,
         onItemClick = {
             navigateShop(it.shop.id)
         },

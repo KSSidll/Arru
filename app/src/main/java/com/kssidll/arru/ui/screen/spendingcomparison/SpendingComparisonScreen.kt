@@ -37,10 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.RankSource
-import com.kssidll.arru.domain.data.loadedData
-import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.ui.component.list.SpendingComparisonList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -51,9 +48,9 @@ import com.kssidll.arru.ui.theme.Typography
 fun <T> SpendingComparisonScreen(
     onBack: () -> Unit,
     title: String,
-    leftSideItems: Data<List<T>>,
+    leftSideItems: List<T>,
     leftSideHeader: String,
-    rightSideItems: Data<List<T>>,
+    rightSideItems: List<T>,
     rightSideHeader: String,
     modifier: Modifier = Modifier,
 ) where T: RankSource {
@@ -82,7 +79,7 @@ fun <T> SpendingComparisonScreen(
                 .fillMaxSize()
         ) {
             AnimatedVisibility(
-                visible = leftSideItems.loadedEmpty() && rightSideItems.loadedEmpty(),
+                visible = leftSideItems.isEmpty() && rightSideItems.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -98,18 +95,10 @@ fun <T> SpendingComparisonScreen(
             }
 
             AnimatedVisibility(
-                visible = leftSideItems.loadedData() || rightSideItems.loadedData(),
+                visible = leftSideItems.isNotEmpty() || rightSideItems.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                val leftItems = if (leftSideItems is Data.Loaded) {
-                    leftSideItems.data
-                } else emptyList()
-
-                val rightItems = if (rightSideItems is Data.Loaded) {
-                    rightSideItems.data
-                } else emptyList()
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,9 +113,9 @@ fun <T> SpendingComparisonScreen(
 
                         SpendingComparisonList(
                             listHeader = String(),
-                            leftSideItems = leftItems,
+                            leftSideItems = leftSideItems,
                             leftSideHeader = leftSideHeader,
-                            rightSideItems = rightItems,
+                            rightSideItems = rightSideItems,
                             rightSideHeader = rightSideHeader,
                         )
                     }
@@ -144,9 +133,9 @@ private fun SpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                leftSideItems = ItemSpentByCategory.generateList(4),
                 leftSideHeader = "left",
-                rightSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                rightSideItems = ItemSpentByCategory.generateList(4),
                 rightSideHeader = "right",
             )
         }
@@ -161,9 +150,9 @@ private fun EmptySpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = Data.Loaded(emptyList()),
+                leftSideItems = emptyList(),
                 leftSideHeader = "left",
-                rightSideItems = Data.Loaded(emptyList()),
+                rightSideItems = emptyList(),
                 rightSideHeader = "right",
             )
         }
@@ -178,9 +167,9 @@ private fun ExpandedSpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                leftSideItems = ItemSpentByCategory.generateList(4),
                 leftSideHeader = "left",
-                rightSideItems = Data.Loaded(ItemSpentByCategory.generateList(4)),
+                rightSideItems = ItemSpentByCategory.generateList(4),
                 rightSideHeader = "right",
             )
         }
@@ -195,9 +184,9 @@ private fun ExpandedEmptySpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = Data.Loaded(emptyList()),
+                leftSideItems = emptyList(),
                 leftSideHeader = "left",
-                rightSideItems = Data.Loaded(emptyList()),
+                rightSideItems = emptyList(),
                 rightSideHeader = "right",
             )
         }

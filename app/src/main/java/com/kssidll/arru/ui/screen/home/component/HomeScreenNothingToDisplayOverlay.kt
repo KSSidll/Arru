@@ -3,10 +3,8 @@ package com.kssidll.arru.ui.screen.home.component
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,17 +13,14 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.PreviewExpanded
-import com.kssidll.arru.ui.screen.home.ExpandedHomeRouteNavigation
-import com.kssidll.arru.ui.screen.home.HomeRouteNavigation
-import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 
 @Composable
-fun HomeScreenNothingToDisplayOverlay() {
-    Column {
+fun HomeScreenNothingToDisplayOverlay(
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         Box(modifier = Modifier.weight(1f))
 
         Column(
@@ -89,8 +84,10 @@ fun HomeScreenNothingToDisplayOverlay() {
 }
 
 @Composable
-fun ExpandedHomeScreenNothingToDisplayOverlay() {
-    Column {
+fun ExpandedHomeScreenNothingToDisplayOverlay(
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         val pathColor = MaterialTheme.colorScheme.primary
         Canvas(
             modifier = Modifier
@@ -98,7 +95,7 @@ fun ExpandedHomeScreenNothingToDisplayOverlay() {
                 .fillMaxWidth()
         ) {
             val curveEndX = 24.dp.toPx()
-            val curveEndY = 40.dp.toPx()
+            val curveEndY = 60.dp.toPx()
             val lineWidth = 3.dp.toPx()
 
             drawPath(
@@ -150,36 +147,5 @@ fun ExpandedHomeScreenNothingToDisplayOverlay() {
         }
 
         Box(modifier = Modifier.weight(1f))
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun HomeScreenNothingToDisplayOverlayPreview() {
-    ArrugarqTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            HomeRouteNavigation(
-                onLocationChange = {},
-                navigateTransactionAdd = {},
-            ) {
-                HomeScreenNothingToDisplayOverlay()
-            }
-        }
-    }
-}
-
-@PreviewExpanded
-@Composable
-private fun ExpandedHomeScreenNothingToDisplayOverlayPreview() {
-    ArrugarqTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            ExpandedHomeRouteNavigation(
-                onLocationChange = {},
-                navigateTransactionAdd = {},
-                navigateSettings = {},
-            ) {
-                ExpandedHomeScreenNothingToDisplayOverlay()
-            }
-        }
     }
 }
