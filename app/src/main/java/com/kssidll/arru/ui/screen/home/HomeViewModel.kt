@@ -138,7 +138,8 @@ class HomeViewModel @Inject constructor(
     init {
         _uiState.update { currentState ->
             currentState.copy(
-                transactions = transactionRepository.transactionBasketsPagedFlow().toDisplayData()
+                transactions = transactionRepository.transactionBasketsPagedFlow()
+                    .toDisplayData()
                     .cachedIn(viewModelScope)
             )
         }

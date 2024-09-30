@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -274,6 +275,9 @@ interface TransactionBasketDao {
             )
         }
     }
+
+    @Query("SELECT TransactionBasket.* FROM TransactionBasket ORDER BY date DESC")
+    fun allPaged(): PagingSource<Int, TransactionBasket>
 
     fun transactionBasketWithItems(transactionBasketId: Long): Flow<TransactionBasketWithItems?> {
         return getFlow(transactionBasketId).map { basket ->

@@ -291,6 +291,11 @@ fun TransactionScreenContent(
 
             val transactionCount = transactions.itemCount
 
+            // for some reason, when the paging source is invalidated through item edition or insertion
+            // it starts loading the data from seemingly random index, thus we notify the source of an access
+            // to the first visible item before loading the data, so that it loads it first
+            transactions[firstVisibleItemIndex]
+
             // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
             for (index in 0 until transactionCount) {
                 val etherealTransaction = transactions.peek(index)

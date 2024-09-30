@@ -3,11 +3,11 @@ package com.kssidll.arru.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.kssidll.arru.data.dao.TransactionBasketDao
 import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionSpentByTime
-import com.kssidll.arru.data.paging.TransactionBasketWithItemsPagingSource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
@@ -178,11 +178,25 @@ class TransactionBasketRepository(private val dao: TransactionBasketDao):
 
     override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {
         return Pager(
-            config = PagingConfig(pageSize = 3),
-            initialKey = 0,
-            pagingSourceFactory = { TransactionBasketWithItemsPagingSource(this) }
+            config = PagingConfig(
+                pageSize = 12,
+                enablePlaceholders = true,
+                jumpThreshold = 24
+            ),
+            pagingSourceFactory = { dao.allPaged() }
         )
             .flow
+            .map { pagingData ->
+                pagingData.map { transaction ->
+                    TransactionBasketWithItems(
+                        id = transaction.id,
+                        date = transaction.date,
+                        shop = transaction.shopId?.let { dao.shopById(it) },
+                        totalCost = transaction.totalCost,
+                        items = dao.fullItemsByTransactionBasketId(transaction.id)
+                    )
+                }
+            }
     }
 
     override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>> {
