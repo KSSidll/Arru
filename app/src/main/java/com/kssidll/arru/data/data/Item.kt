@@ -16,6 +16,8 @@ import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 import com.patrykandpatrick.vico.core.entry.ChartEntry
 import com.patrykandpatrick.vico.core.entry.FloatEntry
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.util.Locale
 import kotlin.math.log10
 
@@ -285,10 +287,10 @@ data class ItemSpentByTime(
             )
         }
 
-        fun generateList(amount: Int = 10): List<ItemSpentByTime> {
+        fun generateList(amount: Int = 10): ImmutableList<ItemSpentByTime> {
             return List(amount) {
                 generate()
-            }
+            }.toImmutableList()
         }
     }
 

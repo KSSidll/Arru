@@ -105,6 +105,9 @@ kotlin.sourceSets.main {
 dependencies {
     ksp(project(":processor"))
 
+    // Kotlin
+    implementation(libs.kotlin.collections.immutable)
+
     // AndroidX
     implementation(libs.androidx.activity)
     implementation(libs.androidx.splashscreen.core)

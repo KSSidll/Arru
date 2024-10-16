@@ -19,7 +19,11 @@ import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,21 +35,24 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
-@Immutable
+@Stable
 data class HomeUiState(
     val totalSpent: Float = 0f,
 
-    val dashboardSpentByTimeChartData: List<TransactionSpentByTime> = emptyList(),
+    val dashboardSpentByTimeChartData: ImmutableList<TransactionSpentByTime> = persistentListOf(),
     val dashboardSpentByTimeChartCurrentPeriod: TimePeriodFlowHandler.Periods = TimePeriodFlowHandler.Periods.Month,
-    val dashboardCategorySpendingRankingData: List<ItemSpentByCategory> = emptyList(),
-    val dashboardShopSpendingRankingData: List<TransactionTotalSpentByShop> = emptyList(),
+    val dashboardCategorySpendingRankingData: ImmutableList<ItemSpentByCategory> = persistentListOf(),
+    val dashboardShopSpendingRankingData: ImmutableList<TransactionTotalSpentByShop> = persistentListOf(),
+    val dashboardTotalChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
+    val dashboardAverageChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
+    val dashboardMedianChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
 
     val analysisCurrentDateYear: Int = Calendar.getInstance().get(Calendar.YEAR),
     val analysisCurrentDateMonth: Int = Calendar.getInstance().get(Calendar.MONTH) + 1,
-    val analysisCurrentDateCategoryData: List<ItemSpentByCategory> = emptyList(),
-    val analysisCurrentDateShopData: List<TransactionTotalSpentByShop> = emptyList(),
-    val analysisPreviousDateCategoryData: List<ItemSpentByCategory> = emptyList(),
-    val analysisPreviousDateShopData: List<TransactionTotalSpentByShop> = emptyList(),
+    val analysisCurrentDateCategoryData: ImmutableList<ItemSpentByCategory> = persistentListOf(),
+    val analysisCurrentDateShopData: ImmutableList<TransactionTotalSpentByShop> = persistentListOf(),
+    val analysisPreviousDateCategoryData: ImmutableList<ItemSpentByCategory> = persistentListOf(),
+    val analysisPreviousDateShopData: ImmutableList<TransactionTotalSpentByShop> = persistentListOf(),
 
     val transactions: Flow<PagingData<TransactionBasketDisplayData>> = flowOf(),
 
@@ -148,7 +155,7 @@ class HomeViewModel @Inject constructor(
             transactionRepository.totalSpentFlow().collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        totalSpent = it ?: 0f
+                        totalSpent = it ?: 0f,
                     )
                 }
             }
@@ -159,7 +166,7 @@ class HomeViewModel @Inject constructor(
                 .collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            dashboardCategorySpendingRankingData = it
+                            dashboardCategorySpendingRankingData = it.toImmutableList()
                         )
                     }
                 }
@@ -169,7 +176,7 @@ class HomeViewModel @Inject constructor(
             shopRepository.totalSpentByShopFlow().collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        dashboardShopSpendingRankingData = it
+                        dashboardShopSpendingRankingData = it.toImmutableList()
                     )
                 }
             }
@@ -253,7 +260,7 @@ class HomeViewModel @Inject constructor(
             mTimePeriodFlowHandler.spentByTimeData.collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        dashboardSpentByTimeChartData = it
+                        dashboardSpentByTimeChartData = it.toImmutableList()
                     )
                 }
             }
@@ -327,7 +334,7 @@ class HomeViewModel @Inject constructor(
             ).collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        analysisCurrentDateCategoryData = it
+                        analysisCurrentDateCategoryData = it.toImmutableList()
                     )
                 }
             }
@@ -341,7 +348,7 @@ class HomeViewModel @Inject constructor(
             ).collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        analysisCurrentDateShopData = it
+                        analysisCurrentDateShopData = it.toImmutableList()
                     )
                 }
             }
@@ -353,7 +360,7 @@ class HomeViewModel @Inject constructor(
                 .collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            analysisPreviousDateCategoryData = it
+                            analysisPreviousDateCategoryData = it.toImmutableList()
                         )
                     }
                 }
@@ -365,7 +372,7 @@ class HomeViewModel @Inject constructor(
                 .collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            analysisPreviousDateShopData = it
+                            analysisPreviousDateShopData = it.toImmutableList()
                         )
                     }
                 }

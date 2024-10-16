@@ -75,6 +75,7 @@ import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
@@ -285,7 +286,7 @@ private fun ShopScreenContent(
                     } else 0f
 
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = chartData,
+                        spentByTimeData = chartData.toImmutableList(),
                         totalSpentData = totalSpent,
                     )
 

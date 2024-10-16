@@ -1,5 +1,8 @@
 [versions]
 ## Libraries
+# Kotlin
+kotlin-collections-immutable = "0.3.8"
+
 # AndroidX
 androidx-activity = "1.9.2"
 androidx-splashscreen-core = "1.0.1"
@@ -40,6 +43,9 @@ kotlin = "2.0.20"
 ksp = "2.0.20-1.0.25"
 
 [libraries]
+# Kotlin
+kotlin-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
+
 # AndroidX
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity" }
 androidx-splashscreen-core = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splashscreen-core" }

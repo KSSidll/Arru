@@ -140,6 +140,7 @@ private fun DashboardScreenContent(
                     ) {
                         Column {
                             TotalAverageAndMedianSpendingComponent(
+                                totalChartEntryModelProducer = uiState.dashboardTotalChartEntryModelProducer,
                                 spentByTimeData = uiState.dashboardSpentByTimeChartData,
                                 totalSpentData = uiState.totalSpent,
                                 modifier = Modifier.padding(horizontal = 12.dp)
@@ -243,6 +244,7 @@ private fun ExpandedDashboardScreenContent(
                 ) {
                     Column {
                         TotalAverageAndMedianSpendingComponent(
+                            totalChartEntryModelProducer = uiState.dashboardTotalChartEntryModelProducer,
                             spentByTimeData = uiState.dashboardSpentByTimeChartData,
                             totalSpentData = uiState.totalSpent,
                             modifier = Modifier.padding(horizontal = 12.dp)

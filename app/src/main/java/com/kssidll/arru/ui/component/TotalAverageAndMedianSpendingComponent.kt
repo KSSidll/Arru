@@ -48,6 +48,7 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.scroll.InitialScroll
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 
 private val HALF_CHART_TOP_PADDING: Dp = 36.dp
@@ -58,15 +59,18 @@ private val CARD_TEXT_TOP_PADDING: Dp = 10.dp
 
 @Composable
 fun TotalAverageAndMedianSpendingComponent(
-    modifier: Modifier = Modifier,
-    spentByTimeData: List<ChartSource>,
+    spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float,
+    modifier: Modifier = Modifier,
+    totalChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    averageChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    medianChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
     animationSpec: AnimationSpec<Float> = tween(
         800,
         easing = EaseIn
     ),
     skipAnimation: Boolean = false,
-    onAnimationEnd: () -> Unit = {},
+    onAnimationEnd: () -> Unit = {}
 ) {
     val totalStartValue = if (skipAnimation) totalSpentData else 0f
     val averageStartValue = if (skipAnimation) spentByTimeData.avg() else 0f
@@ -82,20 +86,18 @@ fun TotalAverageAndMedianSpendingComponent(
         ) {
             var targetValue by remember { mutableFloatStateOf(totalStartValue) }
 
-            val chartProducer = remember {
-                ChartEntryModelProducer()
-            }
-
             LaunchedEffect(totalSpentData) {
                 targetValue = totalSpentData
+            }
 
-                val oldDataAdjusted = chartProducer.getModel()?.entries?.map { chart ->
+            LaunchedEffect(spentByTimeData) {
+                val oldDataAdjusted = totalChartEntryModelProducer.getModel()?.entries?.map { chart ->
                     chart.map { it.withY(0f) }
                 }
                     .orEmpty()
 
                 if (oldDataAdjusted.isNotEmpty()) {
-                    chartProducer.setEntries(oldDataAdjusted)
+                    totalChartEntryModelProducer.setEntries(oldDataAdjusted)
                 }
 
                 val newData = spentByTimeData.movingTotalChartData()
@@ -104,7 +106,7 @@ fun TotalAverageAndMedianSpendingComponent(
                     delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
                 }
 
-                chartProducer.setEntries(newData)
+                totalChartEntryModelProducer.setEntries(newData)
             }
 
             val animatedValue = animateFloatAsState(
@@ -131,7 +133,7 @@ fun TotalAverageAndMedianSpendingComponent(
 
                 Chart(
                     chart = lineChart(),
-                    chartModelProducer = chartProducer,
+                    chartModelProducer = totalChartEntryModelProducer,
                     chartScrollSpec = rememberChartScrollSpec(
                         isScrollEnabled = false,
                         initialScroll = InitialScroll.End,
@@ -157,29 +159,21 @@ fun TotalAverageAndMedianSpendingComponent(
                     .height(CARD_HEIGHT)
             ) {
                 var averageTargetValue by remember { mutableFloatStateOf(averageStartValue) }
-                val chartProducer = remember {
-                    ChartEntryModelProducer()
-                }
 
                 LaunchedEffect(spentByTimeData) {
                     averageTargetValue = spentByTimeData.avg()
 
-                    val oldDataAdjusted = chartProducer.getModel()?.entries?.map { chart ->
+                    val oldDataAdjusted = averageChartEntryModelProducer.getModel()?.entries?.map { chart ->
                         chart.map { it.withY(0f) }
                     }
                         .orEmpty()
 
                     if (oldDataAdjusted.isNotEmpty()) {
-                        chartProducer.setEntries(oldDataAdjusted)
+                        averageChartEntryModelProducer.setEntries(oldDataAdjusted)
                     }
 
                     val newData = spentByTimeData.movingAverageChartData()
-
-                    if (oldDataAdjusted.isNotEmpty()) {
-                        delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
-                    }
-
-                    chartProducer.setEntries(newData)
+                    averageChartEntryModelProducer.setEntries(newData)
                 }
 
                 val animatedAverageValue = animateFloatAsState(
@@ -206,7 +200,7 @@ fun TotalAverageAndMedianSpendingComponent(
 
                     Chart(
                         chart = lineChart(),
-                        chartModelProducer = chartProducer,
+                        chartModelProducer = averageChartEntryModelProducer,
                         chartScrollSpec = rememberChartScrollSpec(
                             isScrollEnabled = false,
                             initialScroll = InitialScroll.End,
@@ -231,19 +225,16 @@ fun TotalAverageAndMedianSpendingComponent(
                     .height(CARD_HEIGHT)
             ) {
                 var medianTargetValue by remember { mutableFloatStateOf(medianStartValue) }
-                val chartProducer = remember {
-                    ChartEntryModelProducer()
-                }
 
                 LaunchedEffect(spentByTimeData) {
                     medianTargetValue = spentByTimeData.median()
-                    val oldDataAdjusted = chartProducer.getModel()?.entries?.map { chart ->
+                    val oldDataAdjusted = medianChartEntryModelProducer.getModel()?.entries?.map { chart ->
                         chart.map { it.withY(0f) }
                     }
                         .orEmpty()
 
                     if (oldDataAdjusted.isNotEmpty()) {
-                        chartProducer.setEntries(oldDataAdjusted)
+                        medianChartEntryModelProducer.setEntries(oldDataAdjusted)
                     }
 
                     val newData = spentByTimeData.movingMedianChartData()
@@ -252,7 +243,7 @@ fun TotalAverageAndMedianSpendingComponent(
                         delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
                     }
 
-                    chartProducer.setEntries(newData)
+                    medianChartEntryModelProducer.setEntries(newData)
                 }
 
                 val animatedMedianValue = animateFloatAsState(
@@ -279,7 +270,7 @@ fun TotalAverageAndMedianSpendingComponent(
 
                     Chart(
                         chart = lineChart(),
-                        chartModelProducer = chartProducer,
+                        chartModelProducer = medianChartEntryModelProducer,
                         chartScrollSpec = rememberChartScrollSpec(
                             isScrollEnabled = false,
                             initialScroll = InitialScroll.End,
@@ -302,6 +293,9 @@ private fun TotalAverageAndMedianSpendingComponentPreview() {
     ArrugarqTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(
+                totalChartEntryModelProducer = ChartEntryModelProducer(),
+                averageChartEntryModelProducer = ChartEntryModelProducer(),
+                medianChartEntryModelProducer = ChartEntryModelProducer(),
                 spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
             )
