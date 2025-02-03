@@ -24,8 +24,9 @@ android {
             keyAlias = properties.getProperty("keyAlias")
         }
     }
+
     namespace = "com.kssidll.arru"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.kssidll.arru"
@@ -67,8 +68,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        jvmToolchain(17)
     }
 
     buildFeatures {
@@ -106,7 +107,7 @@ dependencies {
     ksp(project(":processor"))
 
     // Kotlin
-    implementation(libs.kotlin.collections.immutable)
+    implementation(libs.kotlinx.collections.immutable)
 
     // AndroidX
     implementation(libs.androidx.activity)
