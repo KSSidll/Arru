@@ -1,7 +1,7 @@
 package com.kssidll.arru.di.module
 
 import android.content.Context
-import com.kssidll.arru.Arru
+import androidx.core.net.toFile
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ItemDao
 import com.kssidll.arru.data.dao.ProducerDao
@@ -10,8 +10,6 @@ import com.kssidll.arru.data.dao.ShopDao
 import com.kssidll.arru.data.dao.TransactionBasketDao
 import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.database.AppDatabase
-import com.kssidll.arru.data.database.externalDbFile
-import com.kssidll.arru.data.database.internalDbFile
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.repository.CategoryRepository
@@ -50,44 +48,14 @@ class DatabaseModule {
             databaseLocation = AppPreferences.getDatabaseLocation(context).first()
         }
 
-        // if it's not internal and doesn't exist, create it so it can be moved
-        if (databaseLocation != AppPreferences.Database.Location.Values.INTERNAL) {
-            if (!context.internalDbFile()
-                    .exists()
-            ) {
-                // simple query to ensure database creation
-                AppDatabase.buildInternal(context)
-                    .query(
-                        "SELECT 1",
-                        null
-                    )
-                    .close()
-                Arru.restart(context)
-            }
-        }
-
         return when (databaseLocation) {
-            AppPreferences.Database.Location.Values.EXTERNAL -> {
-                if (!context.externalDbFile()
-                        .exists()
-                ) {
-                    AppDatabase.moveInternalToExternal(context)
-                }
+            is AppPreferences.Database.Location.Values.URI -> {
+                val uri = (databaseLocation as AppPreferences.Database.Location.Values.URI).uri
 
-                AppDatabase.buildExternal(context)
+                AppDatabase.buildExternal(context, uri.toFile().absolutePath)
             }
 
-            AppPreferences.Database.Location.Values.INTERNAL -> {
-                if (!context.internalDbFile()
-                        .exists()
-                ) {
-                    if (context.externalDbFile()
-                            .exists()
-                    ) {
-                        AppDatabase.moveExternalToInternal(context)
-                    }
-                }
-
+            is AppPreferences.Database.Location.Values.INTERNAL -> {
                 AppDatabase.buildInternal(context)
             }
         }

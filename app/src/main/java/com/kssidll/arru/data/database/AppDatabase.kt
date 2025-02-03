@@ -2,6 +2,7 @@ package com.kssidll.arru.data.database
 
 import android.content.Context
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
@@ -28,9 +29,11 @@ import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.database.AppDatabase.Companion.move
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.Calendar
 
@@ -45,29 +48,18 @@ const val DATABASE_NAME: String = "arru_database.db"
 const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
 
 /**
- * @return absolute path to external database file as [File]
- */
-fun Context.externalDbFile(): File =
-    File(getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME"))
-
-/**
- * @return absolute path to internal database file as [File]
- */
-fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
-
-/**
  * @return absolute path to currently used database file as [File]
  */
 suspend fun Context.currentDbFile(): File {
-    val databaseLocation = AppPreferences.getDatabaseLocation(this@currentDbFile).first()
-
-    return when (databaseLocation) {
-        AppPreferences.Database.Location.Values.EXTERNAL -> {
-            externalDbFile()
+    return when (
+        val databaseLocation = AppPreferences.getDatabaseLocation(this@currentDbFile).first()
+    ) {
+        is AppPreferences.Database.Location.Values.URI -> {
+            databaseLocation.uri.toFile()
         }
 
-        AppPreferences.Database.Location.Values.INTERNAL -> {
-            internalDbFile()
+        is AppPreferences.Database.Location.Values.INTERNAL -> {
+            getDatabasePath(DATABASE_NAME)
         }
     }
 }
@@ -83,7 +75,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
 }
 
 @Database(
-    version = 6,
+    version = 7,
     entities = [
         TransactionBasket::class,
         Item::class,
@@ -126,7 +118,7 @@ abstract class AppDatabase: RoomDatabase() {
          * @param name name of the database or absolute path if not internal location, defaults to internal location with [DATABASE_NAME] name
          * @return [RoomDatabase.Builder] of [AppDatabase] for [name]
          */
-        private fun builder(
+        fun builder(
             context: Context,
             name: String = DATABASE_NAME
         ): Builder<AppDatabase> {
@@ -137,6 +129,7 @@ abstract class AppDatabase: RoomDatabase() {
             )
                 .addMigrations(MIGRATION_3_4)
                 .addMigrations(MIGRATION_5_6)
+                .addMigrations(MIGRATION_6_7(context))
         }
 
         /**
@@ -153,10 +146,10 @@ abstract class AppDatabase: RoomDatabase() {
          * @param context app context
          * @return [AppDatabase] created in external [Context.externalDbFile] location, doesn't ensure database file creation
          */
-        fun buildExternal(context: Context): AppDatabase {
+        fun buildExternal(context: Context, absolutePath: String): AppDatabase {
             return builder(
                 context,
-                context.externalDbFile().absolutePath
+                absolutePath
             ).build()
         }
 
@@ -165,7 +158,7 @@ abstract class AppDatabase: RoomDatabase() {
          * @param fromDbFile absolute path to db file from whose parent directory to move database files
          * @param toDbFile absolute path to db file to whose parent directory to move database files
          */
-        private fun copy(
+        fun copy(
             fromDbFile: File,
             toDbFile: File
         ) {
@@ -199,15 +192,33 @@ abstract class AppDatabase: RoomDatabase() {
         }
 
         /**
-         * moves database files from [fromDbFile] parent directory to [toDbFile] parent directory
+         * moves database files and backups from [fromDbFile] parent directory to [toDbFile] parent directory
+         * @param context app context
          * @param fromDbFile absolute path to db file from whose parent directory to move database files
          * @param toDbFile absolute path to db file to whose parent directory to move database files
          */
-        private fun move(
+        fun move(
+            context: Context,
             fromDbFile: File,
             toDbFile: File
         ) {
-            // TODO add moving backups too when localization change is implemented
+            var availableBackups: List<DatabaseBackup> = emptyList()
+            runBlocking {
+                val dbBackup = File(fromDbFile.parentFile!!.absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
+                if (dbBackup.exists()) {
+                    availableBackups = availableBackups(context, dbBackup)
+                }
+            }
+
+            availableBackups.forEach {
+                copy(
+                    it.file,
+                    File(toDbFile.parentFile!!.absolutePath.plus("/${it.name}.db"))
+                )
+
+                delete(it.file)
+            }
+
             copy(
                 fromDbFile,
                 toDbFile
@@ -220,7 +231,7 @@ abstract class AppDatabase: RoomDatabase() {
          * delete [dbFile] database files
          * @param dbFile absolute path to the main db file to be deleted
          */
-        private fun delete(dbFile: File) {
+        fun delete(dbFile: File) {
             val dbWalFile = File("${dbFile.path}-wal")
             val dbShmFile = File("${dbFile.path}-shm")
 
@@ -233,34 +244,6 @@ abstract class AppDatabase: RoomDatabase() {
             if (dbShmFile.exists()) {
                 dbShmFile.delete()
             }
-        }
-
-        /**
-         * moves the database files from external to internal location
-         * @param context app context
-         */
-        fun moveExternalToInternal(context: Context) {
-            val externalDbFile = context.externalDbFile()
-            val internalDbFile = context.internalDbFile()
-
-            move(
-                externalDbFile,
-                internalDbFile
-            )
-        }
-
-        /**
-         * moves the database files from internal to external location
-         * @param context app context
-         */
-        fun moveInternalToExternal(context: Context) {
-            val externalDbFile = context.externalDbFile()
-            val internalDbFile = context.internalDbFile()
-
-            move(
-                internalDbFile,
-                externalDbFile
-            )
         }
 
         fun lockDbBackup(databaseBackup: DatabaseBackup) {
@@ -339,7 +322,6 @@ abstract class AppDatabase: RoomDatabase() {
         /**
          * loads a database backup to current database location
          * @param context app context
-         * @param preferences app preferences
          * @param backupDbFile database backup file to load
          */
         suspend fun loadDbBackup(
@@ -378,11 +360,13 @@ abstract class AppDatabase: RoomDatabase() {
          */
         suspend fun availableBackups(
             context: Context,
+            directory: File? = null
         ): List<DatabaseBackup> {
-            val directory = context.currentDbBackupDirectory()
+            @Suppress("LocalVariableName")
+            val _directory = directory ?: context.currentDbBackupDirectory()
 
-            if (directory.exists() && directory.isDirectory) {
-                val files = directory.listFiles { file ->
+            if (_directory.exists() && _directory.isDirectory) {
+                val files = _directory.listFiles { file ->
                     // return only files that are databases, ignore shm, wal and other files
                     file.extension == "db"
                 }
@@ -461,10 +445,7 @@ val MIGRATION_3_4 = object: Migration(
 )
 class MIGRATION_4_5_SPEC: AutoMigrationSpec
 
-val MIGRATION_5_6 = object: Migration(
-    5,
-    6
-) {
+val MIGRATION_5_6 = object: Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             """
@@ -526,5 +507,22 @@ val MIGRATION_5_6 = object: Migration(
             CREATE INDEX IF NOT EXISTS index_Item_variantId ON Item (variantId)
         """.trimIndent()
         )
+    }
+}
+
+@Suppress("ClassName")
+class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Attempt to migrate from external storage to internal storage as previous implementation was external storage hard coded
+        try {
+            val externalDbFile = File(context.getExternalFilesDir(null)!!.absolutePath.plus("/database/arru_database.db"))
+            val internalDbFile = context.getDatabasePath(DATABASE_NAME)
+
+            move(
+                context,
+                externalDbFile,
+                internalDbFile
+            )
+        } catch (_: Exception) {}
     }
 }

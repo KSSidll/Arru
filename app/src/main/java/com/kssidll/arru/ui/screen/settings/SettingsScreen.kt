@@ -102,6 +102,8 @@ internal fun SettingsScreen(
     onBack: () -> Unit,
     onBackupsClick: () -> Unit,
     onExportClick: (AppPreferences.Export.Type.Values) -> Unit,
+    databaseLocation: AppPreferences.Database.Location.Values?,
+    onChangeDatabaseLocation: (AppPreferences.Database.Location.Values?) -> Unit,
     currentExportType: AppPreferences.Export.Type.Values,
     onExportTypeChange: (AppPreferences.Export.Type.Values) -> Unit,
     exportUri: Uri?,
@@ -226,6 +228,50 @@ internal fun SettingsScreen(
                                 imageVector = Icons.Default.Backup,
                                 contentDescription = null,
                             )
+                        }
+                    }
+
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Surface(
+                            shape = ShapeDefaults.Large,
+                            tonalElevation = 1.dp,
+                            modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
+                        ) {
+                            Column(modifier = Modifier.animateContentSize()) {
+                                AnimatedVisibility(visible = databaseLocation != null) {
+                                    Surface(
+                                        shape = ShapeDefaults.Large,
+                                        tonalElevation = 2.dp,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                onChangeDatabaseLocation(databaseLocation)
+                                            }
+                                    ) {
+                                        Column(modifier = Modifier.padding(24.dp)) {
+                                            Text(
+                                                text = "${stringResource(id = R.string.database_location)}:",
+                                                style = Typography.labelLarge
+                                            )
+
+                                            Text(
+                                                text = databaseLocation?.let {
+                                                    when (it) {
+                                                        is AppPreferences.Database.Location.Values.URI -> getReadablePathFromUri(it.uri)
+                                                        is AppPreferences.Database.Location.Values.INTERNAL -> stringResource(R.string.database_location_internal)
+                                                    }
+                                                }
+                                                    ?: String(),
+                                                style = Typography.labelMedium
+                                            )
+
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -453,6 +499,8 @@ private fun SettingsScreenPreview() {
                 onBack = {},
                 onBackupsClick = {},
                 onExportClick = {},
+                databaseLocation = null,
+                onChangeDatabaseLocation = {},
                 currentExportType = AppPreferences.Export.Type.Values.CompactCSV,
                 onExportTypeChange = {},
                 exportUri = null,

@@ -88,6 +88,7 @@
     <string name="month">Miesiąc</string>
     <string name="year">Rok</string>
 
+    <string name="database_location_internal">Wewnętrzna</string>
     <string name="export_location">Lokalizacja eksportu</string>
     <string name="export_type">Rodzaj eksportu</string>
     <string name="export">Eksport</string>
@@ -130,4 +131,5 @@
     <string name="theme">Motyw</string>
     <string name="settings_dynamic_theme">Dynamiczny motyw</string>
     <string name="settings_currency_format">Format waluty</string>
+    <string name="database_location">Lokalizacja danych</string>
 </resources>

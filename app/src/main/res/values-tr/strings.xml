@@ -87,6 +87,7 @@
     <string name="month">Ay</string>
     <string name="year">Yıl</string>
 
+    <string name="database_location_internal">Dahili</string>
     <string name="export_location">Dışa aktarma yeri</string>
     <string name="export_type">Dışa aktarma türü</string>
     <string name="export">Dışa Aktar</string>
@@ -129,4 +130,5 @@
     <string name="theme">Tema</string>
     <string name="settings_dynamic_theme">Dinamik tema</string>
     <string name="settings_currency_format">Para birimi biçimi</string>
+    <string name="database_location">Veritabanı konumu</string>
 </resources>

@@ -45,7 +45,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.preference.getExportLocation
+import com.kssidll.arru.data.preference.setDatabaseLocation
 import com.kssidll.arru.data.preference.setExportLocation
 import com.kssidll.arru.service.DataExportService
 import com.kssidll.arru.ui.theme.Typography
@@ -63,9 +65,9 @@ import java.util.Locale
 fun SettingsRoute(
     navigateBack: () -> Unit,
     navigateBackups: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    val viewModel: SettingsViewModel = hiltViewModel()
-
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -161,6 +163,35 @@ fun SettingsRoute(
         }
     }
 
+    val setDatabaseLocation: suspend (Uri) -> Unit = { uri ->
+        val oldUri = when (val it = AppPreferences.getDatabaseLocation(context).first()) {
+            is AppPreferences.Database.Location.Values.INTERNAL -> null
+            is AppPreferences.Database.Location.Values.URI -> it.uri
+        }
+
+        if (oldUri != uri) {
+            val persistableFlags =
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+            if (oldUri != null) {
+                try {
+                    context.contentResolver.releasePersistableUriPermission(
+                        oldUri,
+                        persistableFlags
+                    )
+                } catch (_: Exception) {
+                } // it doesn't really matter if we can't release
+            }
+
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                persistableFlags
+            )
+
+            AppPreferences.setDatabaseLocation(context, AppPreferences.Database.Location.Values.URI(uri))
+        }
+    }
+
     val exportFolderPickerLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
             scope.launch {
@@ -180,7 +211,16 @@ fun SettingsRoute(
             }
         }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    val databaseFolderPickerLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
+            scope.launch {
+                it?.let { uri ->
+                    setDatabaseLocation(uri)
+                }
+            }
+        }
+
+    Box(modifier = modifier.fillMaxSize()) {
 
         SettingsScreen(
             setLocale = {
@@ -198,12 +238,16 @@ fun SettingsRoute(
                     }
                 }
             },
+            databaseLocation = AppPreferences.getDatabaseLocation(context).collectAsState(initial = null).value,
+            onChangeDatabaseLocation = {
+                val uri = it?.let { if (it is AppPreferences.Database.Location.Values.URI) it.uri else null }
+                databaseFolderPickerLauncher.launch(uri)
+            },
             currentExportType = viewModel.currentExportType.collectAsState(initial = AppPreferences.Export.Type.DEFAULT).value,
             onExportTypeChange = {
                 viewModel.setExportType(it)
             },
-            exportUri = AppPreferences.getExportLocation(context)
-                .collectAsState(initial = null).value,
+            exportUri = AppPreferences.getExportLocation(context).collectAsState(initial = null).value,
             onChangeExportUri = { currentExportUri ->
                 exportFolderPickerLauncher.launch(currentExportUri)
             },
@@ -230,7 +274,7 @@ fun SettingsRoute(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable(
-                        interactionSource = MutableInteractionSource(),
+                        interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = {}
                     )

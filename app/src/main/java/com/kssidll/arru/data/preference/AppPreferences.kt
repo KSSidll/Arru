@@ -9,16 +9,21 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toFile
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.kssidll.arru.R
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.database.DATABASE_NAME
 import com.kssidll.arru.di.module.dataStore
 import com.kssidll.arru.di.module.getPreferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.io.File
 import java.util.Locale
 
 /**
@@ -38,30 +43,23 @@ data object AppPreferences {
             /**
              * Key for database location preference key-value pair
              */
-            val key: Preferences.Key<Int> = intPreferencesKey("databaselocation2") // databaselocation was used for a string prior, not sure if that's changeable
+            val key: Preferences.Key<String> = stringPreferencesKey("databaselocation_3")
 
             /**
              * Value for default location
              */
-            val DEFAULT = Values.EXTERNAL
+            val DEFAULT = Values.INTERNAL
 
-            enum class Values {
+            sealed class Values(val value: String) {
                 /**
                  * Value for internal location
                  */
-                INTERNAL,
+                data object INTERNAL: Values("internal")
 
                 /**
-                 * Value for external location
+                 * Value for URI set external location
                  */
-                EXTERNAL,
-
-                ;
-
-                companion object {
-                    private val idMap = Values.entries.associateBy { it.ordinal }
-                    fun getByOrdinal(ordinal: Int) = idMap[ordinal]
-                }
+                data class URI(val uri: Uri): Values(uri.toString())
             }
         }
     }
@@ -80,18 +78,18 @@ data object AppPreferences {
             val key: Preferences.Key<Int> = intPreferencesKey("transactiondate")
 
             /**
-             * Value for default date
+             * Values for default date
              */
             val DEFAULT = Values.CURRENT
 
             enum class Values {
                 /**
-                 * Value for current date
+                 * Values for current date
                  */
                 CURRENT,
 
                 /**
-                 * Value for last transaction date
+                 * Values for last transaction date
                  */
                 LAST,
 
@@ -119,23 +117,23 @@ data object AppPreferences {
             val key: Preferences.Key<Int> = intPreferencesKey("exporttype")
 
             /**
-             * Value for default export type
+             * Values for default export type
              */
             val DEFAULT = Values.CompactCSV
 
             enum class Values {
                 /**
-                 * Value for compact csv export
+                 * Values for compact csv export
                  */
                 CompactCSV,
 
                 /**
-                 * Value for raw csv export
+                 * Values for raw csv export
                  */
                 RawCSV,
 
                 /**
-                 * Value for json export
+                 * Values for json export
                  */
                 JSON,
 
@@ -183,24 +181,24 @@ data object AppPreferences {
             val key: Preferences.Key<Int> = intPreferencesKey("themecolorscheme")
 
             /**
-             * Value for default color scheme
+             * Values for default color scheme
              */
             val DEFAULT = Values.SYSTEM
 
 
             enum class Values {
                 /**
-                 * Value for system color scheme
+                 * Values for system color scheme
                  */
                 SYSTEM,
 
                 /**
-                 * Value for dark color scheme
+                 * Values for dark color scheme
                  */
                 DARK,
 
                 /**
-                 * Value for light color scheme
+                 * Values for light color scheme
                  */
                 LIGHT
 
@@ -260,7 +258,7 @@ suspend fun AppPreferences.setResettableToDefault(context: Context) {
 /**
  * Sets the transaction date preference to a new value
  * @param context App context
- * @param newDatePreference Value to set the date preference to
+ * @param newDatePreference Values to set the date preference to
  */
 suspend fun AppPreferences.setTransactionDate(
     context: Context,
@@ -290,7 +288,7 @@ fun AppPreferences.getTransactionDate(context: Context): Flow<AppPreferences.Tra
 /**
  * Sets the export type preference to a new value
  * @param context App context
- * @param newExportType Value to set the export type preference to
+ * @param newExportType Values to set the export type preference to
  */
 suspend fun AppPreferences.setExportType(
     context: Context,
@@ -320,7 +318,7 @@ fun AppPreferences.getExportType(context: Context): Flow<AppPreferences.Export.T
 /**
  * Sets the export location preference to a new value
  * @param context App context
- * @param newExportLocation Value to set the export location preference to
+ * @param newExportLocation Values to set the export location preference to
  */
 suspend fun AppPreferences.setExportLocation(
     context: Context,
@@ -347,7 +345,7 @@ fun AppPreferences.getExportLocation(context: Context): Flow<Uri?> {
 /**
  * Sets the theme color scheme preference to a new value
  * @param context App context
- * @param newColorScheme Value to set the theme color scheme preference to
+ * @param newColorScheme Values to set the theme color scheme preference to
  */
 suspend fun AppPreferences.setThemeColorScheme(
     context: Context,
@@ -384,7 +382,7 @@ fun AppPreferences.Theme.ColorScheme.Values.detectDarkMode(): (Resources) -> Boo
 /**
  * Sets the theme dynamic color preference to a new value
  * @param context App context
- * @param isDynamicColor Value to set the theme dynamic color preference to
+ * @param isDynamicColor Values to set the theme dynamic color preference to
  */
 suspend fun AppPreferences.setThemeDynamicColor(
     context: Context,
@@ -441,15 +439,53 @@ suspend fun AppPreferences.setDatabaseLocation(
     context: Context,
     newDatabaseLocation: AppPreferences.Database.Location.Values
 ) {
+    val oldValue = getDatabaseLocation(context).first()
+
     getPreferencesDataStore(context).edit {
-        it[AppPreferences.Database.Location.key] = newDatabaseLocation.ordinal
+        it[AppPreferences.Database.Location.key] = newDatabaseLocation.value
+    }
+
+    val newLocation = when (newDatabaseLocation) {
+        is AppPreferences.Database.Location.Values.URI -> newDatabaseLocation.uri
+        is AppPreferences.Database.Location.Values.INTERNAL -> null
+    }
+
+    // move from internal to external
+    if (oldValue is AppPreferences.Database.Location.Values.INTERNAL && newLocation != null) {
+        AppDatabase.move(
+            context,
+            context.getDatabasePath(DATABASE_NAME),
+            File(newLocation.toFile().absolutePath.plus("/${DATABASE_NAME}.db"))
+        )
+    }
+
+    // move from external to internal
+    if (oldValue is AppPreferences.Database.Location.Values.URI && newLocation == null) {
+        AppDatabase.move(
+            context,
+            File(oldValue.uri.toFile().absolutePath.plus("/${DATABASE_NAME}.db")),
+            context.getDatabasePath(DATABASE_NAME)
+        )
+    }
+
+    // move from external to external
+    if (oldValue is AppPreferences.Database.Location.Values.URI && newLocation != null) {
+        AppDatabase.move(
+            context,
+            File(oldValue.uri.toFile().absolutePath.plus("/${DATABASE_NAME}.db")),
+            File(newLocation.toFile().absolutePath.plus("/${DATABASE_NAME}.db"))
+        )
     }
 }
 
 fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Database.Location.Values> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Database.Location.key]?.let {
-            AppPreferences.Database.Location.Values.getByOrdinal(it)
+            try {
+                AppPreferences.Database.Location.Values.URI(Uri.parse(it))
+            } catch (_: Exception) {
+                AppPreferences.Database.Location.Values.INTERNAL
+            }
         }
             ?: AppPreferences.Database.Location.DEFAULT
     }

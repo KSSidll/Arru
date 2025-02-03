@@ -89,6 +89,9 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
 
+    <string name="database_location">Database location</string>
+    <string name="database_location_internal">Internal</string>
+
     <string name="export_location">Export location</string>
     <string name="export_type">Export type</string>
     <string name="export">Export</string>
