@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
-import androidx.core.net.toFile
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -18,12 +17,13 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.kssidll.arru.R
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.DATABASE_NAME
+import com.kssidll.arru.data.database.downloadsAppDirectory
+import com.kssidll.arru.data.database.downloadsDbFile
 import com.kssidll.arru.di.module.dataStore
 import com.kssidll.arru.di.module.getPreferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.io.File
 import java.util.Locale
 
 /**
@@ -57,9 +57,9 @@ data object AppPreferences {
                 data object INTERNAL: Values("internal")
 
                 /**
-                 * Value for URI set external location
+                 * Value for external downloads location
                  */
-                data class URI(val uri: Uri): Values(uri.toString())
+                data object DOWNLOADS: Values("downloads")
             }
         }
     }
@@ -445,35 +445,32 @@ suspend fun AppPreferences.setDatabaseLocation(
         it[AppPreferences.Database.Location.key] = newDatabaseLocation.value
     }
 
-    val newLocation = when (newDatabaseLocation) {
-        is AppPreferences.Database.Location.Values.URI -> newDatabaseLocation.uri
-        is AppPreferences.Database.Location.Values.INTERNAL -> null
-    }
+    // move from internal to external downloads
+    if (
+        oldValue is AppPreferences.Database.Location.Values.INTERNAL
+        && newDatabaseLocation is AppPreferences.Database.Location.Values.DOWNLOADS
+    ) {
+        val downloadsAppDirectory = context.downloadsAppDirectory()
 
-    // move from internal to external
-    if (oldValue is AppPreferences.Database.Location.Values.INTERNAL && newLocation != null) {
+        // create in case it doesn't exist
+        downloadsAppDirectory.mkdir()
+
         AppDatabase.move(
             context,
             context.getDatabasePath(DATABASE_NAME),
-            File(newLocation.toFile().absolutePath.plus("/${DATABASE_NAME}.db"))
+            context.downloadsDbFile()
         )
     }
 
     // move from external to internal
-    if (oldValue is AppPreferences.Database.Location.Values.URI && newLocation == null) {
+    if (
+        oldValue is AppPreferences.Database.Location.Values.DOWNLOADS
+        && newDatabaseLocation is AppPreferences.Database.Location.Values.INTERNAL
+    ) {
         AppDatabase.move(
             context,
-            File(oldValue.uri.toFile().absolutePath.plus("/${DATABASE_NAME}.db")),
+            context.downloadsDbFile(),
             context.getDatabasePath(DATABASE_NAME)
-        )
-    }
-
-    // move from external to external
-    if (oldValue is AppPreferences.Database.Location.Values.URI && newLocation != null) {
-        AppDatabase.move(
-            context,
-            File(oldValue.uri.toFile().absolutePath.plus("/${DATABASE_NAME}.db")),
-            File(newLocation.toFile().absolutePath.plus("/${DATABASE_NAME}.db"))
         )
     }
 }
@@ -481,10 +478,10 @@ suspend fun AppPreferences.setDatabaseLocation(
 fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Database.Location.Values> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Database.Location.key]?.let {
-            try {
-                AppPreferences.Database.Location.Values.URI(Uri.parse(it))
-            } catch (_: Exception) {
-                AppPreferences.Database.Location.Values.INTERNAL
+            when(it) {
+                AppPreferences.Database.Location.Values.INTERNAL.value -> AppPreferences.Database.Location.Values.INTERNAL
+                AppPreferences.Database.Location.Values.DOWNLOADS.value -> AppPreferences.Database.Location.Values.DOWNLOADS
+                else -> AppPreferences.Database.Location.DEFAULT
             }
         }
             ?: AppPreferences.Database.Location.DEFAULT

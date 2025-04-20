@@ -89,6 +89,8 @@
     <string name="year">Rok</string>
 
     <string name="database_location_internal">Wewnętrzna</string>
+    <string name="database_location_downloads">Pobrane</string>
+
     <string name="export_location">Lokalizacja eksportu</string>
     <string name="export_type">Rodzaj eksportu</string>
     <string name="export">Eksport</string>

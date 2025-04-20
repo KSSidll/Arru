@@ -103,7 +103,7 @@ internal fun SettingsScreen(
     onBackupsClick: () -> Unit,
     onExportClick: (AppPreferences.Export.Type.Values) -> Unit,
     databaseLocation: AppPreferences.Database.Location.Values?,
-    onChangeDatabaseLocation: (AppPreferences.Database.Location.Values?) -> Unit,
+    onChangeDatabaseLocation: (AppPreferences.Database.Location.Values) -> Unit,
     currentExportType: AppPreferences.Export.Type.Values,
     onExportTypeChange: (AppPreferences.Export.Type.Values) -> Unit,
     exportUri: Uri?,
@@ -241,33 +241,76 @@ internal fun SettingsScreen(
                         ) {
                             Column(modifier = Modifier.animateContentSize()) {
                                 AnimatedVisibility(visible = databaseLocation != null) {
-                                    Surface(
-                                        shape = ShapeDefaults.Large,
-                                        tonalElevation = 2.dp,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                onChangeDatabaseLocation(databaseLocation)
+                                    Column(modifier = Modifier.padding(24.dp)) {
+                                        Text(
+                                            text = "${stringResource(id = R.string.database_location)}:",
+                                            style = Typography.labelLarge
+                                        )
+
+                                        Surface(
+                                            shape = ShapeDefaults.Large,
+                                            tonalElevation = 2.dp,
+                                            onClick = {
+                                                onChangeDatabaseLocation(AppPreferences.Database.Location.Values.INTERNAL)
                                             }
-                                    ) {
-                                        Column(modifier = Modifier.padding(24.dp)) {
-                                            Text(
-                                                text = "${stringResource(id = R.string.database_location)}:",
-                                                style = Typography.labelLarge
-                                            )
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(
+                                                    vertical = 8.dp,
+                                                    horizontal = 16.dp
+                                                )
+                                            ) {
+                                                Text(
+                                                    text = stringResource(R.string.database_location_internal),
+                                                    style = Typography.labelMedium
+                                                )
 
-                                            Text(
-                                                text = databaseLocation?.let {
-                                                    when (it) {
-                                                        is AppPreferences.Database.Location.Values.URI -> getReadablePathFromUri(it.uri)
-                                                        is AppPreferences.Database.Location.Values.INTERNAL -> stringResource(R.string.database_location_internal)
-                                                    }
+                                                Spacer(modifier = Modifier.width(4.dp))
+
+                                                if (databaseLocation == AppPreferences.Database.Location.Values.INTERNAL) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Check,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                } else {
+                                                    Spacer(modifier = Modifier.width(24.dp))
                                                 }
-                                                    ?: String(),
-                                                style = Typography.labelMedium
-                                            )
+                                            }
+                                        }
 
-                                            Spacer(modifier = Modifier.height(12.dp))
+                                        Surface(
+                                            shape = ShapeDefaults.Large,
+                                            tonalElevation = 2.dp,
+                                            onClick = {
+                                                onChangeDatabaseLocation(AppPreferences.Database.Location.Values.DOWNLOADS)
+                                            }
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(
+                                                    vertical = 8.dp,
+                                                    horizontal = 16.dp
+                                                )
+                                            ) {
+                                                Text(
+                                                    text = stringResource(R.string.database_location_downloads),
+                                                    style = Typography.labelMedium
+                                                )
+
+                                                Spacer(modifier = Modifier.width(4.dp))
+
+                                                if (databaseLocation == AppPreferences.Database.Location.Values.DOWNLOADS) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Check,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                } else {
+                                                    Spacer(modifier = Modifier.width(24.dp))
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -499,7 +542,7 @@ private fun SettingsScreenPreview() {
                 onBack = {},
                 onBackupsClick = {},
                 onExportClick = {},
-                databaseLocation = null,
+                databaseLocation = AppPreferences.Database.Location.DEFAULT,
                 onChangeDatabaseLocation = {},
                 currentExportType = AppPreferences.Export.Type.Values.CompactCSV,
                 onExportTypeChange = {},

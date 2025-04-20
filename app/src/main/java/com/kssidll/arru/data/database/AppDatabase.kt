@@ -1,8 +1,8 @@
 package com.kssidll.arru.data.database
 
 import android.content.Context
+import android.os.Environment
 import android.util.Log
-import androidx.core.net.toFile
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
@@ -11,6 +11,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.Arru
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ItemDao
@@ -47,19 +48,21 @@ const val DATABASE_NAME: String = "arru_database.db"
  */
 const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
 
+fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
+fun Context.downloadsAppDirectory(): File = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.plus("/${APPLICATION_NAME}"))
+fun Context.downloadsDbFile(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_NAME"))
+
 /**
  * @return absolute path to currently used database file as [File]
  */
 suspend fun Context.currentDbFile(): File {
-    return when (
-        val databaseLocation = AppPreferences.getDatabaseLocation(this@currentDbFile).first()
-    ) {
-        is AppPreferences.Database.Location.Values.URI -> {
-            databaseLocation.uri.toFile()
+    return when (AppPreferences.getDatabaseLocation(this).first()) {
+        is AppPreferences.Database.Location.Values.DOWNLOADS -> {
+            downloadsDbFile()
         }
 
         is AppPreferences.Database.Location.Values.INTERNAL -> {
-            getDatabasePath(DATABASE_NAME)
+            internalDbFile()
         }
     }
 }
@@ -162,11 +165,11 @@ abstract class AppDatabase: RoomDatabase() {
             fromDbFile: File,
             toDbFile: File
         ) {
-            val fromDbWalFile = File("${fromDbFile.path}-wal")
-            val fromDbShmFile = File("${fromDbFile.path}-shm")
+            val fromDbWalFile = File("${fromDbFile.absolutePath}-wal")
+            val fromDbShmFile = File("${fromDbFile.absolutePath}-shm")
 
-            val toDbWalFile = File("${toDbFile.path}-wal")
-            val toDbShmFile = File("${toDbFile.path}-shm")
+            val toDbWalFile = File("${toDbFile.absolutePath}-wal")
+            val toDbShmFile = File("${toDbFile.absolutePath}-shm")
 
             if (toDbWalFile.exists()) toDbWalFile.delete()
             if (toDbShmFile.exists()) toDbShmFile.delete()
@@ -203,17 +206,19 @@ abstract class AppDatabase: RoomDatabase() {
             toDbFile: File
         ) {
             var availableBackups: List<DatabaseBackup> = emptyList()
+            val fromDbBackup = File(fromDbFile.parentFile!!.absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
+            val toDbBackup = File(toDbFile.parentFile!!.absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
+
             runBlocking {
-                val dbBackup = File(fromDbFile.parentFile!!.absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
-                if (dbBackup.exists()) {
-                    availableBackups = availableBackups(context, dbBackup)
+                if (fromDbBackup.exists()) {
+                    availableBackups = availableBackups(context, fromDbBackup)
                 }
             }
 
             availableBackups.forEach {
                 copy(
                     it.file,
-                    File(toDbFile.parentFile!!.absolutePath.plus("/${it.name}.db"))
+                    File(toDbBackup.absolutePath.plus("/${it.name}.db"))
                 )
 
                 delete(it.file)
@@ -232,8 +237,8 @@ abstract class AppDatabase: RoomDatabase() {
          * @param dbFile absolute path to the main db file to be deleted
          */
         fun delete(dbFile: File) {
-            val dbWalFile = File("${dbFile.path}-wal")
-            val dbShmFile = File("${dbFile.path}-shm")
+            val dbWalFile = File("${dbFile.absolutePath}-wal")
+            val dbShmFile = File("${dbFile.absolutePath}-shm")
 
             dbFile.delete()
 
@@ -259,9 +264,24 @@ abstract class AppDatabase: RoomDatabase() {
                 locked = true
             ).plus(".db")
 
+            val walFile = File(databaseBackup.file.absolutePath.plus("-wal"))
+            val shmFile = File(databaseBackup.file.absolutePath.plus("-shm"))
+
             databaseBackup.file.renameTo(
                 File(databaseBackup.file.parent, newName)
             )
+
+            if (walFile.exists()) {
+                walFile.renameTo(
+                    File(databaseBackup.file.parent, newName.plus("-wal"))
+                )
+            }
+
+            if (shmFile.exists()) {
+                shmFile.renameTo(
+                    File(databaseBackup.file.parent, newName.plus("-shm"))
+                )
+            }
         }
 
         fun unlockDbBackup(databaseBackup: DatabaseBackup) {
@@ -277,9 +297,24 @@ abstract class AppDatabase: RoomDatabase() {
                 locked = false
             ).plus(".db")
 
+            val walFile = File(databaseBackup.file.absolutePath.plus("-wal"))
+            val shmFile = File(databaseBackup.file.absolutePath.plus("-shm"))
+
             databaseBackup.file.renameTo(
                 File(databaseBackup.file.parent, newName)
             )
+
+            if (walFile.exists()) {
+                walFile.renameTo(
+                    File(databaseBackup.file.parent, newName.plus("-wal"))
+                )
+            }
+
+            if (shmFile.exists()) {
+                shmFile.renameTo(
+                    File(databaseBackup.file.parent, newName.plus("-shm"))
+                )
+            }
         }
 
         /**

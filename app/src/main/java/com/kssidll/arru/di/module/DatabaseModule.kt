@@ -1,7 +1,6 @@
 package com.kssidll.arru.di.module
 
 import android.content.Context
-import androidx.core.net.toFile
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ItemDao
 import com.kssidll.arru.data.dao.ProducerDao
@@ -10,6 +9,8 @@ import com.kssidll.arru.data.dao.ShopDao
 import com.kssidll.arru.data.dao.TransactionBasketDao
 import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.database.downloadsAppDirectory
+import com.kssidll.arru.data.database.downloadsDbFile
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.repository.CategoryRepository
@@ -49,10 +50,13 @@ class DatabaseModule {
         }
 
         return when (databaseLocation) {
-            is AppPreferences.Database.Location.Values.URI -> {
-                val uri = (databaseLocation as AppPreferences.Database.Location.Values.URI).uri
+            is AppPreferences.Database.Location.Values.DOWNLOADS -> {
+                val downloadsAppDirectory = context.downloadsAppDirectory()
 
-                AppDatabase.buildExternal(context, uri.toFile().absolutePath)
+                // create in case it doesn't exist
+                downloadsAppDirectory.mkdir()
+
+                AppDatabase.buildExternal(context, context.downloadsDbFile().absolutePath)
             }
 
             is AppPreferences.Database.Location.Values.INTERNAL -> {

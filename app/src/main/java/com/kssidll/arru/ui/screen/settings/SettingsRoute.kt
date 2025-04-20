@@ -163,35 +163,6 @@ fun SettingsRoute(
         }
     }
 
-    val setDatabaseLocation: suspend (Uri) -> Unit = { uri ->
-        val oldUri = when (val it = AppPreferences.getDatabaseLocation(context).first()) {
-            is AppPreferences.Database.Location.Values.INTERNAL -> null
-            is AppPreferences.Database.Location.Values.URI -> it.uri
-        }
-
-        if (oldUri != uri) {
-            val persistableFlags =
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-
-            if (oldUri != null) {
-                try {
-                    context.contentResolver.releasePersistableUriPermission(
-                        oldUri,
-                        persistableFlags
-                    )
-                } catch (_: Exception) {
-                } // it doesn't really matter if we can't release
-            }
-
-            context.contentResolver.takePersistableUriPermission(
-                uri,
-                persistableFlags
-            )
-
-            AppPreferences.setDatabaseLocation(context, AppPreferences.Database.Location.Values.URI(uri))
-        }
-    }
-
     val exportFolderPickerLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
             scope.launch {
@@ -207,15 +178,6 @@ fun SettingsRoute(
                 it?.let { uri ->
                     setExportLocation(uri)
                     exportServicePermissionsState.launchMultiplePermissionRequest()
-                }
-            }
-        }
-
-    val databaseFolderPickerLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
-            scope.launch {
-                it?.let { uri ->
-                    setDatabaseLocation(uri)
                 }
             }
         }
@@ -240,8 +202,9 @@ fun SettingsRoute(
             },
             databaseLocation = AppPreferences.getDatabaseLocation(context).collectAsState(initial = null).value,
             onChangeDatabaseLocation = {
-                val uri = it?.let { if (it is AppPreferences.Database.Location.Values.URI) it.uri else null }
-                databaseFolderPickerLauncher.launch(uri)
+                scope.launch {
+                    AppPreferences.setDatabaseLocation(context, it)
+                }
             },
             currentExportType = viewModel.currentExportType.collectAsState(initial = AppPreferences.Export.Type.DEFAULT).value,
             onExportTypeChange = {
