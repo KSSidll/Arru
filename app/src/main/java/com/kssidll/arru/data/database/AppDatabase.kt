@@ -147,7 +147,7 @@ abstract class AppDatabase: RoomDatabase() {
 
         /**
          * @param context app context
-         * @return [AppDatabase] created in external [Context.externalDbFile] location, doesn't ensure database file creation
+         * @return [AppDatabase] created in external location, doesn't ensure database file creation
          */
         fun buildExternal(context: Context, absolutePath: String): AppDatabase {
             return builder(
@@ -552,6 +552,30 @@ class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
         try {
             val externalDbFile = File(context.getExternalFilesDir(null)!!.absolutePath.plus("/database/arru_database.db"))
             val internalDbFile = context.getDatabasePath(DATABASE_NAME)
+
+            runBlocking {
+                // Fixes names of wal and shm backup files before moving
+                val backups = AppDatabase.availableBackups(context, File(externalDbFile.parentFile!!.absolutePath.plus("/db_backups")))
+
+                backups.forEach {  backup ->
+                    if (backup.hasLockMarkInName) {
+                        val walFile = File(backup.file.absolutePath.replace("true", "false").plus("-wal"))
+                        val shmFile = File(backup.file.absolutePath.replace("true", "false").plus("-shm"))
+
+                        if (walFile.exists()) {
+                            walFile.renameTo(
+                                File(backup.file.absolutePath.plus("-wal"))
+                            )
+                        }
+
+                        if (shmFile.exists()) {
+                            shmFile.renameTo(
+                                File(backup.file.absolutePath.plus("-shm"))
+                            )
+                        }
+                    }
+                }
+            }
 
             move(
                 context,

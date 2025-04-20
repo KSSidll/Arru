@@ -70,7 +70,7 @@ data class DatabaseBackup(
                     ?: error("couldn't parse transactions from name, naming schema must have changed without updating parsing logic"),
                 totalSpending = spendingFromName(name)
                     ?: error("couldn't parse spending from name, naming schema must have changed without updating parsing logic"),
-                locked = lockedFromName(name) ?: false,
+                locked = lockedFromName(name) == true,
                 hasLockMarkInName = lockedFromName(name) != null
             )
         }
