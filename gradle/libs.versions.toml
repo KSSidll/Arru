@@ -37,7 +37,7 @@ slack-compose-lint = "1.4.2"
 dev-chart-vico-compose = "1.14.0"
 
 ## Plugins
-agp = "8.9.1"
+agp = "8.9.2"
 kotlin = "2.1.10"
 # hilt plugin has same version as hilt library so it is declared in the library section
 ksp = "2.1.10-1.0.29"
