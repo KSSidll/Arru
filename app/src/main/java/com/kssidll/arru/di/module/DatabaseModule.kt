@@ -11,6 +11,7 @@ import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.downloadsAppDirectory
 import com.kssidll.arru.data.database.downloadsDbFile
+import com.kssidll.arru.data.database.externalDbFile
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.repository.CategoryRepository
@@ -50,7 +51,15 @@ class DatabaseModule {
         }
 
         return when (databaseLocation) {
-            is AppPreferences.Database.Location.Values.DOWNLOADS -> {
+            AppPreferences.Database.Location.Values.EXTERNAL -> {
+                AppDatabase.buildExternal(context, context.externalDbFile().absolutePath)
+            }
+
+            AppPreferences.Database.Location.Values.INTERNAL -> {
+                AppDatabase.buildInternal(context)
+            }
+
+            AppPreferences.Database.Location.Values.DOWNLOADS -> {
                 val downloadsAppDirectory = context.downloadsAppDirectory()
 
                 // create in case it doesn't exist
@@ -59,9 +68,6 @@ class DatabaseModule {
                 AppDatabase.buildExternal(context, context.downloadsDbFile().absolutePath)
             }
 
-            is AppPreferences.Database.Location.Values.INTERNAL -> {
-                AppDatabase.buildInternal(context)
-            }
         }
     }
 

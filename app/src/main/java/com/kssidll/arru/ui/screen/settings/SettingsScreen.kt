@@ -247,68 +247,37 @@ internal fun SettingsScreen(
                                             style = Typography.labelLarge
                                         )
 
-                                        Surface(
-                                            shape = ShapeDefaults.Large,
-                                            tonalElevation = 2.dp,
-                                            onClick = {
-                                                onChangeDatabaseLocation(AppPreferences.Database.Location.Values.INTERNAL)
-                                            }
-                                        ) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier.padding(
-                                                    vertical = 8.dp,
-                                                    horizontal = 16.dp
-                                                )
-                                            ) {
-                                                Text(
-                                                    text = stringResource(R.string.database_location_internal),
-                                                    style = Typography.labelMedium
-                                                )
-
-                                                Spacer(modifier = Modifier.width(4.dp))
-
-                                                if (databaseLocation == AppPreferences.Database.Location.Values.INTERNAL) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Check,
-                                                        contentDescription = null,
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                } else {
-                                                    Spacer(modifier = Modifier.width(24.dp))
+                                        AppPreferences.Database.Location.Values.entries.forEach {
+                                            Surface(
+                                                shape = ShapeDefaults.Large,
+                                                tonalElevation = 2.dp,
+                                                onClick = {
+                                                    onChangeDatabaseLocation(it)
                                                 }
-                                            }
-                                        }
-
-                                        Surface(
-                                            shape = ShapeDefaults.Large,
-                                            tonalElevation = 2.dp,
-                                            onClick = {
-                                                onChangeDatabaseLocation(AppPreferences.Database.Location.Values.DOWNLOADS)
-                                            }
-                                        ) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier.padding(
-                                                    vertical = 8.dp,
-                                                    horizontal = 16.dp
-                                                )
                                             ) {
-                                                Text(
-                                                    text = stringResource(R.string.database_location_downloads),
-                                                    style = Typography.labelMedium
-                                                )
-
-                                                Spacer(modifier = Modifier.width(4.dp))
-
-                                                if (databaseLocation == AppPreferences.Database.Location.Values.DOWNLOADS) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Check,
-                                                        contentDescription = null,
-                                                        modifier = Modifier.size(24.dp)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.padding(
+                                                        vertical = 8.dp,
+                                                        horizontal = 16.dp
                                                     )
-                                                } else {
-                                                    Spacer(modifier = Modifier.width(24.dp))
+                                                ) {
+                                                    Text(
+                                                        text = it.getTranslation(),
+                                                        style = Typography.labelMedium
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(4.dp))
+
+                                                    if (databaseLocation == it) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Check,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(24.dp)
+                                                        )
+                                                    } else {
+                                                        Spacer(modifier = Modifier.width(24.dp))
+                                                    }
                                                 }
                                             }
                                         }

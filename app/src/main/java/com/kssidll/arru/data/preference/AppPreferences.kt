@@ -19,6 +19,7 @@ import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.DATABASE_NAME
 import com.kssidll.arru.data.database.downloadsAppDirectory
 import com.kssidll.arru.data.database.downloadsDbFile
+import com.kssidll.arru.data.database.externalDbFile
 import com.kssidll.arru.di.module.dataStore
 import com.kssidll.arru.di.module.getPreferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -43,23 +44,45 @@ data object AppPreferences {
             /**
              * Key for database location preference key-value pair
              */
-            val key: Preferences.Key<String> = stringPreferencesKey("databaselocation_3")
+            val key: Preferences.Key<Int> = intPreferencesKey("databaselocation2")
 
             /**
              * Value for default location
              */
-            val DEFAULT = Values.INTERNAL
+            val DEFAULT = Values.EXTERNAL
 
-            sealed class Values(val value: String) {
+            enum class Values {
                 /**
                  * Value for internal location
                  */
-                data object INTERNAL: Values("internal")
+                INTERNAL,
 
                 /**
-                 * Value for external downloads location
+                 * Value for external location
                  */
-                data object DOWNLOADS: Values("downloads")
+                EXTERNAL,
+
+                /**
+                 * Value for downloads folder location
+                 */
+                DOWNLOADS,
+
+                ;
+
+                @Composable
+                @ReadOnlyComposable
+                fun getTranslation(): String {
+                    return when (this) {
+                        INTERNAL -> stringResource(R.string.database_location_internal)
+                        EXTERNAL -> stringResource(R.string.database_location_external)
+                        DOWNLOADS -> stringResource(R.string.database_location_downloads)
+                    }
+                }
+
+                companion object {
+                    private val idMap = Values.entries.associateBy { it.ordinal }
+                    fun getByOrdinal(ordinal: Int) = idMap[ordinal]
+                }
             }
         }
     }
@@ -442,18 +465,47 @@ suspend fun AppPreferences.setDatabaseLocation(
     val oldValue = getDatabaseLocation(context).first()
 
     getPreferencesDataStore(context).edit {
-        it[AppPreferences.Database.Location.key] = newDatabaseLocation.value
+        it[AppPreferences.Database.Location.key] = newDatabaseLocation.ordinal
     }
 
-    // move from internal to external downloads
-    if (
-        oldValue is AppPreferences.Database.Location.Values.INTERNAL
-        && newDatabaseLocation is AppPreferences.Database.Location.Values.DOWNLOADS
-    ) {
-        val downloadsAppDirectory = context.downloadsAppDirectory()
+    // To internal
 
-        // create in case it doesn't exist
-        downloadsAppDirectory.mkdir()
+    val moveExternalToInternal = {
+        AppDatabase.move(
+            context,
+            context.externalDbFile(),
+            context.getDatabasePath(DATABASE_NAME)
+        )
+    }
+
+    val moveDownloadsToInternal = {
+        AppDatabase.move(
+            context,
+            context.downloadsDbFile(),
+            context.getDatabasePath(DATABASE_NAME)
+        )
+
+        // clean up downloads app directory
+        if (context.downloadsAppDirectory().exists()) {
+            context.downloadsAppDirectory().deleteRecursively()
+        }
+    }
+
+    // From internal
+
+    val moveInternalToExternal = {
+        AppDatabase.move(
+            context,
+            context.getDatabasePath(DATABASE_NAME),
+            context.externalDbFile()
+        )
+    }
+
+    val moveInternalToDownloads = {
+        // create downloads app directory if doesn't exist
+        if (context.downloadsAppDirectory().exists().not()) {
+            context.downloadsAppDirectory().mkdir()
+        }
 
         AppDatabase.move(
             context,
@@ -462,16 +514,18 @@ suspend fun AppPreferences.setDatabaseLocation(
         )
     }
 
-    // move from external to internal
-    if (
-        oldValue is AppPreferences.Database.Location.Values.DOWNLOADS
-        && newDatabaseLocation is AppPreferences.Database.Location.Values.INTERNAL
-    ) {
-        AppDatabase.move(
-            context,
-            context.downloadsDbFile(),
-            context.getDatabasePath(DATABASE_NAME)
-        )
+    // Move to internal if not there yet
+    when (oldValue) {
+        AppPreferences.Database.Location.Values.INTERNAL -> {}
+        AppPreferences.Database.Location.Values.EXTERNAL -> moveExternalToInternal()
+        AppPreferences.Database.Location.Values.DOWNLOADS -> moveDownloadsToInternal()
+    }
+
+    // Move to new location if not there yet (if not internal)
+    when (newDatabaseLocation) {
+        AppPreferences.Database.Location.Values.INTERNAL -> {}
+        AppPreferences.Database.Location.Values.EXTERNAL -> moveInternalToExternal()
+        AppPreferences.Database.Location.Values.DOWNLOADS -> moveInternalToDownloads()
     }
 }
 
@@ -479,8 +533,8 @@ fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Da
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Database.Location.key]?.let {
             when(it) {
-                AppPreferences.Database.Location.Values.INTERNAL.value -> AppPreferences.Database.Location.Values.INTERNAL
-                AppPreferences.Database.Location.Values.DOWNLOADS.value -> AppPreferences.Database.Location.Values.DOWNLOADS
+                AppPreferences.Database.Location.Values.INTERNAL.ordinal -> AppPreferences.Database.Location.Values.INTERNAL
+                AppPreferences.Database.Location.Values.DOWNLOADS.ordinal -> AppPreferences.Database.Location.Values.DOWNLOADS
                 else -> AppPreferences.Database.Location.DEFAULT
             }
         }

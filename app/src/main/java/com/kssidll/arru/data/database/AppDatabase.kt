@@ -30,7 +30,6 @@ import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionBasket
-import com.kssidll.arru.data.database.AppDatabase.Companion.move
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import kotlinx.coroutines.flow.first
@@ -49,6 +48,7 @@ const val DATABASE_NAME: String = "arru_database.db"
 const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
 
 fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
+fun Context.externalDbFile(): File = File(getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME"))
 fun Context.downloadsAppDirectory(): File = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.plus("/${APPLICATION_NAME}"))
 fun Context.downloadsDbFile(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_NAME"))
 
@@ -57,12 +57,16 @@ fun Context.downloadsDbFile(): File = File(downloadsAppDirectory().absolutePath.
  */
 suspend fun Context.currentDbFile(): File {
     return when (AppPreferences.getDatabaseLocation(this).first()) {
-        is AppPreferences.Database.Location.Values.DOWNLOADS -> {
-            downloadsDbFile()
+        AppPreferences.Database.Location.Values.INTERNAL -> {
+            internalDbFile()
         }
 
-        is AppPreferences.Database.Location.Values.INTERNAL -> {
-            internalDbFile()
+        AppPreferences.Database.Location.Values.EXTERNAL -> {
+            externalDbFile()
+        }
+
+        AppPreferences.Database.Location.Values.DOWNLOADS -> {
+            downloadsDbFile()
         }
     }
 }
@@ -548,10 +552,9 @@ val MIGRATION_5_6 = object: Migration(5, 6) {
 @Suppress("ClassName")
 class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // Attempt to migrate from external storage to internal storage as previous implementation was external storage hard coded
+        // Attempt to fix wal and shm backup files
         try {
             val externalDbFile = File(context.getExternalFilesDir(null)!!.absolutePath.plus("/database/arru_database.db"))
-            val internalDbFile = context.getDatabasePath(DATABASE_NAME)
 
             runBlocking {
                 // Fixes names of wal and shm backup files before moving
@@ -576,12 +579,6 @@ class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
                     }
                 }
             }
-
-            move(
-                context,
-                externalDbFile,
-                internalDbFile
-            )
         } catch (_: Exception) {}
     }
 }

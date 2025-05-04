@@ -91,6 +91,7 @@
 
     <string name="database_location">Database location</string>
     <string name="database_location_internal">Internal</string>
+    <string name="database_location_external">External</string>
     <string name="database_location_downloads">Downloads</string>
 
     <string name="export_location">Export location</string>
