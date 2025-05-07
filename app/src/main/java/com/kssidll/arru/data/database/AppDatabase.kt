@@ -203,6 +203,7 @@ abstract class AppDatabase: RoomDatabase() {
          * @param context app context
          * @param fromDbFile absolute path to db file from whose parent directory to move database files
          * @param toDbFile absolute path to db file to whose parent directory to move database files
+         * @throws Exception if the operation fails (original files are not deleted if that happens)
          */
         fun move(
             context: Context,
@@ -219,21 +220,44 @@ abstract class AppDatabase: RoomDatabase() {
                 }
             }
 
-            availableBackups.forEach {
-                copy(
-                    it.file,
-                    File(toDbBackup.absolutePath.plus("/${it.name}.db"))
-                )
-
-                delete(it.file)
-            }
+            // COPY
 
             copy(
                 fromDbFile,
                 toDbFile
             )
 
+            availableBackups.forEach {
+                copy(
+                    it.file,
+                    File(toDbBackup.absolutePath.plus("/${it.name}.db"))
+                )
+            }
+
+            // DOUBLE CHECK
+
+            if (toDbFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+
+            availableBackups.forEach {
+                val fromBackupDbWalFile = File("${it.file.absolutePath}-wal")
+                val fromBackupDbShmFile = File("${it.file.absolutePath}-shm")
+
+                val toBackupDbFile = File(toDbBackup.absolutePath.plus("/${it.name}.db"))
+                val toBackupDbWalFile = File("${toBackupDbFile.absolutePath}-wal")
+                val toBackupDbShmFile = File("${toBackupDbFile.absolutePath}-shm")
+
+                if (toBackupDbFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (fromBackupDbWalFile.exists() && toBackupDbWalFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (fromBackupDbShmFile.exists() && toBackupDbShmFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+            }
+
+            // CLEAN UP
+
             delete(fromDbFile)
+
+            availableBackups.forEach {
+                delete(it.file)
+            }
         }
 
         /**

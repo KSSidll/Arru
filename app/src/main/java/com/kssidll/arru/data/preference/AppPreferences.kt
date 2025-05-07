@@ -514,18 +514,35 @@ suspend fun AppPreferences.setDatabaseLocation(
         )
     }
 
-    // Move to internal if not there yet
-    when (oldValue) {
-        AppPreferences.Database.Location.Values.INTERNAL -> {}
-        AppPreferences.Database.Location.Values.EXTERNAL -> moveExternalToInternal()
-        AppPreferences.Database.Location.Values.DOWNLOADS -> moveDownloadsToInternal()
+    try {
+        // Move to internal if not there yet
+        when (oldValue) {
+            AppPreferences.Database.Location.Values.INTERNAL -> {}
+            AppPreferences.Database.Location.Values.EXTERNAL -> moveExternalToInternal()
+            AppPreferences.Database.Location.Values.DOWNLOADS -> moveDownloadsToInternal()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+
+        getPreferencesDataStore(context).edit {
+            it[AppPreferences.Database.Location.key] = oldValue.ordinal
+        }
     }
 
-    // Move to new location if not there yet (if not internal)
-    when (newDatabaseLocation) {
-        AppPreferences.Database.Location.Values.INTERNAL -> {}
-        AppPreferences.Database.Location.Values.EXTERNAL -> moveInternalToExternal()
-        AppPreferences.Database.Location.Values.DOWNLOADS -> moveInternalToDownloads()
+    try {
+        // Move to new location if not there yet (if not internal)
+        when (newDatabaseLocation) {
+            AppPreferences.Database.Location.Values.INTERNAL -> {}
+            AppPreferences.Database.Location.Values.EXTERNAL -> moveInternalToExternal()
+            AppPreferences.Database.Location.Values.DOWNLOADS -> moveInternalToDownloads()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+
+        getPreferencesDataStore(context).edit {
+            // The database would be in internal right if we get an exception here
+            it[AppPreferences.Database.Location.key] = AppPreferences.Database.Location.Values.INTERNAL.ordinal
+        }
     }
 }
 
