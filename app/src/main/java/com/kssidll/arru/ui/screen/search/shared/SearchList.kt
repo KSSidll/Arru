@@ -40,9 +40,9 @@ import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.domain.data.NameSource
-import com.kssidll.arru.domain.data.searchSort
 import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.domain.data.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.screen.search.component.SearchItem

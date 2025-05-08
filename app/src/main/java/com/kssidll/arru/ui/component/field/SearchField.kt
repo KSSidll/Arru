@@ -43,12 +43,6 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.Boolean
-import kotlin.OptIn
-import kotlin.String
-import kotlin.Suppress
-import kotlin.Unit
-import kotlin.with
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

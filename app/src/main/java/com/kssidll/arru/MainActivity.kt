@@ -16,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.datastore.preferences.core.Preferences
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.detectDarkMode
 import com.kssidll.arru.data.preference.getColorScheme
@@ -31,15 +30,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
-import javax.inject.Inject
 
 val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
 
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
-    @Inject
-    lateinit var preferences: Preferences
-
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

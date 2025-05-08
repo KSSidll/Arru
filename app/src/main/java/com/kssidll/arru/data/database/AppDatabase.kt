@@ -49,7 +49,9 @@ const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
 
 fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
 fun Context.externalDbFile(): File = File(getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME"))
-fun Context.downloadsAppDirectory(): File = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.plus("/${APPLICATION_NAME}"))
+fun Context.downloadsAppDirectory(): File =
+    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.plus("/${APPLICATION_NAME}"))
+
 fun Context.downloadsDbFile(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_NAME"))
 
 /**
@@ -236,7 +238,9 @@ abstract class AppDatabase: RoomDatabase() {
 
             // DOUBLE CHECK
 
-            if (toDbFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+            if (toDbFile.exists()
+                    .not()
+            ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
 
             availableBackups.forEach {
                 val fromBackupDbWalFile = File("${it.file.absolutePath}-wal")
@@ -246,9 +250,15 @@ abstract class AppDatabase: RoomDatabase() {
                 val toBackupDbWalFile = File("${toBackupDbFile.absolutePath}-wal")
                 val toBackupDbShmFile = File("${toBackupDbFile.absolutePath}-shm")
 
-                if (toBackupDbFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
-                if (fromBackupDbWalFile.exists() && toBackupDbWalFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
-                if (fromBackupDbShmFile.exists() && toBackupDbShmFile.exists().not()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (toBackupDbFile.exists()
+                        .not()
+                ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (fromBackupDbWalFile.exists() && toBackupDbWalFile.exists()
+                        .not()
+                ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (fromBackupDbShmFile.exists() && toBackupDbShmFile.exists()
+                        .not()
+                ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
             }
 
             // CLEAN UP
@@ -578,13 +588,18 @@ class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Attempt to fix wal and shm backup files
         try {
-            val externalDbFile = File(context.getExternalFilesDir(null)!!.absolutePath.plus("/database/arru_database.db"))
+            val externalDbFile =
+                File(context.getExternalFilesDir(null)!!.absolutePath.plus("/database/arru_database.db"))
 
             runBlocking {
                 // Fixes names of wal and shm backup files before moving
-                val backups = AppDatabase.availableBackups(context, File(externalDbFile.parentFile!!.absolutePath.plus("/db_backups")))
+                val backups =
+                    AppDatabase.availableBackups(
+                        context,
+                        File(externalDbFile.parentFile!!.absolutePath.plus("/db_backups"))
+                    )
 
-                backups.forEach {  backup ->
+                backups.forEach { backup ->
                     if (backup.hasLockMarkInName) {
                         val walFile = File(backup.file.absolutePath.replace("true", "false").plus("-wal"))
                         val shmFile = File(backup.file.absolutePath.replace("true", "false").plus("-shm"))
@@ -603,6 +618,7 @@ class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
                     }
                 }
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 }

@@ -20,7 +20,6 @@ import com.kssidll.arru.data.database.DATABASE_NAME
 import com.kssidll.arru.data.database.downloadsAppDirectory
 import com.kssidll.arru.data.database.downloadsDbFile
 import com.kssidll.arru.data.database.externalDbFile
-import com.kssidll.arru.di.module.dataStore
 import com.kssidll.arru.di.module.getPreferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -287,7 +286,7 @@ suspend fun AppPreferences.setTransactionDate(
     context: Context,
     newDatePreference: AppPreferences.Transaction.Date.Values
 ) {
-    context.dataStore.edit {
+    getPreferencesDataStore(context).edit {
         it[AppPreferences.Transaction.Date.key] = newDatePreference.ordinal
     }
 }
@@ -518,6 +517,7 @@ suspend fun AppPreferences.setDatabaseLocation(
         // Move to internal if not there yet
         when (oldValue) {
             AppPreferences.Database.Location.Values.INTERNAL -> {}
+
             AppPreferences.Database.Location.Values.EXTERNAL -> moveExternalToInternal()
             AppPreferences.Database.Location.Values.DOWNLOADS -> moveDownloadsToInternal()
         }
@@ -533,6 +533,7 @@ suspend fun AppPreferences.setDatabaseLocation(
         // Move to new location if not there yet (if not internal)
         when (newDatabaseLocation) {
             AppPreferences.Database.Location.Values.INTERNAL -> {}
+
             AppPreferences.Database.Location.Values.EXTERNAL -> moveInternalToExternal()
             AppPreferences.Database.Location.Values.DOWNLOADS -> moveInternalToDownloads()
         }
@@ -549,7 +550,7 @@ suspend fun AppPreferences.setDatabaseLocation(
 fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Database.Location.Values> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Database.Location.key]?.let {
-            when(it) {
+            when (it) {
                 AppPreferences.Database.Location.Values.INTERNAL.ordinal -> AppPreferences.Database.Location.Values.INTERNAL
                 AppPreferences.Database.Location.Values.DOWNLOADS.ordinal -> AppPreferences.Database.Location.Values.DOWNLOADS
                 else -> AppPreferences.Database.Location.DEFAULT

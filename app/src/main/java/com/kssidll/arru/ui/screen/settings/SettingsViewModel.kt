@@ -43,7 +43,7 @@ data class SettingsUiState(
     val theme: AppPreferences.Theme.ColorScheme.Values? = null,
     val isInDynamicColor: Boolean = false,
     val currencyFormatLocale: Locale? = null,
-    @RequiresApi(31) val databaseLocation: AppPreferences.Database.Location.Values? = null
+    val databaseLocation: AppPreferences.Database.Location.Values? = null
 ) {
     val databaseLocationChangeVisible = databaseLocation != null
 
@@ -58,10 +58,12 @@ sealed class SettingsEvent {
     data class SetExportType(val newExportType: AppPreferences.Export.Type.Values): SettingsEvent()
     data object SetExportUri: SettingsEvent()
     data class SetTheme(val newTheme: AppPreferences.Theme.ColorScheme.Values): SettingsEvent()
+
     @RequiresApi(31)
     data class SetDynamicColor(val newDynamicColor: Boolean): SettingsEvent()
     data class SetCurrencyFormatLocale(val newCurrencyFormatLocale: Locale?): SettingsEvent()
     data class SetLocale(val newLocale: AppLocale?): SettingsEvent()
+
     @RequiresApi(30)
     data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values): SettingsEvent()
 }

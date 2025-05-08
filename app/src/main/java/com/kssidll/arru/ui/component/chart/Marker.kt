@@ -108,11 +108,11 @@ internal fun rememberMarker(labelFormatter: MarkerLabelFormatter = DefaultMarker
         overlayingComponent(
             outer = indicatorOuterComponent,
             inner =
-            overlayingComponent(
-                outer = indicatorCenterComponent,
-                inner = indicatorInnerComponent,
-                innerPaddingAll = indicatorInnerAndCenterComponentPaddingValue,
-            ),
+                overlayingComponent(
+                    outer = indicatorCenterComponent,
+                    inner = indicatorInnerComponent,
+                    innerPaddingAll = indicatorInnerAndCenterComponentPaddingValue,
+                ),
             innerPaddingAll = indicatorCenterAndOuterComponentPaddingValue,
         )
     val guideline =

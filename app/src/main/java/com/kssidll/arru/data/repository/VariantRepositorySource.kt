@@ -2,7 +2,6 @@ package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult.Errors
 import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.Flow
 
