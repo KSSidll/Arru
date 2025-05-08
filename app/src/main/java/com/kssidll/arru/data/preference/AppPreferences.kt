@@ -407,14 +407,13 @@ fun AppPreferences.Theme.ColorScheme.Values.detectDarkMode(): (Resources) -> Boo
  * @param context App context
  * @param isDynamicColor Values to set the theme dynamic color preference to
  */
+@RequiresApi(31)
 suspend fun AppPreferences.setThemeDynamicColor(
     context: Context,
     isDynamicColor: Boolean
 ) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        getPreferencesDataStore(context).edit {
-            it[AppPreferences.Theme.DynamicColor.key] = isDynamicColor
-        }
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Theme.DynamicColor.key] = isDynamicColor
     }
 }
 
@@ -458,6 +457,7 @@ fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale> {
     }
 }
 
+@RequiresApi(30)
 suspend fun AppPreferences.setDatabaseLocation(
     context: Context,
     newDatabaseLocation: AppPreferences.Database.Location.Values

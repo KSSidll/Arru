@@ -27,7 +27,6 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,13 +40,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.provider.DocumentsContractCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.preference.getExportLocation
-import com.kssidll.arru.data.preference.setDatabaseLocation
 import com.kssidll.arru.data.preference.setExportLocation
 import com.kssidll.arru.service.DataExportService
 import com.kssidll.arru.ui.theme.Typography
@@ -58,7 +57,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -184,47 +182,38 @@ fun SettingsRoute(
 
     Box(modifier = modifier.fillMaxSize()) {
 
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED).value
+
         SettingsScreen(
-            setLocale = {
-                viewModel.setLocale(it)
-            },
-            onBack = navigateBack,
-            onBackupsClick = navigateBackups,
-            onExportClick = {
-                scope.launch {
-                    val uri = AppPreferences.getExportLocation(context).first()
-                    if (uri != null) {
-                        exportServicePermissionsState.launchMultiplePermissionRequest()
-                    } else {
-                        exportFolderPickerWithExportLauncher.launch(null)
+            uiState = uiState,
+            onEvent = { event ->
+                when (event) {
+                    is SettingsEvent.NavigateBack -> navigateBack()
+                    is SettingsEvent.NavigateBackups -> navigateBackups()
+
+                    is SettingsEvent.ExportData -> {
+                        scope.launch {
+                            val uri = AppPreferences.getExportLocation(context).first()
+                            if (uri != null) {
+                                exportServicePermissionsState.launchMultiplePermissionRequest()
+                            } else {
+                                exportFolderPickerWithExportLauncher.launch(null)
+                            }
+                        }
                     }
+
+                    is SettingsEvent.SetExportType -> viewModel.handleEvent(event)
+
+                    is SettingsEvent.SetExportUri -> {
+                        exportFolderPickerLauncher.launch(uiState.exportUri)
+                    }
+
+                    is SettingsEvent.SetTheme -> viewModel.handleEvent(event)
+                    is SettingsEvent.SetDynamicColor -> viewModel.handleEvent(event)
+                    is SettingsEvent.SetCurrencyFormatLocale -> viewModel.handleEvent(event)
+                    is SettingsEvent.SetLocale -> viewModel.handleEvent(event)
+                    is SettingsEvent.SetDatabaseLocation -> viewModel.handleEvent(event)
                 }
-            },
-            databaseLocation = AppPreferences.getDatabaseLocation(context).collectAsState(initial = null).value,
-            onChangeDatabaseLocation = {
-                scope.launch {
-                    AppPreferences.setDatabaseLocation(context, it)
-                }
-            },
-            currentExportType = viewModel.currentExportType.collectAsState(initial = AppPreferences.Export.Type.DEFAULT).value,
-            onExportTypeChange = {
-                viewModel.setExportType(it)
-            },
-            exportUri = AppPreferences.getExportLocation(context).collectAsState(initial = null).value,
-            onChangeExportUri = { currentExportUri ->
-                exportFolderPickerLauncher.launch(currentExportUri)
-            },
-            currentTheme = viewModel.currentTheme.collectAsState(initial = AppPreferences.Theme.ColorScheme.DEFAULT).value,
-            setTheme = {
-                viewModel.setTheme(it)
-            },
-            isInDynamicColor = viewModel.isInDynamicColor.collectAsState(initial = AppPreferences.Theme.DynamicColor.DEFAULT).value,
-            setDynamicColor = {
-                viewModel.setDynamicColor(it)
-            },
-            currentCurrencyFormat = viewModel.currencyFormatLocale.collectAsState(Locale.getDefault()).value,
-            setCurrencyFormat = {
-                viewModel.setCurrencyFormatLocale(it)
             }
         )
 

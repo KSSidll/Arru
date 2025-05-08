@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.settings
 
 
-import android.net.Uri
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -63,10 +62,8 @@ import androidx.compose.ui.util.fastJoinToString
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.domain.AppLocale
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.helper.getReadablePathFromUri
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
@@ -79,41 +76,12 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.text.NumberFormat
 import java.util.Locale
 
-/**
- * @param setLocale Callback called as request to change current Locale. Provides requested locale as parameter
- * @param onBack Called to request a back navigation
- * @param onBackupsClick Called when the backups button is clicked
- * @param onExportClick Called when the export button is clicked
- * @param currentExportType Current export type
- * @param onExportTypeChange Called when the export type changes. Provides new export type as parameter
- * @param exportUri Uri of the export location if any
- * @param onChangeExportUri Callback to call to request export uri change. Provides requested uri as parameter
- * @param currentTheme Currently selected theme
- * @param setTheme Callback to call to request theme change. Provides requested theme as parameter
- * @param isInDynamicColor Whether the app is in dynamic color
- * @param setDynamicColor Callback to request a toggle of dynamic color. Provides requested value as parameter
- * @param currentCurrencyFormat Currently selected currency format locale
- * @param setCurrencyFormat Callback to request a change in currency format locale. Provides requested value as parameter
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingsScreen(
-    setLocale: (locale: AppLocale?) -> Unit,
-    onBack: () -> Unit,
-    onBackupsClick: () -> Unit,
-    onExportClick: (AppPreferences.Export.Type.Values) -> Unit,
-    databaseLocation: AppPreferences.Database.Location.Values?,
-    onChangeDatabaseLocation: (AppPreferences.Database.Location.Values) -> Unit,
-    currentExportType: AppPreferences.Export.Type.Values,
-    onExportTypeChange: (AppPreferences.Export.Type.Values) -> Unit,
-    exportUri: Uri?,
-    onChangeExportUri: (Uri?) -> Unit,
-    currentTheme: AppPreferences.Theme.ColorScheme.Values,
-    setTheme: (newTheme: AppPreferences.Theme.ColorScheme.Values) -> Unit,
-    isInDynamicColor: Boolean,
-    setDynamicColor: (newDynamicColor: Boolean) -> Unit,
-    currentCurrencyFormat: Locale?,
-    setCurrencyFormat: (Locale?) -> Unit
+fun SettingsScreen(
+    uiState: SettingsUiState,
+    onEvent: (event: SettingsEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var exportOptionsExpanded: Boolean by remember {
         mutableStateOf(false)
@@ -135,7 +103,7 @@ internal fun SettingsScreen(
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = onBack,
+                onBack = { onEvent(SettingsEvent.NavigateBack) },
                 title = {
                     Text(
                         text = stringResource(id = R.string.settings),
@@ -144,7 +112,7 @@ internal fun SettingsScreen(
                 },
             )
         },
-        modifier = Modifier.windowInsetsPadding(
+        modifier = modifier.windowInsetsPadding(
             WindowInsets.navigationBars
                 .only(
                     WindowInsetsSides.Horizontal
@@ -192,7 +160,7 @@ internal fun SettingsScreen(
                     showDefaultValueItem = true,
                     defaultItemText = stringResource(R.string.language),
                     onItemClick = {
-                        setCurrencyFormat(it?.let { Locale.forLanguageTag(it.second.first()) })
+                        onEvent(SettingsEvent.SetCurrencyFormatLocale(it?.let { Locale.forLanguageTag(it.second.first()) }))
                         isCurrencyFormatSearchExpanded = false
                     }
                 )
@@ -208,7 +176,7 @@ internal fun SettingsScreen(
 
                     Button(
                         onClick = {
-                            onBackupsClick()
+                            onEvent(SettingsEvent.NavigateBackups)
                         }
                     ) {
                         Row(
@@ -231,6 +199,7 @@ internal fun SettingsScreen(
                         }
                     }
 
+                    if (Build.VERSION.SDK_INT >= 30)
                     Column {
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -240,7 +209,7 @@ internal fun SettingsScreen(
                             modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
                         ) {
                             Column(modifier = Modifier.animateContentSize()) {
-                                AnimatedVisibility(visible = databaseLocation != null) {
+                                AnimatedVisibility(visible = uiState.databaseLocationChangeVisible) {
                                     Column(modifier = Modifier.padding(24.dp)) {
                                         Text(
                                             text = "${stringResource(id = R.string.database_location)}:",
@@ -252,7 +221,7 @@ internal fun SettingsScreen(
                                                 shape = ShapeDefaults.Large,
                                                 tonalElevation = 2.dp,
                                                 onClick = {
-                                                    onChangeDatabaseLocation(it)
+                                                    onEvent(SettingsEvent.SetDatabaseLocation(it))
                                                 }
                                             ) {
                                                 Row(
@@ -269,7 +238,7 @@ internal fun SettingsScreen(
 
                                                     Spacer(modifier = Modifier.width(4.dp))
 
-                                                    if (databaseLocation == it) {
+                                                    if (uiState.databaseLocation == it) {
                                                         Icon(
                                                             imageVector = Icons.Default.Check,
                                                             contentDescription = null,
@@ -296,7 +265,7 @@ internal fun SettingsScreen(
                                 bottomStartPercent = 50,
                             ),
                             onClick = {
-                                onExportClick(currentExportType)
+                                onEvent(SettingsEvent.ExportData)
                             },
                             contentPadding = PaddingValues(0.dp),
                             modifier = Modifier
@@ -358,14 +327,14 @@ internal fun SettingsScreen(
                                 modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
                             ) {
                                 Column(modifier = Modifier.animateContentSize()) {
-                                    AnimatedVisibility(visible = exportUri != null) {
+                                    AnimatedVisibility(visible = uiState.exportUriVisible) {
                                         Surface(
                                             shape = ShapeDefaults.Large,
                                             tonalElevation = 2.dp,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
-                                                    onChangeExportUri(exportUri)
+                                                    onEvent(SettingsEvent.SetExportUri)
                                                 }
                                         ) {
                                             Column(modifier = Modifier.padding(24.dp)) {
@@ -375,12 +344,7 @@ internal fun SettingsScreen(
                                                 )
 
                                                 Text(
-                                                    text = exportUri?.let {
-                                                        getReadablePathFromUri(
-                                                            it
-                                                        )
-                                                    }
-                                                        ?: String(),
+                                                    text = uiState.readableExportUriString,
                                                     style = Typography.labelMedium
                                                 )
 
@@ -400,7 +364,7 @@ internal fun SettingsScreen(
                                                 shape = ShapeDefaults.Large,
                                                 tonalElevation = 2.dp,
                                                 onClick = {
-                                                    onExportTypeChange(it)
+                                                    onEvent(SettingsEvent.SetExportType(it))
                                                 }
                                             ) {
                                                 Row(
@@ -417,7 +381,7 @@ internal fun SettingsScreen(
 
                                                     Spacer(modifier = Modifier.width(4.dp))
 
-                                                    if (it == currentExportType) {
+                                                    if (uiState.exportType == it) {
                                                         Icon(
                                                             imageVector = Icons.Default.Check,
                                                             contentDescription = null,
@@ -437,14 +401,14 @@ internal fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    LanguageExposedDropdown(setLocale = setLocale)
+                    LanguageExposedDropdown(setLocale = { onEvent(SettingsEvent.SetLocale(it)) })
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     SearchField(
                         showAddButton = false,
                         label = stringResource(R.string.settings_currency_format),
-                        value = 1.0f.formatToCurrency(currentCurrencyFormat ?: Locale.getDefault()),
+                        value = 1.0f.formatToCurrency(uiState.currencyFormatLocale ?: Locale.getDefault()),
                         onClick = {
                             isCurrencyFormatSearchExpanded = true
                         }
@@ -452,12 +416,14 @@ internal fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    ThemeExposedDropdown(
-                        currentTheme = currentTheme,
-                        setTheme = setTheme
-                    )
+                    AnimatedVisibility(visible = uiState.theme != null) {
+                        ThemeExposedDropdown(
+                            currentTheme = uiState.theme ?: AppPreferences.Theme.ColorScheme.DEFAULT,
+                            setTheme = { onEvent(SettingsEvent.SetTheme(it)) }
+                        )
+                    }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (Build.VERSION.SDK_INT >= 31) {
                         val dynamicThemeInteractionSource = remember {
                             MutableInteractionSource()
                         }
@@ -467,7 +433,7 @@ internal fun SettingsScreen(
                             tonalElevation = 2.dp,
                             interactionSource = dynamicThemeInteractionSource,
                             onClick = {
-                                setDynamicColor(!isInDynamicColor)
+                                onEvent(SettingsEvent.SetDynamicColor(!uiState.isInDynamicColor))
                             },
                             modifier = Modifier
                                 .width(TextFieldDefaults.MinWidth)
@@ -478,10 +444,10 @@ internal fun SettingsScreen(
                                     .padding(horizontal = 16.dp)
                             ) {
                                 Checkbox(
-                                    checked = isInDynamicColor,
+                                    checked = uiState.isInDynamicColor,
                                     interactionSource = dynamicThemeInteractionSource,
                                     onCheckedChange = {
-                                        setDynamicColor(!isInDynamicColor)
+                                        onEvent(SettingsEvent.SetDynamicColor(!uiState.isInDynamicColor))
                                     }
                                 )
 
@@ -507,22 +473,8 @@ private fun SettingsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SettingsScreen(
-                setLocale = {},
-                onBack = {},
-                onBackupsClick = {},
-                onExportClick = {},
-                databaseLocation = AppPreferences.Database.Location.DEFAULT,
-                onChangeDatabaseLocation = {},
-                currentExportType = AppPreferences.Export.Type.Values.CompactCSV,
-                onExportTypeChange = {},
-                exportUri = null,
-                onChangeExportUri = {},
-                currentTheme = AppPreferences.Theme.ColorScheme.DEFAULT,
-                setTheme = {},
-                isInDynamicColor = true,
-                setDynamicColor = {},
-                currentCurrencyFormat = Locale.getDefault(),
-                setCurrencyFormat = {}
+                uiState = SettingsUiState(),
+                onEvent = {}
             )
         }
     }
