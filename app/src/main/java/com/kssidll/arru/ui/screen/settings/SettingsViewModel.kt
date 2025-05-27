@@ -19,11 +19,12 @@ import com.kssidll.arru.data.preference.getDynamicColor
 import com.kssidll.arru.data.preference.getExportLocation
 import com.kssidll.arru.data.preference.getExportType
 import com.kssidll.arru.data.preference.setCurrencyFormatLocale
-import com.kssidll.arru.data.preference.setDatabaseLocation
 import com.kssidll.arru.data.preference.setExportType
 import com.kssidll.arru.data.preference.setThemeColorScheme
 import com.kssidll.arru.data.preference.setThemeDynamicColor
 import com.kssidll.arru.domain.AppLocale
+import com.kssidll.arru.domain.usecase.ChangeDatabaseLocationUseCase
+import com.kssidll.arru.domain.usecase.DatabaseMoveResult
 import com.kssidll.arru.domain.usecase.ExportDataUIBlockingUseCase
 import com.kssidll.arru.domain.usecase.ExportDataWithServiceUseCase
 import com.kssidll.arru.helper.getReadablePathFromUri
@@ -43,7 +44,9 @@ data class SettingsUiState(
     val theme: AppPreferences.Theme.ColorScheme.Values? = null,
     val isInDynamicColor: Boolean = false,
     val currencyFormatLocale: Locale? = null,
-    val databaseLocation: AppPreferences.Database.Location.Values? = null
+    val databaseLocation: AppPreferences.Database.Location.Values? = null,
+
+    val databaseLocationChangeFailedError: Boolean = false,
 ) {
     val databaseLocationChangeVisible = databaseLocation != null
 
@@ -66,6 +69,7 @@ sealed class SettingsEvent {
 
     @RequiresApi(30)
     data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values): SettingsEvent()
+    data object DismissDatabaseLocationChangeError: SettingsEvent()
 }
 
 @HiltViewModel
@@ -73,6 +77,7 @@ class SettingsViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val exportDataWithServiceUseCase: ExportDataWithServiceUseCase,
     private val exportDataUIBlockingUseCase: ExportDataUIBlockingUseCase,
+    private val changeDatabaseLocationUseCase: ChangeDatabaseLocationUseCase,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -156,6 +161,13 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.SetCurrencyFormatLocale -> setCurrencyFormatLocale(event.newCurrencyFormatLocale)
             is SettingsEvent.SetLocale -> setLocale(event.newLocale)
             is SettingsEvent.SetDatabaseLocation -> setDatabaseLocation(event.newLocation)
+            is SettingsEvent.DismissDatabaseLocationChangeError -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        databaseLocationChangeFailedError = false
+                    )
+                }
+            }
         }
     }
 
@@ -206,10 +218,18 @@ class SettingsViewModel @Inject constructor(
 
     private fun setDatabaseLocation(newLocation: AppPreferences.Database.Location.Values) = viewModelScope.launch {
         if (Build.VERSION.SDK_INT >= 30) {
-            AppPreferences.setDatabaseLocation(
-                appContext,
-                newLocation
-            )
+            val result = changeDatabaseLocationUseCase(newLocation)
+
+            when (result) {
+                DatabaseMoveResult.SUCCESS -> {}
+                DatabaseMoveResult.FAILED -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            databaseLocationChangeFailedError = true
+                        )
+                    }
+                }
+            }
         } else {
             Log.e("SettingsViewModel", "Attempted to change database location on API ${Build.VERSION.SDK_INT}")
         }

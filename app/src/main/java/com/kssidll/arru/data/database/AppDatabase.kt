@@ -49,8 +49,10 @@ const val DATABASE_BACKUP_DIRECTORY_NAME: String = "db_backups"
 
 fun Context.internalDbFile(): File = getDatabasePath(DATABASE_NAME)
 fun Context.externalDbFile(): File = File(getExternalFilesDir(null)!!.absolutePath.plus("/database/$DATABASE_NAME"))
+
 fun Context.downloadsAppDirectory(): File =
     File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.plus("/${APPLICATION_NAME}"))
+fun Context.downloadsBackupDirectory(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
 
 fun Context.downloadsDbFile(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_NAME"))
 
@@ -238,9 +240,7 @@ abstract class AppDatabase: RoomDatabase() {
 
             // DOUBLE CHECK
 
-            if (toDbFile.exists()
-                    .not()
-            ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+            if (!toDbFile.exists()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
 
             availableBackups.forEach {
                 val fromBackupDbWalFile = File("${it.file.absolutePath}-wal")
@@ -250,15 +250,9 @@ abstract class AppDatabase: RoomDatabase() {
                 val toBackupDbWalFile = File("${toBackupDbFile.absolutePath}-wal")
                 val toBackupDbShmFile = File("${toBackupDbFile.absolutePath}-shm")
 
-                if (toBackupDbFile.exists()
-                        .not()
-                ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
-                if (fromBackupDbWalFile.exists() && toBackupDbWalFile.exists()
-                        .not()
-                ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
-                if (fromBackupDbShmFile.exists() && toBackupDbShmFile.exists()
-                        .not()
-                ) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (!toBackupDbFile.exists()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (fromBackupDbWalFile.exists() && !toBackupDbWalFile.exists()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
+                if (fromBackupDbShmFile.exists() && !toBackupDbShmFile.exists()) throw IllegalStateException("Failed to copy the database from [${fromDbFile.absolutePath}] to [${toDbFile.absolutePath}]")
             }
 
             // CLEAN UP
@@ -455,6 +449,8 @@ abstract class AppDatabase: RoomDatabase() {
                     }
 
                     var changed = false
+
+                    // TOOD check if this is necessary coz why is this even here
                     dbFiles.forEach {
                         if (!it.hasLockMarkInName) {
                             unlockDbBackup(it) // unlock backup files that don't have lock status in the name

@@ -80,7 +80,6 @@
     <string name="backup_lock">Yedeği Kilitle</string>
     <string name="backup_unlock">Yedeği Kilidi Aç</string>
     <string name="no_data_to_display_add_backup_hint">Yedek eklemeyi deneyin</string>
-    <string name="backups_upload_not_implemented_snackbar_message">Yedek yükleme özelliği gelecekteki güncellemelerde bulut sistemine yüklenecektir!</string>
 
     <string name="day">Gün</string>
     <string name="week">Hafta</string>

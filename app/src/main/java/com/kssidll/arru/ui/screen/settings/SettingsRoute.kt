@@ -213,6 +213,7 @@ fun SettingsRoute(
                     is SettingsEvent.SetCurrencyFormatLocale -> viewModel.handleEvent(event)
                     is SettingsEvent.SetLocale -> viewModel.handleEvent(event)
                     is SettingsEvent.SetDatabaseLocation -> viewModel.handleEvent(event)
+                    is SettingsEvent.DismissDatabaseLocationChangeError -> viewModel.handleEvent(event)
                 }
             }
         )

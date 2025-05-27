@@ -460,7 +460,7 @@ fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale> {
 suspend fun AppPreferences.setDatabaseLocation(
     context: Context,
     newDatabaseLocation: AppPreferences.Database.Location.Values
-) {
+): AppPreferences.Database.Location.Values {
     val oldValue = getDatabaseLocation(context).first()
 
     getPreferencesDataStore(context).edit {
@@ -483,11 +483,6 @@ suspend fun AppPreferences.setDatabaseLocation(
             context.downloadsDbFile(),
             context.getDatabasePath(DATABASE_NAME)
         )
-
-        // clean up downloads app directory
-        if (context.downloadsAppDirectory().exists()) {
-            context.downloadsAppDirectory().deleteRecursively()
-        }
     }
 
     // From internal
@@ -527,6 +522,8 @@ suspend fun AppPreferences.setDatabaseLocation(
         getPreferencesDataStore(context).edit {
             it[AppPreferences.Database.Location.key] = oldValue.ordinal
         }
+
+        return oldValue
     }
 
     try {
@@ -544,7 +541,11 @@ suspend fun AppPreferences.setDatabaseLocation(
             // The database would be in internal right if we get an exception here
             it[AppPreferences.Database.Location.key] = AppPreferences.Database.Location.Values.INTERNAL.ordinal
         }
+
+        return AppPreferences.Database.Location.Values.INTERNAL
     }
+
+    return newDatabaseLocation
 }
 
 fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Database.Location.Values> {

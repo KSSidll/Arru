@@ -81,7 +81,6 @@
     <string name="backup_lock">Zablokuj kopie zapasową</string>
     <string name="backup_unlock">Odblokuj kopie zapasową</string>
     <string name="no_data_to_display_add_backup_hint">Spróbuj dodać kopie zapasową</string>
-    <string name="backups_upload_not_implemented_snackbar_message">Będziesz mógł wysłać kopię zapasową do chmury w przyszłej wersji!</string>
 
     <string name="day">Dzień</string>
     <string name="week">Tydzień</string>
@@ -91,6 +90,7 @@
     <string name="database_location_internal">Wewnętrzna</string>
     <string name="database_location_external">Zewnętrzna</string>
     <string name="database_location_downloads">Pobrane</string>
+    <string name="database_location_change_failed_error">Twoje dane są bezpieczne, lecz zmiana lokalizacji bazy danych nieoczekiwanie nie powiodła się :(\n\nSprawdź czy pliki już istnieją w wybranej lokalizacji</string>
 
     <string name="export_location">Lokalizacja eksportu</string>
     <string name="export_type">Rodzaj eksportu</string>

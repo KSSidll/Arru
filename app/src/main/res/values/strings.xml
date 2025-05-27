@@ -82,7 +82,6 @@
     <string name="backup_lock">Lock Backup</string>
     <string name="backup_unlock">Unlock Backup</string>
     <string name="no_data_to_display_add_backup_hint">Try adding a backup</string>
-    <string name="backups_upload_not_implemented_snackbar_message">You will be able to upload the backup to the cloud in future updates!</string>
 
     <string name="day">Day</string>
     <string name="week">Week</string>
@@ -93,6 +92,7 @@
     <string name="database_location_internal">Internal</string>
     <string name="database_location_external">External</string>
     <string name="database_location_downloads">Downloads</string>
+    <string name="database_location_change_failed_error">Your data is safe, but database location change failed unexpectedly :(\n\nPlease check for conflicting files</string>
 
     <string name="export_location">Export location</string>
     <string name="export_type">Export type</string>
