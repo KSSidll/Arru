@@ -452,7 +452,7 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(2.dp))
 
                             Text(
-                                text = "Advanced",
+                                text = stringResource(R.string.advanced),
                                 style = Typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onErrorContainer,
                             )

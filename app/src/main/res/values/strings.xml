@@ -138,4 +138,5 @@
     <string name="settings_dynamic_theme">Dynamic Theme</string>
     <string name="settings_currency_format">Currency Format</string>
     <string name="show_advanced_settings">Show advanced settings</string>
+    <string name="advanced">Advanced</string>
 </resources>
