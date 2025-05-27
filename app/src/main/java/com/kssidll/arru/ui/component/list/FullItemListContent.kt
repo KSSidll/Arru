@@ -52,7 +52,9 @@ fun LazyListScope.fullItemListContent(
         if (item != null) {
             //... yeah
             if (index == 0 || (lastItem != null && item.date / DAY_IN_MILIS != lastItem.date / DAY_IN_MILIS)) {
-                stickyHeader {
+                stickyHeader(
+                    contentType = "date header"
+                ) {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,7 +89,9 @@ fun LazyListScope.fullItemListContent(
                 }
             }
 
-            item {
+            item(
+                contentType = "item"
+            ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,

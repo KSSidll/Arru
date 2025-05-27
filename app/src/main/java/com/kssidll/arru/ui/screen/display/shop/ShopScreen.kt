@@ -272,8 +272,9 @@ private fun ShopScreenContent(
                 .padding(paddingValues)
                 .consumeWindowInsets(paddingValues)
         ) {
-            // TODO add keys to items in lazycolumns coz this bugs out
-            item {
+            item(
+                contentType = "header"
+            ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 

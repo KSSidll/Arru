@@ -284,7 +284,9 @@ fun TransactionScreenContent(
         ) {
             // Offset the fab top padding for the list so edge to edge doesn't hide any transaction cards
             if (fabPadding.calculateTopPadding() != 0.dp) {
-                item {
+                item(
+                    contentType = "top fab padding offset"
+                ) {
                     Box(modifier = Modifier.height(fabPadding.calculateTopPadding()))
                 }
             }
@@ -349,7 +351,9 @@ fun TransactionScreenContent(
 
             // Offset the fab bottom padding for the list so edge to edge doesn't hide any transaction cards
             if (fabPadding.calculateBottomPadding() != 0.dp) {
-                item {
+                item(
+                    contentType = "bottom fab padding offset"
+                ) {
                     Box(modifier = Modifier.height(fabPadding.calculateBottomPadding()))
                 }
             }

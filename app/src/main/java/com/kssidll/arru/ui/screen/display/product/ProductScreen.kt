@@ -277,7 +277,9 @@ private fun ProductScreenContent(
                 .padding(paddingValues)
                 .consumeWindowInsets(paddingValues)
         ) {
-            item {
+            item(
+                contentType = "header"
+            ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
