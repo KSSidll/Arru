@@ -1,0 +1,2 @@
+- Fix settings screen text locale
+- Fix outdated currency locale data
