@@ -1,0 +1,3 @@
+- Add currency locale selection to settings menu
+- Add option to change database location (Supported on Android 11 and newer)
+- Fix transactions screen state loss on screen change
