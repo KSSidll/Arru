@@ -46,6 +46,7 @@ class CurrencyLocaleDataGenerator(
     private fun generateCachedItems(): String {
         return NumberFormat.getAvailableLocales().map { it.toLanguageTag() }
             .groupBy { 1.0f.formatToCurrency(Locale.forLanguageTag(it)) }
+            .toSortedMap { a, b -> b.compareTo(a) }
             .map { (currency, tags) ->
                 "Pair(\"$currency\", listOf(${tags.joinToString { "\"$it\"" }}))"
             }
