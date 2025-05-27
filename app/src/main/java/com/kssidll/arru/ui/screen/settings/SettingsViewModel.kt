@@ -47,6 +47,7 @@ data class SettingsUiState(
     val databaseLocation: AppPreferences.Database.Location.Values? = null,
 
     val databaseLocationChangeFailedError: Boolean = false,
+    val advancedSettingsVisible: Boolean = false,
 ) {
     val databaseLocationChangeVisible = databaseLocation != null
 
@@ -70,6 +71,8 @@ sealed class SettingsEvent {
     @RequiresApi(30)
     data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values): SettingsEvent()
     data object DismissDatabaseLocationChangeError: SettingsEvent()
+
+    data object ToggleAdvancedSettingsVisibility : SettingsEvent()
 }
 
 @HiltViewModel
@@ -165,6 +168,13 @@ class SettingsViewModel @Inject constructor(
                 _uiState.update { currentState ->
                     currentState.copy(
                         databaseLocationChangeFailedError = false
+                    )
+                }
+            }
+            is SettingsEvent.ToggleAdvancedSettingsVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        advancedSettingsVisible = !currentState.advancedSettingsVisible
                     )
                 }
             }

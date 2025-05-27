@@ -214,6 +214,7 @@ fun SettingsRoute(
                     is SettingsEvent.SetLocale -> viewModel.handleEvent(event)
                     is SettingsEvent.SetDatabaseLocation -> viewModel.handleEvent(event)
                     is SettingsEvent.DismissDatabaseLocationChangeError -> viewModel.handleEvent(event)
+                    is SettingsEvent.ToggleAdvancedSettingsVisibility -> viewModel.handleEvent(event)
                 }
             }
         )

@@ -42,7 +42,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -228,64 +230,6 @@ fun SettingsScreen(
                                 imageVector = Icons.Default.Backup,
                                 contentDescription = null,
                             )
-                        }
-                    }
-
-                    if (Build.VERSION.SDK_INT >= 30) {
-                        Column {
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Surface(
-                                shape = ShapeDefaults.Large,
-                                tonalElevation = 1.dp,
-                                modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
-                            ) {
-                                Column(modifier = Modifier.animateContentSize()) {
-                                    AnimatedVisibility(visible = uiState.databaseLocationChangeVisible) {
-                                        Column(modifier = Modifier.padding(24.dp)) {
-                                            Text(
-                                                text = "${stringResource(id = R.string.database_location)}:",
-                                                style = Typography.labelLarge
-                                            )
-
-                                            AppPreferences.Database.Location.Values.entries.forEach {
-                                                Surface(
-                                                    shape = ShapeDefaults.Large,
-                                                    tonalElevation = 2.dp,
-                                                    onClick = {
-                                                        onEvent(SettingsEvent.SetDatabaseLocation(it))
-                                                    }
-                                                ) {
-                                                    Row(
-                                                        verticalAlignment = Alignment.CenterVertically,
-                                                        modifier = Modifier.padding(
-                                                            vertical = 8.dp,
-                                                            horizontal = 16.dp
-                                                        )
-                                                    ) {
-                                                        Text(
-                                                            text = it.getTranslation(),
-                                                            style = Typography.labelMedium
-                                                        )
-
-                                                        Spacer(modifier = Modifier.width(4.dp))
-
-                                                        if (uiState.databaseLocation == it) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Check,
-                                                                contentDescription = null,
-                                                                modifier = Modifier.size(24.dp)
-                                                            )
-                                                        } else {
-                                                            Spacer(modifier = Modifier.width(24.dp))
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
                         }
                     }
 
@@ -488,6 +432,133 @@ fun SettingsScreen(
 
                                 Text(
                                     text = stringResource(R.string.settings_dynamic_theme),
+                                    style = Typography.labelMedium
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    AnimatedVisibility(
+                        visible = uiState.advancedSettingsVisible,
+                    ) {
+                        Column {
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.errorContainer,
+                                modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            Text(
+                                text = "Advanced",
+                                style = Typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                            )
+
+                            if (Build.VERSION.SDK_INT >= 30) {
+                                Column {
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Surface(
+                                        shape = ShapeDefaults.Large,
+                                        tonalElevation = 1.dp,
+                                        modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
+                                    ) {
+                                        Column(modifier = Modifier.animateContentSize()) {
+                                            AnimatedVisibility(visible = uiState.databaseLocationChangeVisible) {
+                                                Column(modifier = Modifier.padding(24.dp)) {
+                                                    Text(
+                                                        text = "${stringResource(id = R.string.database_location)}:",
+                                                        style = Typography.labelLarge
+                                                    )
+
+                                                    AppPreferences.Database.Location.Values.entries.forEach {
+                                                        Surface(
+                                                            shape = ShapeDefaults.Large,
+                                                            tonalElevation = 2.dp,
+                                                            onClick = {
+                                                                onEvent(SettingsEvent.SetDatabaseLocation(it))
+                                                            }
+                                                        ) {
+                                                            Row(
+                                                                verticalAlignment = Alignment.CenterVertically,
+                                                                modifier = Modifier.padding(
+                                                                    vertical = 8.dp,
+                                                                    horizontal = 16.dp
+                                                                )
+                                                            ) {
+                                                                Text(
+                                                                    text = it.getTranslation(),
+                                                                    style = Typography.labelMedium
+                                                                )
+
+                                                                Spacer(modifier = Modifier.width(4.dp))
+
+                                                                if (uiState.databaseLocation == it) {
+                                                                    Icon(
+                                                                        imageVector = Icons.Default.Check,
+                                                                        contentDescription = null,
+                                                                        modifier = Modifier.size(24.dp)
+                                                                    )
+                                                                } else {
+                                                                    Spacer(modifier = Modifier.width(24.dp))
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+                    }
+
+                    // TODO remove when there's more advanced settings, currently the only one is for api 30+
+                    if (Build.VERSION.SDK_INT >= 30) {
+                        val advancedSettingsToggleInteractionSource = remember {
+                            MutableInteractionSource()
+                        }
+
+                        Surface(
+                            shape = ShapeDefaults.Large,
+                            tonalElevation = 2.dp,
+                            interactionSource = advancedSettingsToggleInteractionSource,
+                            onClick = {
+                                onEvent(SettingsEvent.ToggleAdvancedSettingsVisibility)
+                            },
+                            color = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier
+                                .width(TextFieldDefaults.MinWidth)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Checkbox(
+                                    checked = uiState.advancedSettingsVisible,
+                                    interactionSource = advancedSettingsToggleInteractionSource,
+                                    onCheckedChange = {
+                                        onEvent(SettingsEvent.ToggleAdvancedSettingsVisibility)
+                                    },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = MaterialTheme.colorScheme.onErrorContainer,
+                                        uncheckedColor = MaterialTheme.colorScheme.onErrorContainer,
+                                        checkmarkColor = MaterialTheme.colorScheme.errorContainer,
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(
+                                    text = stringResource(R.string.show_advanced_settings),
                                     style = Typography.labelMedium
                                 )
                             }

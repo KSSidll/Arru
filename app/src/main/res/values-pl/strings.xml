@@ -135,4 +135,5 @@
     <string name="settings_dynamic_theme">Dynamiczny motyw</string>
     <string name="settings_currency_format">Format waluty</string>
     <string name="database_location">Lokalizacja danych</string>
+    <string name="show_advanced_settings">Wyświetl zaawansowane ustawienia</string>
 </resources>
