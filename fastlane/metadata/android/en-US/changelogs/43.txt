@@ -1,0 +1,1 @@
+- Add warning when trying to change database location to Downloads as it is extremely dangerous
