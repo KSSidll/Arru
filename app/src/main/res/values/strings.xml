@@ -139,4 +139,7 @@
     <string name="settings_currency_format">Currency Format</string>
     <string name="show_advanced_settings">Show advanced settings</string>
     <string name="advanced">Advanced</string>
+    <string name="database_location_change_extreme_danger_alert">This action is EXTREMELY dangerous, and can lead to complete loss of data at any point even if it succeedes</string>
+    <string name="take_me_to_safety">Take me to safety</string>
+    <string name="i_know_what_i_am_doing">I know what I am doing</string>
 </resources>

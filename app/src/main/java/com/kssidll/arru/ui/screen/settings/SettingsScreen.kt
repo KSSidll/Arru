@@ -106,6 +106,79 @@ fun SettingsScreen(
 
     val buttonHorizontalPadding = buttonStartPadding + buttonEndPadding
 
+    AnimatedVisibility(visible = uiState.databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                onEvent(SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog)
+            }
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .width(280.dp)
+                        .height(160.dp)
+                        .padding(6.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.database_location_change_extreme_danger_alert),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier
+                        .padding(4.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            onEvent(SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog)
+                        },
+                        shape = RoundedCornerShape(
+                            topStartPercent = 50,
+                            bottomStartPercent = 50
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.take_me_to_safety),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            onEvent(SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction)
+                        },
+                        shape = RoundedCornerShape(
+                            topEndPercent = 50,
+                            bottomEndPercent = 50
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.i_know_what_i_am_doing),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     AnimatedVisibility(visible = uiState.databaseLocationChangeFailedError) {
         BasicAlertDialog(
             onDismissRequest = {

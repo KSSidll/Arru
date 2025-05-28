@@ -47,6 +47,8 @@ data class SettingsUiState(
     val databaseLocation: AppPreferences.Database.Location.Values? = null,
 
     val databaseLocationChangeFailedError: Boolean = false,
+    val databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible: Boolean = false,
+    val databaseLocationChangeShowExtremeDangerActionConfirmed: Boolean = false,
     val advancedSettingsVisible: Boolean = false,
 ) {
     val databaseLocationChangeVisible = databaseLocation != null
@@ -71,6 +73,8 @@ sealed class SettingsEvent {
     @RequiresApi(30)
     data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values): SettingsEvent()
     data object DismissDatabaseLocationChangeError: SettingsEvent()
+    data object CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog: SettingsEvent()
+    data object ConfirmDatabaseLocationChangeExtremeDangerAction: SettingsEvent()
 
     data object ToggleAdvancedSettingsVisibility: SettingsEvent()
 }
@@ -180,6 +184,24 @@ class SettingsViewModel @Inject constructor(
                     )
                 }
             }
+
+            is SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible = false,
+                        databaseLocationChangeShowExtremeDangerActionConfirmed = false
+                    )
+                }
+            }
+
+            is SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible = false,
+                        databaseLocationChangeShowExtremeDangerActionConfirmed = true
+                    )
+                }
+            }
         }
     }
 
@@ -230,7 +252,8 @@ class SettingsViewModel @Inject constructor(
 
     private fun setDatabaseLocation(newLocation: AppPreferences.Database.Location.Values) = viewModelScope.launch {
         if (Build.VERSION.SDK_INT >= 30) {
-            val result = changeDatabaseLocationUseCase(newLocation)
+            val state = _uiState.value
+            val result = changeDatabaseLocationUseCase(newLocation, state.databaseLocationChangeShowExtremeDangerActionConfirmed)
 
             when (result) {
                 DatabaseMoveResult.SUCCESS -> {}
@@ -239,6 +262,14 @@ class SettingsViewModel @Inject constructor(
                     _uiState.update { currentState ->
                         currentState.copy(
                             databaseLocationChangeFailedError = true
+                        )
+                    }
+                }
+
+                DatabaseMoveResult.REQUEST_CONFIRMATION -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible = true
                         )
                     }
                 }

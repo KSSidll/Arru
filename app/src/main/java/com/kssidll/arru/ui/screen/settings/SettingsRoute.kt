@@ -215,6 +215,8 @@ fun SettingsRoute(
                     is SettingsEvent.SetDatabaseLocation -> viewModel.handleEvent(event)
                     is SettingsEvent.DismissDatabaseLocationChangeError -> viewModel.handleEvent(event)
                     is SettingsEvent.ToggleAdvancedSettingsVisibility -> viewModel.handleEvent(event)
+                    is SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog -> viewModel.handleEvent(event)
+                    is SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction -> viewModel.handleEvent(event)
                 }
             }
         )

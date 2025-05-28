@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 enum class DatabaseMoveResult {
     SUCCESS,
     FAILED,
+    REQUEST_CONFIRMATION
 }
 
 class ChangeDatabaseLocationUseCase(
@@ -20,8 +21,13 @@ class ChangeDatabaseLocationUseCase(
 ) {
     @RequiresApi(30)
     suspend operator fun invoke(
-        newDatabaseLocation: AppPreferences.Database.Location.Values
+        newDatabaseLocation: AppPreferences.Database.Location.Values,
+        force: Boolean = false
     ) = withContext(dispatcher) {
+        if (newDatabaseLocation == AppPreferences.Database.Location.Values.DOWNLOADS && !force) {
+            return@withContext DatabaseMoveResult.REQUEST_CONFIRMATION
+        }
+
         val setLocation = AppPreferences.setDatabaseLocation(appContext, newDatabaseLocation)
 
         if (setLocation != newDatabaseLocation) {
