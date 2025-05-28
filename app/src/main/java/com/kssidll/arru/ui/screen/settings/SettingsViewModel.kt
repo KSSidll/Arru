@@ -72,7 +72,7 @@ sealed class SettingsEvent {
     data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values): SettingsEvent()
     data object DismissDatabaseLocationChangeError: SettingsEvent()
 
-    data object ToggleAdvancedSettingsVisibility : SettingsEvent()
+    data object ToggleAdvancedSettingsVisibility: SettingsEvent()
 }
 
 @HiltViewModel
@@ -164,6 +164,7 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.SetCurrencyFormatLocale -> setCurrencyFormatLocale(event.newCurrencyFormatLocale)
             is SettingsEvent.SetLocale -> setLocale(event.newLocale)
             is SettingsEvent.SetDatabaseLocation -> setDatabaseLocation(event.newLocation)
+
             is SettingsEvent.DismissDatabaseLocationChangeError -> {
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -171,6 +172,7 @@ class SettingsViewModel @Inject constructor(
                     )
                 }
             }
+
             is SettingsEvent.ToggleAdvancedSettingsVisibility -> {
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -232,6 +234,7 @@ class SettingsViewModel @Inject constructor(
 
             when (result) {
                 DatabaseMoveResult.SUCCESS -> {}
+
                 DatabaseMoveResult.FAILED -> {
                     _uiState.update { currentState ->
                         currentState.copy(

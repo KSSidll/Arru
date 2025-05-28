@@ -52,7 +52,9 @@ fun Context.externalDbFile(): File = File(getExternalFilesDir(null)!!.absolutePa
 
 fun Context.downloadsAppDirectory(): File =
     File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath.plus("/${APPLICATION_NAME}"))
-fun Context.downloadsBackupDirectory(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
+
+fun Context.downloadsBackupDirectory(): File =
+    File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_BACKUP_DIRECTORY_NAME"))
 
 fun Context.downloadsDbFile(): File = File(downloadsAppDirectory().absolutePath.plus("/$DATABASE_NAME"))
 
