@@ -14,14 +14,7 @@ import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
-@Entity(
-    indices = [
-        Index(
-            value = ["name"],
-            unique = true
-        )
-    ]
-)
+@Entity
 data class ProductCategory(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,

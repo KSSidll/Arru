@@ -27,6 +27,7 @@ import com.kssidll.arru.domain.usecase.ChangeDatabaseLocationUseCase
 import com.kssidll.arru.domain.usecase.DatabaseMoveResult
 import com.kssidll.arru.domain.usecase.ExportDataUIBlockingUseCase
 import com.kssidll.arru.domain.usecase.ExportDataWithServiceUseCase
+import com.kssidll.arru.domain.usecase.ImportDataUIBlockingUseCase
 import com.kssidll.arru.helper.getReadablePathFromUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -61,6 +62,7 @@ sealed class SettingsEvent {
     data object NavigateBack: SettingsEvent()
     data object NavigateBackups: SettingsEvent()
     data object ExportData: SettingsEvent()
+    data object ImportData: SettingsEvent()
     data class SetExportType(val newExportType: AppPreferences.Export.Type.Values): SettingsEvent()
     data object SetExportUri: SettingsEvent()
     data class SetTheme(val newTheme: AppPreferences.Theme.ColorScheme.Values): SettingsEvent()
@@ -84,6 +86,7 @@ class SettingsViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val exportDataWithServiceUseCase: ExportDataWithServiceUseCase,
     private val exportDataUIBlockingUseCase: ExportDataUIBlockingUseCase,
+    private val importDataUIBlockingUseCase: ImportDataUIBlockingUseCase,
     private val changeDatabaseLocationUseCase: ChangeDatabaseLocationUseCase,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -159,6 +162,8 @@ class SettingsViewModel @Inject constructor(
 
             is SettingsEvent.ExportData -> {}
 
+            is SettingsEvent.ImportData -> {}
+
             is SettingsEvent.SetExportType -> setExportType(event.newExportType)
 
             is SettingsEvent.SetExportUri -> {}
@@ -203,6 +208,22 @@ class SettingsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun importFromUri(
+        uri: Uri,
+        onMaxProgressChange: (newMaxProgress: Int) -> Unit,
+        onProgressChange: (newProgress: Int) -> Unit,
+        onFinished: () -> Unit,
+        onError: () -> Unit
+    ) = viewModelScope.launch {
+        importDataUIBlockingUseCase(
+            uri = uri,
+            onMaxProgressChange = onMaxProgressChange,
+            onProgressChange = onProgressChange,
+            onFinished = onFinished,
+            onError = onError
+        )
     }
 
     private fun setExportType(newType: AppPreferences.Export.Type.Values) = viewModelScope.launch {

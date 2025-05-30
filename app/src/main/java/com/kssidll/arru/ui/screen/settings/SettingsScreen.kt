@@ -324,7 +324,8 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = stringResource(id = R.string.export),
-                                style = Typography.titleMedium
+                                style = Typography.titleMedium,
+                                modifier = Modifier.padding(start = buttonStartPadding + 30.dp)
                             )
                         }
 
@@ -446,6 +447,27 @@ fun SettingsScreen(
                                     }
                                 }
                             }
+                        }
+                    }
+
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row {
+                        Button(
+                            onClick = {
+                                onEvent(SettingsEvent.ImportData)
+                            },
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .width(TextFieldDefaults.MinWidth)
+                                .height(ButtonDefaults.MinHeight + 4.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.import_),
+                                style = Typography.titleMedium
+                            )
                         }
                     }
 

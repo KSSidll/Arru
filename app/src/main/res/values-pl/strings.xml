@@ -140,4 +140,5 @@
     <string name="database_location_change_extreme_danger_alert">To działanie jest BARDZO niebezpieczne i może doprowadzić do całkowitej utraty danych w dowolnym momencie, nawet jeśli się powiedzie</string>
     <string name="take_me_to_safety">Wracam do bezpieczeństwa</string>
     <string name="i_know_what_i_am_doing">Wiem co robie</string>
+    <string name="import_">Import</string>
 </resources>

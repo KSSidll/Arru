@@ -69,19 +69,19 @@ fun SettingsRoute(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var exportProgressPopupVisible by remember {
+    var uiBlockingProgressPopupVisible by remember {
         mutableStateOf(false)
     }
 
-    var exportUIBlockingJob: Job? by remember {
+    var uiBlockingJob: Job? by remember {
         mutableStateOf(null)
     }
 
-    var exportMaxProgress by remember {
+    var uiBlockingMaxProgress by remember {
         mutableIntStateOf(0)
     }
 
-    var exportProgress by remember {
+    var uiBlockingProgress by remember {
         mutableIntStateOf(0)
     }
 
@@ -105,28 +105,28 @@ fun SettingsRoute(
                 if (it.all { it.value }) {
                     viewModel.exportWithService(parentUri)
                 } else {
-                    exportUIBlockingJob?.cancel()
+                    uiBlockingJob?.cancel()
 
-                    exportProgressPopupVisible = true
+                    uiBlockingProgressPopupVisible = true
 
-                    exportUIBlockingJob = viewModel.exportUIBlocking(
+                    uiBlockingJob = viewModel.exportUIBlocking(
                         parentUri,
                         onMaxProgressChange = {
-                            exportMaxProgress = it
+                            uiBlockingMaxProgress = it
                         },
                         onProgressChange = {
-                            exportProgress = it
+                            uiBlockingProgress = it
                         },
                         onFinished = {
-                            val job = Job(exportUIBlockingJob)
+                            val job = Job(uiBlockingJob)
                             val finishScope = CoroutineScope(Dispatchers.Default + job)
 
                             finishScope.launch {
                                 delay(500)
 
-                                exportProgressPopupVisible = false
-                                exportMaxProgress = 0
-                                exportProgress = 0
+                                uiBlockingProgressPopupVisible = false
+                                uiBlockingMaxProgress = 0
+                                uiBlockingProgress = 0
                             }
                         }
                     )
@@ -180,6 +180,51 @@ fun SettingsRoute(
             }
         }
 
+    val importFolderPickerLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
+            it?.let {
+                uiBlockingJob?.cancel()
+
+                uiBlockingProgressPopupVisible = true
+
+                uiBlockingJob = viewModel.importFromUri(
+                    uri = it,
+                    onMaxProgressChange = {
+                        uiBlockingMaxProgress = it
+                    },
+                    onProgressChange = {
+                        uiBlockingProgress = it
+                    },
+                    onFinished = {
+                        val job = Job(uiBlockingJob)
+                        val finishScope = CoroutineScope(Dispatchers.Default + job)
+
+                        finishScope.launch {
+                            delay(500)
+
+                            uiBlockingProgressPopupVisible = false
+                            uiBlockingMaxProgress = 0
+                            uiBlockingProgress = 0
+                        }
+                    },
+                    onError = {
+                        val job = Job(uiBlockingJob)
+                        val finishScope = CoroutineScope(Dispatchers.Default + job)
+
+                        finishScope.launch {
+                            delay(500)
+
+                            uiBlockingProgressPopupVisible = false
+                            uiBlockingMaxProgress = 0
+                            uiBlockingProgress = 0
+                        }
+
+                        // TODO show error popup
+                    }
+                )
+            }
+        }
+
     Box(modifier = modifier.fillMaxSize()) {
 
         val uiState = viewModel.uiState.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED).value
@@ -199,6 +244,12 @@ fun SettingsRoute(
                             } else {
                                 exportFolderPickerWithExportLauncher.launch(null)
                             }
+                        }
+                    }
+
+                    is SettingsEvent.ImportData -> {
+                        scope.launch {
+                            importFolderPickerLauncher.launch(uiState.exportUri)
                         }
                     }
 
@@ -222,7 +273,7 @@ fun SettingsRoute(
         )
 
         AnimatedVisibility(
-            visible = exportProgressPopupVisible,
+            visible = uiBlockingProgressPopupVisible,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -247,10 +298,10 @@ fun SettingsRoute(
                             Column(horizontalAlignment = Alignment.End) {
                                 LinearProgressIndicator(
                                     progress = {
-                                        if (exportMaxProgress == 0) {
+                                        if (uiBlockingMaxProgress == 0) {
                                             0f
                                         } else {
-                                            exportProgress.toFloat() / exportMaxProgress.toFloat()
+                                            uiBlockingProgress.toFloat() / uiBlockingMaxProgress.toFloat()
                                         }
                                     },
                                     color = MaterialTheme.colorScheme.tertiary,
@@ -264,7 +315,7 @@ fun SettingsRoute(
                                 Spacer(modifier = Modifier.height(3.dp))
 
                                 Text(
-                                    text = "$exportProgress / $exportMaxProgress",
+                                    text = "$uiBlockingProgress / $uiBlockingMaxProgress",
                                     style = Typography.bodySmall,
                                     color = LocalContentColor.current.copy(alpha = 0.6f)
                                 )
@@ -274,8 +325,8 @@ fun SettingsRoute(
 
                             Button(
                                 onClick = {
-                                    exportUIBlockingJob?.cancel()
-                                    exportProgressPopupVisible = false
+                                    uiBlockingJob?.cancel()
+                                    uiBlockingProgressPopupVisible = false
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.errorContainer,

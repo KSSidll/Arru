@@ -14,6 +14,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.Arru
 import com.kssidll.arru.data.dao.CategoryDao
+import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
@@ -88,7 +89,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
 }
 
 @Database(
-    version = 7,
+    version = 8,
     entities = [
         TransactionBasket::class,
         Item::class,
@@ -114,6 +115,10 @@ suspend fun Context.currentDbBackupDirectory(): File {
             to = 5,
             spec = MIGRATION_4_5_SPEC::class
         ),
+        AutoMigration(
+            from = 7,
+            to = 8
+        )
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
@@ -124,6 +129,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getCategoryDao(): CategoryDao
     abstract fun getShopDao(): ShopDao
     abstract fun getProducerDao(): ProducerDao
+    abstract fun getImportDao(): ImportDao
 
     companion object {
         /**
