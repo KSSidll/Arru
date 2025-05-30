@@ -247,7 +247,11 @@ fun SettingsRoute(
                             Column(horizontalAlignment = Alignment.End) {
                                 LinearProgressIndicator(
                                     progress = {
-                                        exportProgress.toFloat() / exportMaxProgress.toFloat()
+                                        if (exportMaxProgress == 0) {
+                                            0f
+                                        } else {
+                                            exportProgress.toFloat() / exportMaxProgress.toFloat()
+                                        }
                                     },
                                     color = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.height(
