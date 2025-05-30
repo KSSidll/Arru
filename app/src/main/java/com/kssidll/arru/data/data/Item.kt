@@ -3,6 +3,7 @@ package com.kssidll.arru.data.data
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.ChartSource
@@ -20,7 +21,31 @@ import kotlinx.collections.immutable.toImmutableList
 import java.util.Locale
 import kotlin.math.log10
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = TransactionBasket::class,
+            parentColumns = ["id"],
+            childColumns = ["transactionBasketId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
+        ForeignKey(
+            entity = Product::class,
+            parentColumns = ["id"],
+            childColumns = ["productId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
+        ForeignKey(
+            entity = ProductVariant::class,
+            parentColumns = ["id"],
+            childColumns = ["variantId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        )
+    ]
+)
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var transactionBasketId: Long,

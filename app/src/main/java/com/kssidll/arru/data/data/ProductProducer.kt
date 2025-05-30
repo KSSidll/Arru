@@ -2,13 +2,21 @@ package com.kssidll.arru.data.data
 
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.domain.data.NameSource
 import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
-@Entity
+@Entity(
+    indices = [
+        Index(
+            value = ["name"],
+            unique = true
+        )
+    ]
+)
 data class ProductProducer(
     @PrimaryKey(autoGenerate = true) val id: Long,
     var name: String,

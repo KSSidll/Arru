@@ -14,7 +14,30 @@ import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = ProductCategory::class,
+            parentColumns = ["id"],
+            childColumns = ["categoryId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
+        ForeignKey(
+            entity = ProductProducer::class,
+            parentColumns = ["id"],
+            childColumns = ["producerId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        )
+    ],
+    indices = [
+        Index(
+            value = ["producerId", "name"],
+            unique = true
+        )
+    ]
+)
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var categoryId: Long,

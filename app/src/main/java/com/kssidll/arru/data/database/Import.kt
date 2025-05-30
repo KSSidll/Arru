@@ -252,7 +252,7 @@ suspend fun handleCsvImport(
             // handle shops
             data.shop?.let { shop ->
                 if (shops[shop] == null) {
-                    shops.put(shop, shops.size.toLong())
+                    shops.put(shop, shops.size.toLong() + 1)
                     shopList.add(
                         Shop(
                             id = shops[shop]!!,
@@ -265,7 +265,7 @@ suspend fun handleCsvImport(
             // handle producers
             data.producer?.let { producer ->
                 if (producers[producer] == null) {
-                    producers.put(producer, producers.size.toLong())
+                    producers.put(producer, producers.size.toLong() + 1)
                     producerList.add(
                         ProductProducer(
                             id = producers[producer]!!,
@@ -278,7 +278,7 @@ suspend fun handleCsvImport(
             // handle categories
             data.category?.let { category ->
                 if (categories[category] == null) {
-                    categories.put(category, categories.size.toLong())
+                    categories.put(category, categories.size.toLong() + 1)
                     categoryList.add(
                         ProductCategory(
                             id = categories[category]!!,
@@ -292,7 +292,7 @@ suspend fun handleCsvImport(
             if (transactions[Pair(data.transactionDate, data.transactionTotalPrice)] == null) {
                 transactions.put(
                     Pair(data.transactionDate, data.transactionTotalPrice),
-                    transactions.size.toLong()
+                    transactions.size.toLong() + 1
                 )
                 transactionList.add(
                     TransactionBasket(
@@ -307,7 +307,7 @@ suspend fun handleCsvImport(
             // handle products
             data.product?.let { product ->
                 if (products[product] == null) {
-                    products.put(product, products.size.toLong())
+                    products.put(product, products.size.toLong() + 1)
                     productList.add(
                         Product(
                             id = products[product]!!,
@@ -322,7 +322,7 @@ suspend fun handleCsvImport(
             // handle variants
             data.variant?.let { variant ->
                 if (variants[variant] == null) {
-                    variants.put(variant, variants.size.toLong())
+                    variants.put(variant, variants.size.toLong() + 1)
                     variantList.add(
                         ProductVariant(
                             id = variants[variant]!!,
@@ -337,7 +337,7 @@ suspend fun handleCsvImport(
                 data.price?.let { price ->
                     itemList.add(
                         Item(
-                            id = itemList.size.toLong(),
+                            id = itemList.size.toLong() + 1,
                             transactionBasketId = transactions[Pair(
                                 data.transactionDate,
                                 data.transactionTotalPrice

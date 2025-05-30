@@ -2,6 +2,7 @@ package com.kssidll.arru.data.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.ChartSource
@@ -15,7 +16,17 @@ import com.patrykandpatrick.vico.core.entry.FloatEntry
 import java.util.Locale
 import kotlin.math.log10
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Shop::class,
+            parentColumns = ["id"],
+            childColumns = ["shopId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        )
+    ]
+)
 data class TransactionBasket(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var date: Long,

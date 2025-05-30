@@ -2,6 +2,7 @@ package com.kssidll.arru.data.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.FuzzySearchSource
@@ -9,7 +10,17 @@ import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Product::class,
+            parentColumns = ["id"],
+            childColumns = ["productId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
+    ]
+)
 data class ProductVariant(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var productId: Long,

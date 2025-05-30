@@ -89,7 +89,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
 }
 
 @Database(
-    version = 8,
+    version = 7,
     entities = [
         TransactionBasket::class,
         Item::class,
@@ -114,10 +114,6 @@ suspend fun Context.currentDbBackupDirectory(): File {
             from = 4,
             to = 5,
             spec = MIGRATION_4_5_SPEC::class
-        ),
-        AutoMigration(
-            from = 7,
-            to = 8
         )
     ]
 )
