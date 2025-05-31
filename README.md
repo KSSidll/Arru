@@ -11,6 +11,9 @@
 </p>
 
 <p align="center">
+  <a title="Crowdin" target="_blank" href="https://crowdin.com/project/arru">
+    <img src="https://badges.crowdin.net/arru/localized.svg">
+  </a>
   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.kssidll.arru">
     <img alt="IzzyOnDroid" src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.kssidll.arru"/>
   </a>
