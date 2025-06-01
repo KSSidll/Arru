@@ -121,4 +121,8 @@
   <string name="take_me_to_safety">Wracam do bezpieczeństwa</string>
   <string name="i_know_what_i_am_doing">Wiem co robie</string>
   <string name="import_">Import</string>
+  <string name="import_error_failed_to_determine_version" comment="Displayed when import fails to determine version of the data, is followed by the data identifier">Nie udało się określić wersji:</string>
+  <string name="import_error_failed_to_open_file" comment="Displayed when import fails to open a file, is followed by the file identifier">Nie udało się otworzyć:</string>
+  <string name="import_error_missing_files" comment="Displayed when import fails to find files, is followed by a list of expected file groups">Nie udało się znaleźć grup plików, oczekiwana jest jedna z:</string>
+  <string name="import_error_parse_error" comment="Displayed when import parsing fails in an unexpected way">Napotkano nieznany błąd przetwarzania</string>
 </resources>

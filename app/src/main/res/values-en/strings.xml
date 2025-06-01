@@ -121,4 +121,8 @@
   <string name="take_me_to_safety">Take me to safety</string>
   <string name="i_know_what_i_am_doing">I know what I am doing</string>
   <string name="import_">Import</string>
+  <string name="import_error_failed_to_determine_version" comment="Displayed when import fails to determine version of the data, is followed by the data identifier">Failed to determine version of:</string>
+  <string name="import_error_failed_to_open_file" comment="Displayed when import fails to open a file, is followed by the file identifier">Failed to open:</string>
+  <string name="import_error_missing_files" comment="Displayed when import fails to find files, is followed by a list of expected file groups">Failed to find file groups, expecting one of:</string>
+  <string name="import_error_parse_error" comment="Displayed when import parsing fails in an unexpected way">Encountered unknown parsing error</string>
 </resources>
