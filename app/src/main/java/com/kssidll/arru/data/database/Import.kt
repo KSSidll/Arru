@@ -243,7 +243,7 @@ suspend fun handleCsvImport(
         val transactions =
             mutableMapOf<Pair<Long, Long>, Long>() // transaction is per day and we assume each has unique total
         val products = mutableMapOf<String, Long>()
-        val variants = mutableMapOf<String, Long>()
+        val variants = mutableMapOf<Pair<String, Long>, Long>() // variant is per name and product
 
         compactCsvData.forEach { data ->
             // handle shops
@@ -321,11 +321,14 @@ suspend fun handleCsvImport(
 
             // handle variants
             data.variant?.let { variant ->
-                if (variants[variant] == null) {
-                    variants.put(variant, variants.size.toLong() + 1) // id of 0 causes a foreign key constraint fail
+                if (variants[Pair(variant, products[data.product]!!)] == null) {
+                    variants.put(
+                        Pair(variant, products[data.product]!!),
+                        variants.size.toLong() + 1
+                    ) // id of 0 causes a foreign key constraint fail
                     variantList.add(
                         ProductVariant(
-                            id = variants[variant]!!,
+                            id = variants[Pair(variant, products[data.product]!!)]!!,
                             productId = products[data.product]!!,
                             name = variant
                         )
@@ -344,7 +347,7 @@ suspend fun handleCsvImport(
                                 data.transactionTotalPrice
                             )]!!,
                             productId = products[data.product]!!,
-                            variantId = data.variant?.let { variants[it] },
+                            variantId = data.variant?.let { variants[Pair(it, products[data.product]!!)] },
                             quantity = quantity,
                             price = price
                         )
