@@ -3,6 +3,8 @@ package com.kssidll.arru.data.database
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.util.JsonReader
+import android.util.JsonToken
 import androidx.core.provider.DocumentsContractCompat
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
@@ -194,32 +196,19 @@ suspend fun handleCsvImport(
                 // From newest to oldest
                 // File version 1.0, @since v2.5.0
                 if (headers == "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity") {
-                    val transactionCostDivisor = 100
-                    val priceDivisor = 100
-                    val quantityDivisor = 1000
-
                     reader.forEachLine {
                         if (it.isNotBlank()) {
                             val text = it.split(";")
 
                             val transactionDate = text[0].toLong()
-                            val transactionTotalPrice =
-                                text[1].split(".", ",")
-                                    .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
+                            val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
                             val shop = if (text[2] != "null") text[2] else null
                             val product = if (text[3] != "null") text[3] else null
                             val variant = if (text[4] != "null") text[4] else null
                             val category = if (text[5] != "null") text[5] else null
                             val producer = if (text[6] != "null") text[6] else null
-                            val price =
-                                if (text[7] != "null") text[7].split(".", ",")
-                                    .let { (it[0].toLong() * priceDivisor) + it[1].padEnd(2, '0').toLong() } else null
-                            val quantity =
-                                if (text[8] != "null") text[8].split(".", ",")
-                                    .let {
-                                        (it[0].toLong() * quantityDivisor) + it[1].padEnd(3, '0')
-                                            .toLong()
-                                    } else null
+                            val price = if (text[7] != "null") text[7].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
+                            val quantity = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
 
                             compactCsvData.add(
                                 CompactCsvRow(
@@ -755,7 +744,411 @@ suspend fun handleJsonImport(
     onFinished: () -> Unit,
     onError: () -> Unit,
 ) {
-    onFinished()
+    // Get the documents
+    var exportDocument: DocumentInfo? = null
+
+    documents.forEach { documentInfo ->
+        if (documentInfo.displayName == "export.json") exportDocument = documentInfo
+    }
+
+    // Prepare data
+    val shopList = mutableListOf<Shop>()
+    val producerList = mutableListOf<ProductProducer>()
+    val categoryList = mutableListOf<ProductCategory>()
+    val transactionList = mutableListOf<TransactionBasket>()
+    val productList = mutableListOf<Product>()
+    val variantList = mutableListOf<ProductVariant>()
+    val itemList = mutableListOf<Item>()
+
+    // Process
+
+    if (exportDocument != null) {
+        onMaxProgressChange(2)
+
+        val jsonUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
+        if (jsonUri == null) {
+            onError()
+            return
+        }
+
+        context.contentResolver.openInputStream(jsonUri).use { inputStream ->
+            if (inputStream == null) {
+                onError()
+                return
+            }
+
+            val reader = JsonReader(inputStream.reader())
+
+            val shops = mutableSetOf<Long>()
+            val producers = mutableSetOf<Long>()
+            val categories = mutableSetOf<Long>()
+            val transactions = mutableSetOf<Long>()
+            val products = mutableSetOf<Long>()
+            val variants = mutableSetOf<Long>()
+            val items = mutableSetOf<Long>()
+
+            try {
+                reader.beginArray()
+
+                while (reader.hasNext()) {
+                    reader.beginObject()
+
+                    var id: Long? = null
+                    var date: Long? = null
+                    var cost: Long? = null
+                    var transactionShopId: Long? = null
+                    val transactionItems = mutableListOf<Item>()
+
+                    while (reader.hasNext()) {
+                        val name = reader.nextName()
+
+                        if (name == "id") {
+                            id = reader.nextLong()
+                        } else if (name == "date") {
+                            date = reader.nextLong()
+                        } else if (name == "cost") {
+                            cost = reader.nextString().split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                        } else if (name == "shop") {
+                            if (reader.peek() == JsonToken.NULL) {
+                                reader.skipValue()
+                            } else {
+                                reader.beginObject()
+
+                                var shopName: String? = null
+
+                                while (reader.hasNext()) {
+                                    val shopValueName = reader.nextName()
+
+                                    if (shopValueName == "id") {
+                                        transactionShopId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                    } else if (shopValueName == "name") {
+                                        shopName = reader.nextString()
+                                    } else {
+                                        reader.skipValue()
+                                    }
+                                }
+
+                                // From newest to oldest
+                                // File version 1.0, @since v2.5.0
+                                if (transactionShopId != null && shopName != null) {
+                                    if (shops.add(transactionShopId)) {
+                                        shopList.add(
+                                            Shop(
+                                                id = transactionShopId,
+                                                name = shopName,
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    // Failed to determine file version
+                                    onError()
+                                    return
+                                }
+
+                                reader.endObject()
+                            }
+                        } else if (name == "items") {
+                            if (reader.peek() == JsonToken.NULL) {
+                                reader.skipValue()
+                            } else {
+                                reader.beginArray()
+
+                                while (reader.hasNext()) {
+                                    reader.beginObject()
+
+                                    var itemId: Long? = null
+                                    var itemPrice: Long? = null
+                                    var itemQuantity: Long? = null
+                                    var itemProductId: Long? = null
+
+                                    var itemVariant: ProductVariant? = null
+
+                                    while (reader.hasNext()) {
+                                        val itemValueName = reader.nextName()
+
+                                        if (itemValueName == "id") {
+                                            itemId =
+                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                        } else if (itemValueName == "price") {
+                                            itemPrice =
+                                                reader.nextString()
+                                                    .split(".", ",")
+                                                    .let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                        } else if (itemValueName == "quantity") {
+                                            itemQuantity =
+                                                reader.nextString()
+                                                    .split(".", ",")
+                                                    .let { it[0].plus(it[1].padEnd(3, '0')).toLong() }
+                                        } else if (itemValueName == "product") {
+                                            reader.beginObject()
+
+                                            var productName: String? = null
+                                            var productCategoryId: Long? = null
+                                            var productProducerId: Long? = null
+
+                                            while (reader.hasNext()) {
+                                                val productValueName = reader.nextName()
+
+                                                if (productValueName == "id") {
+                                                    itemProductId =
+                                                        reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                } else if (productValueName == "name") {
+                                                    productName = reader.nextString()
+                                                } else if (productValueName == "category") {
+                                                    reader.beginObject()
+
+                                                    var categoryName: String? = null
+
+                                                    while (reader.hasNext()) {
+                                                        val categoryValueName = reader.nextName()
+
+                                                        if (categoryValueName == "id") {
+                                                            productCategoryId =
+                                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                        } else if (categoryValueName == "name") {
+                                                            categoryName = reader.nextString()
+                                                        } else {
+                                                            reader.skipValue()
+                                                        }
+                                                    }
+
+                                                    // From newest to oldest
+                                                    // File version 1.0, @since v2.5.0
+                                                    if (productCategoryId != null && categoryName != null) {
+                                                        if (categories.add(productCategoryId)) {
+                                                            categoryList.add(
+                                                                ProductCategory(
+                                                                    id = productCategoryId,
+                                                                    name = categoryName,
+                                                                )
+                                                            )
+                                                        }
+                                                    } else {
+                                                        // Failed to determine file version
+                                                        onError()
+                                                        return
+                                                    }
+
+                                                    reader.endObject()
+                                                } else if (productValueName == "producer") {
+                                                    if (reader.peek() == JsonToken.NULL) {
+                                                        reader.skipValue()
+                                                    } else {
+                                                        reader.beginObject()
+
+                                                        var producerName: String? = null
+
+                                                        while (reader.hasNext()) {
+                                                            val producerValueName = reader.nextName()
+
+                                                            if (producerValueName == "id") {
+                                                                productProducerId =
+                                                                    reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                            } else if (producerValueName == "name") {
+                                                                producerName = reader.nextString()
+                                                            } else {
+                                                                reader.skipValue()
+                                                            }
+                                                        }
+
+                                                        // From newest to oldest
+                                                        // File version 1.0, @since v2.5.0
+                                                        if (productProducerId != null && producerName != null) {
+                                                            if (producers.add(productProducerId)) {
+                                                                producerList.add(
+                                                                    ProductProducer(
+                                                                        id = productProducerId,
+                                                                        name = producerName,
+                                                                    )
+                                                                )
+                                                            }
+                                                        } else {
+                                                            // Failed to determine file version
+                                                            onError()
+                                                            return
+                                                        }
+
+                                                        reader.endObject()
+                                                    }
+                                                } else {
+                                                    reader.skipValue()
+                                                }
+                                            }
+
+                                            // From newest to oldest
+                                            // File version 1.0, @since v2.5.0
+                                            if (
+                                                itemProductId != null
+                                                && productName != null
+                                                && productCategoryId != null
+                                            ) {
+                                                if (products.add(itemProductId)) {
+                                                    productList.add(
+                                                        Product(
+                                                            id = itemProductId,
+                                                            name = productName,
+                                                            categoryId = productCategoryId,
+                                                            producerId = productProducerId,
+                                                        )
+                                                    )
+                                                }
+                                            } else {
+                                                // Failed to determine file version
+                                                onError()
+                                                return
+                                            }
+
+                                            reader.endObject()
+                                        } else if (itemValueName == "variant") {
+                                            if (reader.peek() == JsonToken.NULL) {
+                                                reader.skipValue()
+                                            } else {
+                                                reader.beginObject()
+
+                                                var variantId: Long? = null
+                                                var variantName: String? = null
+
+                                                while (reader.hasNext()) {
+                                                    val variantValueName = reader.nextName()
+
+                                                    if (variantValueName == "id") {
+                                                        variantId =
+                                                            reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                    } else if (variantValueName == "name") {
+                                                        variantName = reader.nextString()
+                                                    } else {
+                                                        reader.skipValue()
+                                                    }
+                                                }
+
+                                                // From newest to oldest
+                                                // File version 1.0, @since v2.5.0
+                                                if (
+                                                    variantId != null
+                                                    && variantName != null
+                                                ) {
+                                                    if (variants.add(variantId)) {
+                                                        itemVariant = ProductVariant(
+                                                            id = variantId,
+                                                            productId = -1, // temporarily assume -1 as product id could technically not be set
+                                                            name = variantName,
+                                                        )
+                                                    }
+                                                } else {
+                                                    // Failed to determine file version
+                                                    onError()
+                                                    return
+                                                }
+
+                                                reader.endObject()
+                                            }
+                                        } else {
+                                            reader.skipValue()
+                                        }
+                                    }
+
+
+                                    // From newest to oldest
+                                    // File version 1.0, @since v2.5.0
+                                    if (
+                                        itemId != null
+                                        && itemPrice != null
+                                        && itemQuantity != null
+                                        && itemProductId != null
+                                    ) {
+                                        if (items.add(itemId)) {
+                                            itemVariant?.let { // update id because now productId has to be set
+                                                it.productId = itemProductId
+                                                variantList.add(it) // also add to list
+                                            }
+
+                                            transactionItems.add(
+                                                Item(
+                                                    id = itemId,
+                                                    transactionBasketId = -1, // temporarily assume -1 as transaction id could technically not be set
+                                                    price = itemPrice,
+                                                    quantity = itemQuantity,
+                                                    productId = itemProductId,
+                                                    variantId = itemVariant?.id
+                                                )
+                                            )
+                                        }
+                                    } else {
+                                        // Failed to determine file version
+                                        onError()
+                                        return
+                                    }
+
+                                    reader.endObject()
+                                }
+
+                                reader.endArray()
+                            }
+                        } else {
+                            reader.skipValue()
+                        }
+                    }
+
+
+                    if (
+                        id != null
+                        && date != null
+                        && cost != null
+                    ) {
+                        if (transactions.add(id)) {
+                            transactionItems.forEach {
+                                it.transactionBasketId = id
+                            }
+
+                            itemList.addAll(transactionItems)
+
+                            transactionList.add(
+                                TransactionBasket(
+                                    id = id,
+                                    date = date,
+                                    shopId = transactionShopId,
+                                    totalCost = cost
+                                )
+                            )
+                        }
+                    }
+
+                    reader.endObject()
+                }
+
+                reader.endArray()
+
+                onProgressChange(1)
+
+                importRepository.insertAll(
+                    shops = shopList,
+                    producers = producerList,
+                    categories = categoryList,
+                    transactions = transactionList,
+                    products = productList,
+                    variants = variantList,
+                    items = itemList
+                )
+
+                onProgressChange(2)
+
+                onFinished()
+
+                return
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onError()
+                return
+            }
+            finally {
+                reader.close()
+            }
+        }
+    }
+
+    // did not find expected files if we are here
+
+    onError()
 
     return
 }
