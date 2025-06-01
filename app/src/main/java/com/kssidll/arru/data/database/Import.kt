@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.JsonReader
 import android.util.JsonToken
+import android.util.Log
 import androidx.core.provider.DocumentsContractCompat
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
@@ -165,6 +166,7 @@ suspend fun handleCsvImport(
 
         val csvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (csvUri == null) {
+            Log.e("ImportCompactCsv", "could not build export csv uri")
             onError()
             return
         }
@@ -185,6 +187,7 @@ suspend fun handleCsvImport(
 
         context.contentResolver.openInputStream(csvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportCompactCsv", "could not open export csv file")
                 onError()
                 return
             }
@@ -227,6 +230,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportCompactCsv", "failed to determine file version")
                     onError()
                     return
                 }
@@ -407,6 +411,7 @@ suspend fun handleCsvImport(
             || variantCsvUri == null
             || itemCsvUri == null
         ) {
+            Log.e("ImportRawCsv", "missing csv files")
             onError()
             return
         }
@@ -414,6 +419,7 @@ suspend fun handleCsvImport(
         // read shop csv
         context.contentResolver.openInputStream(shopCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open shop csv file")
                 onError()
                 return
             }
@@ -442,6 +448,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of shop.csv")
                     onError()
                     return
                 }
@@ -453,6 +460,7 @@ suspend fun handleCsvImport(
         // read producer csv
         context.contentResolver.openInputStream(producerCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open producer csv file")
                 onError()
                 return
             }
@@ -481,6 +489,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of producer.csv")
                     onError()
                     return
                 }
@@ -492,6 +501,7 @@ suspend fun handleCsvImport(
         // read categories csv
         context.contentResolver.openInputStream(categoryCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open categories csv file")
                 onError()
                 return
             }
@@ -520,6 +530,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of category.csv")
                     onError()
                     return
                 }
@@ -531,6 +542,7 @@ suspend fun handleCsvImport(
         // read transactions csv
         context.contentResolver.openInputStream(transactionCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open transactions csv file")
                 onError()
                 return
             }
@@ -567,6 +579,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of transaction.csv")
                     onError()
                     return
                 }
@@ -578,6 +591,7 @@ suspend fun handleCsvImport(
         // read products csv
         context.contentResolver.openInputStream(productCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open products csv file")
                 onError()
                 return
             }
@@ -610,6 +624,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of product.csv")
                     onError()
                     return
                 }
@@ -621,6 +636,7 @@ suspend fun handleCsvImport(
         // read variants csv
         context.contentResolver.openInputStream(variantCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open variants csv file")
                 onError()
                 return
             }
@@ -651,6 +667,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of variant.csv")
                     onError()
                     return
                 }
@@ -662,6 +679,7 @@ suspend fun handleCsvImport(
         // read items csv
         context.contentResolver.openInputStream(itemCsvUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportRawCsv", "failed to open items csv file")
                 onError()
                 return
             }
@@ -705,6 +723,7 @@ suspend fun handleCsvImport(
                     }
                 } else {
                     // Failed to determine file version
+                    Log.e("ImportRawCsv", "failed to determine file version of item.csv")
                     onError()
                     return
                 }
@@ -732,6 +751,7 @@ suspend fun handleCsvImport(
 
     // did not find expected files if we are here
 
+    Log.e("ImportCsv", "failed to find expected files")
     onError()
 
     return
@@ -770,12 +790,14 @@ suspend fun handleJsonImport(
 
         val jsonUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (jsonUri == null) {
+            Log.e("ImportJSON", "could not build export json uri")
             onError()
             return
         }
 
         context.contentResolver.openInputStream(jsonUri).use { inputStream ->
             if (inputStream == null) {
+                Log.e("ImportJSON", "failed to open export json file")
                 onError()
                 return
             }
@@ -844,6 +866,7 @@ suspend fun handleJsonImport(
                                     }
                                 } else {
                                     // Failed to determine file version
+                                    Log.e("ImportJSON", "failed to determine shop data version")
                                     onError()
                                     return
                                 }
@@ -928,6 +951,7 @@ suspend fun handleJsonImport(
                                                         }
                                                     } else {
                                                         // Failed to determine file version
+                                                        Log.e("ImportJSON", "failed to determine category data version")
                                                         onError()
                                                         return
                                                     }
@@ -967,6 +991,7 @@ suspend fun handleJsonImport(
                                                             }
                                                         } else {
                                                             // Failed to determine file version
+                                                            Log.e("ImportJSON", "failed to determine producer data version")
                                                             onError()
                                                             return
                                                         }
@@ -997,6 +1022,7 @@ suspend fun handleJsonImport(
                                                 }
                                             } else {
                                                 // Failed to determine file version
+                                                Log.e("ImportJSON", "failed to determine product data version")
                                                 onError()
                                                 return
                                             }
@@ -1039,6 +1065,7 @@ suspend fun handleJsonImport(
                                                     }
                                                 } else {
                                                     // Failed to determine file version
+                                                    Log.e("ImportJSON", "failed to determine variant data version")
                                                     onError()
                                                     return
                                                 }
@@ -1078,6 +1105,7 @@ suspend fun handleJsonImport(
                                         }
                                     } else {
                                         // Failed to determine file version
+                                        Log.e("ImportJSON", "failed to determine transaction data version")
                                         onError()
                                         return
                                     }
@@ -1151,6 +1179,7 @@ suspend fun handleJsonImport(
 
     // did not find expected files if we are here
 
+    Log.e("ImportJSON", "failed to find expected files")
     onError()
 
     return
