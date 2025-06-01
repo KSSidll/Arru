@@ -24,6 +24,13 @@ data class DocumentInfo(
     val mimeType: String?,
 )
 
+sealed class ImportError() {
+    data class FailedToOpenFile(val fileName: String): ImportError()
+    data class FailedToDetermineVersion(val name: String): ImportError()
+    data class MissingFiles(val expectedFileGroups: List<List<String>>): ImportError()
+    data object ParseError: ImportError()
+}
+
 suspend fun importDataFromUris(
     context: Context,
     uri: Uri,
@@ -31,7 +38,7 @@ suspend fun importDataFromUris(
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
-    onError: () -> Unit,
+    onError: (error: ImportError) -> Unit,
 ) {
     val treeUri = DocumentsContractCompat.buildDocumentUriUsingTree(
         uri,
@@ -124,7 +131,7 @@ suspend fun handleCsvImport(
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
-    onError: () -> Unit,
+    onError: (error: ImportError) -> Unit,
 ) {
     // Get the documents
     var exportDocument: DocumentInfo? = null
@@ -167,7 +174,7 @@ suspend fun handleCsvImport(
         val csvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (csvUri == null) {
             Log.e("ImportCompactCsv", "could not build export csv uri")
-            onError()
+            onError(ImportError.FailedToOpenFile(exportDocument.displayName))
             return
         }
 
@@ -188,7 +195,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(csvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportCompactCsv", "could not open export csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile(exportDocument.displayName))
                 return
             }
 
@@ -231,7 +238,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportCompactCsv", "failed to determine file version")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion(exportDocument.displayName))
                     return
                 }
             }
@@ -412,7 +419,21 @@ suspend fun handleCsvImport(
             || itemCsvUri == null
         ) {
             Log.e("ImportRawCsv", "missing csv files")
-            onError()
+            onError(
+                ImportError.MissingFiles(
+                    listOf(
+                        listOf(
+                            "category.csv",
+                            "item.csv",
+                            "producer.csv",
+                            "product.csv",
+                            "shop.csv",
+                            "transaction.csv",
+                            "variant.csv",
+                        )
+                    )
+                )
+            )
             return
         }
 
@@ -420,7 +441,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(shopCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open shop csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("shop.csv"))
                 return
             }
 
@@ -449,7 +470,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of shop.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("shop.csv"))
                     return
                 }
             }
@@ -461,7 +482,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(producerCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open producer csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("producer.csv"))
                 return
             }
 
@@ -490,7 +511,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of producer.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("producer.csv"))
                     return
                 }
             }
@@ -502,7 +523,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(categoryCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open categories csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("category.csv"))
                 return
             }
 
@@ -531,7 +552,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of category.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("category.csv"))
                     return
                 }
             }
@@ -543,7 +564,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(transactionCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open transactions csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("transaction.csv"))
                 return
             }
 
@@ -580,7 +601,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of transaction.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("transaction.csv"))
                     return
                 }
             }
@@ -592,7 +613,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(productCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open products csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("product.csv"))
                 return
             }
 
@@ -625,7 +646,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of product.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("product.csv"))
                     return
                 }
             }
@@ -637,7 +658,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(variantCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open variants csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("variant.csv"))
                 return
             }
 
@@ -668,7 +689,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of variant.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("variant.csv"))
                     return
                 }
             }
@@ -680,7 +701,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(itemCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open items csv file")
-                onError()
+                onError(ImportError.FailedToOpenFile("item.csv"))
                 return
             }
 
@@ -724,7 +745,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of item.csv")
-                    onError()
+                    onError(ImportError.FailedToDetermineVersion("item.csv"))
                     return
                 }
             }
@@ -752,7 +773,24 @@ suspend fun handleCsvImport(
     // did not find expected files if we are here
 
     Log.e("ImportCsv", "failed to find expected files")
-    onError()
+    onError(
+        ImportError.MissingFiles(
+            listOf(
+                listOf(
+                    "export.csv"
+                ),
+                listOf(
+                    "category.csv",
+                    "item.csv",
+                    "producer.csv",
+                    "product.csv",
+                    "shop.csv",
+                    "transaction.csv",
+                    "variant.csv",
+                )
+            )
+        )
+    )
 
     return
 }
@@ -765,7 +803,7 @@ suspend fun handleJsonImport(
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
-    onError: () -> Unit,
+    onError: (error: ImportError) -> Unit,
 ) {
     // Get the documents
     var exportDocument: DocumentInfo? = null
@@ -791,14 +829,14 @@ suspend fun handleJsonImport(
         val jsonUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (jsonUri == null) {
             Log.e("ImportJSON", "could not build export json uri")
-            onError()
+            onError(ImportError.FailedToOpenFile("export.json"))
             return
         }
 
         context.contentResolver.openInputStream(jsonUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportJSON", "failed to open export json file")
-                onError()
+                onError(ImportError.FailedToOpenFile("export.json"))
                 return
             }
 
@@ -867,7 +905,7 @@ suspend fun handleJsonImport(
                                 } else {
                                     // Failed to determine file version
                                     Log.e("ImportJSON", "failed to determine shop data version")
-                                    onError()
+                                    onError(ImportError.FailedToDetermineVersion("export.json -> shop"))
                                     return
                                 }
 
@@ -952,7 +990,7 @@ suspend fun handleJsonImport(
                                                     } else {
                                                         // Failed to determine file version
                                                         Log.e("ImportJSON", "failed to determine category data version")
-                                                        onError()
+                                                        onError(ImportError.FailedToDetermineVersion("export.json -> category"))
                                                         return
                                                     }
 
@@ -992,7 +1030,7 @@ suspend fun handleJsonImport(
                                                         } else {
                                                             // Failed to determine file version
                                                             Log.e("ImportJSON", "failed to determine producer data version")
-                                                            onError()
+                                                            onError(ImportError.FailedToDetermineVersion("export.json -> producer"))
                                                             return
                                                         }
 
@@ -1023,7 +1061,7 @@ suspend fun handleJsonImport(
                                             } else {
                                                 // Failed to determine file version
                                                 Log.e("ImportJSON", "failed to determine product data version")
-                                                onError()
+                                                onError(ImportError.FailedToDetermineVersion("export.json -> product"))
                                                 return
                                             }
 
@@ -1066,7 +1104,7 @@ suspend fun handleJsonImport(
                                                 } else {
                                                     // Failed to determine file version
                                                     Log.e("ImportJSON", "failed to determine variant data version")
-                                                    onError()
+                                                    onError(ImportError.FailedToDetermineVersion("export.json -> variant"))
                                                     return
                                                 }
 
@@ -1106,7 +1144,7 @@ suspend fun handleJsonImport(
                                     } else {
                                         // Failed to determine file version
                                         Log.e("ImportJSON", "failed to determine transaction data version")
-                                        onError()
+                                        onError(ImportError.FailedToDetermineVersion("export.json -> transaction"))
                                         return
                                     }
 
@@ -1168,7 +1206,7 @@ suspend fun handleJsonImport(
                 return
             } catch (e: Exception) {
                 e.printStackTrace()
-                onError()
+                onError(ImportError.ParseError)
                 return
             }
             finally {
@@ -1180,7 +1218,7 @@ suspend fun handleJsonImport(
     // did not find expected files if we are here
 
     Log.e("ImportJSON", "failed to find expected files")
-    onError()
+    onError(ImportError.MissingFiles(listOf(listOf("export.json"))))
 
     return
 }

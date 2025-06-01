@@ -18,8 +18,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.provider.DocumentsContractCompat
 import androidx.lifecycle.Lifecycle
@@ -45,9 +51,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.kssidll.arru.R
+import com.kssidll.arru.data.database.ImportError
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getExportLocation
 import com.kssidll.arru.data.preference.setExportLocation
+import com.kssidll.arru.helper.getLocalizedString
 import com.kssidll.arru.service.DataExportService
 import com.kssidll.arru.ui.theme.Typography
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
@@ -58,7 +66,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsRoute(
     navigateBack: () -> Unit,
@@ -180,6 +188,8 @@ fun SettingsRoute(
             }
         }
 
+    var importErrorVisible by remember { mutableStateOf(false) }
+    var importErrorText by remember { mutableStateOf("") }
     val importFolderPickerLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
             it?.let {
@@ -208,18 +218,40 @@ fun SettingsRoute(
                         }
                     },
                     onError = {
-                        val job = Job(uiBlockingJob)
-                        val finishScope = CoroutineScope(Dispatchers.Default + job)
+                        uiBlockingProgressPopupVisible = false
+                        uiBlockingMaxProgress = 0
+                        uiBlockingProgress = 0
 
-                        finishScope.launch {
-                            delay(500)
+                        importErrorVisible = true
 
-                            uiBlockingProgressPopupVisible = false
-                            uiBlockingMaxProgress = 0
-                            uiBlockingProgress = 0
+                        importErrorText = when (it) {
+                            is ImportError.FailedToDetermineVersion -> {
+                                buildString {
+                                    append(context.getLocalizedString(R.string.import_error_failed_to_determine_version))
+                                    append(" ${it.name}")
+                                }
+                            }
+
+                            is ImportError.FailedToOpenFile -> {
+                                buildString {
+                                    append(context.getLocalizedString(R.string.import_error_failed_to_open_file))
+                                    append(" ${it.fileName}")
+                                }
+                            }
+
+                            is ImportError.MissingFiles -> {
+                                buildString {
+                                    append(context.getLocalizedString(R.string.import_error_missing_files))
+                                    it.expectedFileGroups.forEach {
+                                        append("\n[ ${it.joinToString(", ")} ]")
+                                    }
+                                }
+                            }
+
+                            is ImportError.ParseError -> {
+                                context.getLocalizedString(R.string.import_error_parse_error)
+                            }
                         }
-
-                        // TODO show error popup
                     }
                 )
             }
@@ -339,6 +371,34 @@ fun SettingsRoute(
                                 )
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        AnimatedVisibility(visible = importErrorVisible) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    importErrorVisible = false
+                }
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    )
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(280.dp)
+                            .height(160.dp)
+                    ) {
+                        Text(
+                            text = importErrorText,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
                     }
                 }
             }

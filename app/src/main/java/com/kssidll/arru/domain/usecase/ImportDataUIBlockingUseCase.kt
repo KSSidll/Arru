@@ -2,6 +2,7 @@ package com.kssidll.arru.domain.usecase
 
 import android.content.Context
 import android.net.Uri
+import com.kssidll.arru.data.database.ImportError
 import com.kssidll.arru.data.database.importDataFromUris
 import com.kssidll.arru.data.repository.ImportRepositorySource
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,7 +20,7 @@ class ImportDataUIBlockingUseCase(
         onMaxProgressChange: (newMaxProgress: Int) -> Unit,
         onProgressChange: (newProgress: Int) -> Unit,
         onFinished: () -> Unit,
-        onError: () -> Unit,
+        onError: (error: ImportError) -> Unit,
     ) = withContext(dispatcher) {
         importDataFromUris(
             context = appContext,

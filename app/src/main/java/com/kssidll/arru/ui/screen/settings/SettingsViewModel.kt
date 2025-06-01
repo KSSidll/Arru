@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate.setApplicationLocales
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.database.ImportError
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getColorScheme
 import com.kssidll.arru.data.preference.getCurrencyFormatLocale
@@ -215,7 +216,7 @@ class SettingsViewModel @Inject constructor(
         onMaxProgressChange: (newMaxProgress: Int) -> Unit,
         onProgressChange: (newProgress: Int) -> Unit,
         onFinished: () -> Unit,
-        onError: () -> Unit
+        onError: (error: ImportError) -> Unit
     ) = viewModelScope.launch {
         importDataUIBlockingUseCase(
             uri = uri,
