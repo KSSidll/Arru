@@ -1,6 +1,8 @@
 <h1 align="center">Arru</h1>
 <h2 align="center">Your expenses tracker</h2>
 
+<h4 align="center">⚠️ BEWARE OF UNOFFICIAL GOOGLE PLAY STORE RELEASE ⚠️</h4>
+
 <br />
 
 <p align="center">
