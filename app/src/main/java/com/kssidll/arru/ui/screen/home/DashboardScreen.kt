@@ -6,7 +6,9 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,6 +37,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -89,6 +92,8 @@ private fun DashboardScreenContent(
     val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val nestedScrollConnection = scrollBehavior.nestedScrollConnection
 
+    val indication = LocalIndication.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -119,15 +124,18 @@ private fun DashboardScreenContent(
         Crossfade(
             targetState = uiState.dashboardScreenNothingToDisplayVisible,
             label = "crossfade between nothing overlay and data display screen",
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
         ) { nothingToDisplayVisible ->
             if (nothingToDisplayVisible) {
-                HomeScreenNothingToDisplayOverlay()
+                HomeScreenNothingToDisplayOverlay(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .consumeWindowInsets(paddingValues)
+                )
             } else {
                 Column(
                     modifier = Modifier
+                        .padding(paddingValues)
+                        .consumeWindowInsets(paddingValues)
                         .nestedScroll(nestedScrollConnection)
                         .verticalScroll(state = uiState.dashboardScrollState)
                 ) {
@@ -179,7 +187,10 @@ private fun DashboardScreenContent(
                                 items = uiState.dashboardCategorySpendingRankingData,
                                 modifier = Modifier
                                     .heightIn(min = 144.dp)
-                                    .clickable {
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = indication
+                                    ) {
                                         onEvent(HomeEvent.NavigateCategoryRanking)
                                     }
                             )
@@ -204,7 +215,10 @@ private fun DashboardScreenContent(
                                 items = uiState.dashboardShopSpendingRankingData,
                                 modifier = Modifier
                                     .heightIn(min = 144.dp)
-                                    .clickable {
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = indication
+                                    ) {
                                         onEvent(HomeEvent.NavigateShopRanking)
                                     }
                             )
