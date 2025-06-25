@@ -236,6 +236,8 @@ private fun ExpandedDashboardScreenContent(
     onEvent: (event: HomeEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val indication = LocalIndication.current
+
     Crossfade(
         targetState = uiState.dashboardScreenNothingToDisplayVisible,
         label = "crossfade between nothing overlay and data display screen",
@@ -299,7 +301,10 @@ private fun ExpandedDashboardScreenContent(
                                 items = uiState.dashboardCategorySpendingRankingData,
                                 modifier = Modifier
                                     .heightIn(min = 144.dp)
-                                    .clickable {
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = indication
+                                    ) {
                                         onEvent(HomeEvent.NavigateCategoryRanking)
                                     }
                             )
@@ -325,7 +330,10 @@ private fun ExpandedDashboardScreenContent(
                                 items = uiState.dashboardShopSpendingRankingData,
                                 modifier = Modifier
                                     .heightIn(min = 144.dp)
-                                    .clickable {
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = indication
+                                    ) {
                                         onEvent(HomeEvent.NavigateShopRanking)
                                     }
                             )
