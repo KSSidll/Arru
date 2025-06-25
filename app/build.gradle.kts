@@ -26,12 +26,12 @@ android {
     }
 
     namespace = "com.kssidll.arru"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.kssidll.arru"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 44
         versionName = "2.5.6"
 
