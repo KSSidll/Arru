@@ -3,7 +3,6 @@ package com.kssidll.arru.ui.screen.search.categorylist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.ui.screen.search.shared.SearchList
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel

@@ -189,7 +189,7 @@ fun ShopPriceCompareChart(
                                     ForegroundColorSpan(point.color),
                                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                                 )
-                                
+
                                 if (index < line.points.size - 1) {
                                     builder.append("  ")
                                 }

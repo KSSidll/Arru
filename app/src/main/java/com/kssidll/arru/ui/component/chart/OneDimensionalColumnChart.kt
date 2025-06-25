@@ -73,10 +73,10 @@ fun OneDimensionalColumnChart(
             columnSeries {
                 series(
                     x = newData.map { it.first.first },
-                    y = newData.map { it.first.second}
+                    y = newData.map { it.first.second }
                 )
             }
-            
+
             extras { extraStore ->
                 extraStore[TopAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.second) } }
                 extraStore[BottomAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.third) } }

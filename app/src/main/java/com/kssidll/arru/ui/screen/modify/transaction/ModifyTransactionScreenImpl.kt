@@ -86,7 +86,8 @@ fun ModifyTransactionScreenImpl(
     onShopAddButtonClick: (query: String?) -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.transaction_add),
-    onTransactionShopLongClick: (shopId: Long) -> Unit) {
+    onTransactionShopLongClick: (shopId: Long) -> Unit
+) {
     val datePickerState = rememberDatePickerState()
 
     ModifyScreen<FuzzySearchSource>(

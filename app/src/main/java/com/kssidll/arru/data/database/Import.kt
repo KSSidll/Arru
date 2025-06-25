@@ -1208,8 +1208,7 @@ suspend fun handleJsonImport(
                 e.printStackTrace()
                 onError(ImportError.ParseError)
                 return
-            }
-            finally {
+            } finally {
                 reader.close()
             }
         }
