@@ -3,6 +3,7 @@ package com.kssidll.arru.data.repository
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface VariantRepositorySource {
@@ -124,7 +125,7 @@ interface VariantRepositorySource {
      * @param product [Product] to match the [ProductVariant] with
      * @return list of [ProductVariant] matching [product] as flow
      */
-    fun byProductFlow(product: Product): Flow<Data<List<ProductVariant>>>
+    fun byProductFlow(product: Product): Flow<Data<ImmutableList<ProductVariant>>>
 
     /**
      * @return total count of [ProductVariant]
@@ -137,5 +138,5 @@ interface VariantRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductVariant>
+    ): ImmutableList<ProductVariant>
 }

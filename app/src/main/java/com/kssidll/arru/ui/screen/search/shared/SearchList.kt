@@ -49,6 +49,8 @@ import com.kssidll.arru.ui.screen.search.component.SearchItem
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.optionalAlpha
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Fuzzy searchable list component
@@ -62,11 +64,12 @@ import com.kssidll.arru.ui.theme.optionalAlpha
 fun <T> SearchList(
     filter: String,
     onFilterChange: (String) -> Unit,
-    items: Data<List<T>>,
+    items: Data<ImmutableList<T>>,
     onItemClick: (item: T) -> Unit,
     onItemLongClick: (item: T) -> Unit,
+    modifier: Modifier = Modifier
 ) where T: FuzzySearchSource, T: NameSource {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         AnimatedVisibility(
             visible = items.loadedEmpty(),
             enter = fadeIn(),
@@ -200,7 +203,7 @@ private fun ListScreenPreview() {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = Data.Loaded(ProductWithAltNames.generateList()),
+                items = Data.Loaded(ProductWithAltNames.generateList().toImmutableList()),
                 onItemClick = {},
                 onItemLongClick = {},
             )
@@ -216,7 +219,7 @@ private fun EmptyListScreenPreview() {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = Data.Loaded(emptyList()),
+                items = Data.Loaded(emptyList<ProductWithAltNames>().toImmutableList()),
                 onItemClick = {},
                 onItemLongClick = {},
             )

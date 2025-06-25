@@ -9,6 +9,7 @@ import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -23,7 +24,7 @@ abstract class ModifyTransactionViewModel: ViewModel() {
     /**
      * @return List of all shops
      */
-    fun allShops(): Flow<Data<List<Shop>>> {
+    fun allShops(): Flow<Data<ImmutableList<Shop>>> {
         return shopRepository.allFlow()
     }
 

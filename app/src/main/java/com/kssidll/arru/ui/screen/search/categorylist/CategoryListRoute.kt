@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.search.categorylist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.ui.screen.search.shared.SearchList
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
@@ -11,9 +12,8 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 fun CategoryListRoute(
     onCategoryClick: (categoryId: Long) -> Unit,
     onCategoryLongClick: (categoryId: Long) -> Unit,
+    viewModel: CategoryListViewModel = hiltViewModel()
 ) {
-    val viewModel: CategoryListViewModel = hiltViewModel()
-
     SearchList(
         filter = viewModel.filter,
         onFilterChange = {

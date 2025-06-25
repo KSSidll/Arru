@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.data
 
+import androidx.collection.FloatFloatPair
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -14,8 +15,6 @@ import com.kssidll.arru.helper.generateRandomDate
 import com.kssidll.arru.helper.generateRandomDateString
 import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
-import com.patrykandpatrick.vico.core.entry.ChartEntry
-import com.patrykandpatrick.vico.core.entry.FloatEntry
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import java.util.Locale
@@ -303,8 +302,8 @@ data class ItemSpentByTime(
         return total
     }
 
-    override fun chartEntry(x: Int): ChartEntry {
-        return FloatEntry(
+    override fun chartEntry(x: Int): FloatFloatPair {
+        return FloatFloatPair(
             x.toFloat(),
             value()
         )
@@ -339,10 +338,10 @@ data class TransactionTotalSpentByTime(
             )
         }
 
-        fun generateList(amount: Int = 10): List<TransactionTotalSpentByTime> {
+        fun generateList(amount: Int = 10): ImmutableList<TransactionTotalSpentByTime> {
             return List(amount) {
                 generate()
-            }
+            }.toImmutableList()
         }
     }
 
@@ -355,8 +354,8 @@ data class TransactionTotalSpentByTime(
         return total
     }
 
-    override fun chartEntry(x: Int): ChartEntry {
-        return FloatEntry(
+    override fun chartEntry(x: Int): FloatFloatPair {
+        return FloatFloatPair(
             x.toFloat(),
             value()
         )
@@ -482,10 +481,10 @@ data class ProductPriceByShopByTime(
             )
         }
 
-        fun generateList(amount: Int = 10): List<ProductPriceByShopByTime> {
+        fun generateList(amount: Int = 10): ImmutableList<ProductPriceByShopByTime> {
             return List(amount) {
                 generate(it.toLong())
-            }
+            }.toImmutableList()
         }
     }
 }

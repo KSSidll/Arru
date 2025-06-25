@@ -14,9 +14,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.ui.theme.schema.DarkColorScheme
 import com.kssidll.arru.ui.theme.schema.LightColorScheme
-import com.patrykandpatrick.vico.compose.m3.style.m3ChartStyle
-import com.patrykandpatrick.vico.compose.style.ChartStyle
-import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
+import com.patrykandpatrick.vico.compose.common.ProvideVicoTheme
+import com.patrykandpatrick.vico.compose.common.VicoTheme
+import com.patrykandpatrick.vico.compose.m3.common.rememberM3VicoTheme
 import kotlin.math.max
 import kotlin.math.min
 
@@ -61,9 +61,9 @@ fun isAppInDarkTheme(colorScheme: AppPreferences.Theme.ColorScheme.Values): Bool
  * @return Default application chart style
  */
 @Composable
-fun arrugarqChartStyle(): ChartStyle {
-    return m3ChartStyle(
-        entityColors = List(12) { itr ->
+fun arruChartTheme(): VicoTheme {
+    return rememberM3VicoTheme(
+        lineCartesianLayerColors = List(12) { itr ->
             val main = MaterialTheme.colorScheme.primary
             val red = main.red
             val green = main.green
@@ -198,8 +198,8 @@ fun ArrugarqTheme(
         colorScheme = animatedColorScheme,
         typography = Typography,
     ) {
-        ProvideChartStyle(
-            chartStyle = arrugarqChartStyle()
+        ProvideVicoTheme(
+            theme = arruChartTheme()
         ) {
             content()
         }

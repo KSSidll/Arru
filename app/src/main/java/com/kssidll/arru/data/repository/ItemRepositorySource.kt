@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ItemRepositorySource {
@@ -134,10 +135,10 @@ interface ItemRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<Item>
+    ): ImmutableList<Item>
 
     /**
      * @return list of [Item] contained within the [TransactionBasket] matching the [transactionId]
      */
-    suspend fun getByTransaction(transactionId: Long): List<Item>
+    suspend fun getByTransaction(transactionId: Long): ImmutableList<Item>
 }

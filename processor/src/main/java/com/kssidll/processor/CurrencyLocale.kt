@@ -20,10 +20,12 @@ class CurrencyLocaleDataGenerator(
         val fileContent = """
             package $packageName
 
+            import kotlinx.collections.immutable.toImmutableList
+            
             object $fileName {
                 val items = listOf(
                     ${generateCachedItems()}
-                )
+                ).toImmutableList()
             }
         """.trimIndent()
 

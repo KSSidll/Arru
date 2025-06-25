@@ -15,6 +15,8 @@ import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -56,11 +58,11 @@ class EditCategoryViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(categoryId: Long): Flow<Data<List<ProductCategory>>> {
+    fun allMergeCandidates(categoryId: Long): Flow<Data<ImmutableList<ProductCategory>>> {
         return categoryRepository.allFlow()
             .map {
                 if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != categoryId })
+                    Data.Loaded(it.data.filter { item -> item.id != categoryId }.toImmutableList())
                 } else it
             }
     }

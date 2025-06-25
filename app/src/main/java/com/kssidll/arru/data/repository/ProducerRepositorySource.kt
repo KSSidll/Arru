@@ -6,6 +6,7 @@ import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ProducerRepositorySource {
@@ -139,25 +140,25 @@ interface ProducerRepositorySource {
      * @param producer [ProductProducer] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param producer [ProductProducer] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param producer [ProductProducer] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param producer [ProductProducer] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param producer [ProductProducer] to match the items to
@@ -167,7 +168,7 @@ interface ProducerRepositorySource {
     /**
      * @return list of all [ProductProducer] as flow
      */
-    fun allFlow(): Flow<Data<List<ProductProducer>>>
+    fun allFlow(): Flow<Data<ImmutableList<ProductProducer>>>
 
     /**
      * @return total count of [ProductProducer]
@@ -180,5 +181,5 @@ interface ProducerRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductProducer>
+    ): ImmutableList<ProductProducer>
 }

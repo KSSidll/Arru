@@ -14,6 +14,8 @@ import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.Inser
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -142,36 +144,36 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .onStart { Data.Loading<Long>() }
     }
 
-    override fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByDayFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByWeekFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByMonthFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByYearFlow(producer.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
     override fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>> {
@@ -205,12 +207,12 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
             .flow
     }
 
-    override fun allFlow(): Flow<Data<List<ProductProducer>>> {
+    override fun allFlow(): Flow<Data<ImmutableList<ProductProducer>>> {
         return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductProducer>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ProductProducer>>() }
     }
 
     override suspend fun totalCount(): Int {
@@ -220,10 +222,10 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
     override suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductProducer> {
+    ): ImmutableList<ProductProducer> {
         return dao.getPagedList(
             limit,
             offset
-        )
+        ).toImmutableList()
     }
 }

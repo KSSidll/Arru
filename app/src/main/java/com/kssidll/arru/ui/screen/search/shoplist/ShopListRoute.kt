@@ -11,9 +11,8 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 internal fun ShopListRoute(
     onShopClick: (shopId: Long) -> Unit,
     onShopLongClick: (shopId: Long) -> Unit,
+    viewModel: ShopListViewModel = hiltViewModel()
 ) {
-    val viewModel: ShopListViewModel = hiltViewModel()
-
     SearchList(
         filter = viewModel.filter,
         onFilterChange = {

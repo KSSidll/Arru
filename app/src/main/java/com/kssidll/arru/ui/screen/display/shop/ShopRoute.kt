@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.domain.data.Data
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ShopRoute(
@@ -17,9 +19,8 @@ fun ShopRoute(
     navigateProducer: (producerId: Long) -> Unit,
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateShopEdit: () -> Unit,
+    viewModel: ShopViewModel = hiltViewModel()
 ) {
-    val viewModel: ShopViewModel = hiltViewModel()
-
     LaunchedEffect(shopId) {
         if (!viewModel.performDataUpdate(shopId)) {
             navigateBack()
@@ -32,7 +33,7 @@ fun ShopRoute(
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
         spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
-            ?: Data.Loaded(emptyList()),
+            ?: Data.Loaded(emptyList<TransactionTotalSpentByTime>().toImmutableList()),
         totalSpentData = viewModel.shopTotalSpent()
             ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loaded(0F),
         spentByTimePeriod = viewModel.spentByTimePeriod,

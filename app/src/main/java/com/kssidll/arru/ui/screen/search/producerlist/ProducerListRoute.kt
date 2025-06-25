@@ -11,9 +11,8 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 fun ProducerListRoute(
     onProducerClick: (producerId: Long) -> Unit,
     onProducerLongClick: (producerId: Long) -> Unit,
+    viewModel: ProducerListViewModel = hiltViewModel()
 ) {
-    val viewModel: ProducerListViewModel = hiltViewModel()
-
     SearchList(
         filter = viewModel.filter,
         onFilterChange = {

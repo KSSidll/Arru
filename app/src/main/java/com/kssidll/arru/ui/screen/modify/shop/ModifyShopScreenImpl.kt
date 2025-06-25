@@ -26,6 +26,7 @@ import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -53,7 +54,7 @@ fun ModifyShopScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: Shop) -> Unit)? = null,
-    mergeCandidates: Flow<Data<List<Shop>>> = flowOf(),
+    mergeCandidates: Flow<Data<ImmutableList<Shop>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: Shop? = null,
     onChosenMergeCandidateChange: ((Shop?) -> Unit)? = null,

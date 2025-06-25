@@ -29,24 +29,29 @@ import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.domain.getTranslation
 import com.kssidll.arru.ui.component.chart.OneDimensionalColumnChart
 import com.kssidll.arru.ui.theme.ArrugarqTheme
-import com.patrykandpatrick.vico.compose.chart.scroll.ChartScrollState
-import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollState
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.scroll.InitialScroll
+import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.core.cartesian.AutoScrollCondition
+import com.patrykandpatrick.vico.core.cartesian.Scroll
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun SpendingSummaryComponent(
-    spentByTimeData: List<ChartSource>,
+    spentByTimeData: ImmutableList<ChartSource>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
     modifier: Modifier = Modifier,
     buttonsModifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
-    autoScrollSpec: AnimationSpec<Float> = tween(1200),
-    scrollState: ChartScrollState = rememberChartScrollState(),
-    columnChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    diffAnimationSpec: AnimationSpec<Float> = tween(1200),
+    scrollState: VicoScrollState = rememberVicoScrollState(
+        initialScroll = Scroll.Absolute.End,
+        autoScrollAnimationSpec = diffAnimationSpec,
+        autoScrollCondition = AutoScrollCondition.OnModelGrowth
+    ),
+    columnChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
     runInitialAnimation: Boolean = true,
-    initialScroll: InitialScroll = InitialScroll.End,
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
 ) {
@@ -66,12 +71,10 @@ fun SpendingSummaryComponent(
             data = spentByTimeData,
             modifier = chartModifier,
             chartEntryModelProducer = columnChartEntryModelProducer,
-            autoScrollSpec = autoScrollSpec,
             scrollState = scrollState,
             runInitialAnimation = runInitialAnimation,
             columnWidth = columnWidth,
             columnSpacing = columnSpacing,
-            initialScroll = initialScroll,
         )
 
     }
@@ -80,9 +83,9 @@ fun SpendingSummaryComponent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PeriodButtons(
-    modifier: Modifier,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodUpdate: (TimePeriodFlowHandler.Periods) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     SingleChoiceSegmentedButtonRow(
         modifier = modifier
