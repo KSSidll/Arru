@@ -52,6 +52,7 @@ import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -83,20 +84,20 @@ fun <T> ModifyScreen(
     onBack: () -> Unit,
     title: String,
     onSubmit: () -> Unit,
+    submitButtonText: String,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: T) -> Unit)? = null,
-    mergeCandidates: Flow<Data<List<T>>> = flowOf(),
+    mergeCandidates: Flow<Data<ImmutableList<T>>> = flowOf(),
     mergeCandidatesTextTransformation: ((T) -> String)? = null,
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: T? = null,
     onChosenMergeCandidateChange: ((T?) -> Unit)? = null,
     showMergeConfirmDialog: Boolean = false,
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
-    submitButtonText: String,
     showDeleteWarning: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningConfirmed: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningMessage: String = String(),
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit
 ) where T: FuzzySearchSource {
     var showMergeSearchDialog by remember {
         mutableStateOf(false)

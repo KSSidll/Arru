@@ -76,7 +76,8 @@ import com.kssidll.arru.ui.component.list.fullItemListContent
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -103,12 +104,12 @@ internal fun ProductScreen(
     onBack: () -> Unit,
     product: Product?,
     transactionItems: LazyPagingItems<FullItem>,
-    spentByTimeData: Data<List<ItemSpentByTime>>,
-    productPriceByShopByTimeData: Data<List<ProductPriceByShopByTime>>,
+    spentByTimeData: Data<ImmutableList<ItemSpentByTime>>,
+    productPriceByShopByTimeData: Data<ImmutableList<ProductPriceByShopByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    chartEntryModelProducer: ChartEntryModelProducer,
+    chartEntryModelProducer: CartesianChartModelProducer,
     onItemCategoryClick: (categoryId: Long) -> Unit,
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
@@ -194,12 +195,12 @@ internal fun ProductScreen(
 @Composable
 private fun ProductScreenContent(
     transactionItems: LazyPagingItems<FullItem>,
-    spentByTimeData: Data<List<ItemSpentByTime>>,
-    productPriceByShopByTimeData: Data<List<ProductPriceByShopByTime>>,
+    spentByTimeData: Data<ImmutableList<ItemSpentByTime>>,
+    productPriceByShopByTimeData: Data<ImmutableList<ProductPriceByShopByTime>>,
     totalSpentData: Data<Float?>,
     spentByTimePeriod: TimePeriodFlowHandler.Periods?,
     onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    chartEntryModelProducer: ChartEntryModelProducer,
+    chartEntryModelProducer: CartesianChartModelProducer,
     onItemCategoryClick: (categoryId: Long) -> Unit,
     onItemProducerClick: (producerId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
@@ -285,14 +286,14 @@ private fun ProductScreenContent(
 
                     val chartData = if (spentByTimeData is Data.Loaded) {
                         spentByTimeData.data
-                    } else emptyList()
+                    } else emptyList<ItemSpentByTime>().toImmutableList()
 
                     val totalSpent = if (totalSpentData is Data.Loaded) {
                         totalSpentData.data ?: 0f
                     } else 0f
 
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = chartData.toImmutableList(),
+                        spentByTimeData = chartData,
                         totalSpentData = totalSpent,
                     )
 
@@ -368,7 +369,7 @@ private fun ProductScreenPreview() {
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = ChartEntryModelProducer(),
+                chartEntryModelProducer = CartesianChartModelProducer(),
                 onItemCategoryClick = {},
                 onItemProducerClick = {},
                 onItemShopClick = {},
@@ -388,12 +389,12 @@ private fun EmptyProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
-                spentByTimeData = Data.Loaded(emptyList()),
-                productPriceByShopByTimeData = Data.Loaded(emptyList()),
+                spentByTimeData = Data.Loaded(emptyList<ItemSpentByTime>().toImmutableList()),
+                productPriceByShopByTimeData = Data.Loaded(emptyList<ProductPriceByShopByTime>().toImmutableList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = ChartEntryModelProducer(),
+                chartEntryModelProducer = CartesianChartModelProducer(),
                 onItemCategoryClick = {},
                 onItemProducerClick = {},
                 onItemShopClick = {},
@@ -418,7 +419,7 @@ private fun ExpandedProductScreenPreview() {
                 totalSpentData = Data.Loaded(generateRandomFloatValue()),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = ChartEntryModelProducer(),
+                chartEntryModelProducer = CartesianChartModelProducer(),
                 onItemCategoryClick = {},
                 onItemProducerClick = {},
                 onItemShopClick = {},
@@ -438,12 +439,12 @@ private fun ExpandedEmptyProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
-                spentByTimeData = Data.Loaded(emptyList()),
-                productPriceByShopByTimeData = Data.Loaded(emptyList()),
+                spentByTimeData = Data.Loaded(emptyList<ItemSpentByTime>().toImmutableList()),
+                productPriceByShopByTimeData = Data.Loaded(emptyList<ProductPriceByShopByTime>().toImmutableList()),
                 totalSpentData = Data.Loaded(null),
                 spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
                 onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = ChartEntryModelProducer(),
+                chartEntryModelProducer = CartesianChartModelProducer(),
                 onItemCategoryClick = {},
                 onItemProducerClick = {},
                 onItemShopClick = {},

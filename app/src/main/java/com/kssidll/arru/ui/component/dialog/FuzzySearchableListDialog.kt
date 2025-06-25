@@ -53,6 +53,8 @@ import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.component.list.BaseClickableListItem
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * @param T: Type of the item, needs to implement FuzzySearchSource
@@ -71,7 +73,7 @@ import com.kssidll.arru.ui.theme.Typography
 @Composable
 fun <T> SearchableListDialog(
     onDismissRequest: () -> Unit,
-    items: Data<List<T>>,
+    items: Data<ImmutableList<T>>,
     itemText: (T) -> String,
     onItemClick: ((T?) -> Unit)? = null,
     onItemClickLabel: String? = null,
@@ -228,7 +230,7 @@ private fun FuzzySearchableListDialogPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = Data.Loaded(ProductWithAltNames.generateList()),
+                items = Data.Loaded(ProductWithAltNames.generateList().toImmutableList()),
                 itemText = { "test" },
                 calculateScore = { _, _ -> 0 }
             )
@@ -243,7 +245,7 @@ private fun EmptyFuzzySearchableListDialogPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = Data.Loaded(emptyList<ProductWithAltNames>()),
+                items = Data.Loaded(emptyList<ProductWithAltNames>().toImmutableList()),
                 itemText = { "test" },
                 calculateScore = { _, _ -> 0 }
             )

@@ -32,6 +32,7 @@ import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import androidx.compose.material3.Surface as Surface1
@@ -65,24 +66,24 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyProductScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductScreenState,
-    categories: Data<List<ProductCategoryWithAltNames>>,
-    producers: Data<List<ProductProducer>>,
+    categories: Data<ImmutableList<ProductCategoryWithAltNames>>,
+    producers: Data<ImmutableList<ProductProducer>>,
     onNewProducerSelected: (producer: ProductProducer?) -> Unit,
     onNewCategorySelected: (category: ProductCategory?) -> Unit,
     onSubmit: () -> Unit,
+    onProducerAddButtonClick: (query: String?) -> Unit,
+    onCategoryAddButtonClick: (query: String?) -> Unit,
+    onItemProducerLongClick: (producerId: Long) -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: Product) -> Unit)? = null,
-    mergeCandidates: Flow<Data<List<Product>>> = flowOf(),
+    mergeCandidates: Flow<Data<ImmutableList<Product>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: Product? = null,
     onChosenMergeCandidateChange: ((Product?) -> Unit)? = null,
     showMergeConfirmDialog: Boolean = false,
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
-    onProducerAddButtonClick: (query: String?) -> Unit,
-    onCategoryAddButtonClick: (query: String?) -> Unit,
-    onItemProducerLongClick: (producerId: Long) -> Unit,
-    onItemCategoryLongClick: (categoryId: Long) -> Unit,
+    onItemCategoryLongClick: (categoryId: Long) -> Unit
 ) {
     ModifyScreen(
         onBack = onBack,

@@ -15,6 +15,7 @@ import com.kssidll.arru.data.repository.VariantRepositorySource
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -155,13 +156,13 @@ abstract class ModifyItemViewModel: ViewModel() {
     /**
      * @return List of all products
      */
-    fun allProducts(): Flow<Data<List<ProductWithAltNames>>> {
+    fun allProducts(): Flow<Data<ImmutableList<ProductWithAltNames>>> {
         return productRepository.allWithAltNamesFlow()
     }
 
-    private val mProductVariants: MutableState<Flow<Data<List<ProductVariant>>>> =
+    private val mProductVariants: MutableState<Flow<Data<ImmutableList<ProductVariant>>>> =
         mutableStateOf(emptyFlow())
-    val productVariants: Flow<Data<List<ProductVariant>>> by mProductVariants
+    val productVariants: Flow<Data<ImmutableList<ProductVariant>>> by mProductVariants
     private var mUpdateProductVariantsJob: Job? = null
 
     /**

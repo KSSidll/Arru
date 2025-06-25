@@ -6,6 +6,7 @@ import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ShopRepositorySource {
@@ -139,25 +140,25 @@ interface ShopRepositorySource {
      * @param shop [Shop] to get the total spending by day from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>>
+    fun totalSpentByDayFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
      * @param shop [Shop] to get the total spending by week from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>>
+    fun totalSpentByWeekFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
      * @param shop [Shop] to get the total spending by month from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>>
+    fun totalSpentByMonthFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
      * @param shop [Shop] to get the total spending by year from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(shop: Shop): Flow<Data<List<TransactionTotalSpentByTime>>>
+    fun totalSpentByYearFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
      * @param shop [Shop] to match the items to
@@ -167,7 +168,7 @@ interface ShopRepositorySource {
     /**
      * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop
      */
-    fun totalSpentByShopFlow(): Flow<List<TransactionTotalSpentByShop>>
+    fun totalSpentByShopFlow(): Flow<ImmutableList<TransactionTotalSpentByShop>>
 
     /**
      * @param year year to match the data to
@@ -177,12 +178,12 @@ interface ShopRepositorySource {
     fun totalSpentByShopByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<List<TransactionTotalSpentByShop>>
+    ): Flow<ImmutableList<TransactionTotalSpentByShop>>
 
     /**
      * @return list of all [Shop] as flow
      */
-    fun allFlow(): Flow<Data<List<Shop>>>
+    fun allFlow(): Flow<Data<ImmutableList<Shop>>>
 
     /**
      * @return total count of [Shop]
@@ -195,5 +196,5 @@ interface ShopRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<Shop>
+    ): ImmutableList<Shop>
 }

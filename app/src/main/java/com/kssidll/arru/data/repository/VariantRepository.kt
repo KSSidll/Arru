@@ -7,6 +7,8 @@ import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.Delete
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -150,12 +152,12 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             .onStart { Data.Loading<ProductVariant?>() }
     }
 
-    override fun byProductFlow(product: Product): Flow<Data<List<ProductVariant>>> {
+    override fun byProductFlow(product: Product): Flow<Data<ImmutableList<ProductVariant>>> {
         return dao.byProductFlow(product.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductVariant>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ProductVariant>>() }
     }
 
     override suspend fun totalCount(): Int {
@@ -165,10 +167,10 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     override suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductVariant> {
+    ): ImmutableList<ProductVariant> {
         return dao.getPagedList(
             limit,
             offset
-        )
+        ).toImmutableList()
     }
 }

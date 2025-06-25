@@ -19,7 +19,7 @@ import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -43,9 +43,9 @@ data class HomeUiState(
     val dashboardSpentByTimeChartCurrentPeriod: TimePeriodFlowHandler.Periods = TimePeriodFlowHandler.Periods.Month,
     val dashboardCategorySpendingRankingData: ImmutableList<ItemSpentByCategory> = persistentListOf(),
     val dashboardShopSpendingRankingData: ImmutableList<TransactionTotalSpentByShop> = persistentListOf(),
-    val dashboardTotalChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-    val dashboardAverageChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
-    val dashboardMedianChartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer(),
+    val dashboardTotalChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val dashboardAverageChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val dashboardMedianChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
 
     val analysisCurrentDateYear: Int = Calendar.getInstance().get(Calendar.YEAR),
     val analysisCurrentDateMonth: Int = Calendar.getInstance().get(Calendar.MONTH) + 1,

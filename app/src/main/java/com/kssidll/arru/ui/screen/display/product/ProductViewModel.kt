@@ -14,8 +14,9 @@ import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -33,11 +34,11 @@ class ProductViewModel @Inject constructor(
 
     private var mProductListener: Job? = null
 
-    val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
+    val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<ItemSpentByTime>>>? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<ImmutableList<ItemSpentByTime>>>? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<Data<List<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<Data<ImmutableList<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun productTotalSpent(): Flow<Data<Float?>>? {
         if (product == null) return null
@@ -45,7 +46,7 @@ class ProductViewModel @Inject constructor(
         return productRepository.totalSpentFlow(product!!)
     }
 
-    fun productPriceByShop(): Flow<Data<List<ProductPriceByShopByTime>>>? {
+    fun productPriceByShop(): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>? {
         if (product == null) return null
 
         return productRepository.averagePriceByVariantByShopByMonthFlow(product!!)

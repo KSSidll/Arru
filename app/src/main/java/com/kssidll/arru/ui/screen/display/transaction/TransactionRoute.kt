@@ -16,8 +16,8 @@ fun TransactionRoute(
     navigateCategory: (categoryId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
+    viewModel: TransactionViewModel = hiltViewModel()
 ) {
-    val viewModel: TransactionViewModel = hiltViewModel()
 
     TransactionScreen(
         onBack = navigateBack,

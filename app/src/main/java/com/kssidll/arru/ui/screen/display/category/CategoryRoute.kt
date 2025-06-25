@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.data.Data
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun CategoryRoute(
@@ -17,9 +19,8 @@ fun CategoryRoute(
     navigateItemEdit: (itemId: Long) -> Unit,
     navigateProducer: (producerId: Long) -> Unit,
     navigateShop: (shopId: Long) -> Unit,
+    viewModel: CategoryViewModel = hiltViewModel()
 ) {
-    val viewModel: CategoryViewModel = hiltViewModel()
-
     LaunchedEffect(categoryId) {
         if (!viewModel.performDataUpdate(categoryId)) {
             navigateBack()
@@ -32,7 +33,7 @@ fun CategoryRoute(
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
         spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
-            ?: Data.Loaded(emptyList()),
+            ?: Data.Loaded(emptyList<ItemSpentByTime>().toImmutableList()),
         totalSpentData = viewModel.categoryTotalSpent()
             ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loading(),
         spentByTimePeriod = viewModel.spentByTimePeriod,

@@ -50,6 +50,7 @@ import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
+import kotlinx.collections.immutable.ImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -73,17 +74,17 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
-    products: Data<List<ProductWithAltNames>>,
-    variants: Data<List<ProductVariant>>,
+    products: Data<ImmutableList<ProductWithAltNames>>,
+    variants: Data<ImmutableList<ProductVariant>>,
     onNewProductSelected: (product: Product?) -> Unit,
     onNewVariantSelected: (variant: ProductVariant?) -> Unit,
     onSubmit: () -> Unit,
-    onDelete: (() -> Unit)? = null,
-    submitButtonText: String = stringResource(id = R.string.item_add),
     onProductAddButtonClick: (query: String?) -> Unit,
     onVariantAddButtonClick: (productId: Long, query: String?) -> Unit,
     onItemLongClick: (productId: Long) -> Unit,
-    onItemVariantLongClick: (variantId: Long) -> Unit,
+    onDelete: (() -> Unit)? = null,
+    submitButtonText: String = stringResource(id = R.string.item_add),
+    onItemVariantLongClick: (variantId: Long) -> Unit
 ) {
     ModifyScreen<FuzzySearchSource>(
         onBack = onBack,

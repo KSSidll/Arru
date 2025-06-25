@@ -13,6 +13,7 @@ import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -92,14 +93,14 @@ abstract class ModifyProductViewModel: ViewModel() {
     /**
      * @return List of all categories
      */
-    fun allCategories(): Flow<Data<List<ProductCategoryWithAltNames>>> {
+    fun allCategories(): Flow<Data<ImmutableList<ProductCategoryWithAltNames>>> {
         return categoryRepository.allWithAltNamesFlow()
     }
 
     /**
      * @return List of all producers
      */
-    fun allProducers(): Flow<Data<List<ProductProducer>>> {
+    fun allProducers(): Flow<Data<ImmutableList<ProductProducer>>> {
         return producerRepository.allFlow()
     }
 }

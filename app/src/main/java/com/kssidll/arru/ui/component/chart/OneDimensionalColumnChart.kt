@@ -14,90 +14,113 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.ui.theme.ArrugarqTheme
-import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
-import com.patrykandpatrick.vico.compose.axis.horizontal.rememberTopAxis
-import com.patrykandpatrick.vico.compose.chart.column.columnChart
-import com.patrykandpatrick.vico.compose.chart.scroll.ChartScrollState
-import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
-import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollState
-import com.patrykandpatrick.vico.compose.style.currentChartStyle
-import com.patrykandpatrick.vico.core.chart.edges.FadingEdges
-import com.patrykandpatrick.vico.core.chart.scale.AutoScaleUp
-import com.patrykandpatrick.vico.core.component.shape.LineComponent
-import com.patrykandpatrick.vico.core.component.shape.Shapes
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.scroll.AutoScrollCondition
-import com.patrykandpatrick.vico.core.scroll.InitialScroll
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberTop
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.compose.common.vicoTheme
+import com.patrykandpatrick.vico.core.cartesian.AutoScrollCondition
+import com.patrykandpatrick.vico.core.cartesian.FadingEdges
+import com.patrykandpatrick.vico.core.cartesian.Scroll
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
+import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import kotlinx.collections.immutable.ImmutableList
+
+private val TopAxisLabelKey = ExtraStore.Key<Map<Float, String>>()
+private val BottomAxisLabelKey = ExtraStore.Key<Map<Float, String>>()
 
 @Composable
 fun OneDimensionalColumnChart(
-    data: List<ChartSource>,
+    data: ImmutableList<ChartSource>,
     modifier: Modifier = Modifier,
-    chartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    chartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
     fadingEdges: FadingEdges? = null,
     isZoomEnabled: Boolean = false,
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
-    autoScrollSpec: AnimationSpec<Float> = tween(1200),
-    diffAnimationSpec: AnimationSpec<Float> = autoScrollSpec,
-    scrollState: ChartScrollState = rememberChartScrollState(),
+    diffAnimationSpec: AnimationSpec<Float> = tween(1200),
+    scrollState: VicoScrollState = rememberVicoScrollState(
+        initialScroll = Scroll.Absolute.End,
+        autoScrollAnimationSpec = diffAnimationSpec,
+        autoScrollCondition = AutoScrollCondition.OnModelGrowth
+    ),
     runInitialAnimation: Boolean = true,
-    initialScroll: InitialScroll = InitialScroll.End,
 ) {
-    val defaultColumns = currentChartStyle.columnChart.columns
     val currencyLocale = LocalCurrencyFormatLocale.current
 
-    val chart = columnChart(
-        remember(defaultColumns) {
-            defaultColumns.map { defaultColumn ->
-                LineComponent(
-                    defaultColumn.color,
-                    columnWidth.value,
-                    Shapes.roundedCornerShape(allPercent = 30)
+    LaunchedEffect(data) {
+        // Peak engineering
+        val newData = data.mapIndexed { index, it ->
+            Triple(
+                it.chartEntry(index),
+                it.topAxisLabel(currencyLocale) ?: "??",
+                it.bottomAxisLabel(currencyLocale) ?: "??"
+            )
+        }
+
+        chartEntryModelProducer.runTransaction {
+            columnSeries {
+                series(
+                    x = newData.map { it.first.first },
+                    y = newData.map { it.first.second}
                 )
             }
-        },
-        spacing = columnSpacing,
-    )
-
-    LaunchedEffect(data) {
-        chartEntryModelProducer.setEntries(data.mapIndexed { index, iChartable ->
-            iChartable.chartEntry(
-                index
-            )
-        })
+            
+            extras { extraStore ->
+                extraStore[TopAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.second) } }
+                extraStore[BottomAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.third) } }
+            }
+        }
     }
 
-    com.patrykandpatrick.vico.compose.chart.Chart(
-        modifier = modifier,
-        chartScrollState = scrollState,
-        chartScrollSpec = rememberChartScrollSpec(
-            isScrollEnabled = true,
-            initialScroll = initialScroll,
-            autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased,
-            autoScrollAnimationSpec = autoScrollSpec,
+    val chart = rememberCartesianChart(
+        rememberColumnCartesianLayer(
+            columnCollectionSpacing = columnSpacing,
+            columnProvider = ColumnCartesianLayer.ColumnProvider.series(
+                vicoTheme.columnCartesianLayerColors.map { color ->
+                    rememberLineComponent(
+                        fill = fill(color),
+                        thickness = columnWidth,
+                        shape = CorneredShape.rounded(allPercent = 30),
+                    )
+                }
+            )
         ),
-        diffAnimationSpec = diffAnimationSpec,
-        chart = chart,
-        chartModelProducer = chartEntryModelProducer,
-        topAxis = rememberTopAxis(
-            valueFormatter = { value, _ ->
-                data.getOrNull(value.toInt())
-                    ?.topAxisLabel(currencyLocale)
-                    .orEmpty()
-            },
-        ),
-        bottomAxis = rememberBottomAxis(
-            valueFormatter = { value, _ ->
-                data.getOrNull(value.toInt())
-                    ?.bottomAxisLabel(currencyLocale)
-                    .orEmpty()
-            },
-        ),
-        runInitialAnimation = runInitialAnimation,
         fadingEdges = fadingEdges,
-        isZoomEnabled = isZoomEnabled,
-        autoScaleUp = AutoScaleUp.None,
+        topAxis = HorizontalAxis.rememberTop(
+            valueFormatter = CartesianValueFormatter { context, value, _ ->
+                context.model.extraStore.getOrNull(TopAxisLabelKey)?.get(value.toFloat()) ?: "??"
+            },
+            itemPlacer = HorizontalAxis.ItemPlacer.segmented()
+        ),
+        bottomAxis = HorizontalAxis.rememberBottom(
+            valueFormatter = CartesianValueFormatter { context, value, _ ->
+                context.model.extraStore.getOrNull(BottomAxisLabelKey)?.get(value.toFloat()) ?: "??"
+            },
+            itemPlacer = HorizontalAxis.ItemPlacer.segmented()
+        ),
+        decorations = listOf()
+    )
+
+    CartesianChartHost(
+        modifier = modifier,
+        modelProducer = chartEntryModelProducer,
+        scrollState = scrollState,
+        zoomState = rememberVicoZoomState(zoomEnabled = isZoomEnabled),
+        animationSpec = diffAnimationSpec,
+        animateIn = runInitialAnimation,
+        chart = chart
     )
 }
 

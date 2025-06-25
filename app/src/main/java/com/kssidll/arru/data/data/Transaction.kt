@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.data
 
+import androidx.collection.FloatFloatPair
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -11,8 +12,6 @@ import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.generateRandomDateString
 import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomTime
-import com.patrykandpatrick.vico.core.entry.ChartEntry
-import com.patrykandpatrick.vico.core.entry.FloatEntry
 import java.util.Locale
 import kotlin.math.log10
 
@@ -216,8 +215,8 @@ data class TransactionSpentByTime(
         return total
     }
 
-    override fun chartEntry(x: Int): ChartEntry {
-        return FloatEntry(
+    override fun chartEntry(x: Int): FloatFloatPair {
+        return FloatFloatPair(
             x.toFloat(),
             value()
         )

@@ -13,8 +13,9 @@ import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -32,12 +33,12 @@ class ShopViewModel @Inject constructor(
 
     private var mShopListener: Job? = null
 
-    val chartEntryModelProducer: ChartEntryModelProducer = ChartEntryModelProducer()
+    val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<List<TransactionTotalSpentByTime>>>? =
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<ImmutableList<TransactionTotalSpentByTime>>>? =
         null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<Data<List<TransactionTotalSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun shopTotalSpent(): Flow<Data<Float?>>? {
         if (shop == null) return null

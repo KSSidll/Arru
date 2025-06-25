@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.component
 
+import androidx.collection.FloatFloatPair
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
@@ -43,13 +45,20 @@ import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.chart.rememberMarker
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.line.lineChart
-import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.scroll.InitialScroll
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.compose.common.shader.verticalGradient
+import com.patrykandpatrick.vico.compose.common.vicoTheme
+import com.patrykandpatrick.vico.core.cartesian.Scroll
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.common.shader.ShaderProvider
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.delay
 
 private val HALF_CHART_TOP_PADDING: Dp = 36.dp
 private val FULL_CHART_TOP_PADDING: Dp = 18.dp
@@ -62,9 +71,9 @@ fun TotalAverageAndMedianSpendingComponent(
     spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float,
     modifier: Modifier = Modifier,
-    totalChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
-    averageChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
-    medianChartEntryModelProducer: ChartEntryModelProducer = remember { ChartEntryModelProducer() },
+    totalChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
+    averageChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
+    medianChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
     animationSpec: AnimationSpec<Float> = tween(
         800,
         easing = EaseIn
@@ -91,22 +100,20 @@ fun TotalAverageAndMedianSpendingComponent(
             }
 
             LaunchedEffect(spentByTimeData) {
-                val oldDataAdjusted = totalChartEntryModelProducer.getModel()?.entries?.map { chart ->
-                    chart.map { it.withY(0f) }
-                }
-                    .orEmpty()
+                val newData = spentByTimeData.movingTotalChartData().toMutableList()
 
-                if (oldDataAdjusted.isNotEmpty()) {
-                    totalChartEntryModelProducer.setEntries(oldDataAdjusted)
+                if (newData.size == 1) {
+                    newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                 }
 
-                val newData = spentByTimeData.movingTotalChartData()
-
-                if (oldDataAdjusted.isNotEmpty()) {
-                    delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
+                totalChartEntryModelProducer.runTransaction {
+                    lineSeries {
+                        series(
+                            x = newData.map { it.first },
+                            y = newData.map { it.second }
+                        )
+                    }
                 }
-
-                totalChartEntryModelProducer.setEntries(newData)
             }
 
             val animatedValue = animateFloatAsState(
@@ -130,15 +137,30 @@ fun TotalAverageAndMedianSpendingComponent(
                         style = Typography.headlineLarge,
                     )
                 }
-
-                Chart(
-                    chart = lineChart(),
-                    chartModelProducer = totalChartEntryModelProducer,
-                    chartScrollSpec = rememberChartScrollSpec(
-                        isScrollEnabled = false,
-                        initialScroll = InitialScroll.End,
+                CartesianChartHost(
+                    chart = rememberCartesianChart(
+                        rememberLineCartesianLayer(
+                            lineProvider = LineCartesianLayer.LineProvider.series(
+                                vicoTheme.lineCartesianLayerColors.map { color ->
+                                    LineCartesianLayer.rememberLine(
+                                        areaFill = LineCartesianLayer.AreaFill.single(
+                                            fill(
+                                                ShaderProvider.verticalGradient(
+                                                    arrayOf(color.copy(0.4f), Color.Transparent)
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
+                            )
+                        ),
+                        marker = rememberMarker()
                     ),
-                    marker = rememberMarker(),
+                    modelProducer = totalChartEntryModelProducer,
+                    scrollState = rememberVicoScrollState(
+                        scrollEnabled = false,
+                        initialScroll = Scroll.Absolute.End
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = FULL_CHART_TOP_PADDING)
@@ -162,18 +184,20 @@ fun TotalAverageAndMedianSpendingComponent(
 
                 LaunchedEffect(spentByTimeData) {
                     averageTargetValue = spentByTimeData.avg()
+                    val newData = spentByTimeData.movingAverageChartData().toMutableList()
 
-                    val oldDataAdjusted = averageChartEntryModelProducer.getModel()?.entries?.map { chart ->
-                        chart.map { it.withY(0f) }
-                    }
-                        .orEmpty()
-
-                    if (oldDataAdjusted.isNotEmpty()) {
-                        averageChartEntryModelProducer.setEntries(oldDataAdjusted)
+                    if (newData.size == 1) {
+                        newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                     }
 
-                    val newData = spentByTimeData.movingAverageChartData()
-                    averageChartEntryModelProducer.setEntries(newData)
+                    averageChartEntryModelProducer.runTransaction {
+                        lineSeries {
+                            series(
+                                x = newData.map { it.first },
+                                y = newData.map { it.second }
+                            )
+                        }
+                    }
                 }
 
                 val animatedAverageValue = animateFloatAsState(
@@ -198,14 +222,31 @@ fun TotalAverageAndMedianSpendingComponent(
                         )
                     }
 
-                    Chart(
-                        chart = lineChart(),
-                        chartModelProducer = averageChartEntryModelProducer,
-                        chartScrollSpec = rememberChartScrollSpec(
-                            isScrollEnabled = false,
-                            initialScroll = InitialScroll.End,
+
+                    CartesianChartHost(
+                        chart = rememberCartesianChart(
+                            rememberLineCartesianLayer(
+                                lineProvider = LineCartesianLayer.LineProvider.series(
+                                    vicoTheme.lineCartesianLayerColors.map { color ->
+                                        LineCartesianLayer.rememberLine(
+                                            areaFill = LineCartesianLayer.AreaFill.single(
+                                                fill(
+                                                    ShaderProvider.verticalGradient(
+                                                        arrayOf(color.copy(0.4f), Color.Transparent)
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            ),
+                            marker = rememberMarker()
                         ),
-                        marker = rememberMarker(),
+                        modelProducer = averageChartEntryModelProducer,
+                        scrollState = rememberVicoScrollState(
+                            scrollEnabled = false,
+                            initialScroll = Scroll.Absolute.End
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = HALF_CHART_TOP_PADDING)
@@ -228,22 +269,20 @@ fun TotalAverageAndMedianSpendingComponent(
 
                 LaunchedEffect(spentByTimeData) {
                     medianTargetValue = spentByTimeData.median()
-                    val oldDataAdjusted = medianChartEntryModelProducer.getModel()?.entries?.map { chart ->
-                        chart.map { it.withY(0f) }
-                    }
-                        .orEmpty()
+                    val newData = spentByTimeData.movingMedianChartData().toMutableList()
 
-                    if (oldDataAdjusted.isNotEmpty()) {
-                        medianChartEntryModelProducer.setEntries(oldDataAdjusted)
+                    if (newData.size == 1) {
+                        newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                     }
 
-                    val newData = spentByTimeData.movingMedianChartData()
-
-                    if (oldDataAdjusted.isNotEmpty()) {
-                        delay(com.patrykandpatrick.vico.core.Animation.DIFF_DURATION.toLong())
+                    medianChartEntryModelProducer.runTransaction {
+                        lineSeries {
+                            series(
+                                x = newData.map { it.first },
+                                y = newData.map { it.second }
+                            )
+                        }
                     }
-
-                    medianChartEntryModelProducer.setEntries(newData)
                 }
 
                 val animatedMedianValue = animateFloatAsState(
@@ -268,14 +307,30 @@ fun TotalAverageAndMedianSpendingComponent(
                         )
                     }
 
-                    Chart(
-                        chart = lineChart(),
-                        chartModelProducer = medianChartEntryModelProducer,
-                        chartScrollSpec = rememberChartScrollSpec(
-                            isScrollEnabled = false,
-                            initialScroll = InitialScroll.End,
+                    CartesianChartHost(
+                        chart = rememberCartesianChart(
+                            rememberLineCartesianLayer(
+                                lineProvider = LineCartesianLayer.LineProvider.series(
+                                    vicoTheme.lineCartesianLayerColors.map { color ->
+                                        LineCartesianLayer.rememberLine(
+                                            areaFill = LineCartesianLayer.AreaFill.single(
+                                                fill(
+                                                    ShaderProvider.verticalGradient(
+                                                        arrayOf(color.copy(0.4f), Color.Transparent)
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            ),
+                            marker = rememberMarker()
                         ),
-                        marker = rememberMarker(),
+                        modelProducer = medianChartEntryModelProducer,
+                        scrollState = rememberVicoScrollState(
+                            scrollEnabled = false,
+                            initialScroll = Scroll.Absolute.End
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = HALF_CHART_TOP_PADDING)
@@ -293,9 +348,6 @@ private fun TotalAverageAndMedianSpendingComponentPreview() {
     ArrugarqTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(
-                totalChartEntryModelProducer = ChartEntryModelProducer(),
-                averageChartEntryModelProducer = ChartEntryModelProducer(),
-                medianChartEntryModelProducer = ChartEntryModelProducer(),
                 spentByTimeData = ItemSpentByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
             )

@@ -56,6 +56,7 @@ import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerScreenState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
+import kotlinx.collections.immutable.ImmutableList
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -79,14 +80,13 @@ fun ModifyTransactionScreenImpl(
     isExpandedScreen: Boolean,
     onBack: () -> Unit,
     state: ModifyTransactionScreenState,
-    shops: Data<List<Shop>>,
+    shops: Data<ImmutableList<Shop>>,
     onNewShopSelected: (shop: Shop?) -> Unit,
     onSubmit: () -> Unit,
+    onShopAddButtonClick: (query: String?) -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.transaction_add),
-    onShopAddButtonClick: (query: String?) -> Unit,
-    onTransactionShopLongClick: (shopId: Long) -> Unit,
-) {
+    onTransactionShopLongClick: (shopId: Long) -> Unit) {
     val datePickerState = rememberDatePickerState()
 
     ModifyScreen<FuzzySearchSource>(
@@ -173,7 +173,7 @@ fun ModifyTransactionScreenImpl(
 @Composable
 private fun ModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
-    shops: Data<List<Shop>>,
+    shops: Data<ImmutableList<Shop>>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
@@ -345,7 +345,7 @@ private fun ModifyTransactionScreenContent(
 @Composable
 private fun ExpandedModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
-    shops: Data<List<Shop>>,
+    shops: Data<ImmutableList<Shop>>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {

@@ -19,6 +19,8 @@ import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.Inser
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -229,36 +231,36 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .onStart { Data.Loading<Long>() }
     }
 
-    override fun totalSpentByDayFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByDayFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByDayFlow(category.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByWeekFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByWeekFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByWeekFlow(category.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByMonthFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByMonthFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByMonthFlow(category.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
-    override fun totalSpentByYearFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>> {
+    override fun totalSpentByYearFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>> {
         return dao.totalSpentByYearFlow(category.id)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ItemSpentByTime>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ItemSpentByTime>>() }
     }
 
     override fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<FullItem>> {
@@ -292,16 +294,17 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .flow
     }
 
-    override fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>> {
+    override fun totalSpentByCategoryFlow(): Flow<ImmutableList<ItemSpentByCategory>> {
         return dao.totalSpentByCategoryFlow()
             .cancellable()
             .distinctUntilChanged()
+            .map { it.toImmutableList() }
     }
 
     override fun totalSpentByCategoryByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<List<ItemSpentByCategory>> {
+    ): Flow<ImmutableList<ItemSpentByCategory>> {
         val date: String = buildString {
             append(year)
             append("-")
@@ -317,22 +320,23 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         return dao.totalSpentByCategoryByMonthFlow(date)
             .cancellable()
             .distinctUntilChanged()
+            .map { it.toImmutableList() }
     }
 
-    override fun allFlow(): Flow<Data<List<ProductCategory>>> {
+    override fun allFlow(): Flow<Data<ImmutableList<ProductCategory>>> {
         return dao.allFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductCategory>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ProductCategory>>() }
     }
 
-    override fun allWithAltNamesFlow(): Flow<Data<List<ProductCategoryWithAltNames>>> {
+    override fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductCategoryWithAltNames>>> {
         return dao.allWithAltNamesFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<List<ProductCategoryWithAltNames>>() }
+            .map { Data.Loaded(it.toImmutableList()) }
+            .onStart { Data.Loading<ImmutableList<ProductCategoryWithAltNames>>() }
     }
 
     override suspend fun totalCount(): Int {
@@ -342,10 +346,10 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
     override suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductCategory> {
+    ): ImmutableList<ProductCategory> {
         return dao.getPagedList(
             limit,
             offset
-        )
+        ).toImmutableList()
     }
 }

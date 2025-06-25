@@ -8,6 +8,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductCategoryAltName
 import com.kssidll.arru.data.data.ProductCategoryWithAltNames
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepositorySource {
@@ -204,25 +205,25 @@ interface CategoryRepositorySource {
      * @param category [ProductCategory] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByDayFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByWeekFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByMonthFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(category: ProductCategory): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByYearFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param category [ProductCategory] to match the items to
@@ -232,7 +233,7 @@ interface CategoryRepositorySource {
     /**
      * @return list of [ItemSpentByCategory] representing total spending groupped by category
      */
-    fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>>
+    fun totalSpentByCategoryFlow(): Flow<ImmutableList<ItemSpentByCategory>>
 
     /**
      * @param year year to match the data to
@@ -242,17 +243,17 @@ interface CategoryRepositorySource {
     fun totalSpentByCategoryByMonthFlow(
         year: Int,
         month: Int
-    ): Flow<List<ItemSpentByCategory>>
+    ): Flow<ImmutableList<ItemSpentByCategory>>
 
     /**
      * @return list of all [ProductCategory] as flow
      */
-    fun allFlow(): Flow<Data<List<ProductCategory>>>
+    fun allFlow(): Flow<Data<ImmutableList<ProductCategory>>>
 
     /**
      * @return list of all [ProductCategoryWithAltNames] as flow
      */
-    fun allWithAltNamesFlow(): Flow<Data<List<ProductCategoryWithAltNames>>>
+    fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductCategoryWithAltNames>>>
 
     /**
      * @return total count of [ProductCategory]
@@ -265,5 +266,5 @@ interface CategoryRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductCategory>
+    ): ImmutableList<ProductCategory>
 }

@@ -11,6 +11,7 @@ import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.Data
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepositorySource {
@@ -221,25 +222,25 @@ interface ProductRepositorySource {
      * @param product [Product] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(product: Product): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByDayFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param product [Product] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(product: Product): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByWeekFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param product [Product] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(product: Product): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByMonthFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param product [Product] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(product: Product): Flow<Data<List<ItemSpentByTime>>>
+    fun totalSpentByYearFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
      * @param product [Product] to match the items to
@@ -255,18 +256,18 @@ interface ProductRepositorySource {
     /**
      * @return list of all [ProductWithAltNames] as flow
      */
-    fun allWithAltNamesFlow(): Flow<Data<List<ProductWithAltNames>>>
+    fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductWithAltNames>>>
 
     /**
      * @param product [Product] to match the data with
      * @return list of [ProductPriceByShopByTime] representing the average price of [product] groupped by variant, shop and month as flow
      */
-    fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<List<ProductPriceByShopByTime>>>
+    fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>
 
     /**
      * @return list of all [Product] as flow
      */
-    fun allFlow(): Flow<Data<List<Product>>>
+    fun allFlow(): Flow<Data<ImmutableList<Product>>>
 
     /**
      * @return total count of [Product]
@@ -279,5 +280,5 @@ interface ProductRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<Product>
+    ): ImmutableList<Product>
 }

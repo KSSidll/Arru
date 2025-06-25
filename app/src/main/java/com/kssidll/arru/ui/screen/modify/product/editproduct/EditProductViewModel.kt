@@ -18,6 +18,8 @@ import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -74,11 +76,11 @@ class EditProductViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(productId: Long): Flow<Data<List<Product>>> {
+    fun allMergeCandidates(productId: Long): Flow<Data<ImmutableList<Product>>> {
         return productRepository.allFlow()
             .map {
                 if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != productId })
+                    Data.Loaded(it.data.filter { item -> item.id != productId }.toImmutableList())
                 } else it
             }
     }
