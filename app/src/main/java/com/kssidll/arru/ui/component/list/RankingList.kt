@@ -43,6 +43,8 @@ import com.kssidll.arru.domain.data.RankSource
 import com.kssidll.arru.ui.component.other.ProgressBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 private val firstTextStyle: TextStyle = Typography.titleLarge
 private val secondTextStyle: TextStyle = Typography.titleMedium
@@ -103,7 +105,7 @@ private fun getRowHeight(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> RankingList(
-    items: List<T>,
+    items: ImmutableList<T>,
     modifier: Modifier = Modifier,
     innerItemPadding: PaddingValues = PaddingValues(0.dp),
     displayCount: Int = 6,
@@ -288,7 +290,7 @@ private fun RankingListPreview() {
     ArrugarqTheme {
         Surface {
             RankingList(
-                items = TransactionTotalSpentByShop.generateList(),
+                items = TransactionTotalSpentByShop.generateList().toImmutableList(),
             )
         }
     }

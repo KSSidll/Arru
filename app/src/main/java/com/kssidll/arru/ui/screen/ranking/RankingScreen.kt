@@ -39,6 +39,8 @@ import com.kssidll.arru.ui.component.list.RankingList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Generic ranking screen
@@ -56,7 +58,7 @@ import com.kssidll.arru.ui.theme.Typography
 fun <T> RankingScreen(
     onBack: () -> Unit,
     title: String,
-    data: List<T>,
+    data: ImmutableList<T>,
     onItemClick: ((T) -> Unit)? = null,
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
@@ -135,7 +137,7 @@ private fun RankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = ItemSpentByCategory.generateList(),
+                data = ItemSpentByCategory.generateList().toImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -153,7 +155,7 @@ private fun EmptyRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = emptyList(),
+                data = emptyList<ItemSpentByCategory>().toImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -171,7 +173,7 @@ private fun ExpandedRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = ItemSpentByCategory.generateList(),
+                data = ItemSpentByCategory.generateList().toImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -189,7 +191,7 @@ private fun ExpandedEmptyRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = emptyList(),
+                data = emptyList<ItemSpentByCategory>().toImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},

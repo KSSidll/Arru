@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -15,7 +16,7 @@ class ShopRankingViewModel @Inject constructor(
     /**
      * @return List of data points representing shop spending in time as flow
      */
-    fun shopTotalSpentFlow(): Flow<List<TransactionTotalSpentByShop>> {
+    fun shopTotalSpentFlow(): Flow<ImmutableList<TransactionTotalSpentByShop>> {
         return shopRepository.totalSpentByShopFlow()
     }
 }
