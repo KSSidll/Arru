@@ -94,6 +94,11 @@ fun LazyListScope.transactionBasketCard(
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Column {
+                    val onItemClick = remember(onItemClick) { onItemClick }
+                    val onItemLongClick = remember(onItemLongClick) { onItemLongClick }
+                    val onItemCategoryClick = remember(onItemCategoryClick) { onItemCategoryClick }
+                    val onItemProducerClick = remember(onItemProducerClick) { onItemProducerClick }
+
                     transaction.items.forEach { item ->
                         FullItemCard(
                             item = item,
