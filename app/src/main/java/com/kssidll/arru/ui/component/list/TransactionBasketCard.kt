@@ -31,6 +31,7 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -187,6 +188,8 @@ fun LazyListScope.transactionBasketCardHeader(
                                 )
                         ) {
                             if (transaction.shop != null) {
+                                val onItemShopClick = remember(transaction.shop.id) { onItemShopClick }
+
                                 Button(
                                     onClick = {
                                         onItemShopClick(transaction.shop.id)

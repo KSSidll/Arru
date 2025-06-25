@@ -118,15 +118,18 @@ fun TransactionsScreen(
                 )
 
                 Box {
-                    TransactionScreenContent(
-                        onEvent = onEvent,
-                        listState = uiState.transactionsListState,
-                        transactions = transactions,
+                    // apply padding only for horizontal insets because we want vertical edge to edge
+                    Box(
                         modifier = Modifier
-                            // apply padding only for horizontal insets because we want vertical edge to edge
                             .padding(horizontalPaddingValues)
                             .consumeWindowInsets(paddingValues)
-                    )
+                    ) {
+                        TransactionScreenContent(
+                            onEvent = onEvent,
+                            listState = uiState.transactionsListState,
+                            transactions = transactions,
+                        )
+                    }
 
                     Box(
                         modifier = Modifier
@@ -182,15 +185,15 @@ fun TransactionsScreen(
                     },
                     sheetPeekHeight = BOTTOM_SHEET_PEEK_HEIGHT,
                 ) { innerPaddingValues ->
-                    TransactionScreenContent(
-                        onEvent = onEvent,
-                        listState = uiState.transactionsListState,
-                        transactions = transactions,
-                        fabPadding = innerPaddingValues,
-                        modifier = Modifier
-                            // don't add padding for inner insets to allow edge to edge over the bottom sheet
-                            .consumeWindowInsets(innerPaddingValues)
-                    )
+                    // don't add padding for inner insets to allow edge to edge over the bottom sheet
+                    Box(modifier = Modifier.consumeWindowInsets(innerPaddingValues)) {
+                        TransactionScreenContent(
+                            onEvent = onEvent,
+                            listState = uiState.transactionsListState,
+                            transactions = transactions,
+                            fabPadding = innerPaddingValues,
+                        )
+                    }
                 }
             }
         }

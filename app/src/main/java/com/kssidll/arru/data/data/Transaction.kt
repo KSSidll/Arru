@@ -1,6 +1,7 @@
 package com.kssidll.arru.data.data
 
 import androidx.collection.FloatFloatPair
+import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -144,6 +145,7 @@ data class TransactionBasket(
     }
 }
 
+@Immutable
 data class TransactionBasketWithItems(
     val id: Long,
     val date: Long,
