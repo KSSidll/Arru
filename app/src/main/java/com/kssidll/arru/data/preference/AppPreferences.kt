@@ -141,7 +141,7 @@ data object AppPreferences {
             /**
              * Values for default export type
              */
-            val DEFAULT = Values.CompactCSV
+            val DEFAULT = Values.RawCSV
 
             enum class Values {
                 /**
