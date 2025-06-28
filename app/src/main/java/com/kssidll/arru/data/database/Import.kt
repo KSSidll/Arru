@@ -206,9 +206,9 @@ suspend fun handleCsvImport(
                 // From newest to oldest
                 // File version 1.0, @since v2.5.0
                 if (headers == "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity") {
-                    reader.forEachLine {
-                        if (it.isNotBlank()) {
-                            val text = it.split(";")
+                    reader.forEachLine { line ->
+                        if (line.isNotBlank()) {
+                            val text = line.split(";")
 
                             val transactionDate = text[0].toLong()
                             val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
@@ -577,9 +577,9 @@ suspend fun handleCsvImport(
                 if (headers == "id;date;shopId;totalCost") {
                     val transactionCostDivisor = 100
 
-                    reader.forEachLine {
-                        if (it.isNotBlank()) {
-                            val text = it.split(";")
+                    reader.forEachLine { line ->
+                        if (line.isNotBlank()) {
+                            val text = line.split(";")
 
                             val id = text[0].toLong()
                             val date = text[1].toLong()
@@ -715,9 +715,9 @@ suspend fun handleCsvImport(
                     val priceDivisor = 100
                     val quantityDivisor = 1000
 
-                    reader.forEachLine {
-                        if (it.isNotBlank()) {
-                            val text = it.split(';')
+                    reader.forEachLine { line ->
+                        if (line.isNotBlank()) {
+                            val text = line.split(';')
 
                             val id = text[0].toLong()
                             val transactionBasketId = text[1].toLong()
@@ -882,12 +882,16 @@ suspend fun handleJsonImport(
                                 while (reader.hasNext()) {
                                     val shopValueName = reader.nextName()
 
-                                    if (shopValueName == "id") {
-                                        transactionShopId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                    } else if (shopValueName == "name") {
-                                        shopName = reader.nextString()
-                                    } else {
-                                        reader.skipValue()
+                                    when (shopValueName) {
+                                        "id" -> {
+                                            transactionShopId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                        }
+                                        "name" -> {
+                                            shopName = reader.nextString()
+                                        }
+                                        else -> {
+                                            reader.skipValue()
+                                        }
                                     }
                                 }
 
@@ -924,6 +928,7 @@ suspend fun handleJsonImport(
                                     var itemPrice: Long? = null
                                     var itemQuantity: Long? = null
                                     var itemProductId: Long? = null
+                                    var itemVariantId: Long? = null
 
                                     var itemVariant: ProductVariant? = null
 
@@ -966,13 +971,17 @@ suspend fun handleJsonImport(
                                                     while (reader.hasNext()) {
                                                         val categoryValueName = reader.nextName()
 
-                                                        if (categoryValueName == "id") {
-                                                            productCategoryId =
-                                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                                        } else if (categoryValueName == "name") {
-                                                            categoryName = reader.nextString()
-                                                        } else {
-                                                            reader.skipValue()
+                                                        when (categoryValueName) {
+                                                            "id" -> {
+                                                                productCategoryId =
+                                                                    reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                            }
+                                                            "name" -> {
+                                                                categoryName = reader.nextString()
+                                                            }
+                                                            else -> {
+                                                                reader.skipValue()
+                                                            }
                                                         }
                                                     }
 
@@ -1006,13 +1015,17 @@ suspend fun handleJsonImport(
                                                         while (reader.hasNext()) {
                                                             val producerValueName = reader.nextName()
 
-                                                            if (producerValueName == "id") {
-                                                                productProducerId =
-                                                                    reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                                            } else if (producerValueName == "name") {
-                                                                producerName = reader.nextString()
-                                                            } else {
-                                                                reader.skipValue()
+                                                            when (producerValueName) {
+                                                                "id" -> {
+                                                                    productProducerId =
+                                                                        reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                }
+                                                                "name" -> {
+                                                                    producerName = reader.nextString()
+                                                                }
+                                                                else -> {
+                                                                    reader.skipValue()
+                                                                }
                                                             }
                                                         }
 
@@ -1071,32 +1084,33 @@ suspend fun handleJsonImport(
                                                 reader.skipValue()
                                             } else {
                                                 reader.beginObject()
-
-                                                var variantId: Long? = null
                                                 var variantName: String? = null
 
                                                 while (reader.hasNext()) {
                                                     val variantValueName = reader.nextName()
 
-                                                    if (variantValueName == "id") {
-                                                        variantId =
-                                                            reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                                    } else if (variantValueName == "name") {
-                                                        variantName = reader.nextString()
-                                                    } else {
-                                                        reader.skipValue()
+                                                    when (variantValueName) {
+                                                        "id" -> {
+                                                            itemVariantId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                        }
+                                                        "name" -> {
+                                                            variantName = reader.nextString()
+                                                        }
+                                                        else -> {
+                                                            reader.skipValue()
+                                                        }
                                                     }
                                                 }
 
                                                 // From newest to oldest
                                                 // File version 1.0, @since v2.5.0
                                                 if (
-                                                    variantId != null
+                                                    itemVariantId != null
                                                     && variantName != null
                                                 ) {
-                                                    if (variants.add(variantId)) {
+                                                    if (variants.add(itemVariantId)) {
                                                         itemVariant = ProductVariant(
-                                                            id = variantId,
+                                                            id = itemVariantId,
                                                             productId = -1, // temporarily assume -1 as product id could technically not be set
                                                             name = variantName,
                                                         )
@@ -1137,7 +1151,7 @@ suspend fun handleJsonImport(
                                                     price = itemPrice,
                                                     quantity = itemQuantity,
                                                     productId = itemProductId,
-                                                    variantId = itemVariant?.id
+                                                    variantId = itemVariantId
                                                 )
                                             )
                                         }
