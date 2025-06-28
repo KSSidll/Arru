@@ -1,16 +1,22 @@
 package com.kssidll.arru.ui.screen.modify.variant
 
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,6 +32,7 @@ import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.optionalAlpha
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -45,6 +52,8 @@ fun ModifyVariantScreenImpl(
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
+    val isGlobalVariantInteractionSource = remember { MutableInteractionSource() }
+
     ModifyScreen<FuzzySearchSource>(
         onBack = onBack,
         title = stringResource(id = R.string.item_product_variant_full),
@@ -89,6 +98,41 @@ fun ModifyVariantScreenImpl(
                     .fillMaxWidth()
                     .padding(horizontal = ItemHorizontalPadding)
             )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable(
+                        enabled = state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null,
+                        indication = null,
+                        interactionSource = isGlobalVariantInteractionSource
+                    ) {
+                        state.isVariantGlobal.value.data?.let {
+                            state.isVariantGlobal.value = Field.Loaded(!it)
+                        }
+                    }
+            ) {
+                Checkbox(
+                    enabled = state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null,
+                    checked = state.isVariantGlobal.value.data ?: false,
+                    onCheckedChange = {
+                        state.isVariantGlobal.value = Field.Loaded(it)
+                    },
+                    interactionSource = isGlobalVariantInteractionSource
+                )
+
+                Text(
+                    text = "Show in all products", // TODO use `R.string.variant_use_as_global`
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = optionalAlpha)
+                    }
+                )
+            }
         }
     }
 }
