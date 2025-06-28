@@ -125,4 +125,5 @@
   <string name="import_error_failed_to_open_file" comment="Displayed when import fails to open a file, is followed by the file identifier">Failed to open:</string>
   <string name="import_error_missing_files" comment="Displayed when import fails to find files, is followed by a list of expected file groups">Failed to find file groups, expecting one of:</string>
   <string name="import_error_parse_error" comment="Displayed when import parsing fails in an unexpected way">Encountered unknown parsing error</string>
+  <string name="variant_use_as_global" comment="Shown in Product Variant creation as toggle for whether it should be an aggregated global variant that is displayed in all products">Use as aggregate shown in all products</string>
 </resources>
