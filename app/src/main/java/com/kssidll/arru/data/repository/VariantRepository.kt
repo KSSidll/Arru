@@ -50,7 +50,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
         // handle change to global variant for local ones on global creation by name
         if (productId == null) {
-            val others = dao.byName(name).first()
+            val others = dao.byName(name).first().filter { it.id != newVariantId }
 
             others.forEach { variant ->
                 val othersItems = dao.getItems(variant.id)
