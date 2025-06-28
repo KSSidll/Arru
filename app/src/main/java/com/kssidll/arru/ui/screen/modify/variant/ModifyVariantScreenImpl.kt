@@ -124,7 +124,7 @@ fun ModifyVariantScreenImpl(
                 )
 
                 Text(
-                    text = "Show in all products", // TODO use `R.string.variant_use_as_global`
+                    text = "Use as aggregated variant and show for all products", // TODO use `R.string.variant_use_as_global`
                     style = MaterialTheme.typography.bodyLarge,
                     color = if (state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null) {
                         MaterialTheme.colorScheme.onSurface
