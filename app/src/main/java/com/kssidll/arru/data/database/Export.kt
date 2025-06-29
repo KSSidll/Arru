@@ -419,7 +419,7 @@ suspend fun exportDataAsCompactCsv(
         ?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity\n".toByteArray()
+                    "transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity\n".toByteArray()
                 )
 
                 var offset = 0
@@ -436,7 +436,7 @@ suspend fun exportDataAsCompactCsv(
 
                         if (items.isEmpty()) {
                             outputStream.write(
-                                "${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;null;null;null;null\n".toByteArray()
+                                "${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null\n".toByteArray()
                             )
                         } else {
                             items.forEach { item ->
@@ -450,9 +450,11 @@ suspend fun exportDataAsCompactCsv(
                                 val variant =
                                     item.variantId?.let { variantRepository.get(it)?.name }
                                         ?: "null"
+                                val variantGlobal = item.variantId?.let { variantRepository.get(it)?.productId == null }
+                                    ?: false
 
                                 outputStream.write(
-                                    "${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${category};${producer};${item.actualPrice()};${item.actualQuantity()}\n".toByteArray()
+                                    "${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()}\n".toByteArray()
                                 )
                             }
                         }
@@ -620,6 +622,7 @@ suspend fun exportDataAsJson(
                                     writer.beginObject()
                                     writer.name("id").value(variant.id)
                                     writer.name("name").value(variant.name)
+                                    writer.name("global").value(variant.productId == null)
                                     writer.endObject()
                                 }
 
