@@ -62,6 +62,7 @@ data class ModifyTransactionScreenState(
     val date: MutableState<Field<Long>> = mutableStateOf(Field.Loaded()),
     val totalCost: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
     val selectedShop: MutableState<Field<Shop?>> = mutableStateOf(Field.Loaded()),
+    val note: MutableState<Field<String?>> = mutableStateOf(Field.Loaded()),
 
     var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),

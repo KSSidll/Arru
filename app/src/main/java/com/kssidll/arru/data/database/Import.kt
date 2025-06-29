@@ -367,7 +367,8 @@ suspend fun handleCsvImport(
                         id = transactions[data.transactionId]!!,
                         date = data.transactionDate,
                         shopId = data.shop?.let { shops[it] },
-                        totalCost = data.transactionTotalPrice
+                        totalCost = data.transactionTotalPrice,
+                        note = null
                     )
                 )
             }
@@ -665,7 +666,8 @@ suspend fun handleCsvImport(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     date = date,
                                     shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
-                                    totalCost = totalCost
+                                    totalCost = totalCost,
+                                    note = null
                                 )
                             )
                         }
@@ -1274,7 +1276,8 @@ suspend fun handleJsonImport(
                                     id = id,
                                     date = date,
                                     shopId = transactionShopId,
-                                    totalCost = cost
+                                    totalCost = cost,
+                                    note = null
                                 )
                             )
                         }

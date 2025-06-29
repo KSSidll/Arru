@@ -20,30 +20,29 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-class TransactionBasketRepository(private val dao: TransactionBasketDao):
-    TransactionBasketRepositorySource {
+class TransactionBasketRepository(
+    private val dao: TransactionBasketDao
+): TransactionBasketRepositorySource {
     // Create
 
     override suspend fun insert(
         date: Long,
         totalCost: Long,
-        shopId: Long?
+        shopId: Long?,
+        note: String?
     ): InsertResult {
         val transaction = TransactionBasket(
             date = date,
             totalCost = totalCost,
-            shopId = shopId
+            shopId = shopId,
+            note = note
         )
 
-        if (transaction.validDate()
-                .not()
-        ) {
+        if (!transaction.validDate()) {
             return InsertResult.Error(InsertResult.InvalidDate)
         }
 
-        if (transaction.validTotalCost()
-                .not()
-        ) {
+        if (!transaction.validTotalCost()) {
             return InsertResult.Error(InsertResult.InvalidTotalCost)
         }
 

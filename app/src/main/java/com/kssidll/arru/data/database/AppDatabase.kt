@@ -626,6 +626,7 @@ class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
 
 val MIGRATION_7_8 = object: Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        // Make productId nullable for global variants
         db.execSQL(
             """
             CREATE TABLE tmp_ProductVariant (
@@ -660,6 +661,52 @@ val MIGRATION_7_8 = object: Migration(7, 8) {
         db.execSQL(
             """
             CREATE INDEX IF NOT EXISTS index_ProductVariant_productId ON ProductVariant (productId)
+        """.trimIndent()
+        )
+
+        // Add note field to transactions
+        db.execSQL(
+            """
+            CREATE TABLE tmp_TransactionBasket (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                date INTEGER NOT NULL,
+                shopId INTEGER,
+                totalCost INTEGER NOT NULL,
+                note TEXT,
+                FOREIGN KEY(shopId) REFERENCES Shop(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO tmp_TransactionBasket (id, date, shopId, totalCost, note)
+            SELECT id, date, shopId, totalCost, NULL
+            FROM TransactionBasket
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE TransactionBasket
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE tmp_TransactionBasket RENAME TO TransactionBasket
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionBasket_date ON TransactionBasket(date)
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_TransactionBasket_shopId ON TransactionBasket(shopId)
         """.trimIndent()
         )
     }
