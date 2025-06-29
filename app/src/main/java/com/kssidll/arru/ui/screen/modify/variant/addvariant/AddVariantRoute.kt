@@ -13,9 +13,9 @@ fun AddVariantRoute(
     productId: Long,
     defaultName: String?,
     navigateBack: (variantId: Long?) -> Unit,
+    viewModel: AddVariantViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddVariantViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
         viewModel.screenState.name.value = Field.Loaded(defaultName)

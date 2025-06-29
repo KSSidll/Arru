@@ -36,6 +36,10 @@ class EditVariantViewModel @Inject constructor(
             value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
+        screenState.isVariantGlobal.apply {
+            value = Field.Loading(variant?.productId == null)
+        }
+
         return@async variant != null
     }
         .await()

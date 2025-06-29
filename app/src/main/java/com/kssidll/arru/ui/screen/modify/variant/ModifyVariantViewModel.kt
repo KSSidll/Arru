@@ -21,4 +21,5 @@ abstract class ModifyVariantViewModel: ViewModel() {
  */
 data class ModifyVariantScreenState(
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
+    val isVariantGlobal: MutableState<Field<Boolean>> = mutableStateOf(Field.Loaded()),
 ): ModifyScreenState()

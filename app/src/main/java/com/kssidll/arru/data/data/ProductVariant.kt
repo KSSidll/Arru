@@ -23,13 +23,13 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 )
 data class ProductVariant(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var productId: Long,
+    @ColumnInfo(index = true) var productId: Long?,
     var name: String,
 ): FuzzySearchSource {
 
     @Ignore
     constructor(
-        productId: Long,
+        productId: Long?,
         name: String,
     ): this(
         0,

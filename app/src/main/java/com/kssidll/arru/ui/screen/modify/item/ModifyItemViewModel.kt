@@ -172,7 +172,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         mUpdateProductVariantsJob?.cancel()
         mUpdateProductVariantsJob = viewModelScope.launch {
             mProductVariants.value =
-                screenState.selectedProduct.value.data?.let { variantsRepository.byProductFlow(it) }
+                screenState.selectedProduct.value.data?.let { variantsRepository.byProductFlow(it, true) }
                     ?: emptyFlow()
         }
     }

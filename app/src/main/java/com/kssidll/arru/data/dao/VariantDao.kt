@@ -35,6 +35,9 @@ interface VariantDao {
     @Query("SELECT item.* FROM item WHERE item.variantId = :variantId")
     suspend fun getItems(variantId: Long): List<Item>
 
+    @Update
+    suspend fun updateItems(items: List<Item>)
+
     @Delete
     suspend fun deleteItems(items: List<Item>)
 
@@ -46,14 +49,20 @@ interface VariantDao {
     @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.id = :variantId")
     fun getFlow(variantId: Long): Flow<ProductVariant?>
 
-    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId = :productId AND productvariant.name = :name")
-    suspend fun byProductAndName(
-        productId: Long,
+    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.name = :name")
+    fun byName(
         name: String
+    ): Flow<List<ProductVariant>>
+
+    @Query("SELECT productvariant.* FROM productvariant WHERE ((:includeGlobal AND productvariant.productId IS NULL) OR (productvariant.productId = :productId)) AND productvariant.name = :name")
+    suspend fun byProductAndName(
+        productId: Long?,
+        name: String,
+        includeGlobal: Boolean
     ): ProductVariant?
 
-    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId == :productId")
-    fun byProductFlow(productId: Long): Flow<List<ProductVariant>>
+    @Query("SELECT productvariant.* FROM productvariant WHERE (:includeGlobal AND productvariant.productId IS NULL) OR productvariant.productId = :productId")
+    fun byProductFlow(productId: Long, includeGlobal: Boolean): Flow<List<ProductVariant>>
 
     @Query("SELECT COUNT(*) FROM productvariant")
     suspend fun totalCount(): Int

@@ -59,12 +59,12 @@ interface VariantRepositorySource {
 
     /**
      * Inserts [ProductVariant]
-     * @param productId id of the [Product] to insert the [ProductVariant] for
+     * @param productId id of the [Product] to insert the [ProductVariant] for, null for global [ProductVariant]
      * @param name name of the variant
      * @return [InsertResult] with id of the newly inserted [ProductVariant] or an error if any
      */
     suspend fun insert(
-        productId: Long,
+        productId: Long?,
         name: String
     ): InsertResult
 
@@ -84,13 +84,13 @@ interface VariantRepositorySource {
     /**
      * Updates [ProductVariant] with [variantId] id to provided [productId] and [name]
      * @param variantId id to match [ProductVariant]
-     * @param productId [Product] id to update the matching [ProductVariant] to
+     * @param productId [Product] id to update the matching [ProductVariant] to, null for global [ProductVariant]
      * @param name name to update the matching [ProductVariant] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
         variantId: Long,
-        productId: Long,
+        productId: Long?,
         name: String
     ): UpdateResult
 
@@ -123,9 +123,10 @@ interface VariantRepositorySource {
 
     /**
      * @param product [Product] to match the [ProductVariant] with
+     * @param showGlobal whether to return global variants as well
      * @return list of [ProductVariant] matching [product] as flow
      */
-    fun byProductFlow(product: Product): Flow<Data<ImmutableList<ProductVariant>>>
+    fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariant>>>
 
     /**
      * @return total count of [ProductVariant]

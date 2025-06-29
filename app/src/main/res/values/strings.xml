@@ -57,6 +57,7 @@
     <string name="item_product_variant_full">Product Variant</string>
     <string name="item_product_variant_add">Add Variant</string>
     <string name="item_product_variant_edit">Edit Variant</string>
+    <string name="variant_use_as_global" comment="Shown in Product Variant creation as toggle for whether it should be an aggregated global variant that is displayed in all products">Use as aggregate shown in all products</string>
     <string name="item_product_variant_add_description">Add new Product Variant</string>
     <string name="item_product_variant_default_value">Kilograms</string>
     <string name="item_product_variant_delete_warning_text">This action will delete all of the transactions associated with this product variant</string>

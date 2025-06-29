@@ -12,6 +12,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
@@ -19,7 +20,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     // Create
 
     override suspend fun insert(
-        productId: Long,
+        productId: Long?,
         name: String
     ): InsertResult {
         val variant = ProductVariant(
@@ -27,26 +28,42 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             name
         )
 
-        if (dao.getProduct(productId) == null) {
+        if (productId != null && dao.getProduct(productId) == null) {
             return InsertResult.Error(InsertResult.InvalidProductId)
         }
 
-        if (variant.validName()
-                .not()
-        ) {
+        if (!variant.validName()) {
             return InsertResult.Error(InsertResult.InvalidName)
         }
 
         val other = dao.byProductAndName(
             productId,
-            name
+            name,
+            true
         )
 
         if (other != null) {
             return InsertResult.Error(InsertResult.DuplicateName)
         }
 
-        return InsertResult.Success(dao.insert(variant))
+        val newVariantId = dao.insert(variant)
+
+        // handle change to global variant for local ones on global creation by name
+        if (productId == null) {
+            val others = dao.byName(name).first().filter { it.id != newVariantId }
+
+            others.forEach { variant ->
+                val othersItems = dao.getItems(variant.id)
+
+                othersItems.forEach { it.variantId = newVariantId }
+
+                dao.updateItems(othersItems)
+                dao.delete(variant)
+            }
+        }
+
+        return InsertResult.Success(newVariantId)
+
     }
 
     // Update
@@ -67,7 +84,8 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
         val other = dao.byProductAndName(
             variant.productId,
-            name
+            name,
+            true
         )
 
         if (other != null && other.id != variant.id) {
@@ -81,14 +99,14 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
     override suspend fun update(
         variantId: Long,
-        productId: Long,
+        productId: Long?,
         name: String
     ): UpdateResult {
         if (dao.get(variantId) == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
-        if (dao.getProduct(productId) == null) {
+        if (productId != null && dao.getProduct(productId) == null) {
             return UpdateResult.Error(UpdateResult.InvalidProductId)
         }
 
@@ -106,7 +124,8 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
         val other = dao.byProductAndName(
             productId,
-            name
+            name,
+            true
         )
 
         if (other != null && other.id != variant.id) {
@@ -152,8 +171,8 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             .onStart { Data.Loading<ProductVariant?>() }
     }
 
-    override fun byProductFlow(product: Product): Flow<Data<ImmutableList<ProductVariant>>> {
-        return dao.byProductFlow(product.id)
+    override fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariant>>> {
+        return dao.byProductFlow(product.id, showGlobal)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it.toImmutableList()) }

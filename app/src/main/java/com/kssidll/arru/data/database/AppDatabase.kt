@@ -89,7 +89,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
 }
 
 @Database(
-    version = 7,
+    version = 8,
     entities = [
         TransactionBasket::class,
         Item::class,
@@ -145,6 +145,7 @@ abstract class AppDatabase: RoomDatabase() {
                 .addMigrations(MIGRATION_3_4)
                 .addMigrations(MIGRATION_5_6)
                 .addMigrations(MIGRATION_6_7(context))
+                .addMigrations(MIGRATION_7_8)
         }
 
         /**
@@ -620,5 +621,46 @@ class MIGRATION_6_7(private val context: Context): Migration(6, 7) {
             }
         } catch (_: Exception) {
         }
+    }
+}
+
+val MIGRATION_7_8 = object: Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE tmp_ProductVariant (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                name TEXT NOT NULL,
+                productId INTEGER,
+                FOREIGN KEY(productId) REFERENCES Product(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO tmp_ProductVariant (id, name, productId)
+            SELECT id, name, productId 
+            FROM ProductVariant
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE ProductVariant
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE tmp_ProductVariant RENAME TO ProductVariant
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS index_ProductVariant_productId ON ProductVariant (productId)
+        """.trimIndent()
+        )
     }
 }
