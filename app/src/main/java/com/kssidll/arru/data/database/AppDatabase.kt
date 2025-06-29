@@ -647,14 +647,6 @@ val MIGRATION_7_8 = object: Migration(7, 8) {
 
         db.execSQL(
             """
-            INSERT INTO tmp_ProductVariant (id, name, productId)
-            SELECT id, name, productId 
-            FROM ProductVariant
-        """.trimIndent()
-        )
-
-        db.execSQL(
-            """
             DROP TABLE ProductVariant
         """.trimIndent()
         )
