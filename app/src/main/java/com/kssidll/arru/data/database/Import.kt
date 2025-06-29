@@ -184,6 +184,7 @@ suspend fun handleCsvImport(
             val shop: String?,
             val product: String?,
             val variant: String?,
+            val variantGlobal: Boolean,
             val category: String?,
             val producer: String?,
             val price: Long?,
@@ -203,43 +204,83 @@ suspend fun handleCsvImport(
                 // Get headers from first line
                 val headers = reader.readLine()
 
-                // From newest to oldest
-                // File version 1.0, @since v2.5.0
-                if (headers == "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity") {
-                    reader.forEachLine { line ->
-                        if (line.isNotBlank()) {
-                            val text = line.split(";")
+                when (headers) {
+                    // File version 2.0, @since v2.5.7
+                    "transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity" -> {
+                        reader.forEachLine { line ->
+                            if (line.isNotBlank()) {
+                                val text = line.split(";")
 
-                            val transactionDate = text[0].toLong()
-                            val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
-                            val shop = if (text[2] != "null") text[2] else null
-                            val product = if (text[3] != "null") text[3] else null
-                            val variant = if (text[4] != "null") text[4] else null
-                            val category = if (text[5] != "null") text[5] else null
-                            val producer = if (text[6] != "null") text[6] else null
-                            val price = if (text[7] != "null") text[7].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
-                            val quantity = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
+                                val transactionDate = text[0].toLong()
+                                val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                val shop = if (text[2] != "null") text[2] else null
+                                val product = if (text[3] != "null") text[3] else null
+                                val variant = if (text[4] != "null") text[4] else null
+                                val variantGlobal = text[5] == "true"
+                                val category = if (text[6] != "null") text[6] else null
+                                val producer = if (text[7] != "null") text[7] else null
+                                val price = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
+                                val quantity = if (text[9] != "null") text[9].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
 
-                            compactCsvData.add(
-                                CompactCsvRow(
-                                    transactionDate = transactionDate,
-                                    transactionTotalPrice = transactionTotalPrice,
-                                    shop = shop,
-                                    product = product,
-                                    variant = variant,
-                                    category = category,
-                                    producer = producer,
-                                    price = price,
-                                    quantity = quantity,
+                                compactCsvData.add(
+                                    CompactCsvRow(
+                                        transactionDate = transactionDate,
+                                        transactionTotalPrice = transactionTotalPrice,
+                                        shop = shop,
+                                        product = product,
+                                        variant = variant,
+                                        variantGlobal = variantGlobal,
+                                        category = category,
+                                        producer = producer,
+                                        price = price,
+                                        quantity = quantity,
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
-                } else {
-                    // Failed to determine file version
-                    Log.e("ImportCompactCsv", "failed to determine file version")
-                    onError(ImportError.FailedToDetermineVersion(exportDocument.displayName))
-                    return
+
+                    // File version 1.0, @since v2.5.0
+                    "transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity" -> {
+                        reader.forEachLine { line ->
+                            if (line.isNotBlank()) {
+                                val text = line.split(";")
+
+                                val transactionDate = text[0].toLong()
+                                val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                val shop = if (text[2] != "null") text[2] else null
+                                val product = if (text[3] != "null") text[3] else null
+                                val variant = if (text[4] != "null") text[4] else null
+                                val category = if (text[5] != "null") text[5] else null
+                                val producer = if (text[6] != "null") text[6] else null
+                                val price = if (text[7] != "null") text[7].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
+                                val quantity = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
+
+                                compactCsvData.add(
+                                    CompactCsvRow(
+                                        transactionDate = transactionDate,
+                                        transactionTotalPrice = transactionTotalPrice,
+                                        shop = shop,
+                                        product = product,
+                                        variant = variant,
+                                        variantGlobal = false,
+                                        category = category,
+                                        producer = producer,
+                                        price = price,
+                                        quantity = quantity,
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    // Unknown version
+                    else -> {
+                        // Failed to determine file version
+                        Log.e("ImportCompactCsv", "failed to determine file version")
+                        onError(ImportError.FailedToDetermineVersion(exportDocument.displayName))
+                        return
+                    }
                 }
             }
 
@@ -254,7 +295,7 @@ suspend fun handleCsvImport(
         val transactions =
             mutableMapOf<Pair<Long, Long>, Long>() // transaction is per day and we assume each has unique total
         val products = mutableMapOf<String, Long>()
-        val variants = mutableMapOf<Pair<String, Long>, Long>() // variant is per name and product
+        val variants = mutableMapOf<Pair<String, Long?>, Long>() // variant is per name and product, product can be null if variant is global
 
         compactCsvData.forEach { data ->
             // handle shops
@@ -332,7 +373,21 @@ suspend fun handleCsvImport(
 
             // handle variants
             data.variant?.let { variant ->
-                if (variants[Pair(variant, products[data.product]!!)] == null) {
+                if (data.variantGlobal) {
+                    if (variants[Pair(variant, null)] == null) {
+                        variants.put(
+                            Pair(variant, null),
+                            variants.size.toLong() + 1
+                        ) // id of 0 causes a foreign key constraint fail
+                        variantList.add(
+                            ProductVariant(
+                                id = variants[Pair(variant, null)]!!,
+                                productId = null,
+                                name = variant
+                            )
+                        )
+                    }
+                } else if (variants[Pair(variant, products[data.product]!!)] == null) {
                     variants.put(
                         Pair(variant, products[data.product]!!),
                         variants.size.toLong() + 1
@@ -358,7 +413,11 @@ suspend fun handleCsvImport(
                                 data.transactionTotalPrice
                             )]!!,
                             productId = products[data.product]!!,
-                            variantId = data.variant?.let { variants[Pair(it, products[data.product]!!)] },
+                            variantId = data.variant?.let {
+                                if (data.variantGlobal) {
+                                    variants[Pair(it, null)]
+                                } else variants[Pair(it, products[data.product]!!)]
+                            },
                             quantity = quantity,
                             price = price
                         )
@@ -668,19 +727,20 @@ suspend fun handleCsvImport(
 
                 // From newest to oldest
                 // File version 1.0, @since v2.5.0
+                // productId optional @since v2.5.7
                 if (headers == "id;productId;name") {
                     reader.forEachLine {
                         if (it.isNotBlank()) {
                             val text = it.split(";")
 
-                            val id = text[0].toLong()
-                            val productId = text[1].toLong()
+                            val id = text[0].toLong() + 1 // id can be 0 but 0 causes a foreign key constraint fail
+                            val productId = if (text[1] != "null") text[1].toLong() + 1 else null // id can be 0 but 0 causes a foreign key constraint fail
                             val name = text[2]
 
                             variantList.add(
                                 ProductVariant(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    productId = productId + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                    id = id,
+                                    productId = productId,
                                     name = name
                                 )
                             )
@@ -1085,6 +1145,7 @@ suspend fun handleJsonImport(
                                             } else {
                                                 reader.beginObject()
                                                 var variantName: String? = null
+                                                var variantGlobal: Boolean = false  // @since v2.5.7, global has null productId, default not global
 
                                                 while (reader.hasNext()) {
                                                     val variantValueName = reader.nextName()
@@ -1095,6 +1156,9 @@ suspend fun handleJsonImport(
                                                         }
                                                         "name" -> {
                                                             variantName = reader.nextString()
+                                                        }
+                                                        "global" -> {
+                                                            variantGlobal = reader.nextBoolean()
                                                         }
                                                         else -> {
                                                             reader.skipValue()
@@ -1109,9 +1173,13 @@ suspend fun handleJsonImport(
                                                     && variantName != null
                                                 ) {
                                                     if (variants.add(itemVariantId)) {
+                                                        val productId = if (variantGlobal) {
+                                                            null // global variants have no product id
+                                                        } else -1L  // temporarily assume -1 as product id could technically not be set
+
                                                         itemVariant = ProductVariant(
                                                             id = itemVariantId,
-                                                            productId = -1, // temporarily assume -1 as product id could technically not be set
+                                                            productId = productId,
                                                             name = variantName,
                                                         )
                                                     }
@@ -1140,7 +1208,10 @@ suspend fun handleJsonImport(
                                     ) {
                                         if (items.add(itemId)) {
                                             itemVariant?.let { // update id because now productId has to be set
-                                                it.productId = itemProductId
+                                                // only update id if not null, null means that the variant is global
+                                                if (it.productId != null) {
+                                                    it.productId = itemProductId
+                                                }
                                                 variantList.add(it) // also add to list
                                             }
 
