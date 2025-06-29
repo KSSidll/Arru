@@ -419,7 +419,7 @@ suspend fun exportDataAsCompactCsv(
         ?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    "transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity\n".toByteArray()
+                    "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity\n".toByteArray()
                 )
 
                 var offset = 0
@@ -436,7 +436,7 @@ suspend fun exportDataAsCompactCsv(
 
                         if (items.isEmpty()) {
                             outputStream.write(
-                                "${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null\n".toByteArray()
+                                "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null\n".toByteArray()
                             )
                         } else {
                             items.forEach { item ->
@@ -454,7 +454,7 @@ suspend fun exportDataAsCompactCsv(
                                     ?: false
 
                                 outputStream.write(
-                                    "${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()}\n".toByteArray()
+                                    "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()}\n".toByteArray()
                                 )
                             }
                         }

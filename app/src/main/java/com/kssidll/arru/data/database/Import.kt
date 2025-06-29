@@ -179,6 +179,7 @@ suspend fun handleCsvImport(
         }
 
         data class CompactCsvRow(
+            val transactionId: Long,
             val transactionDate: Long,
             val transactionTotalPrice: Long,
             val shop: String?,
@@ -206,24 +207,26 @@ suspend fun handleCsvImport(
 
                 when (headers) {
                     // File version 2.0, @since v2.5.7
-                    "transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity" -> {
+                    "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity" -> {
                         reader.forEachLine { line ->
                             if (line.isNotBlank()) {
                                 val text = line.split(";")
 
-                                val transactionDate = text[0].toLong()
-                                val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
-                                val shop = if (text[2] != "null") text[2] else null
-                                val product = if (text[3] != "null") text[3] else null
-                                val variant = if (text[4] != "null") text[4] else null
-                                val variantGlobal = text[5] == "true"
-                                val category = if (text[6] != "null") text[6] else null
-                                val producer = if (text[7] != "null") text[7] else null
-                                val price = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
-                                val quantity = if (text[9] != "null") text[9].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
+                                val transactionId = text[0].toLong()
+                                val transactionDate = text[1].toLong()
+                                val transactionTotalPrice = text[2].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                val shop = if (text[3] != "null") text[3] else null
+                                val product = if (text[4] != "null") text[4] else null
+                                val variant = if (text[5] != "null") text[5] else null
+                                val variantGlobal = text[6] == "true"
+                                val category = if (text[7] != "null") text[7] else null
+                                val producer = if (text[8] != "null") text[8] else null
+                                val price = if (text[9] != "null") text[9].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
+                                val quantity = if (text[10] != "null") text[10].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
 
                                 compactCsvData.add(
                                     CompactCsvRow(
+                                        transactionId = transactionId,
                                         transactionDate = transactionDate,
                                         transactionTotalPrice = transactionTotalPrice,
                                         shop = shop,
@@ -256,8 +259,22 @@ suspend fun handleCsvImport(
                                 val price = if (text[7] != "null") text[7].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
                                 val quantity = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
 
+                                val transactionId = if (compactCsvData.isEmpty()) {
+                                    0L
+                                } else {
+                                    val prev = compactCsvData.last()
+
+                                    if (prev.transactionDate != transactionDate || prev.transactionTotalPrice != transactionTotalPrice) {
+                                        compactCsvData.last().transactionId + 1
+                                    } else {
+                                        compactCsvData.last().transactionId
+                                    }
+
+                                }
+
                                 compactCsvData.add(
                                     CompactCsvRow(
+                                        transactionId = transactionId,
                                         transactionDate = transactionDate,
                                         transactionTotalPrice = transactionTotalPrice,
                                         shop = shop,
@@ -292,8 +309,7 @@ suspend fun handleCsvImport(
         val shops = mutableMapOf<String, Long>()
         val producers = mutableMapOf<String, Long>()
         val categories = mutableMapOf<String, Long>()
-        val transactions =
-            mutableMapOf<Pair<Long, Long>, Long>() // transaction is per day and we assume each has unique total
+        val transactions = mutableMapOf<Long, Long>()
         val products = mutableMapOf<String, Long>()
         val variants = mutableMapOf<Pair<String, Long?>, Long>() // variant is per name and product, product can be null if variant is global
 
@@ -341,14 +357,14 @@ suspend fun handleCsvImport(
             }
 
             // handle transactions
-            if (transactions[Pair(data.transactionDate, data.transactionTotalPrice)] == null) {
+            if (transactions[data.transactionId] == null) {
                 transactions.put(
-                    Pair(data.transactionDate, data.transactionTotalPrice),
+                    data.transactionId,
                     transactions.size.toLong() + 1 // id of 0 causes a foreign key constraint fail
                 )
                 transactionList.add(
                     TransactionBasket(
-                        id = transactions[Pair(data.transactionDate, data.transactionTotalPrice)]!!,
+                        id = transactions[data.transactionId]!!,
                         date = data.transactionDate,
                         shopId = data.shop?.let { shops[it] },
                         totalCost = data.transactionTotalPrice
@@ -408,10 +424,7 @@ suspend fun handleCsvImport(
                     itemList.add(
                         Item(
                             id = itemList.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
-                            transactionBasketId = transactions[Pair(
-                                data.transactionDate,
-                                data.transactionTotalPrice
-                            )]!!,
+                            transactionBasketId = transactions[data.transactionId]!!,
                             productId = products[data.product]!!,
                             variantId = data.variant?.let {
                                 if (data.variantGlobal) {
