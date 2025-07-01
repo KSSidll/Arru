@@ -419,7 +419,7 @@ suspend fun exportDataAsCompactCsv(
         ?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity\n".toByteArray()
+                    "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity;transactionNote\n".toByteArray()
                 )
 
                 var offset = 0
@@ -436,7 +436,7 @@ suspend fun exportDataAsCompactCsv(
 
                         if (items.isEmpty()) {
                             outputStream.write(
-                                "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null\n".toByteArray()
+                                "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null;${transactionData.note}\n".toByteArray()
                             )
                         } else {
                             items.forEach { item ->
@@ -454,7 +454,7 @@ suspend fun exportDataAsCompactCsv(
                                     ?: false
 
                                 outputStream.write(
-                                    "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()}\n".toByteArray()
+                                    "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()};${transactionData.note}\n".toByteArray()
                                 )
                             }
                         }
@@ -559,6 +559,7 @@ suspend fun exportDataAsJson(
                         writer.name("id").value(transactionData.id)
                         writer.name("date").value(transactionData.date)
                         writer.name("cost").value(transactionData.actualTotalCost())
+                        writer.name("note").value(transactionData.note)
 
                         writer.name("shop")
                         if (shop == null) writer.nullValue()

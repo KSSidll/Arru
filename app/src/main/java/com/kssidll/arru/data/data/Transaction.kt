@@ -63,7 +63,7 @@ data class TransactionBasket(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${date};${shopId};${actualTotalCost()}"
+        return "${id};${date};${shopId};${actualTotalCost()};${note}"
     }
 
     companion object {
@@ -82,7 +82,7 @@ data class TransactionBasket(
          */
         @Ignore
         fun csvHeaders(): String {
-            return "id;date;shopId;totalCost"
+            return "id;date;shopId;totalCost;note"
         }
 
         @Ignore
