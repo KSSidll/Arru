@@ -59,24 +59,24 @@ class TransactionBasketRepository(
         transactionId: Long,
         date: Long,
         totalCost: Long,
-        shopId: Long?
+        shopId: Long?,
+        note: String?
     ): UpdateResult {
         val transaction =
             dao.get(transactionId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
-        transaction.date = date
-        transaction.totalCost = totalCost
-        transaction.shopId = shopId
+        val newTransaction = transaction.copy(
+            date = date,
+            totalCost = totalCost,
+            shopId = shopId,
+            note = note
+        )
 
-        if (transaction.validDate()
-                .not()
-        ) {
+        if (!newTransaction.validDate()) {
             return UpdateResult.Error(UpdateResult.InvalidDate)
         }
 
-        if (transaction.validTotalCost()
-                .not()
-        ) {
+        if (!newTransaction.validTotalCost()) {
             return UpdateResult.Error(UpdateResult.InvalidTotalCost)
         }
 
@@ -84,7 +84,7 @@ class TransactionBasketRepository(
             return UpdateResult.Error(UpdateResult.InvalidShopId)
         }
 
-        dao.update(transaction)
+        dao.update(newTransaction)
 
         return UpdateResult.Success
     }

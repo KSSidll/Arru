@@ -261,6 +261,17 @@ fun LazyListScope.transactionBasketCardHeader(
                     ),
                 ) {
                     Column {
+                        if (!transaction.note.isNullOrBlank()) {
+                            Box(modifier = Modifier.padding(horizontal = 32.dp)) {
+                                Text(
+                                    text = transaction.note,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+
                         OutlinedIconButton(
                             onClick = {
                                 onItemAddClick(transaction.id)

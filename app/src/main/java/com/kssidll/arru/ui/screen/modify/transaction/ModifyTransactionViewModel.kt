@@ -75,5 +75,6 @@ data class ModifyTransactionScreenState(
         date.apply { value = value.toLoading() }
         totalCost.apply { value = value.toLoading() }
         selectedShop.apply { value = value.toLoading() }
+        note.apply { value = value.toLoading() }
     }
 }

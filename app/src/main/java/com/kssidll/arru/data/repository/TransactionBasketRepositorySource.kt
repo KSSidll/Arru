@@ -105,6 +105,7 @@ interface TransactionBasketRepositorySource {
         date: Long,
         totalCost: Long,
         shopId: Long?,
+        note: String?
     ): UpdateResult
 
     // Delete

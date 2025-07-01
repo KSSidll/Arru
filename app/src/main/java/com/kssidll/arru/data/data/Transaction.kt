@@ -28,11 +28,12 @@ import kotlin.math.log10
         )
     ]
 )
+@Immutable
 data class TransactionBasket(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var date: Long,
-    @ColumnInfo(index = true) var shopId: Long?,
-    var totalCost: Long,
+    @ColumnInfo(index = true) val date: Long,
+    @ColumnInfo(index = true) val shopId: Long?,
+    val totalCost: Long,
     val note: String?,
 ) {
     @Ignore
