@@ -190,6 +190,7 @@ suspend fun handleCsvImport(
             val producer: String?,
             val price: Long?,
             val quantity: Long?,
+            val transactionNote: String?
         )
 
         val compactCsvData = mutableListOf<CompactCsvRow>()
@@ -207,7 +208,7 @@ suspend fun handleCsvImport(
 
                 when (headers) {
                     // File version 2.0, @since v2.5.7
-                    "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity" -> {
+                    "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity;transactionNote" -> {
                         reader.forEachLine { line ->
                             if (line.isNotBlank()) {
                                 val text = line.split(";")
@@ -223,6 +224,7 @@ suspend fun handleCsvImport(
                                 val producer = if (text[8] != "null") text[8] else null
                                 val price = if (text[9] != "null") text[9].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
                                 val quantity = if (text[10] != "null") text[10].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
+                                val transactionNote = if (text[11] != "null") text[11] else null
 
                                 compactCsvData.add(
                                     CompactCsvRow(
@@ -237,6 +239,7 @@ suspend fun handleCsvImport(
                                         producer = producer,
                                         price = price,
                                         quantity = quantity,
+                                        transactionNote = transactionNote
                                     )
                                 )
                             }
@@ -285,6 +288,7 @@ suspend fun handleCsvImport(
                                         producer = producer,
                                         price = price,
                                         quantity = quantity,
+                                        transactionNote = null
                                     )
                                 )
                             }
@@ -368,7 +372,7 @@ suspend fun handleCsvImport(
                         date = data.transactionDate,
                         shopId = data.shop?.let { shops[it] },
                         totalCost = data.transactionTotalPrice,
-                        note = null
+                        note = data.transactionNote
                     )
                 )
             }
@@ -645,38 +649,69 @@ suspend fun handleCsvImport(
                 // Get headers from first line
                 val headers = reader.readLine()
 
-                // From newest to oldest
-                // File version 1.0, @since v2.5.0
-                if (headers == "id;date;shopId;totalCost") {
-                    val transactionCostDivisor = 100
+                when (headers) {
+                    // File version 2.0, @since v2.5.7
+                    "id;date;shopId;totalCost;note" -> {
+                        val transactionCostDivisor = 100
 
-                    reader.forEachLine { line ->
-                        if (line.isNotBlank()) {
-                            val text = line.split(";")
+                        reader.forEachLine { line ->
+                            if (line.isNotBlank()) {
+                                val text = line.split(";")
 
-                            val id = text[0].toLong()
-                            val date = text[1].toLong()
-                            val shopId = if (text[2] != "null") text[2].toLong() else null
-                            val totalCost =
-                                text[3].split(".", ",")
-                                    .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
+                                val id = text[0].toLong()
+                                val date = text[1].toLong()
+                                val shopId = if (text[2] != "null") text[2].toLong() else null
+                                val totalCost =
+                                    text[3].split(".", ",")
+                                        .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
+                                val note = if (text[4] != "null") text[4] else null
 
-                            transactionList.add(
-                                TransactionBasket(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    date = date,
-                                    shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
-                                    totalCost = totalCost,
-                                    note = null
+                                transactionList.add(
+                                    TransactionBasket(
+                                        id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                        date = date,
+                                        shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                        totalCost = totalCost,
+                                        note = note
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
-                } else {
-                    // Failed to determine file version
-                    Log.e("ImportRawCsv", "failed to determine file version of transaction.csv")
-                    onError(ImportError.FailedToDetermineVersion("transaction.csv"))
-                    return
+
+                    // File version 1.0, @since v2.5.0
+                    "id;date;shopId;totalCost" -> {
+                        val transactionCostDivisor = 100
+
+                        reader.forEachLine { line ->
+                            if (line.isNotBlank()) {
+                                val text = line.split(";")
+
+                                val id = text[0].toLong()
+                                val date = text[1].toLong()
+                                val shopId = if (text[2] != "null") text[2].toLong() else null
+                                val totalCost =
+                                    text[3].split(".", ",")
+                                        .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
+
+                                transactionList.add(
+                                    TransactionBasket(
+                                        id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                        date = date,
+                                        shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                        totalCost = totalCost,
+                                        note = null
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        // Failed to determine file version
+                        Log.e("ImportRawCsv", "failed to determine file version of transaction.csv")
+                        onError(ImportError.FailedToDetermineVersion("transaction.csv"))
+                        return
+                    }
                 }
             }
         }
@@ -936,168 +971,273 @@ suspend fun handleJsonImport(
                     var cost: Long? = null
                     var transactionShopId: Long? = null
                     val transactionItems = mutableListOf<Item>()
+                    var transactionNote: String? = null
 
                     while (reader.hasNext()) {
                         val name = reader.nextName()
 
-                        if (name == "id") {
-                            id = reader.nextLong()
-                        } else if (name == "date") {
-                            date = reader.nextLong()
-                        } else if (name == "cost") {
-                            cost = reader.nextString().split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
-                        } else if (name == "shop") {
-                            if (reader.peek() == JsonToken.NULL) {
-                                reader.skipValue()
-                            } else {
-                                reader.beginObject()
-
-                                var shopName: String? = null
-
-                                while (reader.hasNext()) {
-                                    val shopValueName = reader.nextName()
-
-                                    when (shopValueName) {
-                                        "id" -> {
-                                            transactionShopId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                        }
-                                        "name" -> {
-                                            shopName = reader.nextString()
-                                        }
-                                        else -> {
-                                            reader.skipValue()
-                                        }
-                                    }
-                                }
-
-                                // From newest to oldest
-                                // File version 1.0, @since v2.5.0
-                                if (transactionShopId != null && shopName != null) {
-                                    if (shops.add(transactionShopId)) {
-                                        shopList.add(
-                                            Shop(
-                                                id = transactionShopId,
-                                                name = shopName,
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    // Failed to determine file version
-                                    Log.e("ImportJSON", "failed to determine shop data version")
-                                    onError(ImportError.FailedToDetermineVersion("export.json -> shop"))
-                                    return
-                                }
-
-                                reader.endObject()
+                        when (name) {
+                            "id" -> {
+                                id = reader.nextLong()
                             }
-                        } else if (name == "items") {
-                            if (reader.peek() == JsonToken.NULL) {
-                                reader.skipValue()
-                            } else {
-                                reader.beginArray()
-
-                                while (reader.hasNext()) {
+                            "date" -> {
+                                date = reader.nextLong()
+                            }
+                            "cost" -> {
+                                cost = reader.nextString().split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                            }
+                            "note" -> {
+                                if (reader.peek() == JsonToken.NULL) {
+                                    transactionNote = null
+                                    reader.nextNull()
+                                } else {
+                                    transactionNote = reader.nextString()
+                                }
+                            }
+                            "shop" -> {
+                                if (reader.peek() == JsonToken.NULL) {
+                                    reader.nextNull()
+                                } else {
                                     reader.beginObject()
 
-                                    var itemId: Long? = null
-                                    var itemPrice: Long? = null
-                                    var itemQuantity: Long? = null
-                                    var itemProductId: Long? = null
-                                    var itemVariantId: Long? = null
-
-                                    var itemVariant: ProductVariant? = null
+                                    var shopName: String? = null
 
                                     while (reader.hasNext()) {
-                                        val itemValueName = reader.nextName()
+                                        val shopValueName = reader.nextName()
 
-                                        if (itemValueName == "id") {
-                                            itemId =
-                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                        } else if (itemValueName == "price") {
-                                            itemPrice =
-                                                reader.nextString()
-                                                    .split(".", ",")
-                                                    .let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
-                                        } else if (itemValueName == "quantity") {
-                                            itemQuantity =
-                                                reader.nextString()
-                                                    .split(".", ",")
-                                                    .let { it[0].plus(it[1].padEnd(3, '0')).toLong() }
-                                        } else if (itemValueName == "product") {
-                                            reader.beginObject()
+                                        when (shopValueName) {
+                                            "id" -> {
+                                                transactionShopId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                            }
 
-                                            var productName: String? = null
-                                            var productCategoryId: Long? = null
-                                            var productProducerId: Long? = null
+                                            "name" -> {
+                                                shopName = reader.nextString()
+                                            }
 
-                                            while (reader.hasNext()) {
-                                                val productValueName = reader.nextName()
+                                            else -> {
+                                                reader.skipValue()
+                                            }
+                                        }
+                                    }
 
-                                                if (productValueName == "id") {
-                                                    itemProductId =
+                                    // From newest to oldest
+                                    // File version 1.0, @since v2.5.0
+                                    if (transactionShopId != null && shopName != null) {
+                                        if (shops.add(transactionShopId)) {
+                                            shopList.add(
+                                                Shop(
+                                                    id = transactionShopId,
+                                                    name = shopName,
+                                                )
+                                            )
+                                        }
+                                    } else {
+                                        // Failed to determine file version
+                                        Log.e("ImportJSON", "failed to determine shop data version")
+                                        onError(ImportError.FailedToDetermineVersion("export.json -> shop"))
+                                        return
+                                    }
+
+                                    reader.endObject()
+                                }
+                            }
+                            "items" -> {
+                                if (reader.peek() == JsonToken.NULL) {
+                                    reader.nextNull()
+                                } else {
+                                    reader.beginArray()
+
+                                    while (reader.hasNext()) {
+                                        reader.beginObject()
+
+                                        var itemId: Long? = null
+                                        var itemPrice: Long? = null
+                                        var itemQuantity: Long? = null
+                                        var itemProductId: Long? = null
+                                        var itemVariantId: Long? = null
+
+                                        var itemVariant: ProductVariant? = null
+
+                                        while (reader.hasNext()) {
+                                            val itemValueName = reader.nextName()
+
+                                            when (itemValueName) {
+                                                "id" -> {
+                                                    itemId =
                                                         reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                                } else if (productValueName == "name") {
-                                                    productName = reader.nextString()
-                                                } else if (productValueName == "category") {
+                                                }
+                                                "price" -> {
+                                                    itemPrice =
+                                                        reader.nextString()
+                                                            .split(".", ",")
+                                                            .let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                                }
+                                                "quantity" -> {
+                                                    itemQuantity =
+                                                        reader.nextString()
+                                                            .split(".", ",")
+                                                            .let { it[0].plus(it[1].padEnd(3, '0')).toLong() }
+                                                }
+                                                "product" -> {
                                                     reader.beginObject()
 
-                                                    var categoryName: String? = null
+                                                    var productName: String? = null
+                                                    var productCategoryId: Long? = null
+                                                    var productProducerId: Long? = null
 
                                                     while (reader.hasNext()) {
-                                                        val categoryValueName = reader.nextName()
+                                                        val productValueName = reader.nextName()
 
-                                                        when (categoryValueName) {
-                                                            "id" -> {
-                                                                productCategoryId =
-                                                                    reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                        if (productValueName == "id") {
+                                                            itemProductId =
+                                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                        } else if (productValueName == "name") {
+                                                            productName = reader.nextString()
+                                                        } else if (productValueName == "category") {
+                                                            reader.beginObject()
+
+                                                            var categoryName: String? = null
+
+                                                            while (reader.hasNext()) {
+                                                                val categoryValueName = reader.nextName()
+
+                                                                when (categoryValueName) {
+                                                                    "id" -> {
+                                                                        productCategoryId =
+                                                                            reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                    }
+
+                                                                    "name" -> {
+                                                                        categoryName = reader.nextString()
+                                                                    }
+
+                                                                    else -> {
+                                                                        reader.skipValue()
+                                                                    }
+                                                                }
                                                             }
-                                                            "name" -> {
-                                                                categoryName = reader.nextString()
+
+                                                            // From newest to oldest
+                                                            // File version 1.0, @since v2.5.0
+                                                            if (productCategoryId != null && categoryName != null) {
+                                                                if (categories.add(productCategoryId)) {
+                                                                    categoryList.add(
+                                                                        ProductCategory(
+                                                                            id = productCategoryId,
+                                                                            name = categoryName,
+                                                                        )
+                                                                    )
+                                                                }
+                                                            } else {
+                                                                // Failed to determine file version
+                                                                Log.e("ImportJSON", "failed to determine category data version")
+                                                                onError(ImportError.FailedToDetermineVersion("export.json -> category"))
+                                                                return
                                                             }
-                                                            else -> {
-                                                                reader.skipValue()
+
+                                                            reader.endObject()
+                                                        } else if (productValueName == "producer") {
+                                                            if (reader.peek() == JsonToken.NULL) {
+                                                                reader.nextNull()
+                                                            } else {
+                                                                reader.beginObject()
+
+                                                                var producerName: String? = null
+
+                                                                while (reader.hasNext()) {
+                                                                    val producerValueName = reader.nextName()
+
+                                                                    when (producerValueName) {
+                                                                        "id" -> {
+                                                                            productProducerId =
+                                                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                        }
+
+                                                                        "name" -> {
+                                                                            producerName = reader.nextString()
+                                                                        }
+
+                                                                        else -> {
+                                                                            reader.skipValue()
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                // From newest to oldest
+                                                                // File version 1.0, @since v2.5.0
+                                                                if (productProducerId != null && producerName != null) {
+                                                                    if (producers.add(productProducerId)) {
+                                                                        producerList.add(
+                                                                            ProductProducer(
+                                                                                id = productProducerId,
+                                                                                name = producerName,
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                } else {
+                                                                    // Failed to determine file version
+                                                                    Log.e("ImportJSON", "failed to determine producer data version")
+                                                                    onError(ImportError.FailedToDetermineVersion("export.json -> producer"))
+                                                                    return
+                                                                }
+
+                                                                reader.endObject()
                                                             }
+                                                        } else {
+                                                            reader.skipValue()
                                                         }
                                                     }
 
                                                     // From newest to oldest
                                                     // File version 1.0, @since v2.5.0
-                                                    if (productCategoryId != null && categoryName != null) {
-                                                        if (categories.add(productCategoryId)) {
-                                                            categoryList.add(
-                                                                ProductCategory(
-                                                                    id = productCategoryId,
-                                                                    name = categoryName,
+                                                    if (
+                                                        itemProductId != null
+                                                        && productName != null
+                                                        && productCategoryId != null
+                                                    ) {
+                                                        if (products.add(itemProductId)) {
+                                                            productList.add(
+                                                                Product(
+                                                                    id = itemProductId,
+                                                                    name = productName,
+                                                                    categoryId = productCategoryId,
+                                                                    producerId = productProducerId,
                                                                 )
                                                             )
                                                         }
                                                     } else {
                                                         // Failed to determine file version
-                                                        Log.e("ImportJSON", "failed to determine category data version")
-                                                        onError(ImportError.FailedToDetermineVersion("export.json -> category"))
+                                                        Log.e("ImportJSON", "failed to determine product data version")
+                                                        onError(ImportError.FailedToDetermineVersion("export.json -> product"))
                                                         return
                                                     }
 
                                                     reader.endObject()
-                                                } else if (productValueName == "producer") {
+                                                }
+                                                "variant" -> {
                                                     if (reader.peek() == JsonToken.NULL) {
-                                                        reader.skipValue()
+                                                        reader.nextNull()
                                                     } else {
                                                         reader.beginObject()
-
-                                                        var producerName: String? = null
+                                                        var variantName: String? = null
+                                                        var variantGlobal = false  // @since v2.5.7, global has null productId, default not global
 
                                                         while (reader.hasNext()) {
-                                                            val producerValueName = reader.nextName()
+                                                            val variantValueName = reader.nextName()
 
-                                                            when (producerValueName) {
+                                                            when (variantValueName) {
                                                                 "id" -> {
-                                                                    productProducerId =
-                                                                        reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                    itemVariantId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
                                                                 }
+
                                                                 "name" -> {
-                                                                    producerName = reader.nextString()
+                                                                    variantName = reader.nextString()
                                                                 }
+
+                                                                "global" -> {
+                                                                    variantGlobal = reader.nextBoolean()
+                                                                }
+
                                                                 else -> {
                                                                     reader.skipValue()
                                                                 }
@@ -1106,155 +1246,82 @@ suspend fun handleJsonImport(
 
                                                         // From newest to oldest
                                                         // File version 1.0, @since v2.5.0
-                                                        if (productProducerId != null && producerName != null) {
-                                                            if (producers.add(productProducerId)) {
-                                                                producerList.add(
-                                                                    ProductProducer(
-                                                                        id = productProducerId,
-                                                                        name = producerName,
-                                                                    )
+                                                        if (
+                                                            itemVariantId != null
+                                                            && variantName != null
+                                                        ) {
+                                                            if (variants.add(itemVariantId)) {
+                                                                val productId = if (variantGlobal) {
+                                                                    null // global variants have no product id
+                                                                } else -1L  // temporarily assume -1 as product id could technically not be set
+
+                                                                itemVariant = ProductVariant(
+                                                                    id = itemVariantId,
+                                                                    productId = productId,
+                                                                    name = variantName,
                                                                 )
                                                             }
                                                         } else {
                                                             // Failed to determine file version
-                                                            Log.e("ImportJSON", "failed to determine producer data version")
-                                                            onError(ImportError.FailedToDetermineVersion("export.json -> producer"))
+                                                            Log.e("ImportJSON", "failed to determine variant data version")
+                                                            onError(ImportError.FailedToDetermineVersion("export.json -> variant"))
                                                             return
                                                         }
 
                                                         reader.endObject()
                                                     }
-                                                } else {
+                                                }
+                                                else -> {
                                                     reader.skipValue()
                                                 }
                                             }
+                                        }
 
-                                            // From newest to oldest
-                                            // File version 1.0, @since v2.5.0
-                                            if (
-                                                itemProductId != null
-                                                && productName != null
-                                                && productCategoryId != null
-                                            ) {
-                                                if (products.add(itemProductId)) {
-                                                    productList.add(
-                                                        Product(
-                                                            id = itemProductId,
-                                                            name = productName,
-                                                            categoryId = productCategoryId,
-                                                            producerId = productProducerId,
-                                                        )
+
+                                        // From newest to oldest
+                                        // File version 1.0, @since v2.5.0
+                                        if (
+                                            itemId != null
+                                            && itemPrice != null
+                                            && itemQuantity != null
+                                            && itemProductId != null
+                                        ) {
+                                            if (items.add(itemId)) {
+                                                itemVariant?.let { // update id because now productId has to be set
+                                                    // only update id if not null, null means that the variant is global
+                                                    if (it.productId != null) {
+                                                        it.productId = itemProductId
+                                                    }
+                                                    variantList.add(it) // also add to list
+                                                }
+
+                                                transactionItems.add(
+                                                    Item(
+                                                        id = itemId,
+                                                        transactionBasketId = -1, // temporarily assume -1 as transaction id could technically not be set
+                                                        price = itemPrice,
+                                                        quantity = itemQuantity,
+                                                        productId = itemProductId,
+                                                        variantId = itemVariantId
                                                     )
-                                                }
-                                            } else {
-                                                // Failed to determine file version
-                                                Log.e("ImportJSON", "failed to determine product data version")
-                                                onError(ImportError.FailedToDetermineVersion("export.json -> product"))
-                                                return
-                                            }
-
-                                            reader.endObject()
-                                        } else if (itemValueName == "variant") {
-                                            if (reader.peek() == JsonToken.NULL) {
-                                                reader.skipValue()
-                                            } else {
-                                                reader.beginObject()
-                                                var variantName: String? = null
-                                                var variantGlobal: Boolean = false  // @since v2.5.7, global has null productId, default not global
-
-                                                while (reader.hasNext()) {
-                                                    val variantValueName = reader.nextName()
-
-                                                    when (variantValueName) {
-                                                        "id" -> {
-                                                            itemVariantId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
-                                                        }
-                                                        "name" -> {
-                                                            variantName = reader.nextString()
-                                                        }
-                                                        "global" -> {
-                                                            variantGlobal = reader.nextBoolean()
-                                                        }
-                                                        else -> {
-                                                            reader.skipValue()
-                                                        }
-                                                    }
-                                                }
-
-                                                // From newest to oldest
-                                                // File version 1.0, @since v2.5.0
-                                                if (
-                                                    itemVariantId != null
-                                                    && variantName != null
-                                                ) {
-                                                    if (variants.add(itemVariantId)) {
-                                                        val productId = if (variantGlobal) {
-                                                            null // global variants have no product id
-                                                        } else -1L  // temporarily assume -1 as product id could technically not be set
-
-                                                        itemVariant = ProductVariant(
-                                                            id = itemVariantId,
-                                                            productId = productId,
-                                                            name = variantName,
-                                                        )
-                                                    }
-                                                } else {
-                                                    // Failed to determine file version
-                                                    Log.e("ImportJSON", "failed to determine variant data version")
-                                                    onError(ImportError.FailedToDetermineVersion("export.json -> variant"))
-                                                    return
-                                                }
-
-                                                reader.endObject()
+                                                )
                                             }
                                         } else {
-                                            reader.skipValue()
+                                            // Failed to determine file version
+                                            Log.e("ImportJSON", "failed to determine transaction data version")
+                                            onError(ImportError.FailedToDetermineVersion("export.json -> transaction"))
+                                            return
                                         }
+
+                                        reader.endObject()
                                     }
 
-
-                                    // From newest to oldest
-                                    // File version 1.0, @since v2.5.0
-                                    if (
-                                        itemId != null
-                                        && itemPrice != null
-                                        && itemQuantity != null
-                                        && itemProductId != null
-                                    ) {
-                                        if (items.add(itemId)) {
-                                            itemVariant?.let { // update id because now productId has to be set
-                                                // only update id if not null, null means that the variant is global
-                                                if (it.productId != null) {
-                                                    it.productId = itemProductId
-                                                }
-                                                variantList.add(it) // also add to list
-                                            }
-
-                                            transactionItems.add(
-                                                Item(
-                                                    id = itemId,
-                                                    transactionBasketId = -1, // temporarily assume -1 as transaction id could technically not be set
-                                                    price = itemPrice,
-                                                    quantity = itemQuantity,
-                                                    productId = itemProductId,
-                                                    variantId = itemVariantId
-                                                )
-                                            )
-                                        }
-                                    } else {
-                                        // Failed to determine file version
-                                        Log.e("ImportJSON", "failed to determine transaction data version")
-                                        onError(ImportError.FailedToDetermineVersion("export.json -> transaction"))
-                                        return
-                                    }
-
-                                    reader.endObject()
+                                    reader.endArray()
                                 }
-
-                                reader.endArray()
                             }
-                        } else {
-                            reader.skipValue()
+                            else -> {
+                                reader.skipValue()
+                            }
                         }
                     }
 
@@ -1277,7 +1344,7 @@ suspend fun handleJsonImport(
                                     date = date,
                                     shopId = transactionShopId,
                                     totalCost = cost,
-                                    note = null
+                                    note = transactionNote
                                 )
                             )
                         }
