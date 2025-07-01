@@ -156,6 +156,7 @@ data class TransactionBasketWithItems(
     val date: Long,
     val shop: Shop?,
     val totalCost: Long,
+    val note: String?,
     val items: List<FullItem>,
 ) {
     companion object {
@@ -165,6 +166,7 @@ data class TransactionBasketWithItems(
                 date = generateRandomTime(),
                 shop = Shop.generate(),
                 totalCost = generateRandomLongValue(),
+                note = generateRandomStringValue(),
                 items = FullItem.generateList(),
             )
         }
