@@ -105,7 +105,7 @@ fun LanguageExposedDropdown(
             )
 
             AppLocale.entries.forEach { appLocale ->
-                val locale = Locale(appLocale.code)
+                val locale = Locale.Builder().setLanguageTag(appLocale.tag).build()
 
                 DropdownMenuItem(
                     text = {
