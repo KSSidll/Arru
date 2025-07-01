@@ -89,8 +89,14 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
         }
 
         val transactionBaskets = dao.getTransactionBaskets(shop.id)
-        transactionBaskets.forEach { it.shopId = mergingInto.id }
-        dao.updateTransactionBaskets(transactionBaskets)
+
+        val newTransactionBaskets = transactionBaskets.map {
+            it.copy(
+                shopId = mergingInto.id
+            )
+        }
+
+        dao.updateTransactionBaskets(newTransactionBaskets)
 
         dao.delete(shop)
 

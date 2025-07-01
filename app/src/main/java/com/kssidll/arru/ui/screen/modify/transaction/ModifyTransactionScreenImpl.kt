@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.screen.modify.transaction
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -171,6 +172,7 @@ fun ModifyTransactionScreenImpl(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
@@ -313,7 +315,30 @@ private fun ModifyTransactionScreenContent(
         }
 
         HorizontalDivider()
-        Spacer(modifier = Modifier.height(12.dp))
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        StyledOutlinedTextField(
+            optional = state.note.value.data.isNullOrBlank(),
+            enabled = state.note.value.isEnabled(),
+            value = state.note.value.data.orEmpty(),
+            onValueChange = { newValue ->
+                state.note.apply {
+                    value = Field.Loaded(newValue.trimStart())
+                }
+            },
+            label = {
+                Text(
+                    text = stringResource(R.string.transaction_note),
+                    fontSize = 16.sp,
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = ItemHorizontalPadding.times(2))
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         SearchField(
             enabled = state.selectedShop.value.isEnabled(),

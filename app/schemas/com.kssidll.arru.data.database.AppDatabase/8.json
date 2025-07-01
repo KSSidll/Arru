@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "ed56f7bc01b602b254a01bee580279f0",
+    "identityHash": "34945c2ba557045e76b1c7dc15597582",
     "entities": [
       {
         "tableName": "TransactionBasket",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `shopId` INTEGER, `totalCost` INTEGER NOT NULL, FOREIGN KEY(`shopId`) REFERENCES `Shop`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `shopId` INTEGER, `totalCost` INTEGER NOT NULL, `note` TEXT, FOREIGN KEY(`shopId`) REFERENCES `Shop`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -30,6 +30,11 @@
             "columnName": "totalCost",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -559,7 +564,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ed56f7bc01b602b254a01bee580279f0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '34945c2ba557045e76b1c7dc15597582')"
     ]
   }
 }

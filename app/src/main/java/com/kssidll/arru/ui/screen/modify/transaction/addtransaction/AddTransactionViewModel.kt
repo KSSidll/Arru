@@ -78,7 +78,8 @@ class AddTransactionViewModel @Inject constructor(
                 )
             }
                 ?: TransactionBasket.INVALID_TOTAL_COST,
-            shopId = screenState.selectedShop.value.data?.id
+            shopId = screenState.selectedShop.value.data?.id,
+            note = screenState.note.value.data?.trim(),
         )
 
         if (result.isError()) {

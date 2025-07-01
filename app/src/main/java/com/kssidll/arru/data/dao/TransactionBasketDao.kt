@@ -272,6 +272,7 @@ interface TransactionBasketDao {
                 shop = shop,
                 totalCost = basket.totalCost,
                 items = items,
+                note = basket.note
             )
         }
     }
@@ -291,6 +292,7 @@ interface TransactionBasketDao {
                     shop = shop,
                     totalCost = basket.totalCost,
                     items = items,
+                    note = basket.note
                 )
             } else return@map null
         }

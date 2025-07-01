@@ -12,6 +12,7 @@ import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.generateRandomDateString
 import com.kssidll.arru.helper.generateRandomLongValue
+import com.kssidll.arru.helper.generateRandomStringValue
 import com.kssidll.arru.helper.generateRandomTime
 import java.util.Locale
 import kotlin.math.log10
@@ -27,22 +28,26 @@ import kotlin.math.log10
         )
     ]
 )
+@Immutable
 data class TransactionBasket(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var date: Long,
-    @ColumnInfo(index = true) var shopId: Long?,
-    var totalCost: Long,
+    @ColumnInfo(index = true) val date: Long,
+    @ColumnInfo(index = true) val shopId: Long?,
+    val totalCost: Long,
+    val note: String?,
 ) {
     @Ignore
     constructor(
         date: Long,
         totalCost: Long,
-        shopId: Long?
+        shopId: Long?,
+        note: String?
     ): this(
         0,
         date,
         shopId,
-        totalCost
+        totalCost,
+        note
     )
 
     @Ignore
@@ -58,7 +63,7 @@ data class TransactionBasket(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${date};${shopId};${actualTotalCost()}"
+        return "${id};${date};${shopId};${actualTotalCost()};${note}"
     }
 
     companion object {
@@ -77,7 +82,7 @@ data class TransactionBasket(
          */
         @Ignore
         fun csvHeaders(): String {
-            return "id;date;shopId;totalCost"
+            return "id;date;shopId;totalCost;note"
         }
 
         @Ignore
@@ -117,6 +122,7 @@ data class TransactionBasket(
                 date = generateRandomTime(),
                 shopId = generateRandomLongValue(),
                 totalCost = generateRandomLongValue(),
+                note = generateRandomStringValue()
             )
         }
 
@@ -151,6 +157,7 @@ data class TransactionBasketWithItems(
     val date: Long,
     val shop: Shop?,
     val totalCost: Long,
+    val note: String?,
     val items: List<FullItem>,
 ) {
     companion object {
@@ -160,6 +167,7 @@ data class TransactionBasketWithItems(
                 date = generateRandomTime(),
                 shop = Shop.generate(),
                 totalCost = generateRandomLongValue(),
+                note = generateRandomStringValue(),
                 items = FullItem.generateList(),
             )
         }

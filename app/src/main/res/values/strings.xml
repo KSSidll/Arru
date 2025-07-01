@@ -35,6 +35,7 @@
     <string name="transaction_edit">Edit Transaction</string>
     <string name="transaction_delete_warning_text">This action will delete all items associated with this transaction</string>
     <string name="transaction_items_toggle">Toggle transaction items visibility</string>
+    <string name="transaction_note">Note</string>
 
     <string name="item">Item</string>
     <string name="item_add">Add Item</string>

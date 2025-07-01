@@ -80,12 +80,14 @@ interface TransactionBasketRepositorySource {
      * @param date date of the [TransactionBasket]
      * @param totalCost total cost of the [TransactionBasket]
      * @param shopId id of the [Shop] in the [TransactionBasket]
+     * @param note note of the [Shop] in the [TransactionBasket]
      * @return [InsertResult] with id of the newly inserted [TransactionBasket] or an error if any
      */
     suspend fun insert(
         date: Long,
         totalCost: Long,
         shopId: Long?,
+        note: String?
     ): InsertResult
 
     // Update
@@ -103,6 +105,7 @@ interface TransactionBasketRepositorySource {
         date: Long,
         totalCost: Long,
         shopId: Long?,
+        note: String?
     ): UpdateResult
 
     // Delete
