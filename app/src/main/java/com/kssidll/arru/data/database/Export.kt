@@ -436,7 +436,7 @@ suspend fun exportDataAsCompactCsv(
 
                         if (items.isEmpty()) {
                             outputStream.write(
-                                "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null;${transactionData.note}\n".toByteArray()
+                                "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};null;null;${false};null;null;null;null;${transactionData.note?.replace(';', ',')?.trim()}\n".toByteArray()
                             )
                         } else {
                             items.forEach { item ->
@@ -454,7 +454,7 @@ suspend fun exportDataAsCompactCsv(
                                     ?: false
 
                                 outputStream.write(
-                                    "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()};${transactionData.note}\n".toByteArray()
+                                    "${transactionData.id};${transactionData.date};${transactionData.actualTotalCost()};${shop};${product?.name ?: "null"};${variant};${variantGlobal};${category};${producer};${item.actualPrice()};${item.actualQuantity()};${transactionData.note?.replace(';', ',')?.trim()}\n".toByteArray()
                                 )
                             }
                         }
