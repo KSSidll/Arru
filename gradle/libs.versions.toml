@@ -13,10 +13,10 @@ androidx-datastore-preferences = "1.1.7"
 dev-navigation-reimagined = "1.5.0"
 
 # Compose
-androidx-compose-bom = "2025.06.01"
+androidx-compose-bom = "2025.07.00"
 
 # DI
-google-hilt = "2.56.2"
+google-hilt = "2.57"
 
 # Room
 androidx-room = "2.7.2"
