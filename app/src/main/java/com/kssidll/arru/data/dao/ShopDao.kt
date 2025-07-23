@@ -149,7 +149,7 @@ interface ShopDao {
         """
         WITH date_series AS (
             SELECT MIN(transactionbasket.date) AS start_date,
-                   MAX(transactionbasket.date) AS end_date
+                   UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM transactionbasket
                 WHERE transactionbasket.shopId = :shopId
             UNION ALL
@@ -176,7 +176,7 @@ interface ShopDao {
         """
         WITH date_series AS (
         SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
-                 (MAX(transactionbasket.date) - 604800000) AS end_date
+                 ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM transactionbasket
             WHERE transactionbasket.shopId = :shopId
         UNION ALL
@@ -204,7 +204,7 @@ interface ShopDao {
         """
         WITH date_series AS (
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
-               DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS end_date
+               DATE(current_timestamp, 'localtime', 'start of month') AS end_date
         FROM transactionbasket
             WHERE transactionbasket.shopId = :shopId
         UNION ALL
@@ -231,7 +231,7 @@ interface ShopDao {
         """
         WITH date_series AS (
         SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
-               DATE(MAX(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS end_date
+               DATE(current_timestamp, 'localtime', 'start of year') AS end_date
         FROM transactionbasket
             WHERE transactionbasket.shopId = :shopId
         UNION ALL
