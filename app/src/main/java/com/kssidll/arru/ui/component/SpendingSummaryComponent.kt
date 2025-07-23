@@ -28,11 +28,9 @@ import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.domain.getTranslation
 import com.kssidll.arru.ui.component.chart.OneDimensionalColumnChart
+import com.kssidll.arru.ui.component.chart.oneDimensionalColumnChartDefaultScrollState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.core.cartesian.AutoScrollCondition
-import com.patrykandpatrick.vico.core.cartesian.Scroll
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import kotlinx.collections.immutable.ImmutableList
 
@@ -45,11 +43,7 @@ fun SpendingSummaryComponent(
     buttonsModifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
     diffAnimationSpec: AnimationSpec<Float> = tween(1200),
-    scrollState: VicoScrollState = rememberVicoScrollState(
-        initialScroll = Scroll.Absolute.End,
-        autoScrollAnimationSpec = diffAnimationSpec,
-        autoScrollCondition = AutoScrollCondition.OnModelGrowth
-    ),
+    scrollState: VicoScrollState = oneDimensionalColumnChartDefaultScrollState(),
     columnChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
     runInitialAnimation: Boolean = true,
     columnWidth: Dp = 75.dp,

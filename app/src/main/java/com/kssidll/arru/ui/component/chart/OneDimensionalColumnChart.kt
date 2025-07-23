@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.component.chart
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -41,6 +42,14 @@ private val TopAxisLabelKey = ExtraStore.Key<Map<Float, String>>()
 private val BottomAxisLabelKey = ExtraStore.Key<Map<Float, String>>()
 
 @Composable
+fun oneDimensionalColumnChartDefaultScrollState() = rememberVicoScrollState(
+    initialScroll = Scroll.Absolute.End,
+    autoScrollAnimationSpec = snap(0),
+    autoScrollCondition = AutoScrollCondition.OnModelGrowth
+)
+
+
+@Composable
 fun OneDimensionalColumnChart(
     data: ImmutableList<ChartSource>,
     modifier: Modifier = Modifier,
@@ -50,11 +59,7 @@ fun OneDimensionalColumnChart(
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
     diffAnimationSpec: AnimationSpec<Float> = tween(1200),
-    scrollState: VicoScrollState = rememberVicoScrollState(
-        initialScroll = Scroll.Absolute.End,
-        autoScrollAnimationSpec = diffAnimationSpec,
-        autoScrollCondition = AutoScrollCondition.OnModelGrowth
-    ),
+    scrollState: VicoScrollState = oneDimensionalColumnChartDefaultScrollState(),
     runInitialAnimation: Boolean = true,
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current
