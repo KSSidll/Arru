@@ -1,0 +1,2 @@
+- Calculate data until current date instead of latest transaction
+- Use Arru name identifier in export files

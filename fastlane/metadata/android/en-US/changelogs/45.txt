@@ -1,0 +1,6 @@
+- Add global variants
+- Add transactions notes
+- Support SDK 36
+- Performance improvements
+- Fixed compact CSV import (collapsing transaction)
+- Fixed JSON variants import
