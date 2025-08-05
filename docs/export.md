@@ -19,21 +19,22 @@ The Compact CSV export combines all data into a single CSV file.
 
 #### File Structure:
 
-- `export.csv`: Contains data from all tables
+- `arru-export.csv`: Contains data from all tables
 
 #### Data Format:
 
 The CSV file includes a header row followed by data rows.
 The separator used in the format is the semicolon `;`
+Transactions are groupped by transactionId column
 
-Example `export.csv`:
+Example `arru-export.csv`:
 
 ```
-transactionDate;transactionTotalPrice;shop;product;variant;category;producer;price;quantity
-1639353600000;75.57;null;Monster;568 ml;Energy Drink;null;4.5;1
-1639353600000;75.57;null;Paper;16 Rolls;Utility;null;12;1
-1644451200000;29.11;Aldi;Tomato;null;Vegetables;null;16;0.253
-1644451200000;129.37;Allegro;null;null;null;null;null;null
+transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity;transacitonNote
+1;1639353600000;75.57;null;Monster;568 ml;false;Energy Drink;null;4.5;1;null
+1;1639353600000;75.57;null;Paper;16 Rolls;false;Utility;null;12;1;null
+2;1644451200000;29.11;Aldi;Tomato;null;false;Vegetables;null;16;0.253;null
+3;1644451200000;129.37;Allegro;null;null;false;null;null;null;null;Some allegro purchase
 ```
 
 ### 2. Raw CSV
@@ -42,13 +43,13 @@ The Raw CSV export is a literal database dump, with each table exported to a sep
 
 #### File Structure:
 
-- `category.csv`: Contains all data from the ProductCategory table
-- `item.csv`: Contains all data from the Item table
-- `producer.csv`: Contains all data from the ProductProducer table
-- `product.csv`: Contains all data from the Product table
-- `shop.csv`: Contains all data from the Shop table
-- `transaction.csv`: Contains all data from the TransactionBasket table
-- `variant.csv`: Contains all data from the ProductVariant table
+- `arru-export-category.csv`: Contains all data from the ProductCategory table
+- `arru-export-item.csv`: Contains all data from the Item table
+- `arru-export-producer.csv`: Contains all data from the ProductProducer table
+- `arru-export-product.csv`: Contains all data from the Product table
+- `arru-export-shop.csv`: Contains all data from the Shop table
+- `arru-export-transaction.csv`: Contains all data from the TransactionBasket table
+- `arru-export-variant.csv`: Contains all data from the ProductVariant table
 
 #### Tables and Their Relationships
 
@@ -124,7 +125,7 @@ The Raw CSV export is a literal database dump, with each table exported to a sep
 Each CSV file includes a header row followed by data rows.
 The separator used in the format is the semicolon `;`
 
-Example `category.csv`:
+Example `arru-export-category.csv`:
 
 ```
 id;name
@@ -133,7 +134,7 @@ id;name
 2;Vegetables
 ```
 
-Example `item.csv`:
+Example `arru-export-item.csv`:
 
 ```
 id;transactionBasketId;productId;variantId;quantity;price
@@ -142,13 +143,13 @@ id;transactionBasketId;productId;variantId;quantity;price
 2;1;2;null;0.253;16
 ```
 
-Example `producer.csv`:
+Example `arru-export-producer.csv`:
 
 ```
 id;name
 ```
 
-Example `product.csv`:
+Example `arru-export-product.csv`:
 
 ```
 id;categoryId;producerId;name
@@ -157,7 +158,7 @@ id;categoryId;producerId;name
 2;2;null;Tomato
 ```
 
-Example `shop.csv`:
+Example `arru-export-shop.csv`:
 
 ```
 id;name
@@ -165,21 +166,22 @@ id;name
 5;Allegro
 ```
 
-Example `transaction.csv`:
+Example `arru-export-transaction.csv`:
 
 ```
-id;date;shopId;totalCost
-0;1639353600000;null;75.57
-2;1644451200000;3;29.11
-7;1644451200000;5;129.37
+id;date;shopId;totalCost;note
+0;1639353600000;null;75.57;null
+2;1644451200000;3;29.11;null
+7;1644451200000;5;129.37;Some allegro purchase
 ```
 
-Example `variant.csv`:
+Example `arru-export-variant.csv`:
 
 ```
 id;productId;name
 0;0;568 ml
 1;1;16 Rolls
+2;null;A global variant
 ```
 
 ### 3. JSON
@@ -188,11 +190,11 @@ The JSON export combines all data into a single JSON file.
 
 #### File Structure:
 
-- `export.json`: Contains data from all tables
+- `arru-export.json`: Contains data from all tables
 
 #### Data Format:
 
-Example `export.json`:
+Example `arru-export.json`:
 
 ```json
 [
@@ -200,6 +202,7 @@ Example `export.json`:
     "id": 0,
     "date": 1639353600000,
     "cost": 72.57,
+    "note": null,
     "shop": null,
     "items": [
       {
@@ -217,7 +220,8 @@ Example `export.json`:
         },
         "variant": {
           "id": 0,
-          "name": "568 ml"
+          "name": "568 ml",
+          "global": false
         }
       },
       {
@@ -235,7 +239,8 @@ Example `export.json`:
         },
         "variant": {
           "id": 1,
-          "name": "16 Rolls"
+          "name": "16 Rolls",
+          "global": false
         }
       }
     ]
