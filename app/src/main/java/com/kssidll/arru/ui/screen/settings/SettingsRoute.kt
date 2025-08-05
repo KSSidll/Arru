@@ -391,13 +391,14 @@ fun SettingsRoute(
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .width(280.dp)
-                            .height(160.dp)
+                          .width(300.dp)
+                          .height(300.dp)
                     ) {
                         Text(
                             text = importErrorText,
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(2.dp)
                         )
                     }
                 }

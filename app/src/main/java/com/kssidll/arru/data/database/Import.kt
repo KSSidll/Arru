@@ -121,6 +121,29 @@ suspend fun importDataFromUris(
         // don't continue if a json was found
         return
     }
+
+
+    Log.e("Import", "failed to find expected files")
+    onError(
+        ImportError.MissingFiles(
+            listOf(
+                listOf(
+                    "arru-export.json"
+                ), listOf(
+                    "arru-export.csv"
+                ), listOf(
+                    "arru-export-category.csv",
+                    "arru-export-item.csv",
+                    "arru-export-producer.csv",
+                    "arru-export-product.csv",
+                    "arru-export-shop.csv",
+                    "arru-export-transaction.csv",
+                    "arru-export-variant.csv",
+                )
+            )
+        )
+    )
+    return
 }
 
 suspend fun handleCsvImport(
@@ -144,16 +167,32 @@ suspend fun handleCsvImport(
     var variantDocument: DocumentInfo? = null
     var itemDocument: DocumentInfo? = null
 
-    documents.forEach { documentInfo ->
-        if (documentInfo.displayName == "export.csv") exportDocument = documentInfo
 
-        if (documentInfo.displayName == "shop.csv") shopDocument = documentInfo
-        if (documentInfo.displayName == "producer.csv") producerDocument = documentInfo
-        if (documentInfo.displayName == "category.csv") categoryDocument = documentInfo
-        if (documentInfo.displayName == "transaction.csv") transactionDocument = documentInfo
-        if (documentInfo.displayName == "product.csv") productDocument = documentInfo
-        if (documentInfo.displayName == "variant.csv") variantDocument = documentInfo
-        if (documentInfo.displayName == "item.csv") itemDocument = documentInfo
+    // @since 2.5.8
+    // new naming schema for files
+    documents.forEach { documentInfo ->
+        if (documentInfo.displayName == "arru-export.csv") exportDocument = documentInfo
+
+        if (documentInfo.displayName == "arru-export-shop.csv") shopDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-producer.csv") producerDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-category.csv") categoryDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-transaction.csv") transactionDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-product.csv") productDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-variant.csv") variantDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-item.csv") itemDocument = documentInfo
+    }
+
+    // Fallback old naming schema, only read if no new detected
+    documents.forEach { documentInfo ->
+        if (documentInfo.displayName == "export.csv" && exportDocument == null) exportDocument = documentInfo
+
+        if (documentInfo.displayName == "shop.csv" && shopDocument == null) shopDocument = documentInfo
+        if (documentInfo.displayName == "producer.csv" && producerDocument == null) producerDocument = documentInfo
+        if (documentInfo.displayName == "category.csv" && categoryDocument == null) categoryDocument = documentInfo
+        if (documentInfo.displayName == "transaction.csv" && transactionDocument == null) transactionDocument = documentInfo
+        if (documentInfo.displayName == "product.csv" && productDocument == null) productDocument = documentInfo
+        if (documentInfo.displayName == "variant.csv" && variantDocument == null) variantDocument = documentInfo
+        if (documentInfo.displayName == "item.csv" && itemDocument == null) itemDocument = documentInfo
     }
 
     // Prepare data
@@ -500,13 +539,13 @@ suspend fun handleCsvImport(
                 ImportError.MissingFiles(
                     listOf(
                         listOf(
-                            "category.csv",
-                            "item.csv",
-                            "producer.csv",
-                            "product.csv",
-                            "shop.csv",
-                            "transaction.csv",
-                            "variant.csv",
+                            "arru-export-category.csv",
+                            "arru-export-item.csv",
+                            "arru-export-producer.csv",
+                            "arru-export-product.csv",
+                            "arru-export-shop.csv",
+                            "arru-export-transaction.csv",
+                            "arru-export-variant.csv",
                         )
                     )
                 )
@@ -518,7 +557,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(shopCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open shop csv file")
-                onError(ImportError.FailedToOpenFile("shop.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-shop.csv"))
                 return
             }
 
@@ -547,7 +586,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of shop.csv")
-                    onError(ImportError.FailedToDetermineVersion("shop.csv"))
+                    onError(ImportError.FailedToDetermineVersion("arru-export-shop.csv"))
                     return
                 }
             }
@@ -559,7 +598,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(producerCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open producer csv file")
-                onError(ImportError.FailedToOpenFile("producer.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-producer.csv"))
                 return
             }
 
@@ -588,7 +627,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of producer.csv")
-                    onError(ImportError.FailedToDetermineVersion("producer.csv"))
+                    onError(ImportError.FailedToDetermineVersion("arru-export-producer.csv"))
                     return
                 }
             }
@@ -600,7 +639,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(categoryCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open categories csv file")
-                onError(ImportError.FailedToOpenFile("category.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-category.csv"))
                 return
             }
 
@@ -629,7 +668,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of category.csv")
-                    onError(ImportError.FailedToDetermineVersion("category.csv"))
+                    onError(ImportError.FailedToDetermineVersion("arru-export-category.csv"))
                     return
                 }
             }
@@ -641,7 +680,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(transactionCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open transactions csv file")
-                onError(ImportError.FailedToOpenFile("transaction.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-transaction.csv"))
                 return
             }
 
@@ -709,7 +748,7 @@ suspend fun handleCsvImport(
                     else -> {
                         // Failed to determine file version
                         Log.e("ImportRawCsv", "failed to determine file version of transaction.csv")
-                        onError(ImportError.FailedToDetermineVersion("transaction.csv"))
+                        onError(ImportError.FailedToDetermineVersion("arru-export-transaction.csv"))
                         return
                     }
                 }
@@ -722,7 +761,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(productCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open products csv file")
-                onError(ImportError.FailedToOpenFile("product.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-product.csv"))
                 return
             }
 
@@ -755,7 +794,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of product.csv")
-                    onError(ImportError.FailedToDetermineVersion("product.csv"))
+                    onError(ImportError.FailedToDetermineVersion("arru-export-product.csv"))
                     return
                 }
             }
@@ -767,7 +806,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(variantCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open variants csv file")
-                onError(ImportError.FailedToOpenFile("variant.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-variant.csv"))
                 return
             }
 
@@ -799,7 +838,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of variant.csv")
-                    onError(ImportError.FailedToDetermineVersion("variant.csv"))
+                    onError(ImportError.FailedToDetermineVersion("arru-export-variant.csv"))
                     return
                 }
             }
@@ -811,7 +850,7 @@ suspend fun handleCsvImport(
         context.contentResolver.openInputStream(itemCsvUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportRawCsv", "failed to open items csv file")
-                onError(ImportError.FailedToOpenFile("item.csv"))
+                onError(ImportError.FailedToOpenFile("arru-export-item.csv"))
                 return
             }
 
@@ -855,7 +894,7 @@ suspend fun handleCsvImport(
                 } else {
                     // Failed to determine file version
                     Log.e("ImportRawCsv", "failed to determine file version of item.csv")
-                    onError(ImportError.FailedToDetermineVersion("item.csv"))
+                    onError(ImportError.FailedToDetermineVersion("arru-export-item.csv"))
                     return
                 }
             }
@@ -887,16 +926,16 @@ suspend fun handleCsvImport(
         ImportError.MissingFiles(
             listOf(
                 listOf(
-                    "export.csv"
+                    "arru-export.csv"
                 ),
                 listOf(
-                    "category.csv",
-                    "item.csv",
-                    "producer.csv",
-                    "product.csv",
-                    "shop.csv",
-                    "transaction.csv",
-                    "variant.csv",
+                    "arru-export-category.csv",
+                    "arru-export-item.csv",
+                    "arru-export-producer.csv",
+                    "arru-export-product.csv",
+                    "arru-export-shop.csv",
+                    "arru-export-transaction.csv",
+                    "arru-export-variant.csv",
                 )
             )
         )
@@ -918,8 +957,15 @@ suspend fun handleJsonImport(
     // Get the documents
     var exportDocument: DocumentInfo? = null
 
+    // @since 2.5.8
+    // new naming schema for files
     documents.forEach { documentInfo ->
-        if (documentInfo.displayName == "export.json") exportDocument = documentInfo
+        if (documentInfo.displayName == "arru-export.json") exportDocument = documentInfo
+    }
+
+    // Fallback old naming schema, only read if no new detected
+    documents.forEach { documentInfo ->
+        if (documentInfo.displayName == "export.json" && exportDocument == null) exportDocument = documentInfo
     }
 
     // Prepare data
@@ -939,14 +985,14 @@ suspend fun handleJsonImport(
         val jsonUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (jsonUri == null) {
             Log.e("ImportJSON", "could not build export json uri")
-            onError(ImportError.FailedToOpenFile("export.json"))
+            onError(ImportError.FailedToOpenFile("arru-export.json"))
             return
         }
 
         context.contentResolver.openInputStream(jsonUri).use { inputStream ->
             if (inputStream == null) {
                 Log.e("ImportJSON", "failed to open export json file")
-                onError(ImportError.FailedToOpenFile("export.json"))
+                onError(ImportError.FailedToOpenFile("arru-export.json"))
                 return
             }
 
@@ -1034,7 +1080,7 @@ suspend fun handleJsonImport(
                                     } else {
                                         // Failed to determine file version
                                         Log.e("ImportJSON", "failed to determine shop data version")
-                                        onError(ImportError.FailedToDetermineVersion("export.json -> shop"))
+                                        onError(ImportError.FailedToDetermineVersion("arru-export.json -> shop"))
                                         return
                                     }
 
@@ -1131,7 +1177,7 @@ suspend fun handleJsonImport(
                                                             } else {
                                                                 // Failed to determine file version
                                                                 Log.e("ImportJSON", "failed to determine category data version")
-                                                                onError(ImportError.FailedToDetermineVersion("export.json -> category"))
+                                                                onError(ImportError.FailedToDetermineVersion("arru-export.json -> category"))
                                                                 return
                                                             }
 
@@ -1177,7 +1223,7 @@ suspend fun handleJsonImport(
                                                                 } else {
                                                                     // Failed to determine file version
                                                                     Log.e("ImportJSON", "failed to determine producer data version")
-                                                                    onError(ImportError.FailedToDetermineVersion("export.json -> producer"))
+                                                                    onError(ImportError.FailedToDetermineVersion("arru-export.json -> producer"))
                                                                     return
                                                                 }
 
@@ -1208,7 +1254,7 @@ suspend fun handleJsonImport(
                                                     } else {
                                                         // Failed to determine file version
                                                         Log.e("ImportJSON", "failed to determine product data version")
-                                                        onError(ImportError.FailedToDetermineVersion("export.json -> product"))
+                                                        onError(ImportError.FailedToDetermineVersion("arru-export.json -> product"))
                                                         return
                                                     }
 
@@ -1264,7 +1310,7 @@ suspend fun handleJsonImport(
                                                         } else {
                                                             // Failed to determine file version
                                                             Log.e("ImportJSON", "failed to determine variant data version")
-                                                            onError(ImportError.FailedToDetermineVersion("export.json -> variant"))
+                                                            onError(ImportError.FailedToDetermineVersion("arru-export.json -> variant"))
                                                             return
                                                         }
 
@@ -1309,7 +1355,7 @@ suspend fun handleJsonImport(
                                         } else {
                                             // Failed to determine file version
                                             Log.e("ImportJSON", "failed to determine transaction data version")
-                                            onError(ImportError.FailedToDetermineVersion("export.json -> transaction"))
+                                            onError(ImportError.FailedToDetermineVersion("arru-export.json -> transaction"))
                                             return
                                         }
 
@@ -1385,7 +1431,7 @@ suspend fun handleJsonImport(
     // did not find expected files if we are here
 
     Log.e("ImportJSON", "failed to find expected files")
-    onError(ImportError.MissingFiles(listOf(listOf("export.json"))))
+    onError(ImportError.MissingFiles(listOf(listOf("arru-export.json"))))
 
     return
 }

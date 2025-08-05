@@ -79,66 +79,38 @@ suspend fun exportDataAsRawCsv(
     ).format(timeNow)
 
     val exportDirUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        uri,
-        DocumentsContract.Document.MIME_TYPE_DIR,
-        "export-raw-csv-${timeFormatted}"
+        context.contentResolver, uri, DocumentsContract.Document.MIME_TYPE_DIR, "arru-export-raw-csv-${timeFormatted}"
     )!!
 
     val categoryCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "category.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-category.csv"
     )!!
 
     val itemCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "item.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-item.csv"
     )!!
 
     val producerCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "producer.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-producer.csv"
     )!!
 
     val productCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "product.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-product.csv"
     )!!
 
     val shopCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "shop.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-shop.csv"
     )!!
 
     val transactionCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "transaction.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-transaction.csv"
     )!!
 
     val variantCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "variant.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export-variant.csv"
     )!!
 
-    context.contentResolver.openFileDescriptor(
-        categoryCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(categoryCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     ProductCategory.csvHeaders()
@@ -164,11 +136,7 @@ suspend fun exportDataAsRawCsv(
             }
         }
 
-    context.contentResolver.openFileDescriptor(
-        itemCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(itemCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     Item.csvHeaders()
@@ -194,11 +162,7 @@ suspend fun exportDataAsRawCsv(
             }
         }
 
-    context.contentResolver.openFileDescriptor(
-        producerCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(producerCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     ProductProducer.csvHeaders()
@@ -224,11 +188,7 @@ suspend fun exportDataAsRawCsv(
             }
         }
 
-    context.contentResolver.openFileDescriptor(
-        productCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(productCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     Product.csvHeaders()
@@ -254,11 +214,7 @@ suspend fun exportDataAsRawCsv(
             }
         }
 
-    context.contentResolver.openFileDescriptor(
-        shopCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(shopCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     Shop.csvHeaders()
@@ -284,11 +240,7 @@ suspend fun exportDataAsRawCsv(
             }
         }
 
-    context.contentResolver.openFileDescriptor(
-        transactionCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(transactionCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     TransactionBasket.csvHeaders()
@@ -314,11 +266,7 @@ suspend fun exportDataAsRawCsv(
             }
         }
 
-    context.contentResolver.openFileDescriptor(
-        variantCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(variantCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     ProductVariant.csvHeaders()
@@ -402,21 +350,14 @@ suspend fun exportDataAsCompactCsv(
         context.contentResolver,
         parentUri,
         DocumentsContract.Document.MIME_TYPE_DIR,
-        "export-compact-csv-${timeFormatted}"
+        "arru-export-compact-csv-${timeFormatted}"
     )!!
 
     val exportCsvFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "text/csv",
-        "export.csv"
+        context.contentResolver, exportDirUri, "text/csv", "arru-export.csv"
     )!!
 
-    context.contentResolver.openFileDescriptor(
-        exportCsvFileUri,
-        "w"
-    )
-        ?.use { parcelFileDescriptor ->
+    context.contentResolver.openFileDescriptor(exportCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
                     "transactionId;transactionDate;transactionTotalPrice;shop;product;variant;variantGlobal;category;producer;price;quantity;transactionNote\n".toByteArray()
@@ -524,21 +465,14 @@ suspend fun exportDataAsJson(
         context.contentResolver,
         parentUri,
         DocumentsContract.Document.MIME_TYPE_DIR,
-        "export-json-${timeFormatted}"
+        "arru-export-json-${timeFormatted}"
     )!!
 
     val exportJsonFileUri = DocumentsContractCompat.createDocument(
-        context.contentResolver,
-        exportDirUri,
-        "application/json",
-        "export.json"
+        context.contentResolver, exportDirUri, "application/json", "arru-export.json"
     )!!
 
-    context.contentResolver.openOutputStream(
-        exportJsonFileUri,
-        "w"
-    )
-        ?.use { outputStream ->
+    context.contentResolver.openOutputStream(exportJsonFileUri, "w")?.use { outputStream ->
             JsonWriter(OutputStreamWriter(outputStream)).use { writer ->
                 writer.setIndent("  ")
                 writer.beginArray()
