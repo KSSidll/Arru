@@ -17,10 +17,10 @@ import com.kssidll.arru.R
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 enum class HomeDestinations(
-    @StringRes val label: Int,
+    @param:StringRes val label: Int,
     val disabledIcon: ImageVector,
     val enabledIcon: ImageVector,
-    @StringRes val contentDescription: Int
+    @param:StringRes val contentDescription: Int
 ) {
     DASHBOARD(
         R.string.dashboard_nav_label,

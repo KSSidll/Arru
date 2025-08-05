@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ImportDataUIBlockingUseCase(
-    @ApplicationContext val appContext: Context,
+    @param:ApplicationContext val appContext: Context,
     private val importRepository: ImportRepositorySource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {

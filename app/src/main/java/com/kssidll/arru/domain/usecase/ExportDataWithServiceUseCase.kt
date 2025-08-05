@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class ExportDataWithServiceUseCase(
-    @ApplicationContext val appContext: Context,
+    @param:ApplicationContext val appContext: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     suspend operator fun invoke(uri: Uri) = withContext(dispatcher) {

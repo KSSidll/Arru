@@ -84,7 +84,7 @@ sealed class SettingsEvent {
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    @ApplicationContext private val appContext: Context,
+    @param:ApplicationContext private val appContext: Context,
     private val exportDataWithServiceUseCase: ExportDataWithServiceUseCase,
     private val exportDataUIBlockingUseCase: ExportDataUIBlockingUseCase,
     private val importDataUIBlockingUseCase: ImportDataUIBlockingUseCase,

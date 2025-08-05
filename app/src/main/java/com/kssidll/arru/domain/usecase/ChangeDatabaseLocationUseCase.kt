@@ -16,7 +16,7 @@ enum class DatabaseMoveResult {
 }
 
 class ChangeDatabaseLocationUseCase(
-    @ApplicationContext val appContext: Context,
+    @param:ApplicationContext val appContext: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     @RequiresApi(30)

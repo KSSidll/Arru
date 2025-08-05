@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class ExportDataUIBlockingUseCase(
-    @ApplicationContext val appContext: Context,
+    @param:ApplicationContext val appContext: Context,
     private val categoryRepository: CategoryRepositorySource,
     private val itemRepository: ItemRepositorySource,
     private val producerRepository: ProducerRepositorySource,

@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
-    @ApplicationContext private val appContext: Context,
+    @param:ApplicationContext private val appContext: Context,
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {

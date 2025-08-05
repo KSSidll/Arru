@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BackupsViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val transactionBasketRepository: TransactionBasketRepositorySource,
 ): ViewModel() {
     val availableBackups: SnapshotStateList<DatabaseBackup> = mutableStateListOf()
