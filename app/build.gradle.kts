@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import java.util.Properties
 
 plugins {
@@ -80,10 +79,6 @@ android {
 
     composeCompiler {
         includeSourceInformation = true
-
-        featureFlags = setOf(
-            ComposeFeatureFlag.OptimizeNonSkippingGroups
-        )
     }
 
     packaging {
