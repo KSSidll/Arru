@@ -533,6 +533,46 @@ fun SettingsScreen(
                         }
                     }
 
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box {
+                        val togglePersistentNotificationInteractionSource = remember {
+                            MutableInteractionSource()
+                        }
+
+                        Surface(
+                            shape = ShapeDefaults.Large,
+                            tonalElevation = 2.dp,
+                            interactionSource = togglePersistentNotificationInteractionSource,
+                            onClick = {
+                                onEvent(SettingsEvent.TogglePersistentNotification)
+                            },
+                            modifier = Modifier
+                                .width(TextFieldDefaults.MinWidth)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Checkbox(
+                                    checked = uiState.persistentNotificationEnabled,
+                                    interactionSource = togglePersistentNotificationInteractionSource,
+                                    onCheckedChange = {
+                                        onEvent(SettingsEvent.TogglePersistentNotification)
+                                    },
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(
+                                    text = stringResource(R.string.show_persistent_notification),
+                                    style = Typography.labelMedium
+                                )
+                            }
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     AnimatedVisibility(

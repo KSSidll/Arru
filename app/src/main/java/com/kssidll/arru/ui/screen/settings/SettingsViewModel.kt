@@ -19,8 +19,10 @@ import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.preference.getDynamicColor
 import com.kssidll.arru.data.preference.getExportLocation
 import com.kssidll.arru.data.preference.getExportType
+import com.kssidll.arru.data.preference.getPersistentNotificationsEnabled
 import com.kssidll.arru.data.preference.setCurrencyFormatLocale
 import com.kssidll.arru.data.preference.setExportType
+import com.kssidll.arru.data.preference.setPersistentNotificationEnabled
 import com.kssidll.arru.data.preference.setThemeColorScheme
 import com.kssidll.arru.data.preference.setThemeDynamicColor
 import com.kssidll.arru.domain.AppLocale
@@ -30,6 +32,7 @@ import com.kssidll.arru.domain.usecase.ExportDataUIBlockingUseCase
 import com.kssidll.arru.domain.usecase.ExportDataWithServiceUseCase
 import com.kssidll.arru.domain.usecase.ImportDataUIBlockingUseCase
 import com.kssidll.arru.helper.getReadablePathFromUri
+import com.kssidll.arru.service.PersistentNotificationService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +50,8 @@ data class SettingsUiState(
     val isInDynamicColor: Boolean = false,
     val currencyFormatLocale: Locale? = null,
     val databaseLocation: AppPreferences.Database.Location.Values? = null,
+
+    val persistentNotificationEnabled: Boolean = false,
 
     val databaseLocationChangeFailedError: Boolean = false,
     val databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible: Boolean = false,
@@ -79,6 +84,7 @@ sealed class SettingsEvent {
     data object CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog: SettingsEvent()
     data object ConfirmDatabaseLocationChangeExtremeDangerAction: SettingsEvent()
 
+    data object TogglePersistentNotification: SettingsEvent()
     data object ToggleAdvancedSettingsVisibility: SettingsEvent()
 }
 
@@ -153,6 +159,16 @@ class SettingsViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            AppPreferences.getPersistentNotificationsEnabled(appContext).collect {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        persistentNotificationEnabled = it
+                    )
+                }
+            }
+        }
     }
 
     fun handleEvent(event: SettingsEvent) {
@@ -180,6 +196,18 @@ class SettingsViewModel @Inject constructor(
                     currentState.copy(
                         databaseLocationChangeFailedError = false
                     )
+                }
+            }
+
+            is SettingsEvent.TogglePersistentNotification -> {
+                val enabled = !uiState.value.persistentNotificationEnabled
+                viewModelScope.launch {
+                    AppPreferences.setPersistentNotificationEnabled(appContext, enabled)
+                    if (enabled) {
+                        PersistentNotificationService.start(appContext)
+                    } else {
+                        PersistentNotificationService.stop(appContext)
+                    }
                 }
             }
 

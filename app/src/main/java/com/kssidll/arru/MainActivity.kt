@@ -21,8 +21,10 @@ import com.kssidll.arru.data.preference.detectDarkMode
 import com.kssidll.arru.data.preference.getColorScheme
 import com.kssidll.arru.data.preference.getCurrencyFormatLocale
 import com.kssidll.arru.data.preference.getDynamicColor
+import com.kssidll.arru.data.preference.getPersistentNotificationsEnabled
 import com.kssidll.arru.data.preference.setResettableToDefault
 import com.kssidll.arru.service.DataExportService
+import com.kssidll.arru.service.PersistentNotificationService
 import com.kssidll.arru.service.getServiceStateCold
 import com.kssidll.arru.service.setServiceState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -51,6 +53,14 @@ class MainActivity: AppCompatActivity() {
                 DataExportService.SERVICE_NAME,
                 applicationContext.getServiceStateCold(DataExportService::class.java)
             )
+
+            applicationContext.setServiceState(
+                PersistentNotificationService.SERVICE_NAME,
+                applicationContext.getServiceStateCold(PersistentNotificationService::class.java)
+            )
+            if (AppPreferences.getPersistentNotificationsEnabled(applicationContext).first()) {
+                PersistentNotificationService.start(applicationContext)
+            }
 
             colorScheme = AppPreferences.getColorScheme(applicationContext).first()
             isInDynamicColor = AppPreferences.getDynamicColor(applicationContext).first()

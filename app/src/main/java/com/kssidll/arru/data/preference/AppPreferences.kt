@@ -267,6 +267,16 @@ data object AppPreferences {
             const val DEFAULT = "DEFAULT"
         }
     }
+
+    data object Notifications {
+        data object Persistent {
+            data object Enabled {
+                val key: Preferences.Key<Boolean> = booleanPreferencesKey("notificationspersistentenabled")
+
+                const val DEFAULT = false
+            }
+        }
+    }
 }
 
 /**
@@ -558,5 +568,22 @@ fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Da
             }
         }
             ?: AppPreferences.Database.Location.DEFAULT
+    }
+}
+
+suspend fun AppPreferences.setPersistentNotificationEnabled(
+    context: Context,
+    enabled: Boolean
+) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Notifications.Persistent.Enabled.key] = enabled
+    }
+}
+
+@Suppress("KotlinConstantConditions")
+fun AppPreferences.getPersistentNotificationsEnabled(context: Context): Flow<Boolean> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Notifications.Persistent.Enabled.key]
+            ?: AppPreferences.Notifications.Persistent.Enabled.DEFAULT
     }
 }
