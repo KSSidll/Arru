@@ -49,7 +49,6 @@ import dev.olshevski.navigation.reimagined.NavController
 import dev.olshevski.navigation.reimagined.navEntry
 import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.pop
-import dev.olshevski.navigation.reimagined.rememberNavController
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
@@ -371,7 +370,7 @@ fun defaultPopContentTransformation(
 @Composable
 fun Navigation(
     isExpandedScreen: Boolean,
-    navController: NavController<Screen> = rememberNavController(startDestination = Screen.Home)
+    navController: NavController<Screen>
 ) {
     NavBackHandler(controller = navController)
 

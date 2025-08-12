@@ -19,6 +19,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.kssidll.arru.APPLICATION_NAME
+import com.kssidll.arru.INTENT_NAVIGATE_TO_ADD_TRANSACTION
+import com.kssidll.arru.INTENT_NAVIGATE_TO_KEY
 import com.kssidll.arru.MainActivity
 import com.kssidll.arru.R
 import com.kssidll.arru.helper.checkPermission
@@ -253,6 +255,11 @@ class PersistentNotificationService: Service() {
             this,
             MainActivity::class.java
         ).let { notificationIntent ->
+            notificationIntent.putExtra(INTENT_NAVIGATE_TO_KEY, INTENT_NAVIGATE_TO_ADD_TRANSACTION)
+            notificationIntent.addFlags(
+                Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            )
+
             PendingIntent.getActivity(
                 this,
                 0,
