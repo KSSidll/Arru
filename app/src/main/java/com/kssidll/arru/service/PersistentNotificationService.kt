@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -268,7 +269,10 @@ class PersistentNotificationService: Service() {
         return builder
             .setContentTitle("$APPLICATION_NAME - ${getLocalizedString(R.string.persistent_notification_add_transaction)}")
             .setContentIntent(pendingIntent)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, R.mipmap.ic_launcher_round))
+            .setOngoing(true)
+            .setAutoCancel(false)
             .build()
     }
 

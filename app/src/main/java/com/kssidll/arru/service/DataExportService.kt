@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
@@ -550,7 +551,8 @@ class DataExportService: Service() {
             .setContentTitle(APPLICATION_NAME)
             .setContentText("${getLocalizedString(R.string.service_data_export_notification_progress)}: $exportedDataSize/$totalDataSize")
             .setContentIntent(pendingIntent)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, R.mipmap.ic_launcher_round))
             .addAction(stopServiceAction)
             .setProgress(
                 totalDataSize,
