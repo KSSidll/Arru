@@ -57,6 +57,7 @@ import com.kssidll.arru.data.preference.getExportLocation
 import com.kssidll.arru.data.preference.setExportLocation
 import com.kssidll.arru.helper.getLocalizedString
 import com.kssidll.arru.service.DataExportService
+import com.kssidll.arru.service.PersistentNotificationService
 import com.kssidll.arru.ui.theme.Typography
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -140,6 +141,13 @@ fun SettingsRoute(
                     )
                 }
             }
+        }
+    )
+
+    val persistentNotificationServicePermissionsState = rememberMultiplePermissionsState(
+        permissions = PersistentNotificationService.Permissions.ALL.asList(),
+        onPermissionsResult = {
+            viewModel.handleEvent(SettingsEvent.TogglePersistentNotification)
         }
     )
 
@@ -289,6 +297,10 @@ fun SettingsRoute(
 
                     is SettingsEvent.SetExportUri -> {
                         exportFolderPickerLauncher.launch(uiState.exportUri)
+                    }
+
+                    is SettingsEvent.TogglePersistentNotification -> {
+                        persistentNotificationServicePermissionsState.launchMultiplePermissionRequest()
                     }
 
                     is SettingsEvent.SetTheme -> viewModel.handleEvent(event)

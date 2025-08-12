@@ -16,6 +16,8 @@
         android:minSdkVersion="33"
         />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
     <application
         android:name=".Arru"
         android:allowBackup="true"
@@ -54,6 +56,16 @@
             android:exported="false"
             android:foregroundServiceType="dataSync"
             />
+
+        <service
+          android:name=".service.PersistentNotificationService"
+          android:enabled="true"
+          android:exported="false"
+          android:foregroundServiceType="specialUse">
+            <property
+              android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+              android:value="opt-in persistent notification for quick access to the app" />
+        </service>
 
         <receiver
             android:name=".broadcast.DataExportServiceStopActionReceiver"
