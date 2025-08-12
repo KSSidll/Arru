@@ -150,6 +150,7 @@
     <string name="service_persistent_notification_name">Persistent Notification</string>
     <string name="service_persistent_notification_description">Persistent Notification</string>
     <string name="show_persistent_notification">Show persistent notification</string>
+    <string name="persistent_notification_add_transaction">Add transaction</string>
 
     <string name="import_error_failed_to_determine_version">Failed to determine version of:</string>
     <string name="import_error_failed_to_open_file">Failed to open:</string>

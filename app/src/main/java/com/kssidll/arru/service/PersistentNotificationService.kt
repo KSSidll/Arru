@@ -113,7 +113,6 @@ class PersistentNotificationService: Service() {
             SERVICE_NOTIFICATION_ID,
             createNotification(),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                // TODO test if works on e.g API 29
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             } else {
                 0
@@ -267,7 +266,7 @@ class PersistentNotificationService: Service() {
         )
 
         return builder
-            .setContentTitle("$APPLICATION_NAME is running")
+            .setContentTitle("$APPLICATION_NAME - ${getLocalizedString(R.string.persistent_notification_add_transaction)}")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .build()
