@@ -127,4 +127,8 @@
   <string name="import_error_parse_error" comment="Displayed when import parsing fails in an unexpected way">Encountered unknown parsing error</string>
   <string name="variant_use_as_global" comment="Shown in Product Variant creation as toggle for whether it should be an aggregated global variant that is displayed in all products">Use as aggregate shown in all products</string>
   <string name="transaction_note" comment="Label for the transaction note text field">Note</string>
+  <string name="service_persistent_notification_name" comment="Displayed in OS app settings as notification type">Persistent Notification</string>
+  <string name="service_persistent_notification_description" comment="Displayed in OS app settings as notification type description">Persistent Notification</string>
+  <string name="show_persistent_notification" comment="Displayed in app settings as label for a toggle">Show persistent notification</string>
+  <string name="persistent_notification_add_transaction" comment="Displayed in the persistent notification title">Add transaction</string>
 </resources>
