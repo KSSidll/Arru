@@ -1,0 +1,1 @@
+- Add an optional persistent notification to quickly add transaction
