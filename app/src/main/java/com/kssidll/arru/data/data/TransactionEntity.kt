@@ -28,8 +28,8 @@ import kotlin.math.log10
         )
     ],
     indices = [
-        Index(value = ["date"]),
-        Index(value = ["shopEntityId"]),
+        Index(value = ["date"], name = "index_TransactionEntity_date"),
+        Index(value = ["shopEntityId"], name = "index_TransactionEntity_shopEntityId"),
     ],
     tableName = "TransactionEntity"
 )

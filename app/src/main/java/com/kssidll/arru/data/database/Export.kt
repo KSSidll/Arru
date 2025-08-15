@@ -383,15 +383,15 @@ suspend fun exportDataAsCompactCsv(
                             items.forEach { item ->
                                 val product = productRepository.get(item.productEntityId)
                                 val category =
-                                    product?.categoryEntityId?.let { categoryRepository.get(it) }?.name
+                                    product?.productCategoryEntityId?.let { categoryRepository.get(it) }?.name
                                         ?: "null"
                                 val producer =
-                                    product?.producerEntityId?.let { producerRepository.get(it) }?.name
+                                    product?.productProducerEntityId?.let { producerRepository.get(it) }?.name
                                         ?: "null"
                                 val variant =
-                                    item.variantEntityId?.let { variantRepository.get(it)?.name }
+                                    item.productVariantEntityId?.let { variantRepository.get(it)?.name }
                                         ?: "null"
-                                val variantGlobal = item.variantEntityId?.let { variantRepository.get(it)?.productEntityId == null }
+                                val variantGlobal = item.productVariantEntityId?.let { variantRepository.get(it)?.productEntityId == null }
                                     ?: false
 
                                 outputStream.write(
@@ -512,10 +512,10 @@ suspend fun exportDataAsJson(
                             items.forEach { item ->
                                 val product = productRepository.get(item.productEntityId)
                                 val category =
-                                    product?.categoryEntityId?.let { categoryRepository.get(it) }
+                                    product?.productCategoryEntityId?.let { categoryRepository.get(it) }
                                 val producer =
-                                    product?.producerEntityId?.let { producerRepository.get(it) }
-                                val variant = item.variantEntityId?.let { variantRepository.get(it) }
+                                    product?.productProducerEntityId?.let { producerRepository.get(it) }
+                                val variant = item.productVariantEntityId?.let { variantRepository.get(it) }
 
                                 writer.beginObject()
 

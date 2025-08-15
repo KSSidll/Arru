@@ -89,7 +89,7 @@ class CategoryRepository(private val dao: ProductCategoryEntityDao): CategoryRep
         }
 
         val products = dao.getProducts(category.id)
-        products.forEach { it.categoryEntityId = mergingInto.id }
+        products.forEach { it.productCategoryEntityId = mergingInto.id }
         dao.updateProducts(products)
 
         dao.delete(category)

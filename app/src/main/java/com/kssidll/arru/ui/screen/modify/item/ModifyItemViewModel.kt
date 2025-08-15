@@ -129,7 +129,7 @@ abstract class ModifyItemViewModel: ViewModel() {
             productRepository.newestItem(it)
         }
 
-        val variant: ProductVariantEntity? = lastItem?.variantEntityId?.let { variantsRepository.get(it) }
+        val variant: ProductVariantEntity? = lastItem?.productVariantEntityId?.let { variantsRepository.get(it) }
         val price: String? = lastItem?.actualPrice()
             ?.toString()
         val quantity: String? = lastItem?.actualQuantity()
@@ -183,7 +183,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         item: ItemEntity?,
     ) {
         val product: ProductEntity? = item?.productEntityId?.let { productRepository.get(it) }
-        val variant: ProductVariantEntity? = item?.variantEntityId?.let { variantsRepository.get(it) }
+        val variant: ProductVariantEntity? = item?.productVariantEntityId?.let { variantsRepository.get(it) }
         val price: String? = item?.actualPrice()
             ?.toString()
         val quantity: String? = item?.actualQuantity()

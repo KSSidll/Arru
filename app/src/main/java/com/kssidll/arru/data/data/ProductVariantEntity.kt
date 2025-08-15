@@ -21,8 +21,8 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
         ),
     ],
     indices = [
-        Index(value = ["productEntityId"]),
-        Index(value = ["name"]),
+        Index(value = ["productEntityId"], name = "index_ProductVariantEntity_productEntityId"),
+        Index(value = ["name"], name = "index_ProductVariantEntity_name"),
     ],
     tableName = "ProductVariantEntity"
 )

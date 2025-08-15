@@ -295,9 +295,9 @@ interface ProductEntityDao {
 
         return itemEntities.map { entity ->
             val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val variantEntity = entity.variantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(product.categoryEntityId)!!
-            val productProducerEntity = product.producerEntityId?.let { producerById(it) }
+            val variantEntity = entity.productVariantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(product.productCategoryEntityId)!!
+            val productProducerEntity = product.productProducerEntityId?.let { producerById(it) }
             val shopEntity = transactionEntity.shopEntityId?.let { shopById(it) }
 
             FullItem(
@@ -336,11 +336,11 @@ interface ProductEntityDao {
         JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
             AND ItemEntity.productEntityId = :entityId
         LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
-        LEFT JOIN ProductVariantEntity ON ItemEntity.variantEntityId = ProductVariantEntity.id
+        LEFT JOIN ProductVariantEntity ON ItemEntity.productVariantEntityId = ProductVariantEntity.id
         LEFT JOIN ProductEntity ON ItemEntity.productEntityId = ProductEntity.id
-        LEFT JOIN ProductProducerEntity ON ProductEntity.producerEntityId = ProductProducerEntity.id
+        LEFT JOIN ProductProducerEntity ON ProductEntity.productProducerEntityId = ProductProducerEntity.id
         WHERE time IS NOT NULL
-        GROUP BY time, shopEntityId, variantEntityId, producerEntityId
+        GROUP BY time, shopEntityId, productVariantEntityId, productProducerEntityId
         ORDER BY time
     """
     )

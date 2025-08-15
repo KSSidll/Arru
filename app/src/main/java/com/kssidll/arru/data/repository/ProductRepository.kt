@@ -83,8 +83,8 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
         val entity = ProductEntity(
             id = productId,
             name = name.trim(),
-            categoryEntityId = categoryId,
-            producerEntityId = producerId
+            productCategoryEntityId = categoryId,
+            productProducerEntityId = producerId
         )
 
         if (entity.validName()
@@ -132,10 +132,10 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
             it.productEntityId = mergingInto.id
 
             // update id in case it's part of the duplicate variants
-            if (it.variantEntityId != null && it.variantEntityId in duplicateVariants.map { variant -> variant.id }) {
-                it.variantEntityId = dao.variantByName(
+            if (it.productVariantEntityId != null && it.productVariantEntityId in duplicateVariants.map { variant -> variant.id }) {
+                it.productVariantEntityId = dao.variantByName(
                     it.productEntityId,
-                    dao.variantById(it.variantEntityId!!)!!.name
+                    dao.variantById(it.productVariantEntityId!!)!!.name
                 )!!.id
             }
         }

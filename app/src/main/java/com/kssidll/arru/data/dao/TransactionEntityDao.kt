@@ -73,9 +73,9 @@ interface TransactionEntityDao {
 
         return itemEntities.map { item ->
             val productEntity = productById(item.productEntityId)!!
-            val productVariantEntity = item.variantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(productEntity.categoryEntityId)!!
-            val productProducerEntity = productEntity.producerEntityId?.let { producerById(it) }
+            val productVariantEntity = item.productVariantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(productEntity.productCategoryEntityId)!!
+            val productProducerEntity = productEntity.productProducerEntityId?.let { producerById(it) }
             val shopEntity = transactionBasket.shopEntityId?.let { shopById(it) }
 
             FullItem(
@@ -100,9 +100,9 @@ interface TransactionEntityDao {
 
             items.map { item ->
                 val product = productById(item.productEntityId)!!
-                val variant = item.variantEntityId?.let { variantById(it) }
-                val category = categoryById(product.categoryEntityId)!!
-                val producer = product.producerEntityId?.let { producerById(it) }
+                val variant = item.productVariantEntityId?.let { variantById(it) }
+                val category = categoryById(product.productCategoryEntityId)!!
+                val producer = product.productProducerEntityId?.let { producerById(it) }
                 val shop = transactionBasket.shopEntityId?.let { shopById(it) }
 
                 FullItem(

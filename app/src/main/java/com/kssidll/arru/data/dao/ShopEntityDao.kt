@@ -273,9 +273,9 @@ interface ShopEntityDao {
         return itemEntities.map { entity ->
             val transactionEntity = transactionEntityByItemEntityId(entity.id)
             val productEntity = productById(entity.productEntityId)
-            val productVariantEntity = entity.variantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(productEntity.categoryEntityId)
-            val productProducerEntity = productEntity.producerEntityId?.let { producerById(it) }
+            val productVariantEntity = entity.productVariantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(productEntity.productCategoryEntityId)
+            val productProducerEntity = productEntity.productProducerEntityId?.let { producerById(it) }
 
             FullItem(
                 id = entity.id,

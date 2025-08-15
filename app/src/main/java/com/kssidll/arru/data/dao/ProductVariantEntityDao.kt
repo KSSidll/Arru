@@ -32,7 +32,7 @@ interface ProductVariantEntityDao {
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
     suspend fun getProduct(productId: Long): ProductEntity?
 
-    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.variantEntityId = :variantId")
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.productVariantEntityId = :variantId")
     suspend fun getItems(variantId: Long): List<ItemEntity>
 
     @Update

@@ -39,15 +39,15 @@ import kotlin.math.log10
         ForeignKey(
             entity = ProductVariantEntity::class,
             parentColumns = ["id"],
-            childColumns = ["variantEntityId"],
+            childColumns = ["productVariantEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
     ],
     indices = [
-        Index(value = ["transactionEntityId"]),
-        Index(value = ["productEntityId"]),
-        Index(value = ["variantEntityId"]),
+        Index(value = ["transactionEntityId"], name = "index_ItemEntity_transactionEntityId"),
+        Index(value = ["productEntityId"], name = "index_ItemEntity_productEntityId"),
+        Index(value = ["productVariantEntityId"], name = "index_ItemEntity_productVariantEntityId"),
     ],
     tableName = "ItemEntity"
 )
@@ -55,7 +55,7 @@ data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     var transactionEntityId: Long,
     var productEntityId: Long,
-    var variantEntityId: Long?,
+    var productVariantEntityId: Long?,
     var quantity: Long,
     var price: Long,
 ) {
@@ -63,14 +63,14 @@ data class ItemEntity(
     constructor(
         transactionEntityId: Long,
         productEntityId: Long,
-        variantEntityId: Long?,
+        productVariantEntityId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
         transactionEntityId,
         productEntityId,
-        variantEntityId,
+        productVariantEntityId,
         quantity,
         price,
     )
@@ -95,7 +95,7 @@ data class ItemEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${transactionEntityId};${productEntityId};${variantEntityId};${actualQuantity()};${actualPrice()}"
+        return "${id};${transactionEntityId};${productEntityId};${productVariantEntityId};${actualQuantity()};${actualPrice()}"
     }
 
     companion object {
@@ -141,7 +141,7 @@ data class ItemEntity(
                 id = itemId,
                 transactionEntityId = generateRandomLongValue(),
                 productEntityId = generateRandomLongValue(),
-                variantEntityId = generateRandomLongValue(),
+                productVariantEntityId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
             )

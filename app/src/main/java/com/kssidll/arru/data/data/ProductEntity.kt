@@ -16,29 +16,29 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
         ForeignKey(
             entity = ProductCategoryEntity::class,
             parentColumns = ["id"],
-            childColumns = ["categoryEntityId"],
+            childColumns = ["productCategoryEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
         ForeignKey(
             entity = ProductProducerEntity::class,
             parentColumns = ["id"],
-            childColumns = ["producerEntityId"],
+            childColumns = ["productProducerEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
     ],
     indices = [
-        Index(value = ["categoryEntityId"]),
-        Index(value = ["producerEntityId"]),
-        Index(value = ["name"]),
+        Index(value = ["productCategoryEntityId"], name = "index_ProductEntity_productCategoryEntityId"),
+        Index(value = ["productProducerEntityId"], name = "index_ProductEntity_productProducerEntityId"),
+        Index(value = ["name"], name = "index_ProductEntity_name"),
     ],
     tableName = "ProductEntity"
 )
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    var categoryEntityId: Long,
-    var producerEntityId: Long?,
+    var productCategoryEntityId: Long,
+    var productProducerEntityId: Long?,
     val name: String,
 ): FuzzySearchSource, NameSource {
     @Ignore
@@ -61,7 +61,7 @@ data class ProductEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${categoryEntityId};${producerEntityId};${name}"
+        return "${id};${productCategoryEntityId};${productProducerEntityId};${name}"
     }
 
     companion object {
@@ -81,8 +81,8 @@ data class ProductEntity(
         fun generate(productId: Long = 0): ProductEntity {
             return ProductEntity(
                 id = productId,
-                categoryEntityId = generateRandomLongValue(),
-                producerEntityId = generateRandomLongValue(),
+                productCategoryEntityId = generateRandomLongValue(),
+                productProducerEntityId = generateRandomLongValue(),
                 name = generateRandomStringValue(),
             )
         }

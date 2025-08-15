@@ -11,7 +11,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
     indices = [
-        Index(value = ["name"])
+        Index(value = ["name"], name = "index_ProductCategoryEntity_name")
     ],
     tableName = "ProductCategoryEntity"
 )

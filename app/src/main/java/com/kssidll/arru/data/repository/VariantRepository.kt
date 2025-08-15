@@ -55,7 +55,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
             others.forEach { variant ->
                 val othersItems = dao.getItems(variant.id)
 
-                othersItems.forEach { it.variantEntityId = newVariantId }
+                othersItems.forEach { it.productVariantEntityId = newVariantId }
 
                 dao.updateItems(othersItems)
                 dao.delete(variant)

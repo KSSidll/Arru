@@ -64,7 +64,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.producerEntityId = :producerId
+        WHERE ProductEntity.productProducerEntityId = :producerId
         ORDER BY date DESC
         LIMIT :count
         OFFSET :offset
@@ -80,7 +80,7 @@ interface ProductProducerEntityDao {
         """
         SELECT ProductEntity.*
         FROM ProductEntity
-        JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.producerEntityId
+        JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId
         WHERE ProductProducerEntity.id = :producerId
     """
     )
@@ -91,7 +91,7 @@ interface ProductProducerEntityDao {
         SELECT ProductVariantEntity.*
         FROM ProductVariantEntity
         JOIN ProductEntity ON ProductEntity.id = ProductVariantEntity.productEntityId
-        JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.producerEntityId
+        JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId
         WHERE ProductProducerEntity.id = :producerId
     """
     )
@@ -102,7 +102,7 @@ interface ProductProducerEntityDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.producerEntityId
+        JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId
         WHERE ProductProducerEntity.id = :producerId
     """
     )
@@ -125,7 +125,7 @@ interface ProductProducerEntityDao {
         SELECT COUNT(*)
         FROM ItemEntity
         JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ItemEntity.id < :itemEntityId AND ProductEntity.producerEntityId = :producerId
+        WHERE ItemEntity.id < :itemEntityId AND ProductEntity.productProducerEntityId = :producerId
     """
     )
     suspend fun countItemsBefore(
@@ -138,7 +138,7 @@ interface ProductProducerEntityDao {
         SELECT COUNT(*)
         FROM ItemEntity
         JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ItemEntity.id > :itemEntityId AND ProductEntity.producerEntityId = :producerId
+        WHERE ItemEntity.id > :itemEntityId AND ProductEntity.productProducerEntityId = :producerId
     """
     )
     suspend fun countItemsAfter(
@@ -162,7 +162,7 @@ interface ProductProducerEntityDao {
         SELECT SUM(ItemEntity.price * ItemEntity.quantity)
         FROM ItemEntity
         JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.producerEntityId = :entityId
+        WHERE ProductEntity.productProducerEntityId = :entityId
     """
     )
     fun totalSpentFlow(entityId: Long): Flow<Long?>
@@ -175,7 +175,7 @@ interface ProductProducerEntityDao {
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-                AND producerEntityId = :entityId
+                AND productProducerEntityId = :entityId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
@@ -185,7 +185,7 @@ interface ProductProducerEntityDao {
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-                AND producerEntityId = :entityId
+                AND productProducerEntityId = :entityId
             GROUP BY transaction_time
         )
         SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -206,7 +206,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND producerEntityId = :entityId
+            AND productProducerEntityId = :entityId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
@@ -216,7 +216,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND producerEntityId = :entityId
+            AND productProducerEntityId = :entityId
         GROUP BY ItemEntities_time
     )
     SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -237,7 +237,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND producerEntityId = :entityId
+            AND productProducerEntityId = :entityId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
@@ -247,7 +247,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND producerEntityId = :entityId
+            AND productProducerEntityId = :entityId
         GROUP BY ItemEntities_time
     )
     SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -268,7 +268,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND producerEntityId = :entityId
+            AND productProducerEntityId = :entityId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
@@ -278,7 +278,7 @@ interface ProductProducerEntityDao {
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND producerEntityId = :entityId
+            AND productProducerEntityId = :entityId
         GROUP BY ItemEntities_time
     )
     SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -310,8 +310,8 @@ interface ProductProducerEntityDao {
         return itemEntities.map { entity ->
             val transactionEntity = transactionEntityByItemEntityId(entity.id)
             val productEntity = productById(entity.productEntityId)
-            val productVariantEntity = entity.variantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(productEntity.categoryEntityId)
+            val productVariantEntity = entity.productVariantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(productEntity.productCategoryEntityId)
             val shopEntity = transactionEntity.shopEntityId?.let { shopById(it) }
 
             FullItem(

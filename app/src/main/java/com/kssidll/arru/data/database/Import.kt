@@ -423,8 +423,8 @@ suspend fun handleCsvImport(
                     productEntities.add(
                         ProductEntity(
                             id = products[product]!!,
-                            categoryEntityId = categories[data.category]!!,
-                            producerEntityId = data.producer?.let { producers[it] },
+                            productCategoryEntityId = categories[data.category]!!,
+                            productProducerEntityId = data.producer?.let { producers[it] },
                             name = data.product,
                         )
                     )
@@ -470,7 +470,7 @@ suspend fun handleCsvImport(
                             id = itemEntities.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
                             transactionEntityId = transactions[data.transactionId]!!,
                             productEntityId = products[data.product]!!,
-                            variantEntityId = data.variant?.let {
+                            productVariantEntityId = data.variant?.let {
                                 if (data.variantGlobal) {
                                     variants[Pair(it, null)]
                                 } else variants[Pair(it, products[data.product]!!)]
@@ -784,8 +784,8 @@ suspend fun handleCsvImport(
                             productEntities.add(
                                 ProductEntity(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    categoryEntityId = categoryId + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    producerEntityId = producerId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                    productCategoryEntityId = categoryId + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                    productProducerEntityId = producerId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
                                     name = name
                                 )
                             )
@@ -884,7 +884,7 @@ suspend fun handleCsvImport(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     transactionEntityId = transactionBasketId + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     productEntityId = productId + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    variantEntityId = variantId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                    productVariantEntityId = variantId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
                                     quantity = quantity,
                                     price = price,
                                 )
@@ -1246,8 +1246,8 @@ suspend fun handleJsonImport(
                                                                 ProductEntity(
                                                                     id = itemProductId,
                                                                     name = productName,
-                                                                    categoryEntityId = productCategoryId,
-                                                                    producerEntityId = productProducerId,
+                                                                    productCategoryEntityId = productCategoryId,
+                                                                    productProducerEntityId = productProducerId,
                                                                 )
                                                             )
                                                         }
@@ -1348,7 +1348,7 @@ suspend fun handleJsonImport(
                                                         price = itemPrice,
                                                         quantity = itemQuantity,
                                                         productEntityId = itemProductId,
-                                                        variantEntityId = itemVariantId
+                                                        productVariantEntityId = itemVariantId
                                                     )
                                                 )
                                             }
