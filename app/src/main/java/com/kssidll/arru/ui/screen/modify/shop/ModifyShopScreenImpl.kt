@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
@@ -54,7 +53,7 @@ fun ModifyShopScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ShopEntity) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<ShopEntity>>> = flowOf(),
+    mergeCandidates: Flow<ImmutableList<ShopEntity>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: ShopEntity? = null,
     onChosenMergeCandidateChange: ((ShopEntity?) -> Unit)? = null,

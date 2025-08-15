@@ -2,7 +2,6 @@ package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -113,18 +112,12 @@ interface VariantRepositorySource {
      * @param variantId id of the [ProductVariantEntity]
      * @return [ProductVariantEntity] matching [variantId] id or null if none match
      */
-    suspend fun get(variantId: Long): ProductVariantEntity?
-
-    /**
-     * @param variantId id of the [ProductVariantEntity]
-     * @return [ProductVariantEntity] matching [variantId] id or null if none match, as flow
-     */
-    fun getFlow(variantId: Long): Flow<Data<ProductVariantEntity?>>
+    fun get(variantId: Long): Flow<ProductVariantEntity?>
 
     /**
      * @param productEntity [ProductEntity] to match the [ProductVariantEntity] with
      * @param showGlobal whether to return global variants as well
-     * @return list of [ProductVariantEntity] matching [productEntity] as flow
+     * @return list of [ProductVariantEntity] matching [productEntity]
      */
-    fun byProductFlow(productEntity: ProductEntity, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>>
+    fun byProduct(productEntity: ProductEntity, showGlobal: Boolean): Flow<ImmutableList<ProductVariantEntity>>
 }

@@ -13,7 +13,6 @@ import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
@@ -22,6 +21,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -51,11 +51,11 @@ class EditProductViewModel @Inject constructor(
         screenState.selectedProductProducer.apply { value = value.toLoading() }
         screenState.selectedProductCategory.apply { value = value.toLoading() }
 
-        mProduct = productRepository.get(productId)
+        mProduct = productRepository.get(productId).first()
         mMergeMessageProductName.value = mProduct?.name.orEmpty()
 
-        val producer: ProductProducerEntity? = mProduct?.productProducerEntityId?.let { producerRepository.get(it) }
-        val category = mProduct?.productCategoryEntityId?.let { categoryRepository.get(it) }
+        val producer: ProductProducerEntity? = mProduct?.productProducerEntityId?.let { producerRepository.get(it).first() }
+        val category = mProduct?.productCategoryEntityId?.let { categoryRepository.get(it).first() }
 
         screenState.name.apply {
             value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
@@ -76,12 +76,10 @@ class EditProductViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(productId: Long): Flow<Data<ImmutableList<ProductEntity>>> {
-        return productRepository.allFlow()
+    fun allMergeCandidates(productId: Long): Flow<ImmutableList<ProductEntity>> {
+        return productRepository.all()
             .map {
-                if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != productId }.toImmutableList())
-                } else it
+                it.filter { item -> item.id != productId }.toImmutableList()
             }
     }
 

@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.domain.data.Data
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 
@@ -32,10 +31,9 @@ fun CategoryRoute(
         category = viewModel.category,
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
-            ?: Data.Loaded(emptyList<ItemSpentByTime>().toImmutableList()),
-        totalSpentData = viewModel.categoryTotalSpent()
-            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loading(),
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyList<ItemSpentByTime>().toImmutableList())?.value
+            ?: emptyList<ItemSpentByTime>().toImmutableList(),
+        totalSpentData = viewModel.categoryTotalSpent()?.collectAsState(initial = null)?.value,
         spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)

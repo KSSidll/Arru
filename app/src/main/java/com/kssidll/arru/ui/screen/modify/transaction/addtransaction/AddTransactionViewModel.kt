@@ -38,10 +38,10 @@ class AddTransactionViewModel @Inject constructor(
         screenState.selectedShop.apply { value = value.toLoading() }
         screenState.date.apply { value = value.toLoading() }
 
-        val latest = transactionRepository.newest()
+        val latest = transactionRepository.newest().first()
 
         if (latest != null) {
-            val shop = latest.shopEntityId?.let { shopRepository.get(it) }
+            val shop = latest.shopEntityId?.let { shopRepository.get(it).first() }
 
             screenState.selectedShop.value = Field.Loaded(shop)
 

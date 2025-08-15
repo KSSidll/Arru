@@ -5,7 +5,6 @@ import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
-import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -124,17 +123,6 @@ interface TransactionBasketRepositorySource {
     // Read
 
     /**
-     * @param transactionBasketId id of the [TransactionEntity]
-     * @return [TransactionEntity] matching [transactionBasketId] id or null if none match
-     */
-    suspend fun get(transactionBasketId: Long): TransactionEntity?
-
-    /**
-     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none exist
-     */
-    suspend fun newest(): TransactionEntity?
-
-    /**
      * @return value representing the count of [TransactionEntity]
      */
     suspend fun count(): Int
@@ -152,34 +140,45 @@ interface TransactionBasketRepositorySource {
     suspend fun countAfter(transactionBasketId: Long): Int
 
     /**
+     * @param transactionBasketId id of the [TransactionEntity]
+     * @return [TransactionEntity] matching [transactionBasketId] id or null if none match
+     */
+    fun get(transactionBasketId: Long): Flow<TransactionEntity?>
+
+    /**
+     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none exist
+     */
+    fun newest(): Flow<TransactionEntity?>
+
+    /**
      * @return long representing total spending for the [category]
      */
-    suspend fun totalSpentLong(): Data<Long?>
+    fun totalSpentLong(): Flow<Long?>
 
     /**
-     * @return float representing total spending for the [category] as flow
+     * @return float representing total spending for the [category]
      */
-    fun totalSpentFlow(): Flow<Float?>
+    fun totalSpent(): Flow<Float?>
 
     /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by day as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by day
      */
-    fun totalSpentByDayFlow(): Flow<ImmutableList<TransactionSpentByTime>>
+    fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentByTime>>
 
     /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by week as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by week
      */
-    fun totalSpentByWeekFlow(): Flow<ImmutableList<TransactionSpentByTime>>
+    fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentByTime>>
 
     /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by month as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by month
      */
-    fun totalSpentByMonthFlow(): Flow<ImmutableList<TransactionSpentByTime>>
+    fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentByTime>>
 
     /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by year as flow
+     * @return list of [TransactionSpentByTime] representing total spending groupped by year
      */
-    fun totalSpentByYearFlow(): Flow<ImmutableList<TransactionSpentByTime>>
+    fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentByTime>>
 
     /**
      * @param startPosition position, from 0 up, to get next [count] items from
@@ -195,11 +194,11 @@ interface TransactionBasketRepositorySource {
     /**
      * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for placeholder values
      */
-    fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>>
+    fun transactionBasketsPaged(): Flow<PagingData<TransactionBasketWithItems>>
 
     /**
      * @param transactionId id to match [TransactionBasketWithItems] with
-     * @return [TransactionBasketWithItems] matching [transactionId] as flow
+     * @return [TransactionBasketWithItems] matching [transactionId]
      */
-    fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>>
+    fun transactionBasketWithItems(transactionId: Long): Flow<TransactionBasketWithItems?>
 }

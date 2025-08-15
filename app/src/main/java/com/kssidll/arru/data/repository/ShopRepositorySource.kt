@@ -5,7 +5,6 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
-import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -122,66 +121,61 @@ interface ShopRepositorySource {
      * @param shopId id of the [ShopEntity]
      * @return [ShopEntity] matching [shopId] id or null if none match
      */
-    suspend fun get(shopId: Long): ShopEntity?
+    fun get(shopId: Long): Flow<ShopEntity?>
+
 
     /**
-     * @param shopId id of the [ShopEntity]
-     * @return [ShopEntity] matching [shopId] id or null if none match, as flow
+     * @return list of all [ShopEntity]
      */
-    fun getFlow(shopId: Long): Flow<Data<ShopEntity?>>
+    fun all(): Flow<ImmutableList<ShopEntity>>
 
     /**
      * @param entity [ShopEntity] to get the total spending from
-     * @return float representing total spending for the [entity] as flow
+     * @return float representing total spending for the [entity]
      */
-    fun totalSpentFlow(entity: ShopEntity): Flow<Data<Float?>>
+    fun totalSpent(entity: ShopEntity): Flow<Float?>
 
     /**
      * @param entity [ShopEntity] to get the total spending by day from
-     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by day as flow
+     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by day
      */
-    fun totalSpentByDayFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByDay(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>>
 
     /**
      * @param entity [ShopEntity] to get the total spending by week from
-     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by week as flow
+     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by week
      */
-    fun totalSpentByWeekFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByWeek(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>>
 
     /**
      * @param entity [ShopEntity] to get the total spending by month from
-     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by month as flow
+     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by month
      */
-    fun totalSpentByMonthFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByMonth(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>>
 
     /**
      * @param entity [ShopEntity] to get the total spending by year from
-     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by year as flow
+     * @return list of [TransactionTotalSpentByTime] representing total spending groupped by year
      */
-    fun totalSpentByYearFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByYear(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>>
 
     /**
      * @param shopEntity [ShopEntity] to match the items to
      */
-    fun fullItemsPagedFlow(entity: ShopEntity): Flow<PagingData<FullItem>>
+    fun fullItemsPaged(entity: ShopEntity): Flow<PagingData<FullItem>>
 
     /**
      * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop
      */
-    fun totalSpentByShopFlow(): Flow<ImmutableList<TransactionTotalSpentByShop>>
+    fun totalSpentByShop(): Flow<ImmutableList<TransactionTotalSpentByShop>>
 
     /**
      * @param year year to match the data to
      * @param month month to match the data to
      * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop in [year] and [month]
      */
-    fun totalSpentByShopByMonthFlow(
+    fun totalSpentByShopByMonth(
         year: Int,
         month: Int
     ): Flow<ImmutableList<TransactionTotalSpentByShop>>
-
-    /**
-     * @return list of all [ShopEntity] as flow
-     */
-    fun allFlow(): Flow<Data<ImmutableList<ShopEntity>>>
 }

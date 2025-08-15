@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class ModifyTransactionViewModel: ViewModel() {
@@ -24,14 +24,14 @@ abstract class ModifyTransactionViewModel: ViewModel() {
     /**
      * @return List of all shops
      */
-    fun allShops(): Flow<Data<ImmutableList<ShopEntity>>> {
-        return shopRepository.allFlow()
+    fun allShops(): Flow<ImmutableList<ShopEntity>> {
+        return shopRepository.all()
     }
 
     suspend fun setSelectedShopToProvided(providedShopId: Long?) {
         if (providedShopId != null) {
             screenState.selectedShop.apply { value = value.toLoading() }
-            onNewShopSelected(shopRepository.get(providedShopId))
+            onNewShopSelected(shopRepository.get(providedShopId).first())
         }
     }
 
@@ -47,11 +47,9 @@ abstract class ModifyTransactionViewModel: ViewModel() {
         mShopListener?.cancel()
         if (shop != null) {
             mShopListener = viewModelScope.launch {
-                shopRepository.getFlow(shop.id)
+                shopRepository.get(shop.id)
                     .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedShop.value = Field.Loaded(it.data)
-                        }
+                        screenState.selectedShop.value = Field.Loaded(it)
                     }
             }
         }

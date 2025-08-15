@@ -36,11 +36,8 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FuzzySearchSource
-import com.kssidll.arru.domain.data.loadedData
-import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
@@ -50,6 +47,7 @@ import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -73,8 +71,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
-    products: Data<ImmutableList<ProductEntity>>,
-    variants: Data<ImmutableList<ProductVariantEntity>>,
+    products: ImmutableList<ProductEntity>,
+    variants: ImmutableList<ProductVariantEntity>,
     onNewProductSelected: (product: ProductEntity?) -> Unit,
     onNewVariantSelected: (variant: ProductVariantEntity?) -> Unit,
     onSubmit: () -> Unit,
@@ -387,9 +385,9 @@ fun ModifyItemScreenImpl(
                 enabled = state.selectedProduct.value.isEnabled(),
                 value = state.selectedProduct.value.data?.name ?: String(),
                 onClick = {
-                    if (products.loadedData()) {
+                    if (products.isNotEmpty()) {
                         state.isProductSearchDialogExpanded.value = true
-                    } else if (products.loadedEmpty()) {
+                    } else {
                         onProductAddButtonClick(null)
                     }
                 },
@@ -422,9 +420,9 @@ fun ModifyItemScreenImpl(
                     ?: stringResource(R.string.item_product_variant_default_value),
                 onClick = {
                     state.selectedProduct.value.data?.let {
-                        if (variants.loadedData()) {
+                        if (variants.isNotEmpty()) {
                             state.isVariantSearchDialogExpanded.value = true
-                        } else if (variants.loadedEmpty()) {
+                        } else {
                             onVariantAddButtonClick(
                                 it.id,
                                 null
@@ -464,8 +462,8 @@ private fun ModifyItemScreenImplPreview() {
             ModifyItemScreenImpl(
                 onBack = {},
                 state = ModifyItemScreenState(),
-                products = Data.Loading(),
-                variants = Data.Loading(),
+                products = emptyList<ProductEntity>().toImmutableList(),
+                variants = emptyList<ProductVariantEntity>().toImmutableList(),
                 onNewProductSelected = {},
                 onNewVariantSelected = {},
                 onSubmit = {},

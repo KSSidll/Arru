@@ -16,6 +16,7 @@ import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 @Dao
 interface ProductProducerEntityDao {
@@ -149,10 +150,10 @@ interface ProductProducerEntityDao {
     // Read
 
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :entityId")
-    suspend fun get(entityId: Long): ProductProducerEntity?
+    fun get(entityId: Long): Flow<ProductProducerEntity?>
 
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :entityId")
-    fun getFlow(entityId: Long): Flow<ProductProducerEntity?>
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY ProductProducerEntity.id DESC")
+    fun all(): Flow<List<ProductProducerEntity>>
 
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.name = :name")
     suspend fun byName(name: String): ProductProducerEntity?
@@ -165,7 +166,7 @@ interface ProductProducerEntityDao {
         WHERE ProductEntity.productProducerEntityId = :entityId
     """
     )
-    fun totalSpentFlow(entityId: Long): Flow<Long?>
+    fun totalSpent(entityId: Long): Flow<Long?>
 
     @Query(
         """
@@ -196,7 +197,7 @@ interface ProductProducerEntityDao {
         ORDER BY time
     """
     )
-    fun totalSpentByDayFlow(entityId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByDay(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -227,7 +228,7 @@ interface ProductProducerEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByWeekFlow(entityId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByWeek(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -258,7 +259,7 @@ interface ProductProducerEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByMonthFlow(entityId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByMonth(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -289,7 +290,7 @@ interface ProductProducerEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByYearFlow(entityId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByYear(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Transaction
     suspend fun fullItems(
@@ -297,7 +298,7 @@ interface ProductProducerEntityDao {
         count: Int,
         offset: Int
     ): List<FullItem> {
-        val producer = get(entityId) ?: return emptyList()
+        val producer = get(entityId).first() ?: return emptyList()
 
         val itemEntities = itemsByProducer(
             entityId,
@@ -327,7 +328,4 @@ interface ProductProducerEntityDao {
             )
         }
     }
-
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY ProductProducerEntity.id DESC")
-    fun allFlow(): Flow<List<ProductProducerEntity>>
 }

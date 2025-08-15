@@ -10,7 +10,6 @@ import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryViewModel
@@ -19,6 +18,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -44,7 +44,7 @@ class EditCategoryViewModel @Inject constructor(
 
         screenState.name.value = screenState.name.value.toLoading()
 
-        mCategory = categoryRepository.get(categoryId)
+        mCategory = categoryRepository.get(categoryId).first()
         mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
 
         screenState.name.apply {
@@ -58,12 +58,10 @@ class EditCategoryViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(categoryId: Long): Flow<Data<ImmutableList<ProductCategoryEntity>>> {
-        return categoryRepository.allFlow()
+    fun allMergeCandidates(categoryId: Long): Flow<ImmutableList<ProductCategoryEntity>> {
+        return categoryRepository.all()
             .map {
-                if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != categoryId }.toImmutableList())
-                } else it
+                it.filter { item -> item.id != categoryId }.toImmutableList()
             }
     }
 

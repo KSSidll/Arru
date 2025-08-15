@@ -18,6 +18,7 @@ import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 @Dao
@@ -65,7 +66,7 @@ interface TransactionEntityDao {
 
     @Transaction
     suspend fun fullItemsByTransactionBasketId(transactionBasketId: Long): List<FullItem> {
-        val transactionBasket = get(transactionBasketId) ?: return emptyList()
+        val transactionBasket = get(transactionBasketId).first() ?: return emptyList()
 
         val itemEntities = itemsByTransactionBasketId(transactionBasketId)
 
@@ -96,7 +97,7 @@ interface TransactionEntityDao {
         val itemsFlow = itemsByTransactionBasketIdFlow(transactionBasketId)
 
         return itemsFlow.map { items ->
-            val transactionBasket = get(transactionBasketId) ?: return@map emptyList()
+            val transactionBasket = get(transactionBasketId).first() ?: return@map emptyList()
 
             items.map { item ->
                 val product = productById(item.productEntityId)!!
@@ -125,12 +126,6 @@ interface TransactionEntityDao {
 
     // Read
 
-    @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :entityId")
-    suspend fun get(entityId: Long): TransactionEntity?
-
-    @Query("SELECT * FROM TransactionEntity ORDER BY id DESC LIMIT 1")
-    suspend fun newest(): TransactionEntity?
-
     @Query("SELECT COUNT(*) FROM TransactionEntity")
     suspend fun count(): Int
 
@@ -141,13 +136,13 @@ interface TransactionEntityDao {
     suspend fun countAfter(entityId: Long): Int
 
     @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :entityId")
-    fun getFlow(entityId: Long): Flow<TransactionEntity?>
+    fun get(entityId: Long): Flow<TransactionEntity?>
+
+    @Query("SELECT * FROM TransactionEntity ORDER BY id DESC LIMIT 1")
+    fun newest(): Flow<TransactionEntity?>
 
     @Query("SELECT SUM(TransactionEntity.totalCost) FROM TransactionEntity")
-    fun totalSpent(): Long?
-
-    @Query("SELECT SUM(TransactionEntity.totalCost) FROM TransactionEntity")
-    fun totalSpentFlow(): Flow<Long?>
+    fun totalSpent(): Flow<Long?>
 
     @Query(
         """
@@ -172,7 +167,7 @@ interface TransactionEntityDao {
         ORDER BY time
     """
     )
-    fun totalSpentByDayFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByDay(): Flow<List<TransactionSpentByTime>>
 
     @Query(
         """
@@ -197,7 +192,7 @@ interface TransactionEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByWeekFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByWeek(): Flow<List<TransactionSpentByTime>>
 
     @Query(
         """
@@ -222,7 +217,7 @@ interface TransactionEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByMonthFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByMonth(): Flow<List<TransactionSpentByTime>>
 
     @Query(
         """
@@ -247,7 +242,7 @@ interface TransactionEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByYearFlow(): Flow<List<TransactionSpentByTime>>
+    fun totalSpentByYear(): Flow<List<TransactionSpentByTime>>
 
     @Query("SELECT TransactionEntity.* FROM TransactionEntity ORDER BY date DESC LIMIT :count OFFSET :startPosition")
     suspend fun partDateDesc(
@@ -281,7 +276,7 @@ interface TransactionEntityDao {
     fun allPaged(): PagingSource<Int, TransactionEntity>
 
     fun transactionBasketWithItems(transactionEntityId: Long): Flow<TransactionBasketWithItems?> {
-        return getFlow(transactionEntityId).map { basket ->
+        return get(transactionEntityId).map { basket ->
             if (basket != null) {
                 val shop = basket.shopEntityId?.let { shopById(it) }
                 val items = fullItemsByTransactionBasketId(basket.id)

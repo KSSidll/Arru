@@ -10,7 +10,6 @@ import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.shop.ModifyShopViewModel
@@ -19,6 +18,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -44,7 +44,7 @@ class EditShopViewModel @Inject constructor(
 
         screenState.name.apply { value = value.toLoading() }
 
-        mShop = shopRepository.get(shopId)
+        mShop = shopRepository.get(shopId).first()
         mMergeMessageShopName.value = mShop?.name.orEmpty()
 
         screenState.name.apply {
@@ -59,12 +59,10 @@ class EditShopViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(shopId: Long): Flow<Data<ImmutableList<ShopEntity>>> {
-        return shopRepository.allFlow()
+    fun allMergeCandidates(shopId: Long): Flow<ImmutableList<ShopEntity>> {
+        return shopRepository.all()
             .map {
-                if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != shopId }.toImmutableList())
-                } else it
+                it.filter { item -> item.id != shopId }.toImmutableList()
             }
     }
 

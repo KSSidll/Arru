@@ -19,7 +19,7 @@ class CategorySpendingComparisonViewModel @Inject constructor(
         year: Int,
         month: Int
     ): Flow<List<ItemSpentByCategory>> {
-        return categoryRepository.totalSpentByCategoryByMonthFlow(
+        return categoryRepository.totalSpentByCategoryByMonth(
             year,
             month
         )
@@ -42,7 +42,7 @@ class CategorySpendingComparisonViewModel @Inject constructor(
             localMonth -= 1
         }
 
-        return categoryRepository.totalSpentByCategoryByMonthFlow(
+        return categoryRepository.totalSpentByCategoryByMonth(
             localYear,
             localMonth
         )

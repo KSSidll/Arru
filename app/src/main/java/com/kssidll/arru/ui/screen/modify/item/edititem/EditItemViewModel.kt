@@ -13,6 +13,7 @@ import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,7 +34,7 @@ class EditItemViewModel @Inject constructor(
 
         screenState.allToLoading()
 
-        mItem = itemRepository.get(itemId)
+        mItem = itemRepository.get(itemId).first()
 
         updateStateForItem(mItem)
 

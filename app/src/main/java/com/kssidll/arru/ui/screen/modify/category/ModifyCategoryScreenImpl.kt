@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
@@ -54,7 +53,7 @@ fun ModifyCategoryScreenImpl(
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ProductCategoryEntity) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<ProductCategoryEntity>>> = flowOf(),
+    mergeCandidates: Flow<ImmutableList<ProductCategoryEntity>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: ProductCategoryEntity? = null,
     onChosenMergeCandidateChange: ((ProductCategoryEntity?) -> Unit)? = null,

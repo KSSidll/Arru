@@ -16,5 +16,5 @@ class ProducerListViewModel @Inject constructor(
     private val _filter = mutableStateOf(String())
     var filter by _filter
 
-    fun items() = producerRepository.allFlow()
+    fun items() = producerRepository.all()
 }

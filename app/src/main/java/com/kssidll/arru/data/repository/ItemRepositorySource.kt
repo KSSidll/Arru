@@ -4,7 +4,6 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.domain.data.Data
 import kotlinx.coroutines.flow.Flow
 
 interface ItemRepositorySource {
@@ -111,15 +110,10 @@ interface ItemRepositorySource {
      * @param itemId id of the [ItemEntity]
      * @return [ItemEntity] with [itemId] id or null if none match
      */
-    suspend fun get(itemId: Long): ItemEntity?
+    suspend fun get(itemId: Long): Flow<ItemEntity?>
 
     /**
      * @return newest [ItemEntity], null if none found
      */
-    suspend fun newest(): ItemEntity?
-
-    /**
-     * @return newest [ItemEntity] as flow
-     */
-    fun newestFlow(): Flow<Data<ItemEntity?>>
+    suspend fun newest(): Flow<ItemEntity?>
 }

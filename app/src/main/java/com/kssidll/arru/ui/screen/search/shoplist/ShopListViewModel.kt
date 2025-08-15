@@ -16,5 +16,5 @@ class ShopListViewModel @Inject constructor(
     private val _filter = mutableStateOf(String())
     var filter by _filter
 
-    fun items() = shopRepository.allFlow()
+    fun items() = shopRepository.all()
 }

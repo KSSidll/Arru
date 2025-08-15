@@ -12,7 +12,6 @@ import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
-import com.kssidll.arru.domain.data.Data
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -21,6 +20,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,22 +35,19 @@ class CategoryViewModel @Inject constructor(
 
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<ImmutableList<ItemSpentByTime>>>? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ItemSpentByTime>>? = null
     val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<Data<ImmutableList<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<ImmutableList<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun categoryTotalSpent(): Flow<Data<Float?>>? {
-        if (category == null) return null
-
-        return categoryRepository.totalSpentFlow(category!!)
+    fun categoryTotalSpent(): Flow<Float?>? {
+        return category?.let { categoryRepository.totalSpent(it) }
     }
 
     /**
      * @return paging data of full item for current category as flow
      */
     fun transactions(): Flow<PagingData<FullItem>> {
-        if (category == null) return emptyFlow()
-        return categoryRepository.fullItemsPagedFlow(category!!)
+        return category?.let { categoryRepository.fullItemsPaged(it) } ?: emptyFlow()
     }
 
     /**
@@ -65,7 +62,7 @@ class CategoryViewModel @Inject constructor(
      * @return true if provided [categoryId] was valid, false otherwise
      */
     suspend fun performDataUpdate(categoryId: Long) = viewModelScope.async {
-        val category = categoryRepository.get(categoryId) ?: return@async false
+        val category = categoryRepository.get(categoryId).first() ?: return@async false
 
         // We ignore the possiblity of changing category while one is already loaded
         // as not doing that would increase complexity too much
@@ -74,13 +71,9 @@ class CategoryViewModel @Inject constructor(
 
         mCategoryListener?.cancel()
         mCategoryListener = viewModelScope.launch {
-            categoryRepository.getFlow(categoryId)
+            categoryRepository.get(categoryId)
                 .collectLatest {
-                    if (it is Data.Loaded) {
-                        mCategory.value = it.data
-                    } else {
-                        mCategory.value = null
-                    }
+                    mCategory.value = it
                 }
         }
 
@@ -88,17 +81,17 @@ class CategoryViewModel @Inject constructor(
 
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
-            dayFlow = {
-                categoryRepository.totalSpentByDayFlow(category)
+            day = {
+                categoryRepository.totalSpentByDay(category)
             },
-            weekFlow = {
-                categoryRepository.totalSpentByWeekFlow(category)
+            week = {
+                categoryRepository.totalSpentByWeek(category)
             },
-            monthFlow = {
-                categoryRepository.totalSpentByMonthFlow(category)
+            month = {
+                categoryRepository.totalSpentByMonth(category)
             },
-            yearFlow = {
-                categoryRepository.totalSpentByYearFlow(category)
+            year = {
+                categoryRepository.totalSpentByYear(category)
             },
         )
 

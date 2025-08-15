@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -47,9 +47,8 @@ fun EditItemRoute(
     ModifyItemScreenImpl(
         onBack = navigateBack,
         state = viewModel.screenState,
-        products = viewModel.allProducts()
-            .collectAsState(initial = Data.Loading()).value,
-        variants = viewModel.productVariants.collectAsState(initial = Data.Loading()).value,
+        products = viewModel.allProducts().collectAsState(initial = emptyImmutableList()).value,
+        variants = viewModel.productVariants.collectAsState(initial = emptyImmutableList()).value,
         onNewProductSelected = {
             scope.launch {
                 viewModel.onNewProductSelected(it)

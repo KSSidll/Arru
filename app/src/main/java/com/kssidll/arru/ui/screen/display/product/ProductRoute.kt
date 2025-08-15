@@ -5,11 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.orEmpty
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ProductRoute(
@@ -33,12 +31,9 @@ fun ProductRoute(
         product = viewModel.product,
         transactionItems = viewModel.transactions()
             .collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
-            ?: Data.Loaded(emptyList<ItemSpentByTime>().toImmutableList()),
-        productPriceByShopByTimeData = viewModel.productPriceByShop()
-            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loaded(emptyList<ProductPriceByShopByTime>().toImmutableList()),
-        totalSpentData = viewModel.productTotalSpent()
-            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loaded(0F),
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
+        productPriceByShopByTimeData = viewModel.productPriceByShop()?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
+        totalSpentData = viewModel.productTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
         spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)

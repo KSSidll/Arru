@@ -12,6 +12,7 @@ import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.variant.ModifyVariantViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +31,7 @@ class EditVariantViewModel @Inject constructor(
 
         screenState.name.apply { value = value.toLoading() }
 
-        val variant = variantRepository.get(variantId)
+        val variant = variantRepository.get(variantId).first()
 
         screenState.name.apply {
             value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()

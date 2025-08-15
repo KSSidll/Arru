@@ -11,14 +11,13 @@ import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 
 class TransactionBasketRepository(
     private val dao: TransactionEntityDao
@@ -63,7 +62,7 @@ class TransactionBasketRepository(
         note: String?
     ): UpdateResult {
         val transaction =
-            dao.get(transactionId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+            dao.get(transactionId).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         val newTransaction = transaction.copy(
             date = date,
@@ -96,7 +95,7 @@ class TransactionBasketRepository(
         force: Boolean
     ): DeleteResult {
         val transaction =
-            dao.get(transactionId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+            dao.get(transactionId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val items = dao.itemsByTransactionBasketId(transactionId)
 
@@ -112,14 +111,6 @@ class TransactionBasketRepository(
 
     // Read
 
-    override suspend fun get(transactionBasketId: Long): TransactionEntity? {
-        return dao.get(transactionBasketId)
-    }
-
-    override suspend fun newest(): TransactionEntity? {
-        return dao.newest()
-    }
-
     override suspend fun count(): Int {
         return dao.count()
     }
@@ -132,40 +123,48 @@ class TransactionBasketRepository(
         return dao.countAfter(transactionBasketId)
     }
 
-    override suspend fun totalSpentLong(): Data<Long?> {
-        return Data.Loaded(dao.totalSpent())
+    override fun get(transactionBasketId: Long): Flow<TransactionEntity?> {
+        return dao.get(transactionBasketId)
     }
 
-    override fun totalSpentFlow(): Flow<Float?> {
-        return dao.totalSpentFlow()
+    override fun newest(): Flow<TransactionEntity?> {
+        return dao.newest()
+    }
+
+    override fun totalSpentLong(): Flow<Long?> {
+        return dao.totalSpent()
+    }
+
+    override fun totalSpent(): Flow<Float?> {
+        return dao.totalSpent()
             .cancellable()
             .distinctUntilChanged()
             .map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
     }
 
-    override fun totalSpentByDayFlow(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByDayFlow()
+    override fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentByTime>> {
+        return dao.totalSpentByDay()
             .cancellable()
             .distinctUntilChanged()
             .map { it.toImmutableList() }
     }
 
-    override fun totalSpentByWeekFlow(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByWeekFlow()
+    override fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentByTime>> {
+        return dao.totalSpentByWeek()
             .cancellable()
             .distinctUntilChanged()
             .map { it.toImmutableList() }
     }
 
-    override fun totalSpentByMonthFlow(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByMonthFlow()
+    override fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentByTime>> {
+        return dao.totalSpentByMonth()
             .cancellable()
             .distinctUntilChanged()
             .map { it.toImmutableList() }
     }
 
-    override fun totalSpentByYearFlow(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByYearFlow()
+    override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentByTime>> {
+        return dao.totalSpentByYear()
             .cancellable()
             .distinctUntilChanged()
             .map { it.toImmutableList() }
@@ -181,7 +180,7 @@ class TransactionBasketRepository(
         ).toImmutableList()
     }
 
-    override fun transactionBasketsPagedFlow(): Flow<PagingData<TransactionBasketWithItems>> {
+    override fun transactionBasketsPaged(): Flow<PagingData<TransactionBasketWithItems>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 12,
@@ -205,11 +204,9 @@ class TransactionBasketRepository(
             }
     }
 
-    override fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>> {
+    override fun transactionBasketWithItems(transactionId: Long): Flow<TransactionBasketWithItems?> {
         return dao.transactionBasketWithItems(transactionId)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<TransactionBasketWithItems>() }
     }
 }

@@ -13,6 +13,7 @@ import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +33,7 @@ class EditTransactionViewModel @Inject constructor(
 
         screenState.allToLoading()
 
-        mTransaction = transactionRepository.get(transactionId)
+        mTransaction = transactionRepository.get(transactionId).first()
 
         updateStateForTransaction(mTransaction)
 
@@ -43,7 +44,7 @@ class EditTransactionViewModel @Inject constructor(
     private suspend fun updateStateForTransaction(
         transaction: TransactionEntity?
     ) {
-        val shop: ShopEntity? = transaction?.shopEntityId?.let { shopRepository.get(it) }
+        val shop: ShopEntity? = transaction?.shopEntityId?.let { shopRepository.get(it).first() }
 
         screenState.date.apply {
             value = Field.Loaded(transaction?.date)

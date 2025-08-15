@@ -42,11 +42,8 @@ interface ItemEntityDao {
     // Read
 
     @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.id = :entityId")
-    suspend fun get(entityId: Long): ItemEntity?
+    fun get(entityId: Long): Flow<ItemEntity?>
 
     @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
-    suspend fun newest(): ItemEntity?
-
-    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
-    fun newestFlow(): Flow<ItemEntity?>
+    fun newest(): Flow<ItemEntity?>
 }

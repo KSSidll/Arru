@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.ui.component.dialog.DeleteWarningConfirmDialog
 import com.kssidll.arru.ui.component.dialog.MergeConfirmDialog
@@ -53,6 +52,7 @@ import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -87,7 +87,7 @@ fun <T> ModifyScreen(
     submitButtonText: String,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: T) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<T>>> = flowOf(),
+    mergeCandidates: Flow<ImmutableList<T>> = flowOf(),
     mergeCandidatesTextTransformation: ((T) -> String)? = null,
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: T? = null,
@@ -125,7 +125,7 @@ fun <T> ModifyScreen(
                 onDismissRequest = {
                     showMergeSearchDialog = false
                 },
-                items = mergeCandidates.collectAsState(initial = Data.Loading()).value,
+                items = mergeCandidates.collectAsState(initial = emptyList<T>().toImmutableList()).value,
                 itemText = {
                     mergeCandidatesTextTransformation?.invoke(it)
                         .orEmpty()

@@ -10,7 +10,6 @@ import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerViewModel
@@ -19,6 +18,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -44,7 +44,7 @@ class EditProducerViewModel @Inject constructor(
 
         screenState.name.apply { value = value.toLoading() }
 
-        mProducer = producerRepository.get(producerId)
+        mProducer = producerRepository.get(producerId).first()
         mMergeMessageProducerName.value = mProducer?.name.orEmpty()
 
         screenState.name.apply {
@@ -58,12 +58,10 @@ class EditProducerViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(producerId: Long): Flow<Data<ImmutableList<ProductProducerEntity>>> {
-        return producerRepository.allFlow()
+    fun allMergeCandidates(producerId: Long): Flow<ImmutableList<ProductProducerEntity>> {
+        return producerRepository.all()
             .map {
-                if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != producerId }.toImmutableList())
-                } else it
+                it.filter { item -> item.id != producerId }.toImmutableList()
             }
     }
 

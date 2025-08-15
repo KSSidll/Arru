@@ -9,13 +9,13 @@ import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -34,14 +34,14 @@ abstract class ModifyProductViewModel: ViewModel() {
     suspend fun setSelectedProducer(providedProducerId: Long?) {
         if (providedProducerId != null) {
             screenState.selectedProductProducer.apply { value = value.toLoading() }
-            onNewProducerSelected(producerRepository.get(providedProducerId))
+            onNewProducerSelected(producerRepository.get(providedProducerId).first())
         }
     }
 
     suspend fun setSelectedCategory(providedCategoryId: Long?) {
         if (providedCategoryId != null) {
             screenState.selectedProductCategory.apply { value = value.toLoading() }
-            onNewCategorySelected(categoryRepository.get(providedCategoryId))
+            onNewCategorySelected(categoryRepository.get(providedCategoryId).first())
         }
     }
 
@@ -57,11 +57,9 @@ abstract class ModifyProductViewModel: ViewModel() {
         mProducerListener?.cancel()
         if (producer != null) {
             mProducerListener = viewModelScope.launch {
-                producerRepository.getFlow(producer.id)
+                producerRepository.get(producer.id)
                     .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedProductProducer.value = Field.Loaded(it.data)
-                        }
+                        screenState.selectedProductProducer.value = Field.Loaded(it)
                     }
             }
         }
@@ -79,11 +77,9 @@ abstract class ModifyProductViewModel: ViewModel() {
         mCategoryListener?.cancel()
         if (category != null) {
             mCategoryListener = viewModelScope.launch {
-                categoryRepository.getFlow(category.id)
+                categoryRepository.get(category.id)
                     .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedProductCategory.value = Field.Loaded(it.data)
-                        }
+                        screenState.selectedProductCategory.value = Field.Loaded(it)
                     }
             }
         }
@@ -92,15 +88,15 @@ abstract class ModifyProductViewModel: ViewModel() {
     /**
      * @return List of all categories
      */
-    fun allCategories(): Flow<Data<ImmutableList<ProductCategoryEntity>>> {
-        return categoryRepository.allFlow()
+    fun allCategories(): Flow<ImmutableList<ProductCategoryEntity>> {
+        return categoryRepository.all()
     }
 
     /**
      * @return List of all producers
      */
-    fun allProducers(): Flow<Data<ImmutableList<ProductProducerEntity>>> {
-        return producerRepository.allFlow()
+    fun allProducers(): Flow<ImmutableList<ProductProducerEntity>> {
+        return producerRepository.all()
     }
 }
 

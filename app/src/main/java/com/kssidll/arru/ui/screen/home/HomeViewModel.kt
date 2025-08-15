@@ -123,17 +123,17 @@ class HomeViewModel @Inject constructor(
     private val mTimePeriodFlowHandler: TimePeriodFlowHandler<List<TransactionSpentByTime>> =
         TimePeriodFlowHandler(
             scope = viewModelScope,
-            dayFlow = {
-                transactionRepository.totalSpentByDayFlow()
+            day = {
+                transactionRepository.totalSpentByDay()
             },
-            weekFlow = {
-                transactionRepository.totalSpentByWeekFlow()
+            week = {
+                transactionRepository.totalSpentByWeek()
             },
-            monthFlow = {
-                transactionRepository.totalSpentByMonthFlow()
+            month = {
+                transactionRepository.totalSpentByMonth()
             },
-            yearFlow = {
-                transactionRepository.totalSpentByYearFlow()
+            year = {
+                transactionRepository.totalSpentByYear()
             },
         )
     private var dashboardSpentByTimeChartDataCollectJob: Job? = null
@@ -145,14 +145,14 @@ class HomeViewModel @Inject constructor(
     init {
         _uiState.update { currentState ->
             currentState.copy(
-                transactions = transactionRepository.transactionBasketsPagedFlow()
+                transactions = transactionRepository.transactionBasketsPaged()
                     .toDisplayData()
                     .cachedIn(viewModelScope)
             )
         }
 
         viewModelScope.launch {
-            transactionRepository.totalSpentFlow().collect {
+            transactionRepository.totalSpent().collect {
                 _uiState.update { currentState ->
                     currentState.copy(
                         totalSpent = it ?: 0f,
@@ -162,21 +162,21 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            categoryRepository.totalSpentByCategoryFlow()
+            categoryRepository.totalSpentByCategory()
                 .collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            dashboardCategorySpendingRankingData = it.toImmutableList()
+                            dashboardCategorySpendingRankingData = it
                         )
                     }
                 }
         }
 
         viewModelScope.launch {
-            shopRepository.totalSpentByShopFlow().collect {
+            shopRepository.totalSpentByShop().collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        dashboardShopSpendingRankingData = it.toImmutableList()
+                        dashboardShopSpendingRankingData = it
                     )
                 }
             }
@@ -328,13 +328,13 @@ class HomeViewModel @Inject constructor(
 
         analysisCurrentDateCategoryDataCollectJob?.cancel()
         analysisCurrentDateCategoryDataCollectJob = viewModelScope.launch {
-            categoryRepository.totalSpentByCategoryByMonthFlow(
+            categoryRepository.totalSpentByCategoryByMonth(
                 localUiState.analysisCurrentDateYear,
                 localUiState.analysisCurrentDateMonth
             ).collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        analysisCurrentDateCategoryData = it.toImmutableList()
+                        analysisCurrentDateCategoryData = it
                     )
                 }
             }
@@ -342,13 +342,13 @@ class HomeViewModel @Inject constructor(
 
         analysisCurrentDateShopDataCollectJob?.cancel()
         analysisCurrentDateShopDataCollectJob = viewModelScope.launch {
-            shopRepository.totalSpentByShopByMonthFlow(
+            shopRepository.totalSpentByShopByMonth(
                 localUiState.analysisCurrentDateYear,
                 localUiState.analysisCurrentDateMonth
             ).collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        analysisCurrentDateShopData = it.toImmutableList()
+                        analysisCurrentDateShopData = it
                     )
                 }
             }
@@ -356,11 +356,11 @@ class HomeViewModel @Inject constructor(
 
         analysisPreviousDateCategoryDataCollectJob?.cancel()
         analysisPreviousDateCategoryDataCollectJob = viewModelScope.launch {
-            categoryRepository.totalSpentByCategoryByMonthFlow(previousDateYear, previousDateMonth)
+            categoryRepository.totalSpentByCategoryByMonth(previousDateYear, previousDateMonth)
                 .collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            analysisPreviousDateCategoryData = it.toImmutableList()
+                            analysisPreviousDateCategoryData = it
                         )
                     }
                 }
@@ -368,11 +368,11 @@ class HomeViewModel @Inject constructor(
 
         analysisPreviousDateShopDataCollectJob?.cancel()
         analysisPreviousDateShopDataCollectJob = viewModelScope.launch {
-            shopRepository.totalSpentByShopByMonthFlow(previousDateYear, previousDateMonth)
+            shopRepository.totalSpentByShopByMonth(previousDateYear, previousDateMonth)
                 .collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            analysisPreviousDateShopData = it.toImmutableList()
+                            analysisPreviousDateShopData = it
                         )
                     }
                 }

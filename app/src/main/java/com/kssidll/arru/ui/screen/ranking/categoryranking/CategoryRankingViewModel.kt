@@ -17,6 +17,6 @@ class CategoryRankingViewModel @Inject constructor(
      * @return List of data points representing shop spending in time as flow
      */
     fun categoryTotalSpentFlow(): Flow<ImmutableList<ItemSpentByCategory>> {
-        return categoryRepository.totalSpentByCategoryFlow()
+        return categoryRepository.totalSpentByCategory()
     }
 }

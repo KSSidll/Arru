@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -45,10 +45,8 @@ fun EditProductRoute(
     ModifyProductScreenImpl(
         onBack = navigateBack,
         state = viewModel.screenState,
-        categories = viewModel.allCategories()
-            .collectAsState(initial = Data.Loading()).value,
-        producers = viewModel.allProducers()
-            .collectAsState(initial = Data.Loading()).value,
+        categories = viewModel.allCategories().collectAsState(initial = emptyImmutableList()).value,
+        producers = viewModel.allProducers().collectAsState(initial = emptyImmutableList()).value,
         onNewProducerSelected = {
             viewModel.onNewProducerSelected(it)
         },

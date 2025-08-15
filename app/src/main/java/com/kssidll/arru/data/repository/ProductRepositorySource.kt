@@ -8,7 +8,6 @@ import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -139,48 +138,47 @@ interface ProductRepositorySource {
      * @param productId id of the [ProductEntity]
      * @return [ProductEntity] matching [productId] id or null if none match
      */
-    suspend fun get(productId: Long): ProductEntity?
+    fun get(productId: Long): Flow<ProductEntity?>
 
     /**
-     * @param productId id of the [ProductEntity]
-     * @return [ProductEntity] matching [productId] id or null if none match, as flow
+     * @return list of all [ProductEntity]
      */
-    fun getFlow(productId: Long): Flow<Data<ProductEntity?>>
+    fun all(): Flow<ImmutableList<ProductEntity>>
 
     /**
      * @param entity [ProductEntity] to get the total spending from
-     * @return float representing total spending for the [entity] as flow
+     * @return float representing total spending for the [entity]
      */
-    fun totalSpentFlow(entity: ProductEntity): Flow<Data<Float?>>
+    fun totalSpent(entity: ProductEntity): Flow<Float?>
 
     /**
      * @param entity [ProductEntity] to get the total spending by day from
-     * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
+     * @return list of [ItemSpentByTime] representing total spending groupped by day
      */
-    fun totalSpentByDayFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByDay(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
      * @param entity [ProductEntity] to get the total spending by week from
-     * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
+     * @return list of [ItemSpentByTime] representing total spending groupped by week
      */
-    fun totalSpentByWeekFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByWeek(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
      * @param entity [ProductEntity] to get the total spending by month from
-     * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
+     * @return list of [ItemSpentByTime] representing total spending groupped by month
      */
-    fun totalSpentByMonthFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByMonth(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
      * @param entity [ProductEntity] to get the total spending by year from
-     * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
+     * @return list of [ItemSpentByTime] representing total spending groupped by year
      */
-    fun totalSpentByYearFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByYear(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
      * @param entity [ProductEntity] to match the items to
      */
-    fun fullItemsPagedFlow(entity: ProductEntity): Flow<PagingData<FullItem>>
+    fun fullItemsPaged(entity: ProductEntity): Flow<PagingData<FullItem>>
 
     /**
      * @param entity [ProductEntity] to match the [ItemEntity] with
@@ -190,12 +188,7 @@ interface ProductRepositorySource {
 
     /**
      * @param entity [ProductEntity] to match the data with
-     * @return list of [ProductPriceByShopByTime] representing the average price of [entity] groupped by variant, shop and month as flow
+     * @return list of [ProductPriceByShopByTime] representing the average price of [entity] groupped by variant, shop and month
      */
-    fun averagePriceByVariantByShopByMonthFlow(entity: ProductEntity): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>
-
-    /**
-     * @return list of all [ProductEntity] as flow
-     */
-    fun allFlow(): Flow<Data<ImmutableList<ProductEntity>>>
+    fun averagePriceByVariantByShopByMonth(entity: ProductEntity): Flow<ImmutableList<ProductPriceByShopByTime>>
 }

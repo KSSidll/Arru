@@ -20,10 +20,10 @@ import kotlinx.coroutines.launch
  */
 class TimePeriodFlowHandler<T>(
     private val scope: CoroutineScope,
-    private val dayFlow: () -> Flow<T>,
-    private val weekFlow: () -> Flow<T>,
-    private val monthFlow: () -> Flow<T>,
-    private val yearFlow: () -> Flow<T>,
+    private val day: () -> Flow<T>,
+    private val week: () -> Flow<T>,
+    private val month: () -> Flow<T>,
+    private val year: () -> Flow<T>,
     startPeriod: Periods = Periods.Month,
 ) {
     private var mCurrentPeriod: MutableState<Periods> = mutableStateOf(startPeriod)
@@ -47,16 +47,16 @@ class TimePeriodFlowHandler<T>(
 
         mSpentByTimeQuery = scope.launch {
             when (currentPeriod) {
-                Periods.Day -> mSpentByTimeData.value = dayFlow().distinctUntilChanged()
+                Periods.Day -> mSpentByTimeData.value = day().distinctUntilChanged()
                     .cancellable()
 
-                Periods.Week -> mSpentByTimeData.value = weekFlow().distinctUntilChanged()
+                Periods.Week -> mSpentByTimeData.value = week().distinctUntilChanged()
                     .cancellable()
 
-                Periods.Month -> mSpentByTimeData.value = monthFlow().distinctUntilChanged()
+                Periods.Month -> mSpentByTimeData.value = month().distinctUntilChanged()
                     .cancellable()
 
-                Periods.Year -> mSpentByTimeData.value = yearFlow().distinctUntilChanged()
+                Periods.Year -> mSpentByTimeData.value = year().distinctUntilChanged()
                     .cancellable()
             }
         }

@@ -34,7 +34,6 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.TransactionBasketWithItems
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -43,7 +42,7 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 @Composable
 internal fun TransactionScreen(
     onBack: () -> Unit,
-    transaction: Data<TransactionBasketWithItems?>,
+    transaction: TransactionBasketWithItems?,
     onEditAction: () -> Unit,
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemClick: (productId: Long) -> Unit,
@@ -81,11 +80,11 @@ internal fun TransactionScreen(
         modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) { paddingValues ->
         AnimatedVisibility(
-            visible = transaction is Data.Loaded && transaction.data != null,
+            visible = transaction != null,
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            if (transaction is Data.Loaded && transaction.data != null) {
+            if (transaction != null) {
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -94,7 +93,7 @@ internal fun TransactionScreen(
                         .consumeWindowInsets(paddingValues)
                 ) {
                     transactionBasketCard(
-                        transaction = transaction.data,
+                        transaction = transaction,
                         itemsVisible = true,
                         onItemAddClick = onItemAddClick,
                         onItemClick = onItemClick,
@@ -120,7 +119,7 @@ private fun TransactionScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionScreen(
                 onBack = {},
-                transaction = Data.Loaded(TransactionBasketWithItems.generate()),
+                transaction = TransactionBasketWithItems.generate(),
                 onEditAction = {},
                 onItemAddClick = {},
                 onItemClick = {},

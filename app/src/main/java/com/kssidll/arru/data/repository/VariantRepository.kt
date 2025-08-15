@@ -6,7 +6,6 @@ import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 
 class VariantRepository(private val dao: ProductVariantEntityDao): VariantRepositorySource {
     // Create
@@ -40,7 +38,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
             productId,
             name,
             true
-        )
+        ).first()
 
         if (other != null) {
             return InsertResult.Error(InsertResult.DuplicateName)
@@ -72,7 +70,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
         variantId: Long,
         name: String
     ): UpdateResult {
-        val variant = dao.get(variantId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+        val variant = dao.get(variantId).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         variant.name = name.trim()
 
@@ -86,7 +84,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
             variant.productEntityId,
             name,
             true
-        )
+        ).first()
 
         if (other != null && other.id != variant.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
@@ -102,7 +100,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
         productId: Long?,
         name: String
     ): UpdateResult {
-        if (dao.get(variantId) == null) {
+        if (dao.get(variantId).first() == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
@@ -126,7 +124,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
             productId,
             name,
             true
-        )
+        ).first()
 
         if (other != null && other.id != variant.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
@@ -143,7 +141,7 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
         variantId: Long,
         force: Boolean
     ): DeleteResult {
-        val variant = dao.get(variantId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+        val variant = dao.get(variantId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val items = dao.getItems(variantId)
 
@@ -159,23 +157,16 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
 
     // Read
 
-    override suspend fun get(variantId: Long): ProductVariantEntity? {
+    override fun get(variantId: Long): Flow<ProductVariantEntity?> {
         return dao.get(variantId)
-    }
-
-    override fun getFlow(variantId: Long): Flow<Data<ProductVariantEntity?>> {
-        return dao.getFlow(variantId)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<ProductVariantEntity?>() }
     }
 
-    override fun byProductFlow(productEntity: ProductEntity, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>> {
-        return dao.byProductFlow(productEntity.id, showGlobal)
+    override fun byProduct(productEntity: ProductEntity, showGlobal: Boolean): Flow<ImmutableList<ProductVariantEntity>> {
+        return dao.byProduct(productEntity.id, showGlobal)
             .cancellable()
             .distinctUntilChanged()
-            .map { Data.Loaded(it.toImmutableList()) }
-            .onStart { Data.Loading<ImmutableList<ProductVariantEntity>>() }
+            .map { it.toImmutableList() }
     }
 }

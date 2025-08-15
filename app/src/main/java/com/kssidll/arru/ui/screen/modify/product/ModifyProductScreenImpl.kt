@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.screen.modify.product
 
 
+import android.R.attr.label
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,9 +23,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
@@ -32,6 +31,7 @@ import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import androidx.compose.material3.Surface as Surface1
@@ -65,8 +65,8 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyProductScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductScreenState,
-    categories: Data<ImmutableList<ProductCategoryEntity>>,
-    producers: Data<ImmutableList<ProductProducerEntity>>,
+    categories: ImmutableList<ProductCategoryEntity>,
+    producers: ImmutableList<ProductProducerEntity>,
     onNewProducerSelected: (producer: ProductProducerEntity?) -> Unit,
     onNewCategorySelected: (category: ProductCategoryEntity?) -> Unit,
     onSubmit: () -> Unit,
@@ -75,7 +75,7 @@ fun ModifyProductScreenImpl(
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ProductEntity) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<ProductEntity>>> = flowOf(),
+    mergeCandidates: Flow<ImmutableList<ProductEntity>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
     chosenMergeCandidate: ProductEntity? = null,
     onChosenMergeCandidateChange: ((ProductEntity?) -> Unit)? = null,
@@ -186,9 +186,9 @@ fun ModifyProductScreenImpl(
                     enabled = state.selectedProductProducer.value.isEnabled(),
                     value = state.selectedProductProducer.value.data?.name ?: String(),
                     onClick = {
-                        if (producers.loadedData()) {
+                        if (producers.isNotEmpty()) {
                             state.isProducerSearchDialogExpanded.value = true
-                        } else if (producers.loadedEmpty()) {
+                        } else {
                             onProducerAddButtonClick(null)
                         }
                     },
@@ -214,9 +214,9 @@ fun ModifyProductScreenImpl(
                     enabled = state.selectedProductCategory.value.isEnabled(),
                     value = state.selectedProductCategory.value.data?.name ?: String(),
                     onClick = {
-                        if (categories.loadedData()) {
+                        if (categories.isNotEmpty()) {
                             state.isCategorySearchDialogExpanded.value = true
-                        } else if (categories.loadedEmpty()) {
+                        } else {
                             onCategoryAddButtonClick(null)
                         }
                     },
@@ -254,8 +254,8 @@ private fun ModifyProductScreenImplPreview() {
             ModifyProductScreenImpl(
                 onBack = {},
                 state = ModifyProductScreenState(),
-                categories = Data.Loading(),
-                producers = Data.Loading(),
+                categories = emptyList<ProductCategoryEntity>().toImmutableList(),
+                producers = emptyList<ProductProducerEntity>().toImmutableList(),
                 onNewProducerSelected = {},
                 onNewCategorySelected = {},
                 onSubmit = {},

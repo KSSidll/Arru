@@ -6,7 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -38,8 +38,7 @@ fun EditTransactionRoute(
         isExpandedScreen = isExpandedScreen,
         onBack = navigateBack,
         state = viewModel.screenState,
-        shops = viewModel.allShops()
-            .collectAsState(initial = Data.Loading()).value,
+        shops = viewModel.allShops().collectAsState(initial = emptyImmutableList()).value,
         onNewShopSelected = {
             viewModel.onNewShopSelected(it)
         },
