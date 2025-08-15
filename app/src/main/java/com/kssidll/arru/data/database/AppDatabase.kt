@@ -16,8 +16,8 @@ import com.kssidll.arru.Arru
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
-import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
+import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
@@ -25,7 +25,7 @@ import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
@@ -95,7 +95,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
         ProductVariantEntity::class,
         ProductCategory::class,
         ShopEntity::class,
-        ProductProducer::class,
+        ProductProducerEntity::class,
     ],
     autoMigrations = [
         AutoMigration(
@@ -120,7 +120,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getProductVariantEntityDao(): ProductVariantEntityDao
     abstract fun getCategoryDao(): CategoryDao
     abstract fun getShopEntityDao(): ShopEntityDao
-    abstract fun getProducerDao(): ProducerDao
+    abstract fun getProductProducerEntityDao(): ProductProducerEntityDao
     abstract fun getImportDao(): ImportDao
 
     companion object {

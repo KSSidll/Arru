@@ -44,7 +44,7 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -60,7 +60,7 @@ fun FullItemCard(
     onItemClick: ((item: FullItem) -> Unit)? = null,
     onItemLongClick: ((item: FullItem) -> Unit)? = null,
     onCategoryClick: ((category: ProductCategory) -> Unit)? = null,
-    onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
+    onProducerClick: ((producer: ProductProducerEntity) -> Unit)? = null,
     onShopClick: ((shop: ShopEntity) -> Unit)? = null,
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current

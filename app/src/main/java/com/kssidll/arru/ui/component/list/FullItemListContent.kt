@@ -24,7 +24,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.DAY_IN_MILIS
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -38,7 +38,7 @@ fun LazyListScope.fullItemListContent(
     onItemClick: ((item: FullItem) -> Unit)? = null,
     onItemLongClick: ((item: FullItem) -> Unit)? = null,
     onCategoryClick: ((category: ProductCategory) -> Unit)? = null,
-    onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
+    onProducerClick: ((producer: ProductProducerEntity) -> Unit)? = null,
     onShopClick: ((shop: ShopEntity) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {

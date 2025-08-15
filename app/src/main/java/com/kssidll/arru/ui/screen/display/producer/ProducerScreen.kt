@@ -62,7 +62,7 @@ import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.loadedData
@@ -99,7 +99,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun ProducerScreen(
     onBack: () -> Unit,
-    producer: ProductProducer?,
+    producer: ProductProducerEntity?,
     transactionItems: LazyPagingItems<FullItem>,
     spentByTimeData: Data<ImmutableList<ItemSpentByTime>>,
     totalSpentData: Data<Float?>,

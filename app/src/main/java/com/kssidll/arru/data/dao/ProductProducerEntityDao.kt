@@ -11,28 +11,28 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ProducerDao {
+interface ProductProducerEntityDao {
     // Create
 
     @Insert
-    suspend fun insert(producer: ProductProducer): Long
+    suspend fun insert(producer: ProductProducerEntity): Long
 
     // Update
 
     @Update
-    suspend fun update(producer: ProductProducer)
+    suspend fun update(producer: ProductProducerEntity)
 
     // Delete
 
     @Delete
-    suspend fun delete(producer: ProductProducer)
+    suspend fun delete(producer: ProductProducerEntity)
 
     // Helper
 
@@ -80,8 +80,8 @@ interface ProducerDao {
         """
         SELECT product.*
         FROM product
-        JOIN productproducer ON productproducer.id = product.producerId
-        WHERE productproducer.id = :producerId
+        JOIN ProductProducerEntity ON ProductProducerEntity.id = product.producerId
+        WHERE ProductProducerEntity.id = :producerId
     """
     )
     suspend fun getProducts(producerId: Long): List<Product>
@@ -91,8 +91,8 @@ interface ProducerDao {
         SELECT ProductVariantEntity.*
         FROM ProductVariantEntity
         JOIN product ON product.id = ProductVariantEntity.productId
-        JOIN productproducer ON productproducer.id = product.producerId
-        WHERE productproducer.id = :producerId
+        JOIN ProductProducerEntity ON ProductProducerEntity.id = product.producerId
+        WHERE ProductProducerEntity.id = :producerId
     """
     )
     suspend fun getProductsVariants(producerId: Long): List<ProductVariantEntity>
@@ -102,8 +102,8 @@ interface ProducerDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN product ON product.id = ItemEntity.productId
-        JOIN productproducer ON productproducer.id = product.producerId
-        WHERE productproducer.id = :producerId
+        JOIN ProductProducerEntity ON ProductProducerEntity.id = product.producerId
+        WHERE ProductProducerEntity.id = :producerId
     """
     )
     suspend fun getItems(producerId: Long): List<ItemEntity>
@@ -148,14 +148,14 @@ interface ProducerDao {
 
     // Read
 
-    @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun get(producerId: Long): ProductProducer?
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    suspend fun get(producerId: Long): ProductProducerEntity?
 
-    @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.id = :producerId")
-    fun getFlow(producerId: Long): Flow<ProductProducer?>
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    fun getFlow(producerId: Long): Flow<ProductProducerEntity?>
 
-    @Query("SELECT productproducer.* FROM productproducer WHERE productproducer.name = :name")
-    suspend fun byName(name: String): ProductProducer?
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.name = :name")
+    suspend fun byName(name: String): ProductProducerEntity?
 
     @Query(
         """
@@ -328,15 +328,15 @@ interface ProducerDao {
         }
     }
 
-    @Query("SELECT productproducer.* FROM productproducer ORDER BY productproducer.id DESC")
-    fun allFlow(): Flow<List<ProductProducer>>
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY ProductProducerEntity.id DESC")
+    fun allFlow(): Flow<List<ProductProducerEntity>>
 
-    @Query("SELECT COUNT(*) FROM productproducer")
+    @Query("SELECT COUNT(*) FROM ProductProducerEntity")
     suspend fun totalCount(): Int
 
-    @Query("SELECT productproducer.* FROM productproducer ORDER BY id LIMIT :limit OFFSET :offset")
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY id LIMIT :limit OFFSET :offset")
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductProducer>
+    ): List<ProductProducerEntity>
 }

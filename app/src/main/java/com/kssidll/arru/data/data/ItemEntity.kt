@@ -239,7 +239,7 @@ data class FullItem(
     val product: Product,
     val variant: ProductVariantEntity?,
     val category: ProductCategory,
-    val producer: ProductProducer?,
+    val producer: ProductProducerEntity?,
     val date: Long,
     val shop: ShopEntity?,
 ) {
@@ -260,7 +260,7 @@ data class FullItem(
                 product = Product.generate(),
                 variant = ProductVariantEntity.generate(),
                 category = ProductCategory.generate(),
-                producer = ProductProducer.generate(),
+                producer = ProductProducerEntity.generate(),
                 date = generateRandomDate().time,
                 shop = ShopEntity.generate(),
             )

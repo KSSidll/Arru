@@ -8,7 +8,7 @@ import androidx.core.provider.DocumentsContractCompat
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
@@ -165,7 +165,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(producerCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    ProductProducer.csvHeaders()
+                    ProductProducerEntity.csvHeaders()
                         .toByteArray()
                 )
 

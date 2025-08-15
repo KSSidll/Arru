@@ -7,7 +7,7 @@ import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -83,7 +83,7 @@ interface ProductRepositorySource {
      * Inserts [Product]
      * @param name name of the [Product] to insert
      * @param categoryId id of the [ProductCategory] of the [Product] to insert
-     * @param producerId id of the [ProductProducer] of the [Product] to insert
+     * @param producerId id of the [ProductProducerEntity] of the [Product] to insert
      * @return [InsertResult] with id of the newly inserted [Product] or an error if any
      */
     suspend fun insert(
@@ -99,7 +99,7 @@ interface ProductRepositorySource {
      * @param productId id to match [Product]
      * @param name name to update the matching [Product] to
      * @param categoryId id of the [ProductCategory] to update the matching [Product] to
-     * @param producerId id of the [ProductProducer] to update the matching [Product] to
+     * @param producerId id of the [ProductProducerEntity] to update the matching [Product] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(

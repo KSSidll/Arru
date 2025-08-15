@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
@@ -28,8 +28,8 @@ import javax.inject.Inject
 class ProducerViewModel @Inject constructor(
     private val producerRepository: ProducerRepositorySource,
 ): ViewModel() {
-    private val mProducer: MutableState<ProductProducer?> = mutableStateOf(null)
-    val producer: ProductProducer? by mProducer
+    private val mProducer: MutableState<ProductProducerEntity?> = mutableStateOf(null)
+    val producer: ProductProducerEntity? by mProducer
 
     private var mProducerListener: Job? = null
 

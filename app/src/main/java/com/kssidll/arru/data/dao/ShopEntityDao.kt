@@ -10,7 +10,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
@@ -40,8 +40,8 @@ interface ShopEntityDao {
     @Query("SELECT * FROM product WHERE product.id = :productId")
     suspend fun productById(productId: Long): Product
 
-    @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducer
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    suspend fun producerById(producerId: Long): ProductProducerEntity
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity

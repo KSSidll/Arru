@@ -8,7 +8,7 @@ import androidx.room.Transaction
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
@@ -24,9 +24,9 @@ interface ImportDao {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProducers(entities: List<ProductProducer>)
+    suspend fun insertProducers(entities: List<ProductProducerEntity>)
 
-    @Query("DELETE FROM ProductProducer")
+    @Query("DELETE FROM ProductProducerEntity")
     suspend fun deleteProducers()
 
 
@@ -79,7 +79,7 @@ interface ImportDao {
     @Transaction
     suspend fun insertAll(
         shopEntities: List<ShopEntity>,
-        producers: List<ProductProducer>,
+        producers: List<ProductProducerEntity>,
         categories: List<ProductCategory>,
         transactionEntities: List<TransactionEntity>,
         products: List<Product>,

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
@@ -45,7 +45,7 @@ abstract class ModifyProductViewModel: ViewModel() {
         }
     }
 
-    fun onNewProducerSelected(producer: ProductProducer?) {
+    fun onNewProducerSelected(producer: ProductProducerEntity?) {
         // Don't do anything if the producer is the same as already selected
         if (screenState.selectedProductProducer.value.data == producer) {
             screenState.selectedProductProducer.apply { value = value.toLoaded() }
@@ -99,7 +99,7 @@ abstract class ModifyProductViewModel: ViewModel() {
     /**
      * @return List of all producers
      */
-    fun allProducers(): Flow<Data<ImmutableList<ProductProducer>>> {
+    fun allProducers(): Flow<Data<ImmutableList<ProductProducerEntity>>> {
         return producerRepository.allFlow()
     }
 }
@@ -109,7 +109,7 @@ abstract class ModifyProductViewModel: ViewModel() {
  */
 data class ModifyProductScreenState(
     val selectedProductCategory: MutableState<Field<ProductCategory>> = mutableStateOf(Field.Loaded()),
-    val selectedProductProducer: MutableState<Field<ProductProducer?>> = mutableStateOf(Field.Loaded()),
+    val selectedProductProducer: MutableState<Field<ProductProducerEntity?>> = mutableStateOf(Field.Loaded()),
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
 
     val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),

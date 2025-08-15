@@ -4,7 +4,7 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -73,18 +73,18 @@ interface ProducerRepositorySource {
     // Create
 
     /**
-     * Inserts [ProductProducer]
-     * @param name name of the [ProductProducer]
-     * @return [InsertResult] with id of the newly inserted [ProductProducer] or an error if any
+     * Inserts [ProductProducerEntity]
+     * @param name name of the [ProductProducerEntity]
+     * @return [InsertResult] with id of the newly inserted [ProductProducerEntity] or an error if any
      */
     suspend fun insert(name: String): InsertResult
 
     // Update
 
     /**
-     * Updates [ProductProducer] with [producerId] to provided [name]
-     * @param producerId id to match [ProductProducer]
-     * @param name name to update the matching [ProductProducer] to
+     * Updates [ProductProducerEntity] with [producerId] to provided [name]
+     * @param producerId id to match [ProductProducerEntity]
+     * @param name name to update the matching [ProductProducerEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -99,15 +99,15 @@ interface ProducerRepositorySource {
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        producer: ProductProducer,
-        mergingInto: ProductProducer,
+        producer: ProductProducerEntity,
+        mergingInto: ProductProducerEntity,
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [ProductProducer]
-     * @param producerid id of the [ProductProducer] to delete
+     * Deletes [ProductProducerEntity]
+     * @param producerid id of the [ProductProducerEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
@@ -119,59 +119,59 @@ interface ProducerRepositorySource {
     // Read
 
     /**
-     * @param producerId id of the [ProductProducer]
-     * @return [ProductProducer] matching [producerId] id or null if none match
+     * @param producerId id of the [ProductProducerEntity]
+     * @return [ProductProducerEntity] matching [producerId] id or null if none match
      */
-    suspend fun get(producerId: Long): ProductProducer?
+    suspend fun get(producerId: Long): ProductProducerEntity?
 
     /**
-     * @param producerId id of the [ProductProducer]
-     * @return [ProductProducer] matching [producerId] id or null if none match, as flow
+     * @param producerId id of the [ProductProducerEntity]
+     * @return [ProductProducerEntity] matching [producerId] id or null if none match, as flow
      */
-    fun getFlow(producerId: Long): Flow<Data<ProductProducer?>>
+    fun getFlow(producerId: Long): Flow<Data<ProductProducerEntity?>>
 
     /**
-     * @param producer [ProductProducer] to get the total spending from
+     * @param producer [ProductProducerEntity] to get the total spending from
      * @return float representing total spending for the [producer] as flow
      */
-    fun totalSpentFlow(producer: ProductProducer): Flow<Data<Float?>>
+    fun totalSpentFlow(producer: ProductProducerEntity): Flow<Data<Float?>>
 
     /**
-     * @param producer [ProductProducer] to get the total spending by day from
+     * @param producer [ProductProducerEntity] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByDayFlow(producer: ProductProducerEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param producer [ProductProducer] to get the total spending by week from
+     * @param producer [ProductProducerEntity] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByWeekFlow(producer: ProductProducerEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param producer [ProductProducer] to get the total spending by month from
+     * @param producer [ProductProducerEntity] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByMonthFlow(producer: ProductProducerEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param producer [ProductProducer] to get the total spending by year from
+     * @param producer [ProductProducerEntity] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(producer: ProductProducer): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByYearFlow(producer: ProductProducerEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param producer [ProductProducer] to match the items to
+     * @param producer [ProductProducerEntity] to match the items to
      */
-    fun fullItemsPagedFlow(producer: ProductProducer): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(producer: ProductProducerEntity): Flow<PagingData<FullItem>>
 
     /**
-     * @return list of all [ProductProducer] as flow
+     * @return list of all [ProductProducerEntity] as flow
      */
-    fun allFlow(): Flow<Data<ImmutableList<ProductProducer>>>
+    fun allFlow(): Flow<Data<ImmutableList<ProductProducerEntity>>>
 
     /**
-     * @return total count of [ProductProducer]
+     * @return total count of [ProductProducerEntity]
      */
     suspend fun totalCount(): Int
 
@@ -181,5 +181,5 @@ interface ProducerRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<ProductProducer>
+    ): ImmutableList<ProductProducerEntity>
 }

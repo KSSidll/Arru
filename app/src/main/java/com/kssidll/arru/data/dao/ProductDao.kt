@@ -12,7 +12,7 @@ import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
@@ -40,8 +40,8 @@ interface ProductDao {
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
     suspend fun shopById(shopId: Long): ShopEntity
 
-    @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducer?
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    suspend fun producerById(producerId: Long): ProductProducerEntity?
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity?
@@ -330,7 +330,7 @@ interface ProductDao {
             FROM date_series
             WHERE date_series.end_date > date_series.start_date
         )
-        SELECT product.*, AVG(ItemEntity.price) AS price, ShopEntity.name AS shopName, ProductVariantEntity.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
+        SELECT product.*, AVG(ItemEntity.price) AS price, ShopEntity.name AS shopName, ProductVariantEntity.name as variantName, ProductProducerEntity.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
         FROM date_series
         LEFT JOIN TransactionEntity ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch'))
         JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
@@ -338,7 +338,7 @@ interface ProductDao {
         LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
         LEFT JOIN ProductVariantEntity ON ItemEntity.variantId = ProductVariantEntity.id
         LEFT JOIN product ON ItemEntity.productId = product.id
-        LEFT JOIN productproducer ON product.producerId = productproducer.id
+        LEFT JOIN ProductProducerEntity ON product.producerId = ProductProducerEntity.id
         WHERE time IS NOT NULL
         GROUP BY time, shopEntityId, variantId, producerId
         ORDER BY time

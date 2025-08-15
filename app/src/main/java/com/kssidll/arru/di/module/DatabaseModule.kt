@@ -4,8 +4,8 @@ import android.content.Context
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
-import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
+import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
@@ -131,8 +131,8 @@ class DatabaseModule {
 
 
     @Provides
-    fun provideCategoryRepository(productCategoryDao: CategoryDao): CategoryRepositorySource {
-        return CategoryRepository(productCategoryDao)
+    fun provideCategoryRepository(dao: CategoryDao): CategoryRepositorySource {
+        return CategoryRepository(dao)
     }
 
     @Provides
@@ -146,12 +146,12 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProducerDao(appDatabase: AppDatabase): ProducerDao {
-        return appDatabase.getProducerDao()
+    fun provideProducerDao(appDatabase: AppDatabase): ProductProducerEntityDao {
+        return appDatabase.getProductProducerEntityDao()
     }
 
     @Provides
-    fun provideProducerRepository(productProducerDao: ProducerDao): ProducerRepositorySource {
-        return ProducerRepository(productProducerDao)
+    fun provideProducerRepository(dao: ProductProducerEntityDao): ProducerRepositorySource {
+        return ProducerRepository(dao)
     }
 }

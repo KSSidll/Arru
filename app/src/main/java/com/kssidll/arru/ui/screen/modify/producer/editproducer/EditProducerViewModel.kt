@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
@@ -26,12 +26,12 @@ import javax.inject.Inject
 class EditProducerViewModel @Inject constructor(
     override val producerRepository: ProducerRepositorySource,
 ): ModifyProducerViewModel() {
-    private var mProducer: ProductProducer? = null
+    private var mProducer: ProductProducerEntity? = null
 
     private val mMergeMessageProducerName: MutableState<String> = mutableStateOf(String())
     val mergeMessageProducerName get() = mMergeMessageProducerName.value
 
-    val chosenMergeCandidate: MutableState<ProductProducer?> = mutableStateOf(null)
+    val chosenMergeCandidate: MutableState<ProductProducerEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
     /**
@@ -58,7 +58,7 @@ class EditProducerViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(producerId: Long): Flow<Data<ImmutableList<ProductProducer>>> {
+    fun allMergeCandidates(producerId: Long): Flow<Data<ImmutableList<ProductProducerEntity>>> {
         return producerRepository.allFlow()
             .map {
                 if (it is Data.Loaded) {
@@ -142,7 +142,7 @@ class EditProducerViewModel @Inject constructor(
      * Tries to delete merge producer into provided [mergeCandidate]
      * @return resulting [MergeResult]
      */
-    suspend fun mergeWith(mergeCandidate: ProductProducer) = viewModelScope.async {
+    suspend fun mergeWith(mergeCandidate: ProductProducerEntity) = viewModelScope.async {
         if (mProducer == null) {
             Log.e(
                 "InvalidId",

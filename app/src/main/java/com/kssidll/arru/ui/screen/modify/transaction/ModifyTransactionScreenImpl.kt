@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
@@ -64,7 +64,7 @@ import java.util.Locale
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [ProductProducer]
+ * [ModifyScreen] implementation for [ProductProducerEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyProducerScreenState] instance representing the screen state
  * @param shops Shops that can be set for the transaction

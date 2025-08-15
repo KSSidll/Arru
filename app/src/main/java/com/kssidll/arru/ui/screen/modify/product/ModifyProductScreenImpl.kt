@@ -21,7 +21,7 @@ import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.loadedData
@@ -66,8 +66,8 @@ fun ModifyProductScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductScreenState,
     categories: Data<ImmutableList<ProductCategory>>,
-    producers: Data<ImmutableList<ProductProducer>>,
-    onNewProducerSelected: (producer: ProductProducer?) -> Unit,
+    producers: Data<ImmutableList<ProductProducerEntity>>,
+    onNewProducerSelected: (producer: ProductProducerEntity?) -> Unit,
     onNewCategorySelected: (category: ProductCategory?) -> Unit,
     onSubmit: () -> Unit,
     onProducerAddButtonClick: (query: String?) -> Unit,

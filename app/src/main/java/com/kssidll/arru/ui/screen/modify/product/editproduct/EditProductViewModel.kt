@@ -6,7 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
@@ -54,7 +54,7 @@ class EditProductViewModel @Inject constructor(
         mProduct = productRepository.get(productId)
         mMergeMessageProductName.value = mProduct?.name.orEmpty()
 
-        val producer: ProductProducer? = mProduct?.producerId?.let { producerRepository.get(it) }
+        val producer: ProductProducerEntity? = mProduct?.producerId?.let { producerRepository.get(it) }
         val category = mProduct?.categoryId?.let { categoryRepository.get(it) }
 
         screenState.name.apply {

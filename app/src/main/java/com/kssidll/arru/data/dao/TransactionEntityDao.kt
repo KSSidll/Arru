@@ -11,7 +11,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
@@ -54,8 +54,8 @@ interface TransactionEntityDao {
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun categoryById(categoryId: Long): ProductCategory?
 
-    @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducer?
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    suspend fun producerById(producerId: Long): ProductProducerEntity?
 
     @Query("SELECT ItemEntity.* FROM ItemEntity WHERE transactionEntityId = :transactionBasketId ORDER BY id DESC")
     suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<ItemEntity>
