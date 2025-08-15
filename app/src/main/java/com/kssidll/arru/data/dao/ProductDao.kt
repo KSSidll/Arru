@@ -10,7 +10,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
@@ -46,14 +46,14 @@ interface ProductDao {
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity?
 
-    @Query("SELECT * FROM ProductVariantEntity WHERE ProductVariantEntity.productId = :productId AND ProductVariantEntity.name = :variantName")
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productId = :productId AND ProductVariantEntity.name = :variantName")
     suspend fun variantByName(
         productId: Long,
         variantName: String
     ): ProductVariantEntity?
 
-    @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
-    suspend fun categoryById(categoryId: Long): ProductCategory?
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    suspend fun categoryById(categoryId: Long): ProductCategoryEntity?
 
     @Query(
         """

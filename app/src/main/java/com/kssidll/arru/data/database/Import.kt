@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.core.provider.DocumentsContractCompat
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -198,7 +198,7 @@ suspend fun handleCsvImport(
     // Prepare data
     val shopEntityList = mutableListOf<ShopEntity>()
     val producerList = mutableListOf<ProductProducerEntity>()
-    val categoryList = mutableListOf<ProductCategory>()
+    val categoryList = mutableListOf<ProductCategoryEntity>()
     val transactionList = mutableListOf<TransactionEntity>()
     val productList = mutableListOf<Product>()
     val variantList = mutableListOf<ProductVariantEntity>()
@@ -391,7 +391,7 @@ suspend fun handleCsvImport(
                         categories.size.toLong() + 1
                     ) // id of 0 causes a foreign key constraint fail
                     categoryList.add(
-                        ProductCategory(
+                        ProductCategoryEntity(
                             id = categories[category]!!,
                             name = category
                         )
@@ -658,7 +658,7 @@ suspend fun handleCsvImport(
                             val name = text[1]
 
                             categoryList.add(
-                                ProductCategory(
+                                ProductCategoryEntity(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     name = name
                                 )
@@ -971,7 +971,7 @@ suspend fun handleJsonImport(
     // Prepare data
     val shopEntityList = mutableListOf<ShopEntity>()
     val producerList = mutableListOf<ProductProducerEntity>()
-    val categoryList = mutableListOf<ProductCategory>()
+    val categoryList = mutableListOf<ProductCategoryEntity>()
     val transactionList = mutableListOf<TransactionEntity>()
     val productList = mutableListOf<Product>()
     val variantList = mutableListOf<ProductVariantEntity>()
@@ -1168,7 +1168,7 @@ suspend fun handleJsonImport(
                                                             if (productCategoryId != null && categoryName != null) {
                                                                 if (categories.add(productCategoryId)) {
                                                                     categoryList.add(
-                                                                        ProductCategory(
+                                                                        ProductCategoryEntity(
                                                                             id = productCategoryId,
                                                                             name = categoryName,
                                                                         )

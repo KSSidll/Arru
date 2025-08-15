@@ -11,7 +11,7 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -19,24 +19,24 @@ import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CategoryDao {
+interface ProductCategoryEntityDao {
     // Create
 
     @Insert
-    suspend fun insert(productCategory: ProductCategory): Long
+    suspend fun insert(entity: ProductCategoryEntity): Long
 
     // Update
 
     @Update
-    suspend fun update(productCategory: ProductCategory)
+    suspend fun update(entity: ProductCategoryEntity)
 
     @Update
-    suspend fun update(productCategories: List<ProductCategory>)
+    suspend fun update(productCategories: List<ProductCategoryEntity>)
 
     // Delete
 
     @Delete
-    suspend fun delete(productCategory: ProductCategory)
+    suspend fun delete(entity: ProductCategoryEntity)
 
     // Helper
 
@@ -49,8 +49,8 @@ interface CategoryDao {
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity
 
-    @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
-    suspend fun categoryById(categoryId: Long): ProductCategory
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    suspend fun categoryById(categoryId: Long): ProductCategoryEntity
 
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducerEntity
@@ -87,8 +87,8 @@ interface CategoryDao {
         """
         SELECT product.*
         FROM product
-        JOIN productcategory ON productcategory.id = product.categoryId
-        WHERE productcategory.id = :categoryId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        WHERE ProductCategoryEntity.id = :categoryId
     """
     )
     suspend fun getProducts(categoryId: Long): List<Product>
@@ -98,8 +98,8 @@ interface CategoryDao {
         SELECT ProductVariantEntity.*
         FROM ProductVariantEntity
         JOIN product ON product.id = ProductVariantEntity.productId
-        JOIN productcategory ON productcategory.id = product.categoryId
-        WHERE productcategory.id = :categoryId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        WHERE ProductCategoryEntity.id = :categoryId
     """
     )
     suspend fun getProductsVariants(categoryId: Long): List<ProductVariantEntity>
@@ -109,8 +109,8 @@ interface CategoryDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN product ON product.id = ItemEntity.productId
-        JOIN productcategory ON productcategory.id = product.categoryId
-        WHERE productcategory.id = :categoryId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        WHERE ProductCategoryEntity.id = :categoryId
     """
     )
     suspend fun getItems(categoryId: Long): List<ItemEntity>
@@ -155,22 +155,22 @@ interface CategoryDao {
 
     // Read
 
-    @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
-    suspend fun get(categoryId: Long): ProductCategory?
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    suspend fun get(categoryId: Long): ProductCategoryEntity?
 
-    @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
-    fun getFlow(categoryId: Long): Flow<ProductCategory?>
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    fun getFlow(categoryId: Long): Flow<ProductCategoryEntity?>
 
-    @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.name = :name")
-    suspend fun byName(name: String): ProductCategory?
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name")
+    suspend fun byName(name: String): ProductCategoryEntity?
 
     @Query(
         """
         SELECT SUM(ItemEntity.price * ItemEntity.quantity)
         FROM ItemEntity
         JOIN product ON product.id = ItemEntity.productId
-        JOIN productcategory ON productcategory.id = product.categoryId
-        WHERE productcategory.id = :categoryId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        WHERE ProductCategoryEntity.id = :categoryId
     """
     )
     fun totalSpentFlow(categoryId: Long): Flow<Long?>
@@ -338,38 +338,38 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT productcategory.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
+        SELECT ProductCategoryEntity.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
         JOIN product ON product.id = ItemEntity.productId
-        JOIN productcategory ON productcategory.id = product.categoryId
-        GROUP BY productcategory.id
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        GROUP BY ProductCategoryEntity.id
     """
     )
     fun totalSpentByCategoryFlow(): Flow<List<ItemSpentByCategory>>
 
     @Query(
         """
-        SELECT productcategory.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
+        SELECT ProductCategoryEntity.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
         INNER JOIN product ON ItemEntity.productId = product.id
-        INNER JOIN productcategory ON product.categoryId = productcategory.id
+        INNER JOIN ProductCategoryEntity ON product.categoryId = ProductCategoryEntity.id
         WHERE STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) = :date
-        GROUP BY productcategory.id
+        GROUP BY ProductCategoryEntity.id
     """
     )
     fun totalSpentByCategoryByMonthFlow(date: String): Flow<List<ItemSpentByCategory>>
 
-    @Query("SELECT productcategory.* FROM productcategory ORDER BY productcategory.id DESC")
-    fun allFlow(): Flow<List<ProductCategory>>
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity ORDER BY ProductCategoryEntity.id DESC")
+    fun allFlow(): Flow<List<ProductCategoryEntity>>
 
-    @Query("SELECT COUNT(*) FROM productcategory")
+    @Query("SELECT COUNT(*) FROM ProductCategoryEntity")
     suspend fun totalCount(): Int
 
-    @Query("SELECT productcategory.* FROM productcategory ORDER BY id LIMIT :limit OFFSET :offset")
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity ORDER BY id LIMIT :limit OFFSET :offset")
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<ProductCategory>
+    ): List<ProductCategoryEntity>
 }

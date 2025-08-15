@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
@@ -26,12 +26,12 @@ import javax.inject.Inject
 class EditCategoryViewModel @Inject constructor(
     override val categoryRepository: CategoryRepositorySource,
 ): ModifyCategoryViewModel() {
-    private var mCategory: ProductCategory? = null
+    private var mCategory: ProductCategoryEntity? = null
 
     private val mMergeMessageCategoryName: MutableState<String> = mutableStateOf(String())
     val mergeMessageCategoryName get() = mMergeMessageCategoryName.value
 
-    val chosenMergeCandidate: MutableState<ProductCategory?> = mutableStateOf(null)
+    val chosenMergeCandidate: MutableState<ProductCategoryEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
     /**
@@ -58,7 +58,7 @@ class EditCategoryViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(categoryId: Long): Flow<Data<ImmutableList<ProductCategory>>> {
+    fun allMergeCandidates(categoryId: Long): Flow<Data<ImmutableList<ProductCategoryEntity>>> {
         return categoryRepository.allFlow()
             .map {
                 if (it is Data.Loaded) {
@@ -142,7 +142,7 @@ class EditCategoryViewModel @Inject constructor(
      * Tries to delete merge category into provided [mergeCandidate]
      * @return resulting [MergeResult]
      */
-    suspend fun mergeWith(mergeCandidate: ProductCategory) = viewModelScope.async {
+    suspend fun mergeWith(mergeCandidate: ProductCategoryEntity) = viewModelScope.async {
         if (mCategory == null) {
             Log.e(
                 "InvalidId",

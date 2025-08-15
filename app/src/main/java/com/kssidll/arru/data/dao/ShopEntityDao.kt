@@ -9,7 +9,7 @@ import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -46,8 +46,8 @@ interface ShopEntityDao {
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity
 
-    @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
-    suspend fun categoryById(categoryId: Long): ProductCategory
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    suspend fun categoryById(categoryId: Long): ProductCategoryEntity
 
     @Query(
         """

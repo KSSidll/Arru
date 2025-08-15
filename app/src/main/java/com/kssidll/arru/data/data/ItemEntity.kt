@@ -238,7 +238,7 @@ data class FullItem(
     val price: Long,
     val product: Product,
     val variant: ProductVariantEntity?,
-    val category: ProductCategory,
+    val category: ProductCategoryEntity,
     val producer: ProductProducerEntity?,
     val date: Long,
     val shop: ShopEntity?,
@@ -259,7 +259,7 @@ data class FullItem(
                 price = generateRandomLongValue(),
                 product = Product.generate(),
                 variant = ProductVariantEntity.generate(),
-                category = ProductCategory.generate(),
+                category = ProductCategoryEntity.generate(),
                 producer = ProductProducerEntity.generate(),
                 date = generateRandomDate().time,
                 shop = ShopEntity.generate(),
@@ -421,13 +421,13 @@ data class TransactionTotalSpentByShop(
 }
 
 data class ItemSpentByCategory(
-    @Embedded val category: ProductCategory,
+    @Embedded val category: ProductCategoryEntity,
     val total: Long,
 ): RankSource {
     companion object {
         fun generate(categoryId: Long = 0): ItemSpentByCategory {
             return ItemSpentByCategory(
-                category = ProductCategory.generate(categoryId),
+                category = ProductCategoryEntity.generate(categoryId),
                 total = generateRandomLongValue(),
             )
         }

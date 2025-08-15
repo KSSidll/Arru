@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
@@ -28,8 +28,8 @@ import javax.inject.Inject
 class CategoryViewModel @Inject constructor(
     private val categoryRepository: CategoryRepositorySource,
 ): ViewModel() {
-    private val mCategory: MutableState<ProductCategory?> = mutableStateOf(null)
-    val category: ProductCategory? by mCategory
+    private val mCategory: MutableState<ProductCategoryEntity?> = mutableStateOf(null)
+    val category: ProductCategoryEntity? by mCategory
 
     private var mCategoryListener: Job? = null
 

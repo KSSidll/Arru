@@ -1,9 +1,9 @@
 package com.kssidll.arru.di.module
 
 import android.content.Context
-import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
+import com.kssidll.arru.data.dao.ProductCategoryEntityDao
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
@@ -125,13 +125,13 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
-        return appDatabase.getCategoryDao()
+    fun provideCategoryDao(appDatabase: AppDatabase): ProductCategoryEntityDao {
+        return appDatabase.getProductCategoryEntityDao()
     }
 
 
     @Provides
-    fun provideCategoryRepository(dao: CategoryDao): CategoryRepositorySource {
+    fun provideCategoryRepository(dao: ProductCategoryEntityDao): CategoryRepositorySource {
         return CategoryRepository(dao)
     }
 

@@ -5,7 +5,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
@@ -82,7 +82,7 @@ interface ProductRepositorySource {
     /**
      * Inserts [Product]
      * @param name name of the [Product] to insert
-     * @param categoryId id of the [ProductCategory] of the [Product] to insert
+     * @param categoryId id of the [ProductCategoryEntity] of the [Product] to insert
      * @param producerId id of the [ProductProducerEntity] of the [Product] to insert
      * @return [InsertResult] with id of the newly inserted [Product] or an error if any
      */
@@ -98,7 +98,7 @@ interface ProductRepositorySource {
      * Updates [Product] with [productId] id to provided [name], [categoryId] and [producerId]
      * @param productId id to match [Product]
      * @param name name to update the matching [Product] to
-     * @param categoryId id of the [ProductCategory] to update the matching [Product] to
+     * @param categoryId id of the [ProductCategoryEntity] to update the matching [Product] to
      * @param producerId id of the [ProductProducerEntity] to update the matching [Product] to
      * @return [UpdateResult] with the result
      */

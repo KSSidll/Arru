@@ -4,7 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource
@@ -67,7 +67,7 @@ abstract class ModifyProductViewModel: ViewModel() {
         }
     }
 
-    fun onNewCategorySelected(category: ProductCategory?) {
+    fun onNewCategorySelected(category: ProductCategoryEntity?) {
         // Don't do anything if the producer is the same as already selected
         if (screenState.selectedProductCategory.value.data == category) {
             screenState.selectedProductCategory.apply { value = value.toLoaded() }
@@ -92,7 +92,7 @@ abstract class ModifyProductViewModel: ViewModel() {
     /**
      * @return List of all categories
      */
-    fun allCategories(): Flow<Data<ImmutableList<ProductCategory>>> {
+    fun allCategories(): Flow<Data<ImmutableList<ProductCategoryEntity>>> {
         return categoryRepository.allFlow()
     }
 
@@ -108,7 +108,7 @@ abstract class ModifyProductViewModel: ViewModel() {
  * Data representing [ModifyProductScreenImpl] screen state
  */
 data class ModifyProductScreenState(
-    val selectedProductCategory: MutableState<Field<ProductCategory>> = mutableStateOf(Field.Loaded()),
+    val selectedProductCategory: MutableState<Field<ProductCategoryEntity>> = mutableStateOf(Field.Loaded()),
     val selectedProductProducer: MutableState<Field<ProductProducerEntity?>> = mutableStateOf(Field.Loaded()),
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
 

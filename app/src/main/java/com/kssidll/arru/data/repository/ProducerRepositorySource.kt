@@ -3,7 +3,7 @@ package com.kssidll.arru.data.repository
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
@@ -94,8 +94,8 @@ interface ProducerRepositorySource {
 
     /**
      * Merges [producer] into [mergingInto]
-     * @param producer [ProductCategory] to merge
-     * @param mergingInto [ProductCategory] to merge the [category] into
+     * @param producer [ProductCategoryEntity] to merge
+     * @param mergingInto [ProductCategoryEntity] to merge the [category] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(

@@ -13,9 +13,9 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.Arru
-import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
+import com.kssidll.arru.data.dao.ProductCategoryEntityDao
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
@@ -24,7 +24,7 @@ import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -93,7 +93,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
         ItemEntity::class,
         Product::class,
         ProductVariantEntity::class,
-        ProductCategory::class,
+        ProductCategoryEntity::class,
         ShopEntity::class,
         ProductProducerEntity::class,
     ],
@@ -118,7 +118,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getItemEntityDao(): ItemEntityDao
     abstract fun getProductDao(): ProductDao
     abstract fun getProductVariantEntityDao(): ProductVariantEntityDao
-    abstract fun getCategoryDao(): CategoryDao
+    abstract fun getProductCategoryEntityDao(): ProductCategoryEntityDao
     abstract fun getShopEntityDao(): ShopEntityDao
     abstract fun getProductProducerEntityDao(): ProductProducerEntityDao
     abstract fun getImportDao(): ImportDao

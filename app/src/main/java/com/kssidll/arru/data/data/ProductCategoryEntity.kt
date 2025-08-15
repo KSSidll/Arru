@@ -17,7 +17,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
         )
     ]
 )
-data class ProductCategory(
+data class ProductCategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
 ): FuzzySearchSource, NameSource {
@@ -30,10 +30,10 @@ data class ProductCategory(
     )
 
     /**
-     * Converts the [ProductCategory] data to a string with csv format
+     * Converts the [ProductCategoryEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
-     * @return [ProductCategory] data as [String] with csv format
+     * @return [ProductCategoryEntity] data as [String] with csv format
      */
     @Ignore
     fun formatAsCsvString(): String {
@@ -42,8 +42,8 @@ data class ProductCategory(
 
     companion object {
         /**
-         * Returns the [String] representing the [ProductCategory] csv format headers
-         * @return [String] representing the [ProductCategory] csv format headers
+         * Returns the [String] representing the [ProductCategoryEntity] csv format headers
+         * @return [String] representing the [ProductCategoryEntity] csv format headers
          */
         @Ignore
         fun csvHeaders(): String {
@@ -51,15 +51,15 @@ data class ProductCategory(
         }
 
         @Ignore
-        fun generate(categoryId: Long = 0): ProductCategory {
-            return ProductCategory(
+        fun generate(categoryId: Long = 0): ProductCategoryEntity {
+            return ProductCategoryEntity(
                 id = categoryId,
                 name = generateRandomStringValue(),
             )
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<ProductCategory> {
+        fun generateList(amount: Int = 10): List<ProductCategoryEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -89,14 +89,14 @@ data class ProductCategory(
 }
 
 /**
- * Converts a list of [ProductCategory] data to a list of strings with csv format
+ * Converts a list of [ProductCategoryEntity] data to a list of strings with csv format
  * @param includeHeaders whether to include the csv headers
- * @return [ProductCategory] data as list of string with csv format
+ * @return [ProductCategoryEntity] data as list of string with csv format
  */
-fun List<ProductCategory>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+fun List<ProductCategoryEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(ProductCategory.csvHeaders() + "\n")
+        add(ProductCategoryEntity.csvHeaders() + "\n")
     }
 
     // Add rows

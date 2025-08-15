@@ -4,7 +4,7 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -73,18 +73,18 @@ interface CategoryRepositorySource {
     // Create
 
     /**
-     * Inserts [ProductCategory]
-     * @param name name of the [ProductCategory] to insert
-     * @return [InsertResult] with id of the newly inserted [ProductCategory] or an error if any
+     * Inserts [ProductCategoryEntity]
+     * @param name name of the [ProductCategoryEntity] to insert
+     * @return [InsertResult] with id of the newly inserted [ProductCategoryEntity] or an error if any
      */
     suspend fun insert(name: String): InsertResult
 
     // Update
 
     /**
-     * Updates [ProductCategory] with [categoryId] id to provided [name]
-     * @param categoryId id to match [ProductCategory]
-     * @param name name to update the matching [ProductCategory] to
+     * Updates [ProductCategoryEntity] with [categoryId] id to provided [name]
+     * @param categoryId id to match [ProductCategoryEntity]
+     * @param name name to update the matching [ProductCategoryEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -94,20 +94,20 @@ interface CategoryRepositorySource {
 
     /**
      * Merges [category] into [mergingInto]
-     * @param category [ProductCategory] to merge
-     * @param mergingInto [ProductCategory] to merge the [category] into
+     * @param category [ProductCategoryEntity] to merge
+     * @param mergingInto [ProductCategoryEntity] to merge the [category] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        category: ProductCategory,
-        mergingInto: ProductCategory,
+        category: ProductCategoryEntity,
+        mergingInto: ProductCategoryEntity,
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [ProductCategory] matching [productCategoryId]
-     * @param productCategoryId id of the [ProductCategory] to delete
+     * Deletes [ProductCategoryEntity] matching [productCategoryId]
+     * @param productCategoryId id of the [ProductCategoryEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
@@ -119,51 +119,51 @@ interface CategoryRepositorySource {
     // Read
 
     /**
-     * @param categoryId id of the [ProductCategory]
-     * @return [ProductCategory] matching [categoryId] id or null if none match
+     * @param categoryId id of the [ProductCategoryEntity]
+     * @return [ProductCategoryEntity] matching [categoryId] id or null if none match
      */
-    suspend fun get(categoryId: Long): ProductCategory?
+    suspend fun get(categoryId: Long): ProductCategoryEntity?
 
     /**
-     * @param categoryId id of the [ProductCategory]
-     * @return [ProductCategory] matching [categoryId] id or null if none match, as flow
+     * @param categoryId id of the [ProductCategoryEntity]
+     * @return [ProductCategoryEntity] matching [categoryId] id or null if none match, as flow
      */
-    fun getFlow(categoryId: Long): Flow<Data<ProductCategory?>>
+    fun getFlow(categoryId: Long): Flow<Data<ProductCategoryEntity?>>
 
     /**
-     * @param category [ProductCategory] to get the total spending from
+     * @param category [ProductCategoryEntity] to get the total spending from
      * @return float representing total spending for the [category] as flow
      */
-    fun totalSpentFlow(category: ProductCategory): Flow<Data<Float?>>
+    fun totalSpentFlow(category: ProductCategoryEntity): Flow<Data<Float?>>
 
     /**
-     * @param category [ProductCategory] to get the total spending by day from
+     * @param category [ProductCategoryEntity] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByDayFlow(category: ProductCategoryEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param category [ProductCategory] to get the total spending by week from
+     * @param category [ProductCategoryEntity] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByWeekFlow(category: ProductCategoryEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param category [ProductCategory] to get the total spending by month from
+     * @param category [ProductCategoryEntity] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByMonthFlow(category: ProductCategoryEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param category [ProductCategory] to get the total spending by year from
+     * @param category [ProductCategoryEntity] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(category: ProductCategory): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByYearFlow(category: ProductCategoryEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param category [ProductCategory] to match the items to
+     * @param category [ProductCategoryEntity] to match the items to
      */
-    fun fullItemsPagedFlow(category: ProductCategory): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(category: ProductCategoryEntity): Flow<PagingData<FullItem>>
 
     /**
      * @return list of [ItemSpentByCategory] representing total spending groupped by category
@@ -181,12 +181,12 @@ interface CategoryRepositorySource {
     ): Flow<ImmutableList<ItemSpentByCategory>>
 
     /**
-     * @return list of all [ProductCategory] as flow
+     * @return list of all [ProductCategoryEntity] as flow
      */
-    fun allFlow(): Flow<Data<ImmutableList<ProductCategory>>>
+    fun allFlow(): Flow<Data<ImmutableList<ProductCategoryEntity>>>
 
     /**
-     * @return total count of [ProductCategory]
+     * @return total count of [ProductCategoryEntity]
      */
     suspend fun totalCount(): Int
 
@@ -196,5 +196,5 @@ interface CategoryRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<ProductCategory>
+    ): ImmutableList<ProductCategoryEntity>
 }
