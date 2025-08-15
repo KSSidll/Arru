@@ -25,7 +25,7 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
         price: Long
     ): InsertResult {
         val entity = ItemEntity(
-            transactionBasketId = transactionId,
+            transactionEntityId = transactionId,
             productId = productId,
             variantId = variantId,
             quantity = quantity,

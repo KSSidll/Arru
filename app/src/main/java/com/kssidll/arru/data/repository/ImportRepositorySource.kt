@@ -6,14 +6,14 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 
 interface ImportRepositorySource {
     suspend fun insertAll(
         shops: List<Shop>,
         producers: List<ProductProducer>,
         categories: List<ProductCategory>,
-        transactions: List<TransactionBasket>,
+        transactions: List<TransactionEntity>,
         products: List<Product>,
         variants: List<ProductVariant>,
         entities: List<ItemEntity>

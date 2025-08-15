@@ -19,7 +19,7 @@ import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.dao.ShopDao
-import com.kssidll.arru.data.dao.TransactionBasketDao
+import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.ItemEntity
@@ -28,7 +28,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import kotlinx.coroutines.flow.first
@@ -89,7 +89,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
 @Database(
     version = 9,
     entities = [
-        TransactionBasket::class,
+        TransactionEntity::class,
         ItemEntity::class,
         Product::class,
         ProductVariant::class,
@@ -114,7 +114,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
     ]
 )
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun getTransactionBasketDao(): TransactionBasketDao
+    abstract fun getTransactionEntityDao(): TransactionEntityDao
     abstract fun getItemEntityDao(): ItemEntityDao
     abstract fun getProductDao(): ProductDao
     abstract fun getVariantDao(): VariantDao

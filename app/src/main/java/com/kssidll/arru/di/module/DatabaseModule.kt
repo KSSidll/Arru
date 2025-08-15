@@ -7,7 +7,7 @@ import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.dao.ShopDao
-import com.kssidll.arru.data.dao.TransactionBasketDao
+import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.downloadsAppDirectory
@@ -85,13 +85,13 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideTransactionBasketDao(appDatabase: AppDatabase): TransactionBasketDao {
-        return appDatabase.getTransactionBasketDao()
+    fun provideTransactionBasketDao(appDatabase: AppDatabase): TransactionEntityDao {
+        return appDatabase.getTransactionEntityDao()
     }
 
     @Provides
-    fun provideTransactionBasketRepository(transactionBasketDao: TransactionBasketDao): TransactionBasketRepositorySource {
-        return TransactionBasketRepository(transactionBasketDao)
+    fun provideTransactionBasketRepository(dao: TransactionEntityDao): TransactionBasketRepositorySource {
+        return TransactionBasketRepository(dao)
     }
 
     @Provides

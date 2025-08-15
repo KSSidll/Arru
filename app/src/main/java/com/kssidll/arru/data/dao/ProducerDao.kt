@@ -14,7 +14,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -50,19 +50,19 @@ interface ProducerDao {
 
     @Query(
         """
-        SELECT transactionbasket.*
+        SELECT TransactionEntity.*
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         WHERE ItemEntity.id = :itemEntityId
     """
     )
-    suspend fun transactionBasketByItemEntityId(itemEntityId: Long): TransactionBasket
+    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
 
     @Query(
         """
         SELECT ItemEntity.*
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         JOIN product ON product.id = ItemEntity.productId
         WHERE product.producerId = :producerId
         ORDER BY date DESC
@@ -170,10 +170,10 @@ interface ProducerDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT MIN(transactionbasket.date) AS start_date,
+            SELECT MIN(TransactionEntity.date) AS start_date,
                    UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM ItemEntity
-            JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN product ON product.id = ItemEntity.productId
                 AND producerId = :producerId
             UNION ALL
@@ -181,9 +181,9 @@ interface ProducerDao {
             FROM date_series
             WHERE date_series.end_date > date_series.start_date
         ), ItemEntities AS (
-            SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+            SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
             FROM ItemEntity
-            JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN product ON product.id = ItemEntity.productId
                 AND producerId = :producerId
             GROUP BY transaction_time
@@ -201,10 +201,10 @@ interface ProducerDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+        SELECT (((MIN(TransactionEntity.date) / 86400000) - ((MIN(TransactionEntity.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
                  ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN product ON product.id = ItemEntity.productId
             AND producerId = :producerId
         UNION ALL
@@ -212,9 +212,9 @@ interface ProducerDao {
         FROM date_series
         WHERE date_series.end_date >= date_series.start_date
     ), ItemEntities AS (
-        SELECT ((transactionbasket.date - 345600000) / 604800000) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+        SELECT ((TransactionEntity.date - 345600000) / 604800000) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN product ON product.id = ItemEntity.productId
             AND producerId = :producerId
         GROUP BY ItemEntities_time
@@ -232,10 +232,10 @@ interface ProducerDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                DATE(current_timestamp, 'localtime', 'start of month') AS end_date
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN product ON product.id = ItemEntity.productId
             AND producerId = :producerId
         UNION ALL
@@ -243,9 +243,9 @@ interface ProducerDao {
         FROM date_series
         WHERE date_series.end_date > date_series.start_date
     ), ItemEntities AS (
-        SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+        SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN product ON product.id = ItemEntity.productId
             AND producerId = :producerId
         GROUP BY ItemEntities_time
@@ -263,10 +263,10 @@ interface ProducerDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of year') AS start_date,
                DATE(current_timestamp, 'localtime', 'start of year') AS end_date
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN product ON product.id = ItemEntity.productId
             AND producerId = :producerId
         UNION ALL
@@ -274,9 +274,9 @@ interface ProducerDao {
         FROM date_series
         WHERE date_series.end_date > date_series.start_date
     ), ItemEntities AS (
-        SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
+        SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN product ON product.id = ItemEntity.productId
             AND producerId = :producerId
         GROUP BY ItemEntities_time
@@ -308,11 +308,11 @@ interface ProducerDao {
         if (itemEntities.isEmpty()) return emptyList()
 
         return itemEntities.map { entity ->
-            val transactionBasket = transactionBasketByItemEntityId(entity.id)
+            val transactionEntity = transactionEntityByItemEntityId(entity.id)
             val product = productById(entity.productId)
             val variant = entity.variantId?.let { variantById(it) }
             val category = categoryById(product.categoryId)
-            val shop = transactionBasket.shopId?.let { shopById(it) }
+            val shop = transactionEntity.shopId?.let { shopById(it) }
 
             FullItem(
                 id = entity.id,
@@ -322,7 +322,7 @@ interface ProducerDao {
                 variant = variant,
                 category = category,
                 producer = producer,
-                date = transactionBasket.date,
+                date = transactionEntity.date,
                 shop = shop,
             )
         }

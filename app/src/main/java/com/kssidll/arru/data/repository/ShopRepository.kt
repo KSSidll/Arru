@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ShopDao
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.data.paging.FullItemPagingSource
@@ -146,7 +146,7 @@ class ShopRepository(private val dao: ShopDao): ShopRepositorySource {
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(TransactionBasket.COST_DIVISOR)
+                        ?.div(TransactionEntity.COST_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }

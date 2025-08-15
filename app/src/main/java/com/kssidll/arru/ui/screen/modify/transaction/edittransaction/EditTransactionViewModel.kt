@@ -3,7 +3,7 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
@@ -20,7 +20,7 @@ class EditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionBasketRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
-    private var mTransaction: TransactionBasket? = null
+    private var mTransaction: TransactionEntity? = null
 
     /**
      * Updates data in the screen state
@@ -41,7 +41,7 @@ class EditTransactionViewModel @Inject constructor(
         .await()
 
     private suspend fun updateStateForTransaction(
-        transaction: TransactionBasket?
+        transaction: TransactionEntity?
     ) {
         val shop: Shop? = transaction?.shopId?.let { shopRepository.get(it) }
 
@@ -74,13 +74,13 @@ class EditTransactionViewModel @Inject constructor(
 
         val result = transactionRepository.update(
             transactionId = transactionId,
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
+            date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
             totalCost = screenState.totalCost.value.data?.let {
-                TransactionBasket.totalCostFromString(
+                TransactionEntity.totalCostFromString(
                     it
                 )
             }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
+                ?: TransactionEntity.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id,
             note = screenState.note.value.data?.trim()
         )

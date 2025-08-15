@@ -26,10 +26,11 @@ import kotlin.math.log10
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
-    ]
+    ],
+    tableName = "TransactionEntity"
 )
 @Immutable
-data class TransactionBasket(
+data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val date: Long,
     @ColumnInfo(index = true) val shopId: Long?,
@@ -56,10 +57,10 @@ data class TransactionBasket(
     }
 
     /**
-     * Converts the [TransactionBasket] data to a string with csv format
+     * Converts the [TransactionEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
-     * @return [TransactionBasket] data as [String] with csv format
+     * @return [TransactionEntity] data as [String] with csv format
      */
     @Ignore
     fun formatAsCsvString(): String {
@@ -77,8 +78,8 @@ data class TransactionBasket(
         const val INVALID_TOTAL_COST: Long = Long.MIN_VALUE
 
         /**
-         * Returns the [String] representing the [TransactionBasket] csv format headers
-         * @return [String] representing the [TransactionBasket] csv format headers
+         * Returns the [String] representing the [TransactionEntity] csv format headers
+         * @return [String] representing the [TransactionEntity] csv format headers
          */
         @Ignore
         fun csvHeaders(): String {
@@ -116,8 +117,8 @@ data class TransactionBasket(
         }
 
         @Ignore
-        fun generate(transactionId: Long = 0): TransactionBasket {
-            return TransactionBasket(
+        fun generate(transactionId: Long = 0): TransactionEntity {
+            return TransactionEntity(
                 id = transactionId,
                 date = generateRandomTime(),
                 shopId = generateRandomLongValue(),
@@ -127,7 +128,7 @@ data class TransactionBasket(
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<TransactionBasket> {
+        fun generateList(amount: Int = 10): List<TransactionEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -181,14 +182,14 @@ data class TransactionBasketWithItems(
 }
 
 /**
- * Converts a list of [TransactionBasket] data to a list of strings with csv format
+ * Converts a list of [TransactionEntity] data to a list of strings with csv format
  * @param includeHeaders whether to include the csv headers
- * @return [TransactionBasket] data as list of string with csv format
+ * @return [TransactionEntity] data as list of string with csv format
  */
-fun List<TransactionBasket>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+fun List<TransactionEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(TransactionBasket.csvHeaders() + "\n")
+        add(TransactionEntity.csvHeaders() + "\n")
     }
 
     // Add rows
@@ -218,7 +219,7 @@ data class TransactionSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {

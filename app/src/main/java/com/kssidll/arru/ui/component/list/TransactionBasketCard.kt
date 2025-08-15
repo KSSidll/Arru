@@ -40,8 +40,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -230,7 +230,7 @@ fun LazyListScope.transactionBasketCardHeader(
                         )
                     ) {
                         Text(
-                            text = TransactionBasket.actualTotalCost(transaction.totalCost)
+                            text = TransactionEntity.actualTotalCost(transaction.totalCost)
                                 .formatToCurrency(currencyLocale),
                             style = Typography.titleLarge,
                         )

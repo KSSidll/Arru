@@ -4,9 +4,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.kssidll.arru.data.dao.TransactionBasketDao
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
 class TransactionBasketRepository(
-    private val dao: TransactionBasketDao
+    private val dao: TransactionEntityDao
 ): TransactionBasketRepositorySource {
     // Create
 
@@ -31,7 +31,7 @@ class TransactionBasketRepository(
         shopId: Long?,
         note: String?
     ): InsertResult {
-        val transaction = TransactionBasket(
+        val transaction = TransactionEntity(
             date = date,
             totalCost = totalCost,
             shopId = shopId,
@@ -112,11 +112,11 @@ class TransactionBasketRepository(
 
     // Read
 
-    override suspend fun get(transactionBasketId: Long): TransactionBasket? {
+    override suspend fun get(transactionBasketId: Long): TransactionEntity? {
         return dao.get(transactionBasketId)
     }
 
-    override suspend fun newest(): TransactionBasket? {
+    override suspend fun newest(): TransactionEntity? {
         return dao.newest()
     }
 
@@ -140,7 +140,7 @@ class TransactionBasketRepository(
         return dao.totalSpentFlow()
             .cancellable()
             .distinctUntilChanged()
-            .map { it?.toFloat()?.div(TransactionBasket.COST_DIVISOR) }
+            .map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
     }
 
     override fun totalSpentByDayFlow(): Flow<ImmutableList<TransactionSpentByTime>> {
@@ -220,7 +220,7 @@ class TransactionBasketRepository(
     override suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<TransactionBasket> {
+    ): ImmutableList<TransactionEntity> {
         return dao.getPagedList(
             limit,
             offset

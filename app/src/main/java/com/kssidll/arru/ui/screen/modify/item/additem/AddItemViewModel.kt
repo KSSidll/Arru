@@ -3,7 +3,7 @@ package com.kssidll.arru.ui.screen.modify.item.additem
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource
@@ -27,7 +27,7 @@ class AddItemViewModel @Inject constructor(
 
     /**
      * Tries to add an item to the repository
-     * @param transactionId id of the [TransactionBasket] to add the item to
+     * @param transactionId id of the [TransactionEntity] to add the item to
      * @return resulting [InsertResult]
      */
     suspend fun addItem(transactionId: Long) = viewModelScope.async {

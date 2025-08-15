@@ -53,7 +53,7 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.DatabaseBackup
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -266,7 +266,7 @@ fun BackupsScreen(
 
                                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                                         Text(
-                                                            text = TransactionBasket.actualTotalCost(
+                                                            text = TransactionEntity.actualTotalCost(
                                                                 it.totalSpending
                                                             )
                                                                 .formatToCurrency(currencyLocale),

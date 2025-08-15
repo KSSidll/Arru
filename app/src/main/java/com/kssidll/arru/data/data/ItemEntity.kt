@@ -23,9 +23,9 @@ import kotlin.math.log10
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = TransactionBasket::class,
+            entity = TransactionEntity::class,
             parentColumns = ["id"],
-            childColumns = ["transactionBasketId"],
+            childColumns = ["transactionEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
@@ -48,7 +48,7 @@ import kotlin.math.log10
 )
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var transactionBasketId: Long,
+    @ColumnInfo(index = true) var transactionEntityId: Long,
     @ColumnInfo(index = true) var productId: Long,
     @ColumnInfo(index = true) var variantId: Long?,
     var quantity: Long,
@@ -56,14 +56,14 @@ data class ItemEntity(
 ) {
     @Ignore
     constructor(
-        transactionBasketId: Long,
+        transactionEntityId: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
-        transactionBasketId,
+        transactionEntityId,
         productId,
         variantId,
         quantity,
@@ -90,7 +90,7 @@ data class ItemEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${transactionBasketId};${productId};${variantId};${actualQuantity()};${actualPrice()}"
+        return "${id};${transactionEntityId};${productId};${variantId};${actualQuantity()};${actualPrice()}"
     }
 
     companion object {
@@ -134,7 +134,7 @@ data class ItemEntity(
         fun generate(itemId: Long = 0): ItemEntity {
             return ItemEntity(
                 id = itemId,
-                transactionBasketId = generateRandomLongValue(),
+                transactionEntityId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
                 variantId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
@@ -348,7 +348,7 @@ data class TransactionTotalSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -400,7 +400,7 @@ data class TransactionTotalSpentByShop(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(TransactionBasket.COST_DIVISOR)
+            .div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {

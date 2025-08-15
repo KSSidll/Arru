@@ -2,7 +2,7 @@ package com.kssidll.arru.ui.screen.modify.transaction.addtransaction
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getTransactionDate
 import com.kssidll.arru.data.preference.setTransactionDate
@@ -71,13 +71,13 @@ class AddTransactionViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = transactionRepository.insert(
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
+            date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
             totalCost = screenState.totalCost.value.data?.let {
-                TransactionBasket.totalCostFromString(
+                TransactionEntity.totalCostFromString(
                     it
                 )
             }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
+                ?: TransactionEntity.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id,
             note = screenState.note.value.data?.trim(),
         )

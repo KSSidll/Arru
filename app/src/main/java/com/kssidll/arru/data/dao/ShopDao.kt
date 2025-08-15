@@ -13,7 +13,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import kotlinx.coroutines.flow.Flow
@@ -51,21 +51,21 @@ interface ShopDao {
 
     @Query(
         """
-        SELECT transactionbasket.*
+        SELECT TransactionEntity.*
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         WHERE ItemEntity.id = :itemEntityId
     """
     )
-    suspend fun transactionBasketByItemEntityId(itemEntityId: Long): TransactionBasket
+    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
 
     @Query(
         """
         SELECT ItemEntity.*
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         JOIN product ON product.id = ItemEntity.productId
-        WHERE transactionbasket.shopId = :shopId
+        WHERE TransactionEntity.shopId = :shopId
         ORDER BY date DESC
         LIMIT :count
         OFFSET :offset
@@ -81,20 +81,20 @@ interface ShopDao {
         """
         SELECT ItemEntity.*
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         WHERE shopId = :shopId
     """
     )
     suspend fun getItems(shopId: Long): List<ItemEntity>
 
-    @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.shopId = :shopId")
-    suspend fun getTransactionBaskets(shopId: Long): List<TransactionBasket>
+    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.shopId = :shopId")
+    suspend fun getTransactionBaskets(shopId: Long): List<TransactionEntity>
 
     @Update
-    suspend fun updateTransactionBaskets(baskets: List<TransactionBasket>)
+    suspend fun updateTransactionBaskets(baskets: List<TransactionEntity>)
 
     @Delete
-    suspend fun deleteTransactionBaskets(baskets: List<TransactionBasket>)
+    suspend fun deleteTransactionBaskets(baskets: List<TransactionEntity>)
 
     @Delete
     suspend fun deleteItems(entities: List<ItemEntity>)
@@ -103,8 +103,8 @@ interface ShopDao {
         """
         SELECT COUNT(*)
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
-        WHERE ItemEntity.id < :itemEntityId AND transactionbasket.shopId = :shopId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+        WHERE ItemEntity.id < :itemEntityId AND TransactionEntity.shopId = :shopId
     """
     )
     suspend fun countItemsBefore(
@@ -116,8 +116,8 @@ interface ShopDao {
         """
         SELECT COUNT(*)
         FROM ItemEntity
-        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
-        WHERE ItemEntity.id > :itemEntityId AND transactionbasket.shopId = :shopId
+        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+        WHERE ItemEntity.id > :itemEntityId AND TransactionEntity.shopId = :shopId
     """
     )
     suspend fun countItemsAfter(
@@ -138,9 +138,9 @@ interface ShopDao {
 
     @Query(
         """
-        SELECT SUM(transactionbasket.totalCost)
-        FROM transactionbasket
-        WHERE transactionbasket.shopId = :shopId
+        SELECT SUM(TransactionEntity.totalCost)
+        FROM TransactionEntity
+        WHERE TransactionEntity.shopId = :shopId
     """
     )
     fun totalSpentFlow(shopId: Long): Flow<Long?>
@@ -148,18 +148,18 @@ interface ShopDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT MIN(transactionbasket.date) AS start_date,
+            SELECT MIN(TransactionEntity.date) AS start_date,
                    UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
-            FROM transactionbasket
-                WHERE transactionbasket.shopId = :shopId
+            FROM TransactionEntity
+                WHERE TransactionEntity.shopId = :shopId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
                 WHERE date_series.end_date > date_series.start_date
         ), ItemEntities AS (
-            SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
-            FROM transactionbasket
-            WHERE transactionbasket.shopId = :shopId
+            SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
+            FROM TransactionEntity
+            WHERE TransactionEntity.shopId = :shopId
             GROUP BY transaction_time
         )
         SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total
@@ -175,19 +175,19 @@ interface ShopDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
+        SELECT (((MIN(TransactionEntity.date) / 86400000) - ((MIN(TransactionEntity.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
                  ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
-        FROM transactionbasket
-            WHERE transactionbasket.shopId = :shopId
+        FROM TransactionEntity
+            WHERE TransactionEntity.shopId = :shopId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
             WHERE date_series.end_date >= date_series.start_date
     ), ItemEntities AS (
-        SELECT ((transactionbasket.date - 345600000) / 604800000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
-        FROM transactionbasket
-        JOIN ItemEntity ON ItemEntity.transactionBasketId = transactionbasket.id
-            AND transactionbasket.shopId = :shopId
+        SELECT ((TransactionEntity.date - 345600000) / 604800000) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
+        FROM TransactionEntity
+        JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
+            AND TransactionEntity.shopId = :shopId
         GROUP BY transaction_time
     )
     SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total
@@ -203,18 +203,18 @@ interface ShopDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of month') AS start_date,
+        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                DATE(current_timestamp, 'localtime', 'start of month') AS end_date
-        FROM transactionbasket
-            WHERE transactionbasket.shopId = :shopId
+        FROM TransactionEntity
+            WHERE TransactionEntity.shopId = :shopId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
             WHERE date_series.end_date > date_series.start_date
     ), ItemEntities AS (
-        SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
-        FROM transactionbasket
-        WHERE transactionbasket.shopId = :shopId
+        SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
+        FROM TransactionEntity
+        WHERE TransactionEntity.shopId = :shopId
         GROUP BY transaction_time
     )
     SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(transaction_total, 0) AS total
@@ -230,18 +230,18 @@ interface ShopDao {
     @Query(
         """
         WITH date_series AS (
-        SELECT DATE(MIN(transactionbasket.date) / 1000, 'unixepoch', 'start of year') AS start_date,
+        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of year') AS start_date,
                DATE(current_timestamp, 'localtime', 'start of year') AS end_date
-        FROM transactionbasket
-            WHERE transactionbasket.shopId = :shopId
+        FROM TransactionEntity
+            WHERE TransactionEntity.shopId = :shopId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
             WHERE date_series.end_date > date_series.start_date
     ), ItemEntities AS (
-        SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
-        FROM transactionbasket
-        WHERE transactionbasket.shopId = :shopId
+        SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
+        FROM TransactionEntity
+        WHERE TransactionEntity.shopId = :shopId
         GROUP BY transaction_time
     )
     SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(transaction_total, 0) AS total
@@ -271,7 +271,7 @@ interface ShopDao {
         if (itemEntities.isEmpty()) return emptyList()
 
         return itemEntities.map { entity ->
-            val transactionBasket = transactionBasketByItemEntityId(entity.id)
+            val transactionEntity = transactionEntityByItemEntityId(entity.id)
             val product = productById(entity.productId)
             val variant = entity.variantId?.let { variantById(it) }
             val category = categoryById(product.categoryId)
@@ -285,7 +285,7 @@ interface ShopDao {
                 variant = variant,
                 category = category,
                 producer = producer,
-                date = transactionBasket.date,
+                date = transactionEntity.date,
                 shop = shop,
             )
         }
@@ -293,9 +293,9 @@ interface ShopDao {
 
     @Query(
         """
-        SELECT shop.*, SUM(transactionbasket.totalCost) as total
-        FROM transactionbasket
-        JOIN shop ON shop.id = transactionbasket.shopId
+        SELECT shop.*, SUM(TransactionEntity.totalCost) as total
+        FROM TransactionEntity
+        JOIN shop ON shop.id = TransactionEntity.shopId
         GROUP BY shop.id
     """
     )
@@ -303,10 +303,10 @@ interface ShopDao {
 
     @Query(
         """
-        SELECT shop.*, SUM(transactionbasket.totalCost) as total
-        FROM transactionbasket
-        JOIN shop ON shop.id = transactionbasket.shopId
-        WHERE STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) = :date
+        SELECT shop.*, SUM(TransactionEntity.totalCost) as total
+        FROM TransactionEntity
+        JOIN shop ON shop.id = TransactionEntity.shopId
+        WHERE STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) = :date
         GROUP BY shop.id
     """
     )

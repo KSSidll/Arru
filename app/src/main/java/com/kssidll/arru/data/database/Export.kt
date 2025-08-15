@@ -11,7 +11,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.asCsvList
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource
@@ -243,7 +243,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(transactionCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    TransactionBasket.csvHeaders()
+                    TransactionEntity.csvHeaders()
                         .toByteArray()
                 )
 

@@ -8,7 +8,7 @@ import androidx.room.Update
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,8 +30,8 @@ interface ItemEntityDao {
 
     // Helper
 
-    @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.id = :transactionId")
-    suspend fun getTransactionBasket(transactionId: Long): TransactionBasket?
+    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.id = :transactionId")
+    suspend fun getTransactionBasket(transactionId: Long): TransactionEntity?
 
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
     suspend fun getProduct(productId: Long): Product?
@@ -59,6 +59,6 @@ interface ItemEntityDao {
         offset: Int
     ): List<ItemEntity>
 
-    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.transactionBasketId = :transactionId")
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.transactionEntityId = :transactionId")
     suspend fun getByTransaction(transactionId: Long): List<ItemEntity>
 }

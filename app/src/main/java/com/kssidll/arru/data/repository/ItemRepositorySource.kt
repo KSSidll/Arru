@@ -3,7 +3,7 @@ package com.kssidll.arru.data.repository
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -63,7 +63,7 @@ interface ItemRepositorySource {
 
     /**
      * Inserts [ItemEntity]
-     * @param transactionId id of the [TransactionBasket] to add the [ItemEntity] to
+     * @param transactionId id of the [TransactionEntity] to add the [ItemEntity] to
      * @param productId id of the [Product] in the [ItemEntity]
      * @param variantId id of the [ProductVariant] in the [ItemEntity]
      * @param quantity quantity of the [ItemEntity]
@@ -138,7 +138,7 @@ interface ItemRepositorySource {
     ): ImmutableList<ItemEntity>
 
     /**
-     * @return list of [ItemEntity] contained within the [TransactionBasket] matching the [transactionId]
+     * @return list of [ItemEntity] contained within the [TransactionEntity] matching the [transactionId]
      */
     suspend fun getByTransaction(transactionId: Long): ImmutableList<ItemEntity>
 }

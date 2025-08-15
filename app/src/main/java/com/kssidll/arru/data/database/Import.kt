@@ -13,7 +13,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ImportRepositorySource
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -199,7 +199,7 @@ suspend fun handleCsvImport(
     val shopList = mutableListOf<Shop>()
     val producerList = mutableListOf<ProductProducer>()
     val categoryList = mutableListOf<ProductCategory>()
-    val transactionList = mutableListOf<TransactionBasket>()
+    val transactionList = mutableListOf<TransactionEntity>()
     val productList = mutableListOf<Product>()
     val variantList = mutableListOf<ProductVariant>()
     val itemEntityList = mutableListOf<ItemEntity>()
@@ -406,7 +406,7 @@ suspend fun handleCsvImport(
                     transactions.size.toLong() + 1 // id of 0 causes a foreign key constraint fail
                 )
                 transactionList.add(
-                    TransactionBasket(
+                    TransactionEntity(
                         id = transactions[data.transactionId]!!,
                         date = data.transactionDate,
                         shopId = data.shop?.let { shops[it] },
@@ -468,7 +468,7 @@ suspend fun handleCsvImport(
                     itemEntityList.add(
                         ItemEntity(
                             id = itemEntityList.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
-                            transactionBasketId = transactions[data.transactionId]!!,
+                            transactionEntityId = transactions[data.transactionId]!!,
                             productId = products[data.product]!!,
                             variantId = data.variant?.let {
                                 if (data.variantGlobal) {
@@ -706,7 +706,7 @@ suspend fun handleCsvImport(
                                 val note = if (text[4] != "null") text[4] else null
 
                                 transactionList.add(
-                                    TransactionBasket(
+                                    TransactionEntity(
                                         id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                         date = date,
                                         shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
@@ -734,7 +734,7 @@ suspend fun handleCsvImport(
                                         .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
 
                                 transactionList.add(
-                                    TransactionBasket(
+                                    TransactionEntity(
                                         id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                         date = date,
                                         shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
@@ -882,7 +882,7 @@ suspend fun handleCsvImport(
                             itemEntityList.add(
                                 ItemEntity(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    transactionBasketId = transactionBasketId + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                    transactionEntityId = transactionBasketId + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     productId = productId + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     variantId = variantId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
                                     quantity = quantity,
@@ -972,7 +972,7 @@ suspend fun handleJsonImport(
     val shopList = mutableListOf<Shop>()
     val producerList = mutableListOf<ProductProducer>()
     val categoryList = mutableListOf<ProductCategory>()
-    val transactionList = mutableListOf<TransactionBasket>()
+    val transactionList = mutableListOf<TransactionEntity>()
     val productList = mutableListOf<Product>()
     val variantList = mutableListOf<ProductVariant>()
     val itemEntityList = mutableListOf<ItemEntity>()
@@ -1344,7 +1344,7 @@ suspend fun handleJsonImport(
                                                 transactionItemEntities.add(
                                                     ItemEntity(
                                                         id = itemId,
-                                                        transactionBasketId = -1, // temporarily assume -1 as transaction id could technically not be set
+                                                        transactionEntityId = -1, // temporarily assume -1 as transaction id could technically not be set
                                                         price = itemPrice,
                                                         quantity = itemQuantity,
                                                         productId = itemProductId,
@@ -1379,13 +1379,13 @@ suspend fun handleJsonImport(
                     ) {
                         if (transactions.add(id)) {
                             transactionItemEntities.forEach {
-                                it.transactionBasketId = id
+                                it.transactionEntityId = id
                             }
 
                             itemEntityList.addAll(transactionItemEntities)
 
                             transactionList.add(
-                                TransactionBasket(
+                                TransactionEntity(
                                     id = id,
                                     date = date,
                                     shopId = transactionShopId,
