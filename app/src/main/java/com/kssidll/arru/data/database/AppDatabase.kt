@@ -25,7 +25,6 @@ import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryAltName
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
@@ -95,7 +94,6 @@ suspend fun Context.currentDbBackupDirectory(): File {
         Product::class,
         ProductVariant::class,
         ProductCategory::class,
-        ProductCategoryAltName::class,
         Shop::class,
         ProductProducer::class,
     ],

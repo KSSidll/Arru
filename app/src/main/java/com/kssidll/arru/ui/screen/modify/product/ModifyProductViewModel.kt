@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource
@@ -93,8 +92,8 @@ abstract class ModifyProductViewModel: ViewModel() {
     /**
      * @return List of all categories
      */
-    fun allCategories(): Flow<Data<ImmutableList<ProductCategoryWithAltNames>>> {
-        return categoryRepository.allWithAltNamesFlow()
+    fun allCategories(): Flow<Data<ImmutableList<ProductCategory>>> {
+        return categoryRepository.allFlow()
     }
 
     /**

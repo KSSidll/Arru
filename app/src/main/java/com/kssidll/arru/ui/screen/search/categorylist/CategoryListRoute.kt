@@ -21,10 +21,10 @@ fun CategoryListRoute(
         items = viewModel.items()
             .collectAsState(initial = Data.Loading()).value,
         onItemClick = {
-            onCategoryClick(it.category.id)
+            onCategoryClick(it.id)
         },
         onItemLongClick = {
-            onCategoryLongClick(it.category.id)
+            onCategoryLongClick(it.id)
         },
     )
 }

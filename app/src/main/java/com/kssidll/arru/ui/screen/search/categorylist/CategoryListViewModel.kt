@@ -16,5 +16,5 @@ class CategoryListViewModel @Inject constructor(
     private val _filter = mutableStateOf(String())
     var filter by _filter
 
-    fun items() = categoryRepository.allWithAltNamesFlow()
+    fun items() = categoryRepository.allFlow()
 }

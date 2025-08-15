@@ -12,14 +12,11 @@ import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryAltName
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionBasket
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 @Dao
 interface CategoryDao {
@@ -27,9 +24,6 @@ interface CategoryDao {
 
     @Insert
     suspend fun insert(productCategory: ProductCategory): Long
-
-    @Insert
-    suspend fun insertAltName(alternativeName: ProductCategoryAltName): Long
 
     // Update
 
@@ -39,19 +33,10 @@ interface CategoryDao {
     @Update
     suspend fun update(productCategories: List<ProductCategory>)
 
-    @Update
-    suspend fun updateAltName(alternativeName: ProductCategoryAltName)
-
     // Delete
 
     @Delete
     suspend fun delete(productCategory: ProductCategory)
-
-    @Delete
-    suspend fun deleteAltName(alternativeName: ProductCategoryAltName)
-
-    @Delete
-    suspend fun deleteAltName(alternativeNames: List<ProductCategoryAltName>)
 
     // Helper
 
@@ -97,9 +82,6 @@ interface CategoryDao {
         count: Int,
         offset: Int
     ): List<Item>
-
-    @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.productCategoryId = :categoryId")
-    suspend fun altNames(categoryId: Long): List<ProductCategoryAltName>
 
     @Query(
         """
@@ -178,9 +160,6 @@ interface CategoryDao {
 
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.id = :categoryId")
     fun getFlow(categoryId: Long): Flow<ProductCategory?>
-
-    @Query("SELECT productcategoryaltname.* FROM productcategoryaltname WHERE productcategoryaltname.id = :altNameId")
-    suspend fun getAltName(altNameId: Long): ProductCategoryAltName?
 
     @Query("SELECT productcategory.* FROM productcategory WHERE productcategory.name = :name")
     suspend fun byName(name: String): ProductCategory?
@@ -384,17 +363,6 @@ interface CategoryDao {
 
     @Query("SELECT productcategory.* FROM productcategory ORDER BY productcategory.id DESC")
     fun allFlow(): Flow<List<ProductCategory>>
-
-    fun allWithAltNamesFlow(): Flow<List<ProductCategoryWithAltNames>> {
-        return allFlow().map { list ->
-            list.map { item ->
-                ProductCategoryWithAltNames(
-                    category = item,
-                    alternativeNames = altNames(item.id),
-                )
-            }
-        }
-    }
 
     @Query("SELECT COUNT(*) FROM productcategory")
     suspend fun totalCount(): Int

@@ -21,7 +21,6 @@ import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
@@ -66,7 +65,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyProductScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductScreenState,
-    categories: Data<ImmutableList<ProductCategoryWithAltNames>>,
+    categories: Data<ImmutableList<ProductCategory>>,
     producers: Data<ImmutableList<ProductProducer>>,
     onNewProducerSelected: (producer: ProductProducer?) -> Unit,
     onNewCategorySelected: (category: ProductCategory?) -> Unit,
@@ -135,16 +134,16 @@ fun ModifyProductScreenImpl(
                 },
                 items = categories,
                 onItemClick = {
-                    onNewCategorySelected(it?.category)
+                    onNewCategorySelected(it)
                     state.isCategorySearchDialogExpanded.value = false
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isCategorySearchDialogExpanded.value = false
-                    onItemCategoryLongClick(it.category.id)
+                    onItemCategoryLongClick(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                itemText = { it.category.name },
+                itemText = { it.name },
                 onAddButtonClick = onCategoryAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
                 calculateScore = { item, query ->

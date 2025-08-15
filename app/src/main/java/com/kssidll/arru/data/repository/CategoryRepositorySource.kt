@@ -5,8 +5,6 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryAltName
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -28,22 +26,6 @@ interface CategoryRepositorySource {
             data object DuplicateName: Errors()
         }
 
-        sealed class AltInsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): AltInsertResult(id)
-            class Error(error: Errors): AltInsertResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-        }
-
         sealed class UpdateResult(
             val error: Errors? = null
         ) {
@@ -55,22 +37,6 @@ interface CategoryRepositorySource {
 
             sealed class Errors
             data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-        }
-
-        sealed class AltUpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: AltUpdateResult()
-            class Error(error: Errors): AltUpdateResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidCategoryId: Errors()
             data object InvalidName: Errors()
             data object DuplicateName: Errors()
         }
@@ -113,17 +79,6 @@ interface CategoryRepositorySource {
      */
     suspend fun insert(name: String): InsertResult
 
-    /**
-     * Inserts [ProductCategoryAltName]
-     * @param category [ProductCategory] to add the [alternativeName] to
-     * @param alternativeName alternative name to add to the [category]
-     * @return [AltInsertResult] with id of the newly inserted [ProductCategoryAltName] or an error if any
-     */
-    suspend fun insertAltName(
-        category: ProductCategory,
-        alternativeName: String
-    ): AltInsertResult
-
     // Update
 
     /**
@@ -136,19 +91,6 @@ interface CategoryRepositorySource {
         categoryId: Long,
         name: String
     ): UpdateResult
-
-    /**
-     * Updates [ProductCategoryAltName] with [alternativeNameId] id to provided [categoryId] and [name]
-     * @param alternativeNameId id to match [ProductCategoryAltName]
-     * @param categoryId categoryId to update the matching [ProductCategoryAltName] to
-     * @param name name to update the matching [ProductCategoryAltName] to
-     * @return [UpdateResult] with the result
-     */
-    suspend fun updateAltName(
-        alternativeNameId: Long,
-        categoryId: Long,
-        name: String
-    ): AltUpdateResult
 
     /**
      * Merges [category] into [mergingInto]
@@ -173,13 +115,6 @@ interface CategoryRepositorySource {
         productCategoryId: Long,
         force: Boolean
     ): DeleteResult
-
-    /**
-     * Deletes [ProductCategoryAltName] matching [alternativeNameId]
-     * @param alternativeNameId id of the [ProductCategoryAltName] to delete
-     * @return [DeleteResult] with the result
-     */
-    suspend fun deleteAltName(alternativeNameId: Long): DeleteResult
 
     // Read
 
@@ -249,11 +184,6 @@ interface CategoryRepositorySource {
      * @return list of all [ProductCategory] as flow
      */
     fun allFlow(): Flow<Data<ImmutableList<ProductCategory>>>
-
-    /**
-     * @return list of all [ProductCategoryWithAltNames] as flow
-     */
-    fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductCategoryWithAltNames>>>
 
     /**
      * @return total count of [ProductCategory]
