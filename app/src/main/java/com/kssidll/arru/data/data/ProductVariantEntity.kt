@@ -1,9 +1,9 @@
 package com.kssidll.arru.data.data
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.helper.generateRandomLongValue
@@ -15,26 +15,30 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
         ForeignKey(
             entity = ProductEntity::class,
             parentColumns = ["id"],
-            childColumns = ["productId"],
+            childColumns = ["productEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
+    ],
+    indices = [
+        Index(value = ["productEntityId"]),
+        Index(value = ["name"]),
     ],
     tableName = "ProductVariantEntity"
 )
 data class ProductVariantEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var productId: Long?,
+    var productEntityId: Long?,
     var name: String,
 ): FuzzySearchSource {
 
     @Ignore
     constructor(
-        productId: Long?,
+        productEntityId: Long?,
         name: String,
     ): this(
         0,
-        productId,
+        productEntityId,
         name.trim()
     )
 
@@ -46,7 +50,7 @@ data class ProductVariantEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${productId};${name}"
+        return "${id};${productEntityId};${name}"
     }
 
 
@@ -64,7 +68,7 @@ data class ProductVariantEntity(
         fun generate(variantId: Long = 0): ProductVariantEntity {
             return ProductVariantEntity(
                 id = variantId,
-                productId = generateRandomLongValue(),
+                productEntityId = generateRandomLongValue(),
                 name = generateRandomStringValue(),
             )
         }

@@ -32,7 +32,7 @@ interface ProductVariantEntityDao {
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
     suspend fun getProduct(productId: Long): ProductEntity?
 
-    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.variantId = :variantId")
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.variantEntityId = :variantId")
     suspend fun getItems(variantId: Long): List<ItemEntity>
 
     @Update
@@ -43,25 +43,25 @@ interface ProductVariantEntityDao {
 
     // Read
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
-    suspend fun get(variantId: Long): ProductVariantEntity?
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :entityId")
+    suspend fun get(entityId: Long): ProductVariantEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
-    fun getFlow(variantId: Long): Flow<ProductVariantEntity?>
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :entityId")
+    fun getFlow(entityId: Long): Flow<ProductVariantEntity?>
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.name = :name")
     fun byName(
         name: String
     ): Flow<List<ProductVariantEntity>>
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ((:includeGlobal AND ProductVariantEntity.productId IS NULL) OR (ProductVariantEntity.productId = :productId)) AND ProductVariantEntity.name = :name")
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ((:includeGlobal AND ProductVariantEntity.productEntityId IS NULL) OR (ProductVariantEntity.productEntityId = :productId)) AND ProductVariantEntity.name = :name")
     suspend fun byProductAndName(
         productId: Long?,
         name: String,
         includeGlobal: Boolean
     ): ProductVariantEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE (:includeGlobal AND ProductVariantEntity.productId IS NULL) OR ProductVariantEntity.productId = :productId")
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE (:includeGlobal AND ProductVariantEntity.productEntityId IS NULL) OR ProductVariantEntity.productEntityId = :productId")
     fun byProductFlow(productId: Long, includeGlobal: Boolean): Flow<List<ProductVariantEntity>>
 
     @Query("SELECT COUNT(*) FROM ProductVariantEntity")

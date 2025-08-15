@@ -67,27 +67,27 @@ interface TransactionEntityDao {
     suspend fun fullItemsByTransactionBasketId(transactionBasketId: Long): List<FullItem> {
         val transactionBasket = get(transactionBasketId) ?: return emptyList()
 
-        val items = itemsByTransactionBasketId(transactionBasketId)
+        val itemEntities = itemsByTransactionBasketId(transactionBasketId)
 
-        if (items.isEmpty()) return emptyList()
+        if (itemEntities.isEmpty()) return emptyList()
 
-        return items.map { item ->
-            val product = productById(item.productId)!!
-            val variant = item.variantId?.let { variantById(it) }
-            val category = categoryById(product.categoryId)!!
-            val producer = product.producerId?.let { producerById(it) }
-            val shop = transactionBasket.shopEntityId?.let { shopById(it) }
+        return itemEntities.map { item ->
+            val productEntity = productById(item.productEntityId)!!
+            val productVariantEntity = item.variantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(productEntity.categoryEntityId)!!
+            val productProducerEntity = productEntity.producerEntityId?.let { producerById(it) }
+            val shopEntity = transactionBasket.shopEntityId?.let { shopById(it) }
 
             FullItem(
                 id = item.id,
                 quantity = item.quantity,
                 price = item.price,
-                product = product,
-                variant = variant,
-                category = category,
-                producer = producer,
+                product = productEntity,
+                variant = productVariantEntity,
+                category = productCategoryEntity,
+                producer = productProducerEntity,
                 date = transactionBasket.date,
-                shop = shop,
+                shop = shopEntity,
             )
         }
     }
@@ -99,10 +99,10 @@ interface TransactionEntityDao {
             val transactionBasket = get(transactionBasketId) ?: return@map emptyList()
 
             items.map { item ->
-                val product = productById(item.productId)!!
-                val variant = item.variantId?.let { variantById(it) }
-                val category = categoryById(product.categoryId)!!
-                val producer = product.producerId?.let { producerById(it) }
+                val product = productById(item.productEntityId)!!
+                val variant = item.variantEntityId?.let { variantById(it) }
+                val category = categoryById(product.categoryEntityId)!!
+                val producer = product.producerEntityId?.let { producerById(it) }
                 val shop = transactionBasket.shopEntityId?.let { shopById(it) }
 
                 FullItem(

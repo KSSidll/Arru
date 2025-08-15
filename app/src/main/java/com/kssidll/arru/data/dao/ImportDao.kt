@@ -17,63 +17,63 @@ import com.kssidll.arru.data.data.TransactionEntity
 interface ImportDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertShops(entities: List<ShopEntity>)
+    suspend fun insertShopEntities(entities: List<ShopEntity>)
 
     @Query("DELETE FROM ShopEntity")
-    suspend fun deleteShops()
+    suspend fun deleteShopEntities()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProducers(entities: List<ProductProducerEntity>)
+    suspend fun insertProducerEntities(entities: List<ProductProducerEntity>)
 
     @Query("DELETE FROM ProductProducerEntity")
-    suspend fun deleteProducers()
+    suspend fun deleteProducerEntities()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCategories(entities: List<ProductCategoryEntity>)
+    suspend fun insertCategoryEntities(entities: List<ProductCategoryEntity>)
 
     @Query("DELETE FROM ProductCategoryEntity")
-    suspend fun deleteCategories()
+    suspend fun deleteCategoryEntities()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransactions(entities: List<TransactionEntity>)
+    suspend fun insertTransactionEntities(entities: List<TransactionEntity>)
 
     @Query("DELETE FROM TransactionEntity")
-    suspend fun deleteTransactions()
+    suspend fun deleteTransactionEntities()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProducts(entities: List<ProductEntity>)
+    suspend fun insertProductEntities(entities: List<ProductEntity>)
 
     @Query("DELETE FROM ProductEntity")
-    suspend fun deleteProducts()
+    suspend fun deleteProductEntities()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertVariants(entities: List<ProductVariantEntity>)
+    suspend fun insertVariantEntities(entities: List<ProductVariantEntity>)
 
     @Query("DELETE FROM ProductVariantEntity")
-    suspend fun deleteVariants()
+    suspend fun deleteVariantEntities()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItems(entities: List<ItemEntity>)
+    suspend fun insertItemEntities(entities: List<ItemEntity>)
 
     @Query("DELETE FROM ItemEntity")
-    suspend fun deleteItems()
+    suspend fun deleteItemEntities()
 
 
     @Transaction
     suspend fun deleteAll() {
-        deleteItems()
-        deleteVariants()
-        deleteProducts()
-        deleteTransactions()
-        deleteCategories()
-        deleteProducers()
-        deleteShops()
+        deleteItemEntities()
+        deleteVariantEntities()
+        deleteProductEntities()
+        deleteTransactionEntities()
+        deleteCategoryEntities()
+        deleteProducerEntities()
+        deleteShopEntities()
     }
 
     @Transaction
@@ -88,12 +88,12 @@ interface ImportDao {
     ) {
         deleteAll()
 
-        insertShops(shopEntities)
-        insertProducers(producers)
-        insertCategories(categories)
-        insertTransactions(transactionEntities)
-        insertProducts(productEntities)
-        insertVariants(variantEntities)
-        insertItems(itemEntities)
+        insertShopEntities(shopEntities)
+        insertProducerEntities(producers)
+        insertCategoryEntities(categories)
+        insertTransactionEntities(transactionEntities)
+        insertProductEntities(productEntities)
+        insertVariantEntities(variantEntities)
+        insertItemEntities(itemEntities)
     }
 }

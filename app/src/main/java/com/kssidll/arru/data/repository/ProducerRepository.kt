@@ -83,7 +83,7 @@ class ProducerRepository(private val dao: ProductProducerEntityDao): ProducerRep
         }
 
         val products = dao.getProducts(producer.id)
-        products.forEach { it.producerId = mergingInto.id }
+        products.forEach { it.producerEntityId = mergingInto.id }
         dao.updateProducts(products)
 
         dao.delete(producer)

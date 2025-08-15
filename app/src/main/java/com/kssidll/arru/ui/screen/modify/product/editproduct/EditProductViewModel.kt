@@ -54,8 +54,8 @@ class EditProductViewModel @Inject constructor(
         mProduct = productRepository.get(productId)
         mMergeMessageProductName.value = mProduct?.name.orEmpty()
 
-        val producer: ProductProducerEntity? = mProduct?.producerId?.let { producerRepository.get(it) }
-        val category = mProduct?.categoryId?.let { categoryRepository.get(it) }
+        val producer: ProductProducerEntity? = mProduct?.producerEntityId?.let { producerRepository.get(it) }
+        val category = mProduct?.categoryEntityId?.let { categoryRepository.get(it) }
 
         screenState.name.apply {
             value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()

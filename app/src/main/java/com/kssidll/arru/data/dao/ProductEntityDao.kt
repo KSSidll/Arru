@@ -46,7 +46,7 @@ interface ProductEntityDao {
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productId = :productId AND ProductVariantEntity.name = :variantName")
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId AND ProductVariantEntity.name = :variantName")
     suspend fun variantByName(
         productId: Long,
         variantName: String
@@ -70,7 +70,7 @@ interface ProductEntityDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
         WHERE ProductEntity.id = :productId
         ORDER BY date DESC
         LIMIT :count
@@ -83,14 +83,14 @@ interface ProductEntityDao {
         offset: Int
     ): List<ItemEntity>
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productId = :productId")
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId")
     suspend fun variants(productId: Long): List<ProductVariantEntity>
 
     @Query(
         """
         SELECT ItemEntity.*
         FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
         WHERE ProductEntity.id = :productId
     """
     )
@@ -100,10 +100,10 @@ interface ProductEntityDao {
     suspend fun deleteItems(entities: List<ItemEntity>)
 
     @Delete
-    suspend fun deleteVariants(variants: List<ProductVariantEntity>)
+    suspend fun deleteVariants(entities: List<ProductVariantEntity>)
 
     @Update
-    suspend fun updateVariants(variants: List<ProductVariantEntity>)
+    suspend fun updateVariants(entities: List<ProductVariantEntity>)
 
     @Update
     suspend fun updateItems(entities: List<ItemEntity>)
@@ -112,7 +112,7 @@ interface ProductEntityDao {
         """
         SELECT COUNT(*)
         FROM ItemEntity
-        WHERE ItemEntity.id < :itemEntityId AND ItemEntity.productId = :productId
+        WHERE ItemEntity.id < :itemEntityId AND ItemEntity.productEntityId = :productId
     """
     )
     suspend fun countItemsBefore(
@@ -124,7 +124,7 @@ interface ProductEntityDao {
         """
         SELECT COUNT(*)
         FROM ItemEntity
-        WHERE ItemEntity.id > :itemEntityId AND ItemEntity.productId = :productId
+        WHERE ItemEntity.id > :itemEntityId AND ItemEntity.productEntityId = :productId
     """
     )
     suspend fun countItemsAfter(
@@ -134,11 +134,11 @@ interface ProductEntityDao {
 
     // Read
 
-    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
-    suspend fun get(productId: Long): ProductEntity?
+    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :entityId")
+    suspend fun get(entityId: Long): ProductEntity?
 
-    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
-    fun getFlow(productId: Long): Flow<ProductEntity?>
+    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :entityId")
+    fun getFlow(entityId: Long): Flow<ProductEntity?>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
     suspend fun byName(name: String): ProductEntity?
@@ -147,11 +147,11 @@ interface ProductEntityDao {
         """
         SELECT SUM(ItemEntity.price * ItemEntity.quantity)
         FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-        WHERE ProductEntity.id = :productId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+        WHERE ProductEntity.id = :entityId
     """
     )
-    fun totalSpentFlow(productId: Long): Flow<Long?>
+    fun totalSpentFlow(entityId: Long): Flow<Long?>
 
     @Query(
         """
@@ -160,8 +160,8 @@ interface ProductEntityDao {
                    UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-                AND productId = :productId
+            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+                AND productEntityId = :entityId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
@@ -170,8 +170,8 @@ interface ProductEntityDao {
             SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-                AND productId = :productId
+            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+                AND productEntityId = :entityId
             GROUP BY transaction_time
         )
         SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -182,7 +182,7 @@ interface ProductEntityDao {
         ORDER BY time
     """
     )
-    fun totalSpentByDayFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByDayFlow(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -191,8 +191,8 @@ interface ProductEntityDao {
                  ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-              AND productId = :productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+              AND productEntityId = :entityId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
@@ -201,8 +201,8 @@ interface ProductEntityDao {
         SELECT ((TransactionEntity.date - 345600000) / 604800000) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-            AND productId = :productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+            AND productEntityId = :entityId
         GROUP BY ItemEntities_time
     )
     SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -213,7 +213,7 @@ interface ProductEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByWeekFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByWeekFlow(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -222,8 +222,8 @@ interface ProductEntityDao {
                DATE(current_timestamp, 'localtime', 'start of month') AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-            AND productId = :productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+            AND productEntityId = :entityId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
@@ -232,8 +232,8 @@ interface ProductEntityDao {
         SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-            AND productId = :productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+            AND productEntityId = :entityId
         GROUP BY ItemEntities_time
     )
     SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -244,7 +244,7 @@ interface ProductEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByMonthFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByMonthFlow(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Query(
         """
@@ -253,8 +253,8 @@ interface ProductEntityDao {
                DATE(current_timestamp, 'localtime', 'start of year') AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-            AND productId = :productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+            AND productEntityId = :entityId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
@@ -263,8 +263,8 @@ interface ProductEntityDao {
         SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-            AND productId = :productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+            AND productEntityId = :entityId
         GROUP BY ItemEntities_time
     )
     SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
@@ -275,18 +275,18 @@ interface ProductEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByYearFlow(productId: Long): Flow<List<ItemSpentByTime>>
+    fun totalSpentByYearFlow(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Transaction
     suspend fun fullItems(
-        productId: Long,
+        entityId: Long,
         count: Int,
         offset: Int
     ): List<FullItem> {
-        val product = get(productId) ?: return emptyList()
+        val product = get(entityId) ?: return emptyList()
 
         val itemEntities = itemsByProduct(
-            productId,
+            entityId,
             count,
             offset
         )
@@ -295,27 +295,27 @@ interface ProductEntityDao {
 
         return itemEntities.map { entity ->
             val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val variant = entity.variantId?.let { variantById(it) }
-            val category = categoryById(product.categoryId)!!
-            val producer = product.producerId?.let { producerById(it) }
-            val shop = transactionEntity.shopEntityId?.let { shopById(it) }
+            val variantEntity = entity.variantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(product.categoryEntityId)!!
+            val productProducerEntity = product.producerEntityId?.let { producerById(it) }
+            val shopEntity = transactionEntity.shopEntityId?.let { shopById(it) }
 
             FullItem(
                 id = entity.id,
                 quantity = entity.quantity,
                 price = entity.price,
                 product = product,
-                variant = variant,
-                category = category,
-                producer = producer,
+                variant = variantEntity,
+                category = productCategoryEntity,
+                producer = productProducerEntity,
                 date = transactionEntity.date,
-                shop = shop,
+                shop = shopEntity,
             )
         }
     }
 
-    @Query("SELECT ItemEntity.* FROM ProductEntity JOIN ItemEntity ON ItemEntity.productId = ProductEntity.id WHERE ProductEntity.id = :productId ORDER BY ItemEntity.id DESC LIMIT 1")
-    suspend fun newestItem(productId: Long): ItemEntity?
+    @Query("SELECT ItemEntity.* FROM ProductEntity JOIN ItemEntity ON ItemEntity.productEntityId = ProductEntity.id WHERE ProductEntity.id = :entityId ORDER BY ItemEntity.id DESC LIMIT 1")
+    suspend fun newestItem(entityId: Long): ItemEntity?
 
     @Query(
         """
@@ -324,7 +324,7 @@ interface ProductEntityDao {
                    DATE(current_timestamp, 'localtime', 'start of month') AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-            WHERE productId = :productId
+            WHERE productEntityId = :entityId
             UNION ALL
             SELECT DATE(start_date, '+1 month') AS start_date, end_date
             FROM date_series
@@ -334,17 +334,17 @@ interface ProductEntityDao {
         FROM date_series
         LEFT JOIN TransactionEntity ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch'))
         JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
-            AND ItemEntity.productId = :productId
+            AND ItemEntity.productEntityId = :entityId
         LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
-        LEFT JOIN ProductVariantEntity ON ItemEntity.variantId = ProductVariantEntity.id
-        LEFT JOIN ProductEntity ON ItemEntity.productId = ProductEntity.id
-        LEFT JOIN ProductProducerEntity ON ProductEntity.producerId = ProductProducerEntity.id
+        LEFT JOIN ProductVariantEntity ON ItemEntity.variantEntityId = ProductVariantEntity.id
+        LEFT JOIN ProductEntity ON ItemEntity.productEntityId = ProductEntity.id
+        LEFT JOIN ProductProducerEntity ON ProductEntity.producerEntityId = ProductProducerEntity.id
         WHERE time IS NOT NULL
-        GROUP BY time, shopEntityId, variantId, producerId
+        GROUP BY time, shopEntityId, variantEntityId, producerEntityId
         ORDER BY time
     """
     )
-    fun averagePriceByVariantByShopByMonthFlow(productId: Long): Flow<List<ProductPriceByShopByTime>>
+    fun averagePriceByVariantByShopByMonthFlow(entityId: Long): Flow<List<ProductPriceByShopByTime>>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity ORDER BY ProductEntity.id DESC")
     fun allFlow(): Flow<List<ProductEntity>>

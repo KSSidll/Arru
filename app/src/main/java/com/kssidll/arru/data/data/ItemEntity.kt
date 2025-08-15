@@ -1,11 +1,11 @@
 package com.kssidll.arru.data.data
 
 import androidx.collection.FloatFloatPair
-import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.domain.data.RankSource
@@ -32,40 +32,45 @@ import kotlin.math.log10
         ForeignKey(
             entity = ProductEntity::class,
             parentColumns = ["id"],
-            childColumns = ["productId"],
+            childColumns = ["productEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
         ForeignKey(
             entity = ProductVariantEntity::class,
             parentColumns = ["id"],
-            childColumns = ["variantId"],
+            childColumns = ["variantEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
+    ],
+    indices = [
+        Index(value = ["transactionEntityId"]),
+        Index(value = ["productEntityId"]),
+        Index(value = ["variantEntityId"]),
     ],
     tableName = "ItemEntity"
 )
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var transactionEntityId: Long,
-    @ColumnInfo(index = true) var productId: Long,
-    @ColumnInfo(index = true) var variantId: Long?,
+    var transactionEntityId: Long,
+    var productEntityId: Long,
+    var variantEntityId: Long?,
     var quantity: Long,
     var price: Long,
 ) {
     @Ignore
     constructor(
         transactionEntityId: Long,
-        productId: Long,
-        variantId: Long?,
+        productEntityId: Long,
+        variantEntityId: Long?,
         quantity: Long,
         price: Long,
     ): this(
         0,
         transactionEntityId,
-        productId,
-        variantId,
+        productEntityId,
+        variantEntityId,
         quantity,
         price,
     )
@@ -90,7 +95,7 @@ data class ItemEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${transactionEntityId};${productId};${variantId};${actualQuantity()};${actualPrice()}"
+        return "${id};${transactionEntityId};${productEntityId};${variantEntityId};${actualQuantity()};${actualPrice()}"
     }
 
     companion object {
@@ -135,8 +140,8 @@ data class ItemEntity(
             return ItemEntity(
                 id = itemId,
                 transactionEntityId = generateRandomLongValue(),
-                productId = generateRandomLongValue(),
-                variantId = generateRandomLongValue(),
+                productEntityId = generateRandomLongValue(),
+                variantEntityId = generateRandomLongValue(),
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
             )

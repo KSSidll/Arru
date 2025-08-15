@@ -26,8 +26,8 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
     ): InsertResult {
         val entity = ItemEntity(
             transactionEntityId = transactionId,
-            productId = productId,
-            variantId = variantId,
+            productEntityId = productId,
+            variantEntityId = variantId,
             quantity = quantity,
             price = price
         )
@@ -72,8 +72,8 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
     ): UpdateResult {
         val item = dao.get(itemId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
-        item.productId = productId
-        item.variantId = variantId
+        item.productEntityId = productId
+        item.variantEntityId = variantId
         item.quantity = quantity
         item.price = price
 

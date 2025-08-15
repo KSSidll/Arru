@@ -11,11 +11,11 @@ import com.kssidll.arru.data.data.TransactionEntity
 interface ImportRepositorySource {
     suspend fun insertAll(
         shopEntities: List<ShopEntity>,
-        producers: List<ProductProducerEntity>,
-        categories: List<ProductCategoryEntity>,
-        transactions: List<TransactionEntity>,
+        productProducerEntities: List<ProductProducerEntity>,
+        productCategoryEntities: List<ProductCategoryEntity>,
+        transactionEntities: List<TransactionEntity>,
         productEntities: List<ProductEntity>,
-        variants: List<ProductVariantEntity>,
-        entities: List<ItemEntity>
+        productVariantEntities: List<ProductVariantEntity>,
+        itemEntities: List<ItemEntity>
     )
 }

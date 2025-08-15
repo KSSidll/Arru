@@ -2,10 +2,10 @@ package com.kssidll.arru.data.data
 
 import androidx.collection.FloatFloatPair
 import androidx.compose.runtime.Immutable
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.ChartSource
 import com.kssidll.arru.domain.utils.formatToCurrency
@@ -27,13 +27,17 @@ import kotlin.math.log10
             onUpdate = ForeignKey.RESTRICT,
         )
     ],
+    indices = [
+        Index(value = ["date"]),
+        Index(value = ["shopEntityId"]),
+    ],
     tableName = "TransactionEntity"
 )
 @Immutable
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val date: Long,
-    @ColumnInfo(index = true) val shopEntityId: Long?,
+    val date: Long,
+    val shopEntityId: Long?,
     val totalCost: Long,
     val note: String?,
 ) {
@@ -41,12 +45,12 @@ data class TransactionEntity(
     constructor(
         date: Long,
         totalCost: Long,
-        shopId: Long?,
+        shopEntityId: Long?,
         note: String?
     ): this(
         0,
         date,
-        shopId,
+        shopEntityId,
         totalCost,
         note
     )

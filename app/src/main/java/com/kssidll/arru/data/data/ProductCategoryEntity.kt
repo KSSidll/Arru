@@ -11,11 +11,9 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
     indices = [
-        Index(
-            value = ["name"],
-            unique = true
-        )
-    ]
+        Index(value = ["name"])
+    ],
+    tableName = "ProductCategoryEntity"
 )
 data class ProductCategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,

@@ -64,15 +64,15 @@ interface ShopEntityDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
-        WHERE TransactionEntity.shopEntityId = :shopId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+        WHERE TransactionEntity.shopEntityId = :entityId
         ORDER BY date DESC
         LIMIT :count
         OFFSET :offset
     """
     )
     suspend fun itemsByShop(
-        shopId: Long,
+        entityId: Long,
         count: Int,
         offset: Int
     ): List<ItemEntity>
@@ -82,13 +82,13 @@ interface ShopEntityDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE shopEntityId = :shopId
+        WHERE shopEntityId = :entityId
     """
     )
-    suspend fun getItems(shopId: Long): List<ItemEntity>
+    suspend fun getItems(entityId: Long): List<ItemEntity>
 
-    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.shopEntityId = :shopId")
-    suspend fun getTransactionBaskets(shopId: Long): List<TransactionEntity>
+    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.shopEntityId = :entityId")
+    suspend fun getTransactionBaskets(entityId: Long): List<TransactionEntity>
 
     @Update
     suspend fun updateTransactionBaskets(baskets: List<TransactionEntity>)
@@ -104,12 +104,12 @@ interface ShopEntityDao {
         SELECT COUNT(*)
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id < :itemEntityId AND TransactionEntity.shopEntityId = :shopId
+        WHERE ItemEntity.id < :itemEntityId AND TransactionEntity.shopEntityId = :entityId
     """
     )
     suspend fun countItemsBefore(
         itemEntityId: Long,
-        shopId: Long
+        entityId: Long
     ): Int
 
     @Query(
@@ -117,21 +117,21 @@ interface ShopEntityDao {
         SELECT COUNT(*)
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id > :itemEntityId AND TransactionEntity.shopEntityId = :shopId
+        WHERE ItemEntity.id > :itemEntityId AND TransactionEntity.shopEntityId = :entityId
     """
     )
     suspend fun countItemsAfter(
         itemEntityId: Long,
-        shopId: Long
+        entityId: Long
     ): Int
 
     // Read
 
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
-    suspend fun get(shopId: Long): ShopEntity?
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :entityId")
+    suspend fun get(entityId: Long): ShopEntity?
 
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
-    fun getFlow(shopId: Long): Flow<ShopEntity?>
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :entityId")
+    fun getFlow(entityId: Long): Flow<ShopEntity?>
 
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.name = :name")
     suspend fun byName(name: String): ShopEntity?
@@ -140,10 +140,10 @@ interface ShopEntityDao {
         """
         SELECT SUM(TransactionEntity.totalCost)
         FROM TransactionEntity
-        WHERE TransactionEntity.shopEntityId = :shopId
+        WHERE TransactionEntity.shopEntityId = :entityId
     """
     )
-    fun totalSpentFlow(shopId: Long): Flow<Long?>
+    fun totalSpentFlow(entityId: Long): Flow<Long?>
 
     @Query(
         """
@@ -151,7 +151,7 @@ interface ShopEntityDao {
             SELECT MIN(TransactionEntity.date) AS start_date,
                    UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM TransactionEntity
-                WHERE TransactionEntity.shopEntityId = :shopId
+                WHERE TransactionEntity.shopEntityId = :entityId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
@@ -159,7 +159,7 @@ interface ShopEntityDao {
         ), ItemEntities AS (
             SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
             FROM TransactionEntity
-            WHERE TransactionEntity.shopEntityId = :shopId
+            WHERE TransactionEntity.shopEntityId = :entityId
             GROUP BY transaction_time
         )
         SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total
@@ -170,7 +170,7 @@ interface ShopEntityDao {
         ORDER BY time
     """
     )
-    fun totalSpentByDayFlow(shopId: Long): Flow<List<TransactionTotalSpentByTime>>
+    fun totalSpentByDayFlow(entityId: Long): Flow<List<TransactionTotalSpentByTime>>
 
     @Query(
         """
@@ -178,7 +178,7 @@ interface ShopEntityDao {
         SELECT (((MIN(TransactionEntity.date) / 86400000) - ((MIN(TransactionEntity.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
                  ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM TransactionEntity
-            WHERE TransactionEntity.shopEntityId = :shopId
+            WHERE TransactionEntity.shopEntityId = :entityId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
@@ -187,7 +187,7 @@ interface ShopEntityDao {
         SELECT ((TransactionEntity.date - 345600000) / 604800000) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
         FROM TransactionEntity
         JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
-            AND TransactionEntity.shopEntityId = :shopId
+            AND TransactionEntity.shopEntityId = :entityId
         GROUP BY transaction_time
     )
     SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total
@@ -198,7 +198,7 @@ interface ShopEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByWeekFlow(shopId: Long): Flow<List<TransactionTotalSpentByTime>>
+    fun totalSpentByWeekFlow(entityId: Long): Flow<List<TransactionTotalSpentByTime>>
 
     @Query(
         """
@@ -206,7 +206,7 @@ interface ShopEntityDao {
         SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS start_date,
                DATE(current_timestamp, 'localtime', 'start of month') AS end_date
         FROM TransactionEntity
-            WHERE TransactionEntity.shopEntityId = :shopId
+            WHERE TransactionEntity.shopEntityId = :entityId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
@@ -214,7 +214,7 @@ interface ShopEntityDao {
     ), ItemEntities AS (
         SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
         FROM TransactionEntity
-        WHERE TransactionEntity.shopEntityId = :shopId
+        WHERE TransactionEntity.shopEntityId = :entityId
         GROUP BY transaction_time
     )
     SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(transaction_total, 0) AS total
@@ -225,7 +225,7 @@ interface ShopEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByMonthFlow(shopId: Long): Flow<List<TransactionTotalSpentByTime>>
+    fun totalSpentByMonthFlow(entityId: Long): Flow<List<TransactionTotalSpentByTime>>
 
     @Query(
         """
@@ -233,7 +233,7 @@ interface ShopEntityDao {
         SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of year') AS start_date,
                DATE(current_timestamp, 'localtime', 'start of year') AS end_date
         FROM TransactionEntity
-            WHERE TransactionEntity.shopEntityId = :shopId
+            WHERE TransactionEntity.shopEntityId = :entityId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
@@ -241,7 +241,7 @@ interface ShopEntityDao {
     ), ItemEntities AS (
         SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS transaction_time, SUM(TransactionEntity.totalCost) AS transaction_total
         FROM TransactionEntity
-        WHERE TransactionEntity.shopEntityId = :shopId
+        WHERE TransactionEntity.shopEntityId = :entityId
         GROUP BY transaction_time
     )
     SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(transaction_total, 0) AS total
@@ -252,18 +252,18 @@ interface ShopEntityDao {
     ORDER BY time
     """
     )
-    fun totalSpentByYearFlow(shopId: Long): Flow<List<TransactionTotalSpentByTime>>
+    fun totalSpentByYearFlow(entityId: Long): Flow<List<TransactionTotalSpentByTime>>
 
     @Transaction
     suspend fun fullItems(
-        shopId: Long,
+        entityId: Long,
         count: Int,
         offset: Int
     ): List<FullItem> {
-        val shop = get(shopId) ?: return emptyList()
+        val shop = get(entityId) ?: return emptyList()
 
         val itemEntities = itemsByShop(
-            shopId,
+            entityId,
             count,
             offset
         )
@@ -272,19 +272,19 @@ interface ShopEntityDao {
 
         return itemEntities.map { entity ->
             val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val product = productById(entity.productId)
-            val variant = entity.variantId?.let { variantById(it) }
-            val category = categoryById(product.categoryId)
-            val producer = product.producerId?.let { producerById(it) }
+            val productEntity = productById(entity.productEntityId)
+            val productVariantEntity = entity.variantEntityId?.let { variantById(it) }
+            val productCategoryEntity = categoryById(productEntity.categoryEntityId)
+            val productProducerEntity = productEntity.producerEntityId?.let { producerById(it) }
 
             FullItem(
                 id = entity.id,
                 quantity = entity.quantity,
                 price = entity.price,
-                product = product,
-                variant = variant,
-                category = category,
-                producer = producer,
+                product = productEntity,
+                variant = productVariantEntity,
+                category = productCategoryEntity,
+                producer = productProducerEntity,
                 date = transactionEntity.date,
                 shop = shop,
             )

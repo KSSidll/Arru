@@ -34,7 +34,7 @@ class TransactionBasketRepository(
         val transaction = TransactionEntity(
             date = date,
             totalCost = totalCost,
-            shopId = shopId,
+            shopEntityId = shopId,
             note = note
         )
 

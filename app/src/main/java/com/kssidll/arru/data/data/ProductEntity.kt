@@ -1,6 +1,5 @@
 package com.kssidll.arru.data.data
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
@@ -17,41 +16,40 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
         ForeignKey(
             entity = ProductCategoryEntity::class,
             parentColumns = ["id"],
-            childColumns = ["categoryId"],
+            childColumns = ["categoryEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
         ForeignKey(
             entity = ProductProducerEntity::class,
             parentColumns = ["id"],
-            childColumns = ["producerId"],
+            childColumns = ["producerEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
     ],
     indices = [
-        Index(
-            value = ["producerId", "name"],
-            unique = true
-        )
+        Index(value = ["categoryEntityId"]),
+        Index(value = ["producerEntityId"]),
+        Index(value = ["name"]),
     ],
     tableName = "ProductEntity"
 )
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) var categoryId: Long,
-    @ColumnInfo(index = true) var producerId: Long?,
+    var categoryEntityId: Long,
+    var producerEntityId: Long?,
     val name: String,
 ): FuzzySearchSource, NameSource {
     @Ignore
     constructor(
-        categoryId: Long,
-        producerId: Long?,
+        categoryEntityId: Long,
+        producerEntityId: Long?,
         name: String,
     ): this(
         0,
-        categoryId,
-        producerId,
+        categoryEntityId,
+        producerEntityId,
         name.trim()
     )
 
@@ -63,7 +61,7 @@ data class ProductEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${categoryId};${producerId};${name}"
+        return "${id};${categoryEntityId};${producerEntityId};${name}"
     }
 
     companion object {
@@ -83,8 +81,8 @@ data class ProductEntity(
         fun generate(productId: Long = 0): ProductEntity {
             return ProductEntity(
                 id = productId,
-                categoryId = generateRandomLongValue(),
-                producerId = generateRandomLongValue(),
+                categoryEntityId = generateRandomLongValue(),
+                producerEntityId = generateRandomLongValue(),
                 name = generateRandomStringValue(),
             )
         }

@@ -37,7 +37,7 @@ class EditVariantViewModel @Inject constructor(
         }
 
         screenState.isVariantGlobal.apply {
-            value = Field.Loading(variant?.productId == null)
+            value = Field.Loading(variant?.productEntityId == null)
         }
 
         return@async variant != null
