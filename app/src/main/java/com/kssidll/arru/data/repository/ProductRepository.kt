@@ -8,13 +8,8 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.data.paging.FullItemPagingSource
-import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltInsertResult
-import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.AltUpdateResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
@@ -65,34 +60,6 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         return InsertResult.Success(dao.insert(product))
     }
 
-    override suspend fun insertAltName(
-        product: Product,
-        alternativeName: String
-    ): AltInsertResult {
-        if (dao.get(product.id) != product) {
-            return AltInsertResult.Error(AltInsertResult.InvalidId)
-        }
-
-        val productAltName = ProductAltName(
-            product = product,
-            name = alternativeName,
-        )
-
-        if (productAltName.validName()
-                .not()
-        ) {
-            return AltInsertResult.Error(AltInsertResult.InvalidName)
-        }
-
-        val others = dao.altNames(product.id)
-
-        if (productAltName.name in others.map { it.name }) {
-            return AltInsertResult.Error(AltInsertResult.DuplicateName)
-        }
-
-        return AltInsertResult.Success(dao.insertAltName(productAltName))
-    }
-
     // Update
 
     override suspend fun update(
@@ -137,42 +104,6 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         return UpdateResult.Success
     }
 
-    override suspend fun updateAltName(
-        alternativeNameId: Long,
-        productId: Long,
-        name: String
-    ): AltUpdateResult {
-        if (dao.getAltName(alternativeNameId) == null) {
-            return AltUpdateResult.Error(AltUpdateResult.InvalidId)
-        }
-
-        if (dao.get(productId) == null) {
-            return AltUpdateResult.Error(AltUpdateResult.InvalidProductId)
-        }
-
-        val alternativeName = ProductAltName(
-            id = alternativeNameId,
-            productId = productId,
-            name = name.trim()
-        )
-
-        if (alternativeName.validName()
-                .not()
-        ) {
-            return AltUpdateResult.Error(AltUpdateResult.InvalidName)
-        }
-
-        val others = dao.altNames(productId)
-
-        if (alternativeName.name in others.map { it.name } && alternativeName.id !in others.map { it.id }) {
-            return AltUpdateResult.Error(AltUpdateResult.DuplicateName)
-        }
-
-        dao.updateAltName(alternativeName)
-
-        return AltUpdateResult.Success
-    }
-
     override suspend fun merge(
         product: Product,
         mergingInto: Product
@@ -210,7 +141,6 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         }
         dao.updateItems(items)
 
-        dao.deleteAltName(dao.altNames(product.id))
         dao.deleteVariants(duplicateVariants)
         dao.delete(product)
 
@@ -226,26 +156,15 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
         val product = dao.get(productId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val variants = dao.variants(productId)
-        val altNames = dao.altNames(productId)
         val items = dao.getItems(productId)
 
-        if (!force && (variants.isNotEmpty() || altNames.isNotEmpty() || items.isNotEmpty())) {
+        if (!force && (variants.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
             dao.deleteItems(items)
-            dao.deleteAltName(altNames)
             dao.deleteVariants(variants)
             dao.delete(product)
         }
-
-        return DeleteResult.Success
-    }
-
-    override suspend fun deleteAltName(alternativeNameId: Long): DeleteResult {
-        val altName =
-            dao.getAltName(alternativeNameId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
-
-        dao.deleteAltName(altName)
 
         return DeleteResult.Success
     }
@@ -342,14 +261,6 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
 
     override suspend fun newestItem(product: Product): Item? {
         return dao.newestItem(product.id)
-    }
-
-    override fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductWithAltNames>>> {
-        return dao.allWithAltNamesFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it.toImmutableList()) }
-            .onStart { Data.Loading<ImmutableList<ProductCategoryWithAltNames>>() }
     }
 
     override fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<ImmutableList<ProductPriceByShopByTime>>> {

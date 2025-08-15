@@ -1,13 +1,11 @@
 package com.kssidll.arru.data.data
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.domain.data.NameSource
 import com.kssidll.arru.helper.generateRandomLongValue
@@ -43,7 +41,7 @@ data class Product(
     @ColumnInfo(index = true) var categoryId: Long,
     @ColumnInfo(index = true) var producerId: Long?,
     val name: String,
-): FuzzySearchSource {
+): FuzzySearchSource, NameSource {
     @Ignore
     constructor(
         categoryId: Long,
@@ -106,6 +104,11 @@ data class Product(
         ).score
     }
 
+    @Ignore
+    override fun name(): String {
+        return name
+    }
+
     /**
      * @return true if name is valid, false otherwise
      */
@@ -130,107 +133,4 @@ fun List<Product>.asCsvList(includeHeaders: Boolean = false): List<String> = bui
     this@asCsvList.forEach {
         add(it.formatAsCsvString() + "\n")
     }
-}
-
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = Product::class,
-            parentColumns = ["id"],
-            childColumns = ["productId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.RESTRICT,
-        )
-    ],
-    indices = [
-        Index(
-            value = ["name"],
-            unique = true
-        )
-    ]
-)
-data class ProductAltName(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(index = true) val productId: Long,
-    val name: String,
-) {
-    constructor(
-        product: Product,
-        name: String
-    ): this(
-        id = 0,
-        productId = product.id,
-        name = name.trim()
-    )
-
-    companion object {
-        @Ignore
-        fun generate(productWithAltNameId: Long = 0): ProductAltName {
-            return ProductAltName(
-                id = productWithAltNameId,
-                productId = generateRandomLongValue(),
-                name = generateRandomStringValue(),
-            )
-        }
-
-        @Ignore
-        fun generateList(amount: Int = 10): List<ProductAltName> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
-    }
-
-    /**
-     * @return true if name is valid, false otherwise
-     */
-    @Ignore
-    fun validName(): Boolean {
-        return name.isNotBlank()
-    }
-}
-
-data class ProductWithAltNames(
-    @Embedded val product: Product,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "productId"
-    ) val alternativeNames: List<ProductAltName>
-): FuzzySearchSource, NameSource {
-    companion object {
-        fun generate(productId: Long = 0): ProductWithAltNames {
-            return ProductWithAltNames(
-                product = Product.generate(productId),
-                alternativeNames = ProductAltName.generateList(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<ProductWithAltNames> {
-            return List(amount) {
-                generate(it.toLong())
-            }
-        }
-    }
-
-    override fun fuzzyScore(query: String): Int {
-        val productNameScore = FuzzySearch.extractOne(
-            query,
-            listOf(product.name)
-        ).score
-        val bestAlternativeNamesScore = if (alternativeNames.isNotEmpty()) {
-            FuzzySearch.extractOne(
-                query,
-                alternativeNames.map { it.name }).score
-        } else -1
-
-        return maxOf(
-            productNameScore,
-            bestAlternativeNamesScore
-        )
-    }
-
-    override fun name(): String {
-        return product.name
-    }
-
 }

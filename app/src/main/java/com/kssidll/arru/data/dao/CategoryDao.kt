@@ -11,7 +11,6 @@ import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductCategoryAltName
 import com.kssidll.arru.data.data.ProductCategoryWithAltNames
@@ -125,17 +124,6 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT productaltname.*
-        FROM productaltname
-        JOIN product ON product.id = productaltname.productId
-        JOIN productcategory ON productcategory.id = product.categoryId
-        WHERE productcategory.id = :categoryId
-    """
-    )
-    suspend fun getProductsAltNames(categoryId: Long): List<ProductAltName>
-
-    @Query(
-        """
         SELECT item.*
         FROM item
         JOIN product ON product.id = item.productId
@@ -150,9 +138,6 @@ interface CategoryDao {
 
     @Delete
     suspend fun deleteProductVariants(productVariants: List<ProductVariant>)
-
-    @Delete
-    suspend fun deleteProductAltNames(productAltNames: List<ProductAltName>)
 
     @Delete
     suspend fun deleteItems(items: List<Item>)

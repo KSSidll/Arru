@@ -10,7 +10,6 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
@@ -100,17 +99,6 @@ interface ProducerDao {
 
     @Query(
         """
-        SELECT productaltname.*
-        FROM productaltname
-        JOIN product ON product.id = productaltname.productId
-        JOIN productproducer ON productproducer.id = product.producerId
-        WHERE productproducer.id = :producerId
-    """
-    )
-    suspend fun getProductsAltNames(producerId: Long): List<ProductAltName>
-
-    @Query(
-        """
         SELECT item.*
         FROM item
         JOIN product ON product.id = item.productId
@@ -125,9 +113,6 @@ interface ProducerDao {
 
     @Delete
     suspend fun deleteProductVariants(productVariants: List<ProductVariant>)
-
-    @Delete
-    suspend fun deleteProductAltNames(productAltNames: List<ProductAltName>)
 
     @Delete
     suspend fun deleteItems(items: List<Item>)

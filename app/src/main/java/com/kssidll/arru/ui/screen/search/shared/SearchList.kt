@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductWithAltNames
+import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.domain.data.NameSource
@@ -203,7 +203,7 @@ private fun ListScreenPreview() {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = Data.Loaded(ProductWithAltNames.generateList().toImmutableList()),
+                items = Data.Loaded(Product.generateList().toImmutableList()),
                 onItemClick = {},
                 onItemLongClick = {},
             )
@@ -219,7 +219,7 @@ private fun EmptyListScreenPreview() {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = Data.Loaded(emptyList<ProductWithAltNames>().toImmutableList()),
+                items = Data.Loaded(emptyList<Product>().toImmutableList()),
                 onItemClick = {},
                 onItemLongClick = {},
             )

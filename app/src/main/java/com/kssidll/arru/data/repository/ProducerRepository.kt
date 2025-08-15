@@ -101,14 +101,12 @@ class ProducerRepository(private val dao: ProducerDao): ProducerRepositorySource
 
         val products = dao.getProducts(producerid)
         val productVariants = dao.getProductsVariants(producerid)
-        val productAltNames = dao.getProductsAltNames(producerid)
         val items = dao.getItems(producerid)
 
-        if (!force && (products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
+        if (!force && (products.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
             dao.deleteItems(items)
-            dao.deleteProductAltNames(productAltNames)
             dao.deleteProductVariants(productVariants)
             dao.deleteProducts(products)
             dao.delete(producer)

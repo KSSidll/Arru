@@ -24,7 +24,6 @@ import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductCategoryAltName
 import com.kssidll.arru.data.data.ProductProducer
@@ -89,12 +88,11 @@ suspend fun Context.currentDbBackupDirectory(): File {
 }
 
 @Database(
-    version = 8,
+    version = 9,
     entities = [
         TransactionBasket::class,
         Item::class,
         Product::class,
-        ProductAltName::class,
         ProductVariant::class,
         ProductCategory::class,
         ProductCategoryAltName::class,
@@ -146,6 +144,7 @@ abstract class AppDatabase: RoomDatabase() {
                 .addMigrations(MIGRATION_5_6)
                 .addMigrations(MIGRATION_6_7(context))
                 .addMigrations(MIGRATION_7_8)
+                .addMigrations(MIGRATION_8_9)
         }
 
         /**
@@ -707,6 +706,19 @@ val MIGRATION_7_8 = object: Migration(7, 8) {
         db.execSQL(
             """
             CREATE INDEX IF NOT EXISTS index_TransactionBasket_shopId ON TransactionBasket(shopId)
+        """.trimIndent()
+        )
+    }
+}
+
+val MIGRATION_8_9 = object: Migration(
+    8,
+    9
+) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            
         """.trimIndent()
         )
     }

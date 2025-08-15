@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.VariantRepositorySource
@@ -156,8 +155,8 @@ abstract class ModifyItemViewModel: ViewModel() {
     /**
      * @return List of all products
      */
-    fun allProducts(): Flow<Data<ImmutableList<ProductWithAltNames>>> {
-        return productRepository.allWithAltNamesFlow()
+    fun allProducts(): Flow<Data<ImmutableList<Product>>> {
+        return productRepository.allFlow()
     }
 
     private val mProductVariants: MutableState<Flow<Data<ImmutableList<ProductVariant>>>> =

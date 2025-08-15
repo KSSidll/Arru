@@ -21,10 +21,10 @@ internal fun ProductListRoute(
         items = viewModel.items()
             .collectAsState(initial = Data.Loading()).value,
         onItemClick = {
-            onProductClick(it.product.id)
+            onProductClick(it.id)
         },
         onItemLongClick = {
-            onProductLongClick(it.product.id)
+            onProductLongClick(it.id)
         },
     )
 }

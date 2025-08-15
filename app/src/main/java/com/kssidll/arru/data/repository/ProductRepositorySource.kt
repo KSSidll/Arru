@@ -5,11 +5,9 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -33,22 +31,6 @@ interface ProductRepositorySource {
             data object InvalidProducerId: Errors()
         }
 
-        sealed class AltInsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): AltInsertResult(id)
-            class Error(error: Errors): AltInsertResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-        }
-
         sealed class UpdateResult(
             val error: Errors? = null
         ) {
@@ -64,22 +46,6 @@ interface ProductRepositorySource {
             data object DuplicateName: Errors()
             data object InvalidCategoryId: Errors()
             data object InvalidProducerId: Errors()
-        }
-
-        sealed class AltUpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: AltUpdateResult()
-            class Error(error: Errors): AltUpdateResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidProductId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
         }
 
         sealed class MergeResult(
@@ -126,17 +92,6 @@ interface ProductRepositorySource {
         producerId: Long?
     ): InsertResult
 
-    /**
-     * Inserts [ProductAltName]
-     * @param product [Product] to add the [alternativeName] to
-     * @param alternativeName alternative name to add to the [product]
-     * @return [AltInsertResult] with id of the newly inserted [Product] or an error if any
-     */
-    suspend fun insertAltName(
-        product: Product,
-        alternativeName: String
-    ): AltInsertResult
-
     // Update
 
     /**
@@ -153,19 +108,6 @@ interface ProductRepositorySource {
         categoryId: Long,
         producerId: Long?
     ): UpdateResult
-
-    /**
-     * Updates [ProductAltName] with [alternativeNameId] id to provided [productId] and [name]
-     * @param alternativeNameId id to match [ProductAltName]
-     * @param productId product id to update the matching [ProductAltName] to
-     * @param name name to update the matching [ProductAltName] to
-     * @return [UpdateResult] with the result
-     */
-    suspend fun updateAltName(
-        alternativeNameId: Long,
-        productId: Long,
-        name: String
-    ): AltUpdateResult
 
     /**
      * Merges [product] into [mergingInto]
@@ -190,13 +132,6 @@ interface ProductRepositorySource {
         productId: Long,
         force: Boolean
     ): DeleteResult
-
-    /**
-     * Deletes [ProductAltName] matching [alternativeNameId]
-     * @param alternativeNameId id of the [ProductAltName] to delete
-     * @return [DeleteResult] with the result
-     */
-    suspend fun deleteAltName(alternativeNameId: Long): DeleteResult
 
     // Read
 
@@ -252,11 +187,6 @@ interface ProductRepositorySource {
      * @return newest [Item] that matches [product], null if none match
      */
     suspend fun newestItem(product: Product): Item?
-
-    /**
-     * @return list of all [ProductWithAltNames] as flow
-     */
-    fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductWithAltNames>>>
 
     /**
      * @param product [Product] to match the data with

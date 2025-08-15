@@ -178,14 +178,12 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
         val altNames = dao.altNames(productCategoryId)
         val products = dao.getProducts(productCategoryId)
         val productVariants = dao.getProductsVariants(productCategoryId)
-        val productAltNames = dao.getProductsAltNames(productCategoryId)
         val items = dao.getItems(productCategoryId)
 
-        if (!force && (altNames.isNotEmpty() || products.isNotEmpty() || productAltNames.isNotEmpty() || items.isNotEmpty())) {
+        if (!force && (altNames.isNotEmpty() || products.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
         } else {
             dao.deleteItems(items)
-            dao.deleteProductAltNames(productAltNames)
             dao.deleteProductVariants(productVariants)
             dao.deleteProducts(products)
             dao.deleteAltName(altNames)

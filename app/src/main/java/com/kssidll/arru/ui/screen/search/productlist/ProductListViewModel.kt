@@ -16,5 +16,5 @@ class ProductListViewModel @Inject constructor(
     private val _filter = mutableStateOf(String())
     var filter by _filter
 
-    fun items() = productRepository.allWithAltNamesFlow()
+    fun items() = productRepository.allFlow()
 }

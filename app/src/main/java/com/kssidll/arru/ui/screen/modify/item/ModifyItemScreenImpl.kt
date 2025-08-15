@@ -36,7 +36,6 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FuzzySearchSource
@@ -74,7 +73,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
-    products: Data<ImmutableList<ProductWithAltNames>>,
+    products: Data<ImmutableList<Product>>,
     variants: Data<ImmutableList<ProductVariant>>,
     onNewProductSelected: (product: Product?) -> Unit,
     onNewVariantSelected: (variant: ProductVariant?) -> Unit,
@@ -101,15 +100,15 @@ fun ModifyItemScreenImpl(
                 items = products,
                 onItemClick = {
                     state.isProductSearchDialogExpanded.value = false
-                    onNewProductSelected(it?.product)
+                    onNewProductSelected(it)
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isProductSearchDialogExpanded.value = false
-                    onItemLongClick(it.product.id)
+                    onItemLongClick(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                itemText = { it.product.name },
+                itemText = { it.name },
                 onAddButtonClick = onProductAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_add_description),
                 calculateScore = { item, query ->

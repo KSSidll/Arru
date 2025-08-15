@@ -10,16 +10,13 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.Item
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.ProductWithAltNames
 import com.kssidll.arru.data.data.Shop
 import com.kssidll.arru.data.data.TransactionBasket
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 @Dao
 interface ProductDao {
@@ -28,28 +25,15 @@ interface ProductDao {
     @Insert
     suspend fun insert(product: Product): Long
 
-    @Insert
-    suspend fun insertAltName(alternativeName: ProductAltName): Long
-
     // Update
 
     @Update
     suspend fun update(product: Product)
 
-    @Update
-    suspend fun updateAltName(alternativeName: ProductAltName)
-
     // Delete
 
     @Delete
     suspend fun delete(product: Product)
-
-    @Delete
-    suspend fun deleteAltName(alternativeName: ProductAltName)
-
-    @Delete
-    suspend fun deleteAltName(alternativeNames: List<ProductAltName>)
-
 
     // Helper
 
@@ -101,9 +85,6 @@ interface ProductDao {
 
     @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId = :productId")
     suspend fun variants(productId: Long): List<ProductVariant>
-
-    @Query("SELECT productaltname.* FROM productaltname WHERE productaltname.productId = :productId")
-    suspend fun altNames(productId: Long): List<ProductAltName>
 
     @Query(
         """
@@ -158,9 +139,6 @@ interface ProductDao {
 
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
     fun getFlow(productId: Long): Flow<Product?>
-
-    @Query("SELECT productaltname.* FROM productaltname WHERE productaltname.id = :altNameId")
-    suspend fun getAltName(altNameId: Long): ProductAltName?
 
     @Query("SELECT product.* FROM product WHERE product.name = :name")
     suspend fun byName(name: String): Product?
@@ -338,17 +316,6 @@ interface ProductDao {
 
     @Query("SELECT item.* FROM product JOIN item ON item.productId = product.id WHERE product.id = :productId ORDER BY item.id DESC LIMIT 1")
     suspend fun newestItem(productId: Long): Item?
-
-    fun allWithAltNamesFlow(): Flow<List<ProductWithAltNames>> {
-        return allFlow().map { list ->
-            list.map { item ->
-                ProductWithAltNames(
-                    product = item,
-                    alternativeNames = altNames(item.id)
-                )
-            }
-        }
-    }
 
     @Query(
         """
