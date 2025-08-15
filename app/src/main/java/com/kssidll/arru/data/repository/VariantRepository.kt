@@ -1,8 +1,8 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.dao.VariantDao
+import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
@@ -16,14 +16,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
+class VariantRepository(private val dao: ProductVariantEntityDao): VariantRepositorySource {
     // Create
 
     override suspend fun insert(
         productId: Long?,
         name: String
     ): InsertResult {
-        val variant = ProductVariant(
+        val variant = ProductVariantEntity(
             productId,
             name
         )
@@ -110,7 +110,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
             return UpdateResult.Error(UpdateResult.InvalidProductId)
         }
 
-        val variant = ProductVariant(
+        val variant = ProductVariantEntity(
             id = variantId,
             productId = productId,
             name = name.trim(),
@@ -159,24 +159,24 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
 
     // Read
 
-    override suspend fun get(variantId: Long): ProductVariant? {
+    override suspend fun get(variantId: Long): ProductVariantEntity? {
         return dao.get(variantId)
     }
 
-    override fun getFlow(variantId: Long): Flow<Data<ProductVariant?>> {
+    override fun getFlow(variantId: Long): Flow<Data<ProductVariantEntity?>> {
         return dao.getFlow(variantId)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
-            .onStart { Data.Loading<ProductVariant?>() }
+            .onStart { Data.Loading<ProductVariantEntity?>() }
     }
 
-    override fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariant>>> {
+    override fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>> {
         return dao.byProductFlow(product.id, showGlobal)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it.toImmutableList()) }
-            .onStart { Data.Loading<ImmutableList<ProductVariant>>() }
+            .onStart { Data.Loading<ImmutableList<ProductVariantEntity>>() }
     }
 
     override suspend fun totalCount(): Int {
@@ -186,7 +186,7 @@ class VariantRepository(private val dao: VariantDao): VariantRepositorySource {
     override suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<ProductVariant> {
+    ): ImmutableList<ProductVariantEntity> {
         return dao.getPagedList(
             limit,
             offset

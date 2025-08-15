@@ -35,7 +35,7 @@ import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FuzzySearchSource
@@ -74,9 +74,9 @@ fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
     products: Data<ImmutableList<Product>>,
-    variants: Data<ImmutableList<ProductVariant>>,
+    variants: Data<ImmutableList<ProductVariantEntity>>,
     onNewProductSelected: (product: Product?) -> Unit,
-    onNewVariantSelected: (variant: ProductVariant?) -> Unit,
+    onNewVariantSelected: (variant: ProductVariantEntity?) -> Unit,
     onSubmit: () -> Unit,
     onProductAddButtonClick: (query: String?) -> Unit,
     onVariantAddButtonClick: (productId: Long, query: String?) -> Unit,

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FuzzySearchSource
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
@@ -37,7 +37,7 @@ import com.kssidll.arru.ui.theme.optionalAlpha
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [ProductVariant]
+ * [ModifyScreen] implementation for [ProductVariantEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyVariantScreenState] instance representing the screen state
  * @param onSubmit Callback called when the submit action is triggered

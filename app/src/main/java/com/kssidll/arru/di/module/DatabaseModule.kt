@@ -6,9 +6,9 @@ import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
-import com.kssidll.arru.data.dao.ShopDao
+import com.kssidll.arru.data.dao.ProductVariantEntityDao
+import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
-import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.database.downloadsAppDirectory
 import com.kssidll.arru.data.database.downloadsDbFile
@@ -115,13 +115,13 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideVariantDao(appDatabase: AppDatabase): VariantDao {
-        return appDatabase.getVariantDao()
+    fun provideVariantDao(appDatabase: AppDatabase): ProductVariantEntityDao {
+        return appDatabase.getProductVariantEntityDao()
     }
 
     @Provides
-    fun provideVariantRepository(productVariantDao: VariantDao): VariantRepositorySource {
-        return VariantRepository(productVariantDao)
+    fun provideVariantRepository(dao: ProductVariantEntityDao): VariantRepositorySource {
+        return VariantRepository(dao)
     }
 
     @Provides
@@ -136,13 +136,13 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideShopDao(appDatabase: AppDatabase): ShopDao {
-        return appDatabase.getShopDao()
+    fun provideShopDao(appDatabase: AppDatabase): ShopEntityDao {
+        return appDatabase.getShopEntityDao()
     }
 
     @Provides
-    fun provideShopRepository(shopDao: ShopDao): ShopRepositorySource {
-        return ShopRepository(shopDao)
+    fun provideShopRepository(dao: ShopEntityDao): ShopRepositorySource {
+        return ShopRepository(dao)
     }
 
     @Provides

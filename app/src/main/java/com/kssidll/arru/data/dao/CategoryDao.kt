@@ -13,7 +13,7 @@ import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
@@ -46,8 +46,8 @@ interface CategoryDao {
     @Query("SELECT * FROM product WHERE product.id = :productId")
     suspend fun productById(productId: Long): Product
 
-    @Query("SELECT * FROM productvariant WHERE productvariant.id = :variantId")
-    suspend fun variantById(variantId: Long): ProductVariant
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
+    suspend fun variantById(variantId: Long): ProductVariantEntity
 
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun categoryById(categoryId: Long): ProductCategory
@@ -95,14 +95,14 @@ interface CategoryDao {
 
     @Query(
         """
-        SELECT productvariant.*
-        FROM productvariant
-        JOIN product ON product.id = productvariant.productId
+        SELECT ProductVariantEntity.*
+        FROM ProductVariantEntity
+        JOIN product ON product.id = ProductVariantEntity.productId
         JOIN productcategory ON productcategory.id = product.categoryId
         WHERE productcategory.id = :categoryId
     """
     )
-    suspend fun getProductsVariants(categoryId: Long): List<ProductVariant>
+    suspend fun getProductsVariants(categoryId: Long): List<ProductVariantEntity>
 
     @Query(
         """
@@ -119,7 +119,7 @@ interface CategoryDao {
     suspend fun deleteProducts(products: List<Product>)
 
     @Delete
-    suspend fun deleteProductVariants(productVariants: List<ProductVariant>)
+    suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
 
     @Delete
     suspend fun deleteItems(entities: List<ItemEntity>)

@@ -1,7 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -58,10 +58,10 @@ interface VariantRepositorySource {
     // Create
 
     /**
-     * Inserts [ProductVariant]
-     * @param productId id of the [Product] to insert the [ProductVariant] for, null for global [ProductVariant]
+     * Inserts [ProductVariantEntity]
+     * @param productId id of the [Product] to insert the [ProductVariantEntity] for, null for global [ProductVariantEntity]
      * @param name name of the variant
-     * @return [InsertResult] with id of the newly inserted [ProductVariant] or an error if any
+     * @return [InsertResult] with id of the newly inserted [ProductVariantEntity] or an error if any
      */
     suspend fun insert(
         productId: Long?,
@@ -71,9 +71,9 @@ interface VariantRepositorySource {
     // Update
 
     /**
-     * Updates [ProductVariant] with [variantId] id to provided [name]
-     * @param variantId id to match [ProductVariant]
-     * @param name name to update the matching [ProductVariant] to
+     * Updates [ProductVariantEntity] with [variantId] id to provided [name]
+     * @param variantId id to match [ProductVariantEntity]
+     * @param name name to update the matching [ProductVariantEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -82,10 +82,10 @@ interface VariantRepositorySource {
     ): UpdateResult
 
     /**
-     * Updates [ProductVariant] with [variantId] id to provided [productId] and [name]
-     * @param variantId id to match [ProductVariant]
-     * @param productId [Product] id to update the matching [ProductVariant] to, null for global [ProductVariant]
-     * @param name name to update the matching [ProductVariant] to
+     * Updates [ProductVariantEntity] with [variantId] id to provided [productId] and [name]
+     * @param variantId id to match [ProductVariantEntity]
+     * @param productId [Product] id to update the matching [ProductVariantEntity] to, null for global [ProductVariantEntity]
+     * @param name name to update the matching [ProductVariantEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -97,8 +97,8 @@ interface VariantRepositorySource {
     // Delete
 
     /**
-     * Deletes [ProductVariant]
-     * @param variantId id of the [ProductVariant] to delete
+     * Deletes [ProductVariantEntity]
+     * @param variantId id of the [ProductVariantEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
@@ -110,26 +110,26 @@ interface VariantRepositorySource {
     // Read
 
     /**
-     * @param variantId id of the [ProductVariant]
-     * @return [ProductVariant] matching [variantId] id or null if none match
+     * @param variantId id of the [ProductVariantEntity]
+     * @return [ProductVariantEntity] matching [variantId] id or null if none match
      */
-    suspend fun get(variantId: Long): ProductVariant?
+    suspend fun get(variantId: Long): ProductVariantEntity?
 
     /**
-     * @param variantId id of the [ProductVariant]
-     * @return [ProductVariant] matching [variantId] id or null if none match, as flow
+     * @param variantId id of the [ProductVariantEntity]
+     * @return [ProductVariantEntity] matching [variantId] id or null if none match, as flow
      */
-    fun getFlow(variantId: Long): Flow<Data<ProductVariant?>>
+    fun getFlow(variantId: Long): Flow<Data<ProductVariantEntity?>>
 
     /**
-     * @param product [Product] to match the [ProductVariant] with
+     * @param product [Product] to match the [ProductVariantEntity] with
      * @param showGlobal whether to return global variants as well
-     * @return list of [ProductVariant] matching [product] as flow
+     * @return list of [ProductVariantEntity] matching [product] as flow
      */
-    fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariant>>>
+    fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>>
 
     /**
-     * @return total count of [ProductVariant]
+     * @return total count of [ProductVariantEntity]
      */
     suspend fun totalCount(): Int
 
@@ -139,5 +139,5 @@ interface VariantRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<ProductVariant>
+    ): ImmutableList<ProductVariantEntity>
 }

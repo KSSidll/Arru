@@ -9,7 +9,7 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.asCsvList
@@ -269,7 +269,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(variantCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    ProductVariant.csvHeaders()
+                    ProductVariantEntity.csvHeaders()
                         .toByteArray()
                 )
 

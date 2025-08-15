@@ -18,16 +18,15 @@ import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
-import com.kssidll.arru.data.dao.ShopDao
+import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
-import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
@@ -93,7 +92,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
         TransactionEntity::class,
         ItemEntity::class,
         Product::class,
-        ProductVariant::class,
+        ProductVariantEntity::class,
         ProductCategory::class,
         ShopEntity::class,
         ProductProducer::class,
@@ -118,7 +117,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getTransactionEntityDao(): TransactionEntityDao
     abstract fun getItemEntityDao(): ItemEntityDao
     abstract fun getProductDao(): ProductDao
-    abstract fun getVariantDao(): VariantDao
+    abstract fun getProductVariantEntityDao(): ProductVariantEntityDao
     abstract fun getCategoryDao(): CategoryDao
     abstract fun getShopEntityDao(): ShopEntityDao
     abstract fun getProducerDao(): ProducerDao

@@ -19,9 +19,10 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
-    ]
+    ],
+    tableName = "ProductVariantEntity"
 )
-data class ProductVariant(
+data class ProductVariantEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var productId: Long?,
     var name: String,
@@ -38,10 +39,10 @@ data class ProductVariant(
     )
 
     /**
-     * Converts the [ProductVariant] data to a string with csv format
+     * Converts the [ProductVariantEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
-     * @return [ProductVariant] data as [String] with csv format
+     * @return [ProductVariantEntity] data as [String] with csv format
      */
     @Ignore
     fun formatAsCsvString(): String {
@@ -51,8 +52,8 @@ data class ProductVariant(
 
     companion object {
         /**
-         * Returns the [String] representing the [ProductVariant] csv format headers
-         * @return [String] representing the [ProductVariant] csv format headers
+         * Returns the [String] representing the [ProductVariantEntity] csv format headers
+         * @return [String] representing the [ProductVariantEntity] csv format headers
          */
         @Ignore
         fun csvHeaders(): String {
@@ -60,8 +61,8 @@ data class ProductVariant(
         }
 
         @Ignore
-        fun generate(variantId: Long = 0): ProductVariant {
-            return ProductVariant(
+        fun generate(variantId: Long = 0): ProductVariantEntity {
+            return ProductVariantEntity(
                 id = variantId,
                 productId = generateRandomLongValue(),
                 name = generateRandomStringValue(),
@@ -69,7 +70,7 @@ data class ProductVariant(
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<ProductVariant> {
+        fun generateList(amount: Int = 10): List<ProductVariantEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -94,14 +95,14 @@ data class ProductVariant(
 }
 
 /**
- * Converts a list of [ProductVariant] data to a list of strings with csv format
+ * Converts a list of [ProductVariantEntity] data to a list of strings with csv format
  * @param includeHeaders whether to include the csv headers
- * @return [ProductVariant] data as list of string with csv format
+ * @return [ProductVariantEntity] data as list of string with csv format
  */
-fun List<ProductVariant>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+fun List<ProductVariantEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(ProductVariant.csvHeaders() + "\n")
+        add(ProductVariantEntity.csvHeaders() + "\n")
     }
 
     // Add rows

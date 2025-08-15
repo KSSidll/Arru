@@ -3,7 +3,7 @@ package com.kssidll.arru.ui.screen.modify.variant.editvariant
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.VariantRepositorySource
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class EditVariantViewModel @Inject constructor(
     override val variantRepository: VariantRepositorySource,
 ): ModifyVariantViewModel() {
-    private var mVariant: ProductVariant? = null
+    private var mVariant: ProductVariantEntity? = null
 
     /**
      * Updates data in the screen state

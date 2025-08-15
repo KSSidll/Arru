@@ -11,7 +11,7 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ImportRepositorySource
@@ -201,7 +201,7 @@ suspend fun handleCsvImport(
     val categoryList = mutableListOf<ProductCategory>()
     val transactionList = mutableListOf<TransactionEntity>()
     val productList = mutableListOf<Product>()
-    val variantList = mutableListOf<ProductVariant>()
+    val variantList = mutableListOf<ProductVariantEntity>()
     val itemEntityList = mutableListOf<ItemEntity>()
 
     // Process
@@ -440,7 +440,7 @@ suspend fun handleCsvImport(
                             variants.size.toLong() + 1
                         ) // id of 0 causes a foreign key constraint fail
                         variantList.add(
-                            ProductVariant(
+                            ProductVariantEntity(
                                 id = variants[Pair(variant, null)]!!,
                                 productId = null,
                                 name = variant
@@ -453,7 +453,7 @@ suspend fun handleCsvImport(
                         variants.size.toLong() + 1
                     ) // id of 0 causes a foreign key constraint fail
                     variantList.add(
-                        ProductVariant(
+                        ProductVariantEntity(
                             id = variants[Pair(variant, products[data.product]!!)]!!,
                             productId = products[data.product]!!,
                             name = variant
@@ -827,7 +827,7 @@ suspend fun handleCsvImport(
                             val name = text[2]
 
                             variantList.add(
-                                ProductVariant(
+                                ProductVariantEntity(
                                     id = id,
                                     productId = productId,
                                     name = name
@@ -974,7 +974,7 @@ suspend fun handleJsonImport(
     val categoryList = mutableListOf<ProductCategory>()
     val transactionList = mutableListOf<TransactionEntity>()
     val productList = mutableListOf<Product>()
-    val variantList = mutableListOf<ProductVariant>()
+    val variantList = mutableListOf<ProductVariantEntity>()
     val itemEntityList = mutableListOf<ItemEntity>()
 
     // Process
@@ -1102,7 +1102,7 @@ suspend fun handleJsonImport(
                                         var itemProductId: Long? = null
                                         var itemVariantId: Long? = null
 
-                                        var itemVariant: ProductVariant? = null
+                                        var itemVariant: ProductVariantEntity? = null
 
                                         while (reader.hasNext()) {
                                             val itemValueName = reader.nextName()
@@ -1301,7 +1301,7 @@ suspend fun handleJsonImport(
                                                                     null // global variants have no product id
                                                                 } else -1L  // temporarily assume -1 as product id could technically not be set
 
-                                                                itemVariant = ProductVariant(
+                                                                itemVariant = ProductVariantEntity(
                                                                     id = itemVariantId,
                                                                     productId = productId,
                                                                     name = variantName,

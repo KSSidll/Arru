@@ -13,7 +13,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
@@ -43,14 +43,14 @@ interface ProductDao {
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer?
 
-    @Query("SELECT * FROM productvariant WHERE productvariant.id = :variantId")
-    suspend fun variantById(variantId: Long): ProductVariant?
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
+    suspend fun variantById(variantId: Long): ProductVariantEntity?
 
-    @Query("SELECT * FROM productvariant WHERE productvariant.productId = :productId AND productvariant.name = :variantName")
+    @Query("SELECT * FROM ProductVariantEntity WHERE ProductVariantEntity.productId = :productId AND ProductVariantEntity.name = :variantName")
     suspend fun variantByName(
         productId: Long,
         variantName: String
-    ): ProductVariant?
+    ): ProductVariantEntity?
 
     @Query("SELECT * FROM productcategory WHERE productcategory.id = :categoryId")
     suspend fun categoryById(categoryId: Long): ProductCategory?
@@ -83,8 +83,8 @@ interface ProductDao {
         offset: Int
     ): List<ItemEntity>
 
-    @Query("SELECT productvariant.* FROM productvariant WHERE productvariant.productId = :productId")
-    suspend fun variants(productId: Long): List<ProductVariant>
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productId = :productId")
+    suspend fun variants(productId: Long): List<ProductVariantEntity>
 
     @Query(
         """
@@ -100,10 +100,10 @@ interface ProductDao {
     suspend fun deleteItems(entities: List<ItemEntity>)
 
     @Delete
-    suspend fun deleteVariants(variants: List<ProductVariant>)
+    suspend fun deleteVariants(variants: List<ProductVariantEntity>)
 
     @Update
-    suspend fun updateVariants(variants: List<ProductVariant>)
+    suspend fun updateVariants(variants: List<ProductVariantEntity>)
 
     @Update
     suspend fun updateItems(entities: List<ItemEntity>)
@@ -330,13 +330,13 @@ interface ProductDao {
             FROM date_series
             WHERE date_series.end_date > date_series.start_date
         )
-        SELECT product.*, AVG(ItemEntity.price) AS price, ShopEntity.name AS shopName, productvariant.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
+        SELECT product.*, AVG(ItemEntity.price) AS price, ShopEntity.name AS shopName, ProductVariantEntity.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
         FROM date_series
         LEFT JOIN TransactionEntity ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch'))
         JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
             AND ItemEntity.productId = :productId
         LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
-        LEFT JOIN productvariant ON ItemEntity.variantId = productvariant.id
+        LEFT JOIN ProductVariantEntity ON ItemEntity.variantId = ProductVariantEntity.id
         LEFT JOIN product ON ItemEntity.productId = product.id
         LEFT JOIN productproducer ON product.producerId = productproducer.id
         WHERE time IS NOT NULL
