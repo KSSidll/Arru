@@ -716,7 +716,13 @@ val MIGRATION_8_9 = object: Migration(
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             """
-            
+            DROP TABLE ProductAltName
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            DROP TABLE ProductCategoryAltName
         """.trimIndent()
         )
     }
