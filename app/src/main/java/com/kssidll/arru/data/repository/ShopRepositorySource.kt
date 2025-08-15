@@ -184,17 +184,4 @@ interface ShopRepositorySource {
      * @return list of all [ShopEntity] as flow
      */
     fun allFlow(): Flow<Data<ImmutableList<ShopEntity>>>
-
-    /**
-     * @return total count of [ShopEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] shops offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ShopEntity>
 }

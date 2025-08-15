@@ -202,17 +202,4 @@ interface TransactionBasketRepositorySource {
      * @return [TransactionBasketWithItems] matching [transactionId] as flow
      */
     fun transactionBasketWithItemsFlow(transactionId: Long): Flow<Data<TransactionBasketWithItems?>>
-
-    /**
-     * @return total count of [TransactionEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] baskets offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<TransactionEntity>
 }

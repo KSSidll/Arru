@@ -184,17 +184,4 @@ interface CategoryRepositorySource {
      * @return list of all [ProductCategoryEntity] as flow
      */
     fun allFlow(): Flow<Data<ImmutableList<ProductCategoryEntity>>>
-
-    /**
-     * @return total count of [ProductCategoryEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] categories offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductCategoryEntity>
 }

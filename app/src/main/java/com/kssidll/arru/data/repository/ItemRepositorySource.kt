@@ -5,7 +5,6 @@ import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.Data
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ItemRepositorySource {
@@ -123,22 +122,4 @@ interface ItemRepositorySource {
      * @return newest [ItemEntity] as flow
      */
     fun newestFlow(): Flow<Data<ItemEntity?>>
-
-    /**
-     * @return total count of [ItemEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] items offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ItemEntity>
-
-    /**
-     * @return list of [ItemEntity] contained within the [TransactionEntity] matching the [transactionId]
-     */
-    suspend fun getByTransaction(transactionId: Long): ImmutableList<ItemEntity>
 }

@@ -6,8 +6,6 @@ import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteRes
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Data
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -128,23 +126,5 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
             .distinctUntilChanged()
             .map { Data.Loaded(it) }
             .onStart { Data.Loading<ItemEntity>() }
-    }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ItemEntity> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
-
-    override suspend fun getByTransaction(transactionId: Long): ImmutableList<ItemEntity> {
-        return dao.getByTransaction(transactionId).toImmutableList()
     }
 }

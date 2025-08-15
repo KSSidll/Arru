@@ -169,17 +169,4 @@ interface ProducerRepositorySource {
      * @return list of all [ProductProducerEntity] as flow
      */
     fun allFlow(): Flow<Data<ImmutableList<ProductProducerEntity>>>
-
-    /**
-     * @return total count of [ProductProducerEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] producers offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductProducerEntity>
 }

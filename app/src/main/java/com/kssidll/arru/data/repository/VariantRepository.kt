@@ -178,18 +178,4 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
             .map { Data.Loaded(it.toImmutableList()) }
             .onStart { Data.Loading<ImmutableList<ProductVariantEntity>>() }
     }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductVariantEntity> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
 }

@@ -63,13 +63,4 @@ interface ProductVariantEntityDao {
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE (:includeGlobal AND ProductVariantEntity.productEntityId IS NULL) OR ProductVariantEntity.productEntityId = :productId")
     fun byProductFlow(productId: Long, includeGlobal: Boolean): Flow<List<ProductVariantEntity>>
-
-    @Query("SELECT COUNT(*) FROM ProductVariantEntity")
-    suspend fun totalCount(): Int
-
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity ORDER BY id LIMIT :limit OFFSET :offset")
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): List<ProductVariantEntity>
 }

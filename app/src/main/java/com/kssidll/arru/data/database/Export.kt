@@ -13,13 +13,7 @@ import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.asCsvList
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ExportRepositorySource
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
@@ -38,13 +32,7 @@ import java.util.Locale
 suspend fun exportDataAsRawCsv(
     context: Context,
     uri: Uri,
-    categoryRepository: CategoryRepositorySource,
-    itemRepository: ItemRepositorySource,
-    producerRepository: ProducerRepositorySource,
-    productRepository: ProductRepositorySource,
-    shopRepository: ShopRepositorySource,
-    transactionRepository: TransactionBasketRepositorySource,
-    variantRepository: VariantRepositorySource,
+    exportRepository: ExportRepositorySource,
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
@@ -63,13 +51,13 @@ suspend fun exportDataAsRawCsv(
         onProgressChange(progress)
     }
 
-    addMaxProgress(categoryRepository.totalCount())
-    addMaxProgress(itemRepository.totalCount())
-    addMaxProgress(producerRepository.totalCount())
-    addMaxProgress(productRepository.totalCount())
-    addMaxProgress(shopRepository.totalCount())
-    addMaxProgress(transactionRepository.totalCount())
-    addMaxProgress(variantRepository.totalCount())
+    addMaxProgress(exportRepository.shopCount())
+    addMaxProgress(exportRepository.transactionCount())
+    addMaxProgress(exportRepository.productProducerCount())
+    addMaxProgress(exportRepository.productCategoryCount())
+    addMaxProgress(exportRepository.productCount())
+    addMaxProgress(exportRepository.productVariantCount())
+    addMaxProgress(exportRepository.itemCount())
 
     val timeNow = Calendar.getInstance().time
 
@@ -119,7 +107,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = categoryRepository.getPagedList(
+                    val data = exportRepository.productCategoryPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -145,7 +133,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = itemRepository.getPagedList(
+                    val data = exportRepository.itemPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -171,7 +159,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = producerRepository.getPagedList(
+                    val data = exportRepository.productProducerPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -197,7 +185,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = productRepository.getPagedList(
+                    val data = exportRepository.productPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -223,7 +211,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = shopRepository.getPagedList(
+                    val data = exportRepository.shopPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -249,7 +237,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = transactionRepository.getPagedList(
+                    val data = exportRepository.transactionPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -275,7 +263,7 @@ suspend fun exportDataAsRawCsv(
 
                 var offset = 0
                 do {
-                    val data = variantRepository.getPagedList(
+                    val data = exportRepository.productVariantPagedList(
                         limit = batchSize,
                         offset = offset
                     )
@@ -307,13 +295,7 @@ suspend fun exportDataAsRawCsv(
 suspend fun exportDataAsCompactCsv(
     context: Context,
     uri: Uri,
-    categoryRepository: CategoryRepositorySource,
-    itemRepository: ItemRepositorySource,
-    producerRepository: ProducerRepositorySource,
-    productRepository: ProductRepositorySource,
-    shopRepository: ShopRepositorySource,
-    transactionRepository: TransactionBasketRepositorySource,
-    variantRepository: VariantRepositorySource,
+    exportRepository: ExportRepositorySource,
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
@@ -332,7 +314,7 @@ suspend fun exportDataAsCompactCsv(
         onProgressChange(progress)
     }
 
-    addMaxProgress(transactionRepository.totalCount())
+    addMaxProgress(exportRepository.transactionCount())
 
     val timeNow = Calendar.getInstance().time
 
@@ -365,15 +347,15 @@ suspend fun exportDataAsCompactCsv(
 
                 var offset = 0
                 do {
-                    val transactions = transactionRepository.getPagedList(
+                    val transactions = exportRepository.transactionPagedList(
                         limit = batchSize,
                         offset = offset
                     )
 
                     transactions.forEach { transactionData ->
                         val shop =
-                            transactionData.shopEntityId?.let { shopRepository.get(it) }?.name ?: "null"
-                        val items = itemRepository.getByTransaction(transactionData.id)
+                            transactionData.shopEntityId?.let { exportRepository.getShop(it) }?.name ?: "null"
+                        val items = exportRepository.getItemsByTransaction(transactionData.id)
 
                         if (items.isEmpty()) {
                             outputStream.write(
@@ -381,17 +363,17 @@ suspend fun exportDataAsCompactCsv(
                             )
                         } else {
                             items.forEach { item ->
-                                val product = productRepository.get(item.productEntityId)
+                                val product = exportRepository.getProduct(item.productEntityId)
                                 val category =
-                                    product?.productCategoryEntityId?.let { categoryRepository.get(it) }?.name
+                                    product?.productCategoryEntityId?.let { exportRepository.getProductCategory(it) }?.name
                                         ?: "null"
                                 val producer =
-                                    product?.productProducerEntityId?.let { producerRepository.get(it) }?.name
+                                    product?.productProducerEntityId?.let { exportRepository.getProductProducer(it) }?.name
                                         ?: "null"
                                 val variant =
-                                    item.productVariantEntityId?.let { variantRepository.get(it)?.name }
+                                    item.productVariantEntityId?.let { exportRepository.getProductVariant(it)?.name }
                                         ?: "null"
-                                val variantGlobal = item.productVariantEntityId?.let { variantRepository.get(it)?.productEntityId == null }
+                                val variantGlobal = item.productVariantEntityId?.let { exportRepository.getProductVariant(it)?.productEntityId == null }
                                     ?: false
 
                                 outputStream.write(
@@ -422,13 +404,7 @@ suspend fun exportDataAsCompactCsv(
 suspend fun exportDataAsJson(
     context: Context,
     uri: Uri,
-    categoryRepository: CategoryRepositorySource,
-    itemRepository: ItemRepositorySource,
-    producerRepository: ProducerRepositorySource,
-    productRepository: ProductRepositorySource,
-    shopRepository: ShopRepositorySource,
-    transactionRepository: TransactionBasketRepositorySource,
-    variantRepository: VariantRepositorySource,
+    exportRepository: ExportRepositorySource,
     onMaxProgressChange: (newMaxProgress: Int) -> Unit,
     onProgressChange: (newProgress: Int) -> Unit,
     onFinished: () -> Unit,
@@ -447,7 +423,7 @@ suspend fun exportDataAsJson(
         onProgressChange(progress)
     }
 
-    addMaxProgress(transactionRepository.totalCount())
+    addMaxProgress(exportRepository.transactionCount())
 
     val timeNow = Calendar.getInstance().time
 
@@ -479,15 +455,15 @@ suspend fun exportDataAsJson(
 
                 var offset = 0
                 do {
-                    val transactions = transactionRepository.getPagedList(
+                    val transactions = exportRepository.transactionPagedList(
                         limit = batchSize,
                         offset = offset
                     )
 
                     transactions.forEach { transactionData ->
                         val shop =
-                            transactionData.shopEntityId?.let { shopRepository.get(it) }
-                        val items = itemRepository.getByTransaction(transactionData.id)
+                            transactionData.shopEntityId?.let { exportRepository.getShop(it) }
+                        val items = exportRepository.getItemsByTransaction(transactionData.id)
 
                         writer.beginObject()
                         writer.name("id").value(transactionData.id)
@@ -510,12 +486,12 @@ suspend fun exportDataAsJson(
                         } else {
                             writer.beginArray()
                             items.forEach { item ->
-                                val product = productRepository.get(item.productEntityId)
+                                val product = exportRepository.getProduct(item.productEntityId)
                                 val category =
-                                    product?.productCategoryEntityId?.let { categoryRepository.get(it) }
+                                    product?.productCategoryEntityId?.let { exportRepository.getProductCategory(it) }
                                 val producer =
-                                    product?.productProducerEntityId?.let { producerRepository.get(it) }
-                                val variant = item.productVariantEntityId?.let { variantRepository.get(it) }
+                                    product?.productProducerEntityId?.let { exportRepository.getProductProducer(it) }
+                                val variant = item.productVariantEntityId?.let { exportRepository.getProductVariant(it) }
 
                                 writer.beginObject()
 

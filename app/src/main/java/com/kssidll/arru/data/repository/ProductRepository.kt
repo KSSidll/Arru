@@ -278,18 +278,4 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
             .map { Data.Loaded(it.toImmutableList()) }
             .onStart { Data.Loading<ImmutableList<ProductEntity>>() }
     }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductEntity> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
 }

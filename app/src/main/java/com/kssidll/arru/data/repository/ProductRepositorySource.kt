@@ -198,17 +198,4 @@ interface ProductRepositorySource {
      * @return list of all [ProductEntity] as flow
      */
     fun allFlow(): Flow<Data<ImmutableList<ProductEntity>>>
-
-    /**
-     * @return total count of [ProductEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] products offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductEntity>
 }

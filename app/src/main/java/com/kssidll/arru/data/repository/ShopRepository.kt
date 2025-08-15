@@ -251,18 +251,4 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
             .map { Data.Loaded(it.toImmutableList()) }
             .onStart { Data.Loading<ImmutableList<ShopEntity>>() }
     }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ShopEntity> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
 }

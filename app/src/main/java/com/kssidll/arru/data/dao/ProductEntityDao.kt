@@ -348,13 +348,4 @@ interface ProductEntityDao {
 
     @Query("SELECT ProductEntity.* FROM ProductEntity ORDER BY ProductEntity.id DESC")
     fun allFlow(): Flow<List<ProductEntity>>
-
-    @Query("SELECT COUNT(*) FROM ProductEntity")
-    suspend fun totalCount(): Int
-
-    @Query("SELECT ProductEntity.* FROM ProductEntity ORDER BY id LIMIT :limit OFFSET :offset")
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): List<ProductEntity>
 }

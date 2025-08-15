@@ -13,6 +13,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.Arru
+import com.kssidll.arru.data.dao.ExportDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProductCategoryEntityDao
@@ -121,6 +122,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getProductCategoryEntityDao(): ProductCategoryEntityDao
     abstract fun getShopEntityDao(): ShopEntityDao
     abstract fun getProductProducerEntityDao(): ProductProducerEntityDao
+    abstract fun getExportDao(): ExportDao
     abstract fun getImportDao(): ImportDao
 
     companion object {

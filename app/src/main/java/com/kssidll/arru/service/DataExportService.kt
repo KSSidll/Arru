@@ -27,13 +27,7 @@ import com.kssidll.arru.broadcast.DataExportServiceStopActionReceiver
 import com.kssidll.arru.data.database.exportDataAsCompactCsv
 import com.kssidll.arru.data.database.exportDataAsJson
 import com.kssidll.arru.data.database.exportDataAsRawCsv
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ExportRepositorySource
 import com.kssidll.arru.helper.checkPermission
 import com.kssidll.arru.helper.getLocalizedString
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,25 +54,7 @@ class DataExportService: Service() {
     private lateinit var serviceScope: CoroutineScope
 
     @Inject
-    lateinit var categoryRepository: CategoryRepositorySource
-
-    @Inject
-    lateinit var itemRepository: ItemRepositorySource
-
-    @Inject
-    lateinit var producerRepository: ProducerRepositorySource
-
-    @Inject
-    lateinit var productRepository: ProductRepositorySource
-
-    @Inject
-    lateinit var shopRepository: ShopRepositorySource
-
-    @Inject
-    lateinit var transactionRepository: TransactionBasketRepositorySource
-
-    @Inject
-    lateinit var variantRepository: VariantRepositorySource
+    lateinit var exportRepository: ExportRepositorySource
 
     /**
      * How much data is there to export
@@ -225,13 +201,7 @@ class DataExportService: Service() {
                 exportDataAsRawCsv(
                     context = applicationContext,
                     uri = uri,
-                    categoryRepository = categoryRepository,
-                    itemRepository = itemRepository,
-                    producerRepository = producerRepository,
-                    productRepository = productRepository,
-                    shopRepository = shopRepository,
-                    transactionRepository = transactionRepository,
-                    variantRepository = variantRepository,
+                    exportRepository = exportRepository,
                     onMaxProgressChange = {
                         totalDataSize = it
                         updateNotification(false)
@@ -296,13 +266,7 @@ class DataExportService: Service() {
                 exportDataAsCompactCsv(
                     context = applicationContext,
                     uri = uri,
-                    categoryRepository = categoryRepository,
-                    itemRepository = itemRepository,
-                    producerRepository = producerRepository,
-                    productRepository = productRepository,
-                    shopRepository = shopRepository,
-                    transactionRepository = transactionRepository,
-                    variantRepository = variantRepository,
+                    exportRepository = exportRepository,
                     onMaxProgressChange = {
                         totalDataSize = it
                         updateNotification(false)
@@ -367,13 +331,7 @@ class DataExportService: Service() {
                 exportDataAsJson(
                     context = applicationContext,
                     uri = uri,
-                    categoryRepository = categoryRepository,
-                    itemRepository = itemRepository,
-                    producerRepository = producerRepository,
-                    productRepository = productRepository,
-                    shopRepository = shopRepository,
-                    transactionRepository = transactionRepository,
-                    variantRepository = variantRepository,
+                    exportRepository = exportRepository,
                     onMaxProgressChange = {
                         totalDataSize = it
                         updateNotification(false)

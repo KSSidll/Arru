@@ -212,18 +212,4 @@ class ProducerRepository(private val dao: ProductProducerEntityDao): ProducerRep
             .map { Data.Loaded(it.toImmutableList()) }
             .onStart { Data.Loading<ImmutableList<ProductProducerEntity>>() }
     }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductProducerEntity> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
 }

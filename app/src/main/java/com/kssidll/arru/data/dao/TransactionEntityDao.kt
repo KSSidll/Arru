@@ -297,13 +297,4 @@ interface TransactionEntityDao {
             } else return@map null
         }
     }
-
-    @Query("SELECT COUNT(*) FROM TransactionEntity")
-    suspend fun totalCount(): Int
-
-    @Query("SELECT TransactionEntity.* FROM TransactionEntity ORDER BY id LIMIT :limit OFFSET :offset")
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): List<TransactionEntity>
 }

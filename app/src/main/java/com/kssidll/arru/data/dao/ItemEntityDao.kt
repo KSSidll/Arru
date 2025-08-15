@@ -49,16 +49,4 @@ interface ItemEntityDao {
 
     @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
     fun newestFlow(): Flow<ItemEntity?>
-
-    @Query("SELECT COUNT(*) FROM ItemEntity")
-    suspend fun totalCount(): Int
-
-    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id LIMIT :limit OFFSET :offset")
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): List<ItemEntity>
-
-    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.transactionEntityId = :transactionId")
-    suspend fun getByTransaction(transactionId: Long): List<ItemEntity>
 }

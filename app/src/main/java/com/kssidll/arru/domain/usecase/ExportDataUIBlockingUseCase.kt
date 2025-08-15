@@ -7,13 +7,7 @@ import com.kssidll.arru.data.database.exportDataAsJson
 import com.kssidll.arru.data.database.exportDataAsRawCsv
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getExportType
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ExportRepositorySource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -22,13 +16,7 @@ import kotlinx.coroutines.withContext
 
 class ExportDataUIBlockingUseCase(
     @param:ApplicationContext val appContext: Context,
-    private val categoryRepository: CategoryRepositorySource,
-    private val itemRepository: ItemRepositorySource,
-    private val producerRepository: ProducerRepositorySource,
-    private val productRepository: ProductRepositorySource,
-    private val shopRepository: ShopRepositorySource,
-    private val transactionRepository: TransactionBasketRepositorySource,
-    private val variantRepository: VariantRepositorySource,
+    private val exportRepository: ExportRepositorySource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     suspend operator fun invoke(
@@ -42,13 +30,7 @@ class ExportDataUIBlockingUseCase(
                 exportDataAsCompactCsv(
                     appContext,
                     uri,
-                    categoryRepository,
-                    itemRepository,
-                    producerRepository,
-                    productRepository,
-                    shopRepository,
-                    transactionRepository,
-                    variantRepository,
+                    exportRepository,
                     onMaxProgressChange,
                     onProgressChange,
                     onFinished,
@@ -59,13 +41,7 @@ class ExportDataUIBlockingUseCase(
                 exportDataAsRawCsv(
                     appContext,
                     uri,
-                    categoryRepository,
-                    itemRepository,
-                    producerRepository,
-                    productRepository,
-                    shopRepository,
-                    transactionRepository,
-                    variantRepository,
+                    exportRepository,
                     onMaxProgressChange,
                     onProgressChange,
                     onFinished,
@@ -76,13 +52,7 @@ class ExportDataUIBlockingUseCase(
                 exportDataAsJson(
                     appContext,
                     uri,
-                    categoryRepository,
-                    itemRepository,
-                    producerRepository,
-                    productRepository,
-                    shopRepository,
-                    transactionRepository,
-                    variantRepository,
+                    exportRepository,
                     onMaxProgressChange,
                     onProgressChange,
                     onFinished,

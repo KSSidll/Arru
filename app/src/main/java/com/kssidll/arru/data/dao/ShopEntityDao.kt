@@ -314,13 +314,4 @@ interface ShopEntityDao {
 
     @Query("SELECT ShopEntity.* FROM ShopEntity ORDER BY ShopEntity.id DESC")
     fun allFlow(): Flow<List<ShopEntity>>
-
-    @Query("SELECT COUNT(*) FROM ShopEntity")
-    suspend fun totalCount(): Int
-
-    @Query("SELECT ShopEntity.* FROM ShopEntity ORDER BY id LIMIT :limit OFFSET :offset")
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): List<ShopEntity>
 }

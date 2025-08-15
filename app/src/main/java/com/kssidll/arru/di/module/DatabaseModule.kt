@@ -1,6 +1,7 @@
 package com.kssidll.arru.di.module
 
 import android.content.Context
+import com.kssidll.arru.data.dao.ExportDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProductCategoryEntityDao
@@ -17,6 +18,8 @@ import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.repository.CategoryRepository
 import com.kssidll.arru.data.repository.CategoryRepositorySource
+import com.kssidll.arru.data.repository.ExportRepository
+import com.kssidll.arru.data.repository.ExportRepositorySource
 import com.kssidll.arru.data.repository.ImportRepository
 import com.kssidll.arru.data.repository.ImportRepositorySource
 import com.kssidll.arru.data.repository.ItemRepository
@@ -75,13 +78,23 @@ class DatabaseModule {
     }
 
     @Provides
+    fun provideExportDao(appDatabase: AppDatabase): ExportDao {
+        return appDatabase.getExportDao()
+    }
+
+    @Provides
+    fun provideExportRepository(dao: ExportDao): ExportRepositorySource {
+        return ExportRepository(dao)
+    }
+
+    @Provides
     fun provideImportDao(appDatabase: AppDatabase): ImportDao {
         return appDatabase.getImportDao()
     }
 
     @Provides
-    fun provideImportRepository(importDao: ImportDao): ImportRepositorySource {
-        return ImportRepository(importDao)
+    fun provideImportRepository(dao: ImportDao): ImportRepositorySource {
+        return ImportRepository(dao)
     }
 
     @Provides

@@ -127,17 +127,4 @@ interface VariantRepositorySource {
      * @return list of [ProductVariantEntity] matching [productEntity] as flow
      */
     fun byProductFlow(productEntity: ProductEntity, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>>
-
-    /**
-     * @return total count of [ProductVariantEntity]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] variants offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<ProductVariantEntity>
 }

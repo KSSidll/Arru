@@ -212,18 +212,4 @@ class TransactionBasketRepository(
             .map { Data.Loaded(it) }
             .onStart { Data.Loading<TransactionBasketWithItems>() }
     }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<TransactionEntity> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
 }
