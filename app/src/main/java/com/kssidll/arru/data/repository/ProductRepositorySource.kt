@@ -4,8 +4,8 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
@@ -80,11 +80,11 @@ interface ProductRepositorySource {
     // Create
 
     /**
-     * Inserts [Product]
-     * @param name name of the [Product] to insert
-     * @param categoryId id of the [ProductCategoryEntity] of the [Product] to insert
-     * @param producerId id of the [ProductProducerEntity] of the [Product] to insert
-     * @return [InsertResult] with id of the newly inserted [Product] or an error if any
+     * Inserts [ProductEntity]
+     * @param name name of the [ProductEntity] to insert
+     * @param categoryId id of the [ProductCategoryEntity] of the [ProductEntity] to insert
+     * @param producerId id of the [ProductProducerEntity] of the [ProductEntity] to insert
+     * @return [InsertResult] with id of the newly inserted [ProductEntity] or an error if any
      */
     suspend fun insert(
         name: String,
@@ -95,11 +95,11 @@ interface ProductRepositorySource {
     // Update
 
     /**
-     * Updates [Product] with [productId] id to provided [name], [categoryId] and [producerId]
-     * @param productId id to match [Product]
-     * @param name name to update the matching [Product] to
-     * @param categoryId id of the [ProductCategoryEntity] to update the matching [Product] to
-     * @param producerId id of the [ProductProducerEntity] to update the matching [Product] to
+     * Updates [ProductEntity] with [productId] id to provided [name], [categoryId] and [producerId]
+     * @param productId id to match [ProductEntity]
+     * @param name name to update the matching [ProductEntity] to
+     * @param categoryId id of the [ProductCategoryEntity] to update the matching [ProductEntity] to
+     * @param producerId id of the [ProductProducerEntity] to update the matching [ProductEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -110,21 +110,21 @@ interface ProductRepositorySource {
     ): UpdateResult
 
     /**
-     * Merges [product] into [mergingInto]
-     * @param product [Product] to merge
-     * @param mergingInto [Product] to merge the [product] into
+     * Merges [entity] into [mergingInto]
+     * @param entity [ProductEntity] to merge
+     * @param mergingInto [ProductEntity] to merge the [entity] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        product: Product,
-        mergingInto: Product,
+        entity: ProductEntity,
+        mergingInto: ProductEntity,
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [Product] matching [productId]
-     * @param productId id of the [Product] to delete
+     * Deletes [ProductEntity] matching [productId]
+     * @param productId id of the [ProductEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
@@ -136,71 +136,71 @@ interface ProductRepositorySource {
     // Read
 
     /**
-     * @param productId id of the [Product]
-     * @return [Product] matching [productId] id or null if none match
+     * @param productId id of the [ProductEntity]
+     * @return [ProductEntity] matching [productId] id or null if none match
      */
-    suspend fun get(productId: Long): Product?
+    suspend fun get(productId: Long): ProductEntity?
 
     /**
-     * @param productId id of the [Product]
-     * @return [Product] matching [productId] id or null if none match, as flow
+     * @param productId id of the [ProductEntity]
+     * @return [ProductEntity] matching [productId] id or null if none match, as flow
      */
-    fun getFlow(productId: Long): Flow<Data<Product?>>
+    fun getFlow(productId: Long): Flow<Data<ProductEntity?>>
 
     /**
-     * @param product [Product] to get the total spending from
-     * @return float representing total spending for the [product] as flow
+     * @param entity [ProductEntity] to get the total spending from
+     * @return float representing total spending for the [entity] as flow
      */
-    fun totalSpentFlow(product: Product): Flow<Data<Float?>>
+    fun totalSpentFlow(entity: ProductEntity): Flow<Data<Float?>>
 
     /**
-     * @param product [Product] to get the total spending by day from
+     * @param entity [ProductEntity] to get the total spending by day from
      * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByDayFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param product [Product] to get the total spending by week from
+     * @param entity [ProductEntity] to get the total spending by week from
      * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByWeekFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param product [Product] to get the total spending by month from
+     * @param entity [ProductEntity] to get the total spending by month from
      * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByMonthFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param product [Product] to get the total spending by year from
+     * @param entity [ProductEntity] to get the total spending by year from
      * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByYearFlow(entity: ProductEntity): Flow<Data<ImmutableList<ItemSpentByTime>>>
 
     /**
-     * @param product [Product] to match the items to
+     * @param entity [ProductEntity] to match the items to
      */
-    fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(entity: ProductEntity): Flow<PagingData<FullItem>>
 
     /**
-     * @param product [Product] to match the [ItemEntity] with
-     * @return newest [ItemEntity] that matches [product], null if none match
+     * @param entity [ProductEntity] to match the [ItemEntity] with
+     * @return newest [ItemEntity] that matches [entity], null if none match
      */
-    suspend fun newestItem(product: Product): ItemEntity?
+    suspend fun newestItem(entity: ProductEntity): ItemEntity?
 
     /**
-     * @param product [Product] to match the data with
-     * @return list of [ProductPriceByShopByTime] representing the average price of [product] groupped by variant, shop and month as flow
+     * @param entity [ProductEntity] to match the data with
+     * @return list of [ProductPriceByShopByTime] representing the average price of [entity] groupped by variant, shop and month as flow
      */
-    fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>
+    fun averagePriceByVariantByShopByMonthFlow(entity: ProductEntity): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>
 
     /**
-     * @return list of all [Product] as flow
+     * @return list of all [ProductEntity] as flow
      */
-    fun allFlow(): Flow<Data<ImmutableList<Product>>>
+    fun allFlow(): Flow<Data<ImmutableList<ProductEntity>>>
 
     /**
-     * @return total count of [Product]
+     * @return total count of [ProductEntity]
      */
     suspend fun totalCount(): Int
 
@@ -210,5 +210,5 @@ interface ProductRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<Product>
+    ): ImmutableList<ProductEntity>
 }

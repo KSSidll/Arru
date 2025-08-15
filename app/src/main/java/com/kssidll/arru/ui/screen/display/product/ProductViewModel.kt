@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
@@ -29,8 +29,8 @@ import javax.inject.Inject
 class ProductViewModel @Inject constructor(
     private val productRepository: ProductRepositorySource,
 ): ViewModel() {
-    private val mProduct: MutableState<Product?> = mutableStateOf(null)
-    val product: Product? by mProduct
+    private val mProduct: MutableState<ProductEntity?> = mutableStateOf(null)
+    val product: ProductEntity? by mProduct
 
     private var mProductListener: Job? = null
 

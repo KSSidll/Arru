@@ -9,8 +9,8 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -39,14 +39,14 @@ interface TransactionEntityDao {
 
     // Helper
 
-    @Query("SELECT * FROM ShopEntity WHERE ShopEntity.id = :shopId")
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
     suspend fun shopById(shopId: Long): ShopEntity?
 
-    @Query("SELECT * FROM ItemEntity WHERE ItemEntity.id = :itemId")
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.id = :itemId")
     suspend fun itemById(itemId: Long): ItemEntity?
 
-    @Query("SELECT * FROM product WHERE product.id = :productId")
-    suspend fun productById(productId: Long): Product?
+    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
+    suspend fun productById(productId: Long): ProductEntity?
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity?

@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ProducerRepositorySource
@@ -31,12 +31,12 @@ class EditProductViewModel @Inject constructor(
     override val producerRepository: ProducerRepositorySource,
     override val categoryRepository: CategoryRepositorySource,
 ): ModifyProductViewModel() {
-    private var mProduct: Product? = null
+    private var mProduct: ProductEntity? = null
 
     private val mMergeMessageProductName: MutableState<String> = mutableStateOf(String())
     val mergeMessageProductName get() = mMergeMessageProductName.value
 
-    val chosenMergeCandidate: MutableState<Product?> = mutableStateOf(null)
+    val chosenMergeCandidate: MutableState<ProductEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
     /**
@@ -76,7 +76,7 @@ class EditProductViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(productId: Long): Flow<Data<ImmutableList<Product>>> {
+    fun allMergeCandidates(productId: Long): Flow<Data<ImmutableList<ProductEntity>>> {
         return productRepository.allFlow()
             .map {
                 if (it is Data.Loaded) {
@@ -96,7 +96,7 @@ class EditProductViewModel @Inject constructor(
             productId = productId,
             name = screenState.name.value.data.orEmpty(),
             categoryId = screenState.selectedProductCategory.value.data?.id
-                ?: Product.INVALID_CATEGORY_ID,
+                ?: ProductEntity.INVALID_CATEGORY_ID,
             producerId = screenState.selectedProductProducer.value.data?.id
         )
 
@@ -175,7 +175,7 @@ class EditProductViewModel @Inject constructor(
      * Tries to delete merge product into provided [mergeCandidate]
      * @return resulting [MergeResult]
      */
-    suspend fun mergeWith(mergeCandidate: Product) = viewModelScope.async {
+    suspend fun mergeWith(mergeCandidate: ProductEntity) = viewModelScope.async {
         if (mProduct == null) {
             Log.e(
                 "InvalidId",

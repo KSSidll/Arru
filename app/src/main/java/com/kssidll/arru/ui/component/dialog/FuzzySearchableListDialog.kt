@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
@@ -230,7 +230,7 @@ private fun FuzzySearchableListDialogPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = Data.Loaded(Product.generateList().toImmutableList()),
+                items = Data.Loaded(ProductEntity.generateList().toImmutableList()),
                 itemText = { "test" },
                 calculateScore = { _, _ -> 0 }
             )
@@ -245,7 +245,7 @@ private fun EmptyFuzzySearchableListDialogPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = Data.Loaded(emptyList<Product>().toImmutableList()),
+                items = Data.Loaded(emptyList<ProductEntity>().toImmutableList()),
                 itemText = { "test" },
                 calculateScore = { _, _ -> 0 }
             )

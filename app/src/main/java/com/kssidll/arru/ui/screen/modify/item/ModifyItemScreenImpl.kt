@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
@@ -73,9 +73,9 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyItemScreenImpl(
     onBack: () -> Unit,
     state: ModifyItemScreenState,
-    products: Data<ImmutableList<Product>>,
+    products: Data<ImmutableList<ProductEntity>>,
     variants: Data<ImmutableList<ProductVariantEntity>>,
-    onNewProductSelected: (product: Product?) -> Unit,
+    onNewProductSelected: (product: ProductEntity?) -> Unit,
     onNewVariantSelected: (variant: ProductVariantEntity?) -> Unit,
     onSubmit: () -> Unit,
     onProductAddButtonClick: (query: String?) -> Unit,

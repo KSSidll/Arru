@@ -1,7 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
@@ -171,8 +171,8 @@ class VariantRepository(private val dao: ProductVariantEntityDao): VariantReposi
             .onStart { Data.Loading<ProductVariantEntity?>() }
     }
 
-    override fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>> {
-        return dao.byProductFlow(product.id, showGlobal)
+    override fun byProductFlow(productEntity: ProductEntity, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>> {
+        return dao.byProductFlow(productEntity.id, showGlobal)
             .cancellable()
             .distinctUntilChanged()
             .map { Data.Loaded(it.toImmutableList()) }

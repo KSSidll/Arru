@@ -10,8 +10,8 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -43,8 +43,8 @@ interface ProductCategoryEntityDao {
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
     suspend fun shopById(shopId: Long): ShopEntity
 
-    @Query("SELECT * FROM product WHERE product.id = :productId")
-    suspend fun productById(productId: Long): Product
+    @Query("SELECT * FROM ProductEntity WHERE ProductEntity.id = :productId")
+    suspend fun productById(productId: Long): ProductEntity
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
     suspend fun variantById(variantId: Long): ProductVariantEntity
@@ -70,8 +70,8 @@ interface ProductCategoryEntityDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        JOIN product ON product.id = ItemEntity.productId
-        WHERE product.categoryId = :categoryId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        WHERE ProductEntity.categoryId = :categoryId
         ORDER BY date DESC
         LIMIT :count
         OFFSET :offset
@@ -85,20 +85,20 @@ interface ProductCategoryEntityDao {
 
     @Query(
         """
-        SELECT product.*
-        FROM product
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        SELECT ProductEntity.*
+        FROM ProductEntity
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.categoryId
         WHERE ProductCategoryEntity.id = :categoryId
     """
     )
-    suspend fun getProducts(categoryId: Long): List<Product>
+    suspend fun getProducts(categoryId: Long): List<ProductEntity>
 
     @Query(
         """
         SELECT ProductVariantEntity.*
         FROM ProductVariantEntity
-        JOIN product ON product.id = ProductVariantEntity.productId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        JOIN ProductEntity ON ProductEntity.id = ProductVariantEntity.productId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.categoryId
         WHERE ProductCategoryEntity.id = :categoryId
     """
     )
@@ -108,15 +108,15 @@ interface ProductCategoryEntityDao {
         """
         SELECT ItemEntity.*
         FROM ItemEntity
-        JOIN product ON product.id = ItemEntity.productId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.categoryId
         WHERE ProductCategoryEntity.id = :categoryId
     """
     )
     suspend fun getItems(categoryId: Long): List<ItemEntity>
 
     @Delete
-    suspend fun deleteProducts(products: List<Product>)
+    suspend fun deleteProducts(entities: List<ProductEntity>)
 
     @Delete
     suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
@@ -125,14 +125,14 @@ interface ProductCategoryEntityDao {
     suspend fun deleteItems(entities: List<ItemEntity>)
 
     @Update
-    suspend fun updateProducts(products: List<Product>)
+    suspend fun updateProducts(entities: List<ProductEntity>)
 
     @Query(
         """
         SELECT COUNT(*)
         FROM ItemEntity
-        JOIN product ON product.id = ItemEntity.productId
-        WHERE ItemEntity.id < :itemEntityId AND product.categoryId = :categoryId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        WHERE ItemEntity.id < :itemEntityId AND ProductEntity.categoryId = :categoryId
     """
     )
     suspend fun countItemsBefore(
@@ -144,8 +144,8 @@ interface ProductCategoryEntityDao {
         """
         SELECT COUNT(*)
         FROM ItemEntity
-        JOIN product ON product.id = ItemEntity.productId
-        WHERE ItemEntity.id > :itemEntityId AND product.categoryId = :categoryId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        WHERE ItemEntity.id > :itemEntityId AND ProductEntity.categoryId = :categoryId
     """
     )
     suspend fun countItemsAfter(
@@ -168,8 +168,8 @@ interface ProductCategoryEntityDao {
         """
         SELECT SUM(ItemEntity.price * ItemEntity.quantity)
         FROM ItemEntity
-        JOIN product ON product.id = ItemEntity.productId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.categoryId
         WHERE ProductCategoryEntity.id = :categoryId
     """
     )
@@ -182,7 +182,7 @@ interface ProductCategoryEntityDao {
                    UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-            INNER JOIN product ON product.id = ItemEntity.productId
+            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
                 AND categoryId = :categoryId
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
@@ -192,7 +192,7 @@ interface ProductCategoryEntityDao {
             SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-            INNER JOIN product ON product.id = ItemEntity.productId
+            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
                 AND categoryId = :categoryId
             GROUP BY transaction_time
         )
@@ -213,7 +213,7 @@ interface ProductCategoryEntityDao {
                  ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON product.id = ItemEntity.productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
             AND categoryId = :categoryId
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date
@@ -223,7 +223,7 @@ interface ProductCategoryEntityDao {
         SELECT ((TransactionEntity.date - 345600000) / 604800000) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON product.id = ItemEntity.productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
             AND categoryId = :categoryId
         GROUP BY ItemEntities_time
     )
@@ -244,7 +244,7 @@ interface ProductCategoryEntityDao {
                DATE(current_timestamp, 'localtime', 'start of month') AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON product.id = ItemEntity.productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
             AND categoryId = :categoryId
         UNION ALL
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
@@ -254,7 +254,7 @@ interface ProductCategoryEntityDao {
         SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON product.id = ItemEntity.productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
             AND categoryId = :categoryId
         GROUP BY ItemEntities_time
     )
@@ -275,7 +275,7 @@ interface ProductCategoryEntityDao {
                DATE(current_timestamp, 'localtime', 'start of year') AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON product.id = ItemEntity.productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
             AND categoryId = :categoryId
         UNION ALL
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
@@ -285,7 +285,7 @@ interface ProductCategoryEntityDao {
         SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON product.id = ItemEntity.productId
+        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
             AND categoryId = :categoryId
         GROUP BY ItemEntities_time
     )
@@ -341,8 +341,8 @@ interface ProductCategoryEntityDao {
         SELECT ProductCategoryEntity.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        JOIN product ON product.id = ItemEntity.productId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = product.categoryId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.categoryId
         GROUP BY ProductCategoryEntity.id
     """
     )
@@ -353,8 +353,8 @@ interface ProductCategoryEntityDao {
         SELECT ProductCategoryEntity.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        INNER JOIN product ON ItemEntity.productId = product.id
-        INNER JOIN ProductCategoryEntity ON product.categoryId = ProductCategoryEntity.id
+        INNER JOIN ProductEntity ON ItemEntity.productId = ProductEntity.id
+        INNER JOIN ProductCategoryEntity ON ProductEntity.categoryId = ProductCategoryEntity.id
         WHERE STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) = :date
         GROUP BY ProductCategoryEntity.id
     """

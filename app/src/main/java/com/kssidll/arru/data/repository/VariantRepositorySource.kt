@@ -1,6 +1,6 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Data
 import kotlinx.collections.immutable.ImmutableList
@@ -59,7 +59,7 @@ interface VariantRepositorySource {
 
     /**
      * Inserts [ProductVariantEntity]
-     * @param productId id of the [Product] to insert the [ProductVariantEntity] for, null for global [ProductVariantEntity]
+     * @param productId id of the [ProductEntity] to insert the [ProductVariantEntity] for, null for global [ProductVariantEntity]
      * @param name name of the variant
      * @return [InsertResult] with id of the newly inserted [ProductVariantEntity] or an error if any
      */
@@ -84,7 +84,7 @@ interface VariantRepositorySource {
     /**
      * Updates [ProductVariantEntity] with [variantId] id to provided [productId] and [name]
      * @param variantId id to match [ProductVariantEntity]
-     * @param productId [Product] id to update the matching [ProductVariantEntity] to, null for global [ProductVariantEntity]
+     * @param productId [ProductEntity] id to update the matching [ProductVariantEntity] to, null for global [ProductVariantEntity]
      * @param name name to update the matching [ProductVariantEntity] to
      * @return [UpdateResult] with the result
      */
@@ -122,11 +122,11 @@ interface VariantRepositorySource {
     fun getFlow(variantId: Long): Flow<Data<ProductVariantEntity?>>
 
     /**
-     * @param product [Product] to match the [ProductVariantEntity] with
+     * @param productEntity [ProductEntity] to match the [ProductVariantEntity] with
      * @param showGlobal whether to return global variants as well
-     * @return list of [ProductVariantEntity] matching [product] as flow
+     * @return list of [ProductVariantEntity] matching [productEntity] as flow
      */
-    fun byProductFlow(product: Product, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>>
+    fun byProductFlow(productEntity: ProductEntity, showGlobal: Boolean): Flow<Data<ImmutableList<ProductVariantEntity>>>
 
     /**
      * @return total count of [ProductVariantEntity]

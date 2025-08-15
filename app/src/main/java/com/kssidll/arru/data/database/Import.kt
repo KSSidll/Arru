@@ -8,8 +8,8 @@ import android.util.JsonToken
 import android.util.Log
 import androidx.core.provider.DocumentsContractCompat
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -200,7 +200,7 @@ suspend fun handleCsvImport(
     val producerList = mutableListOf<ProductProducerEntity>()
     val categoryList = mutableListOf<ProductCategoryEntity>()
     val transactionList = mutableListOf<TransactionEntity>()
-    val productList = mutableListOf<Product>()
+    val productEntityList = mutableListOf<ProductEntity>()
     val variantList = mutableListOf<ProductVariantEntity>()
     val itemEntityList = mutableListOf<ItemEntity>()
 
@@ -420,8 +420,8 @@ suspend fun handleCsvImport(
             data.product?.let { product ->
                 if (products[product] == null) {
                     products.put(product, products.size.toLong() + 1) // id of 0 causes a foreign key constraint fail
-                    productList.add(
-                        Product(
+                    productEntityList.add(
+                        ProductEntity(
                             id = products[product]!!,
                             categoryId = categories[data.category]!!,
                             producerId = data.producer?.let { producers[it] },
@@ -490,7 +490,7 @@ suspend fun handleCsvImport(
             producers = producerList,
             categories = categoryList,
             transactions = transactionList,
-            products = productList,
+            productEntities = productEntityList,
             variants = variantList,
             entities = itemEntityList
         )
@@ -781,8 +781,8 @@ suspend fun handleCsvImport(
                             val producerId = if (text[2] != "null") text[2].toLong() else null
                             val name = text[3]
 
-                            productList.add(
-                                Product(
+                            productEntityList.add(
+                                ProductEntity(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     categoryId = categoryId + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     producerId = producerId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
@@ -907,7 +907,7 @@ suspend fun handleCsvImport(
             producers = producerList,
             categories = categoryList,
             transactions = transactionList,
-            products = productList,
+            productEntities = productEntityList,
             variants = variantList,
             entities = itemEntityList
         )
@@ -973,7 +973,7 @@ suspend fun handleJsonImport(
     val producerList = mutableListOf<ProductProducerEntity>()
     val categoryList = mutableListOf<ProductCategoryEntity>()
     val transactionList = mutableListOf<TransactionEntity>()
-    val productList = mutableListOf<Product>()
+    val productEntityList = mutableListOf<ProductEntity>()
     val variantList = mutableListOf<ProductVariantEntity>()
     val itemEntityList = mutableListOf<ItemEntity>()
 
@@ -1242,8 +1242,8 @@ suspend fun handleJsonImport(
                                                         && productCategoryId != null
                                                     ) {
                                                         if (products.add(itemProductId)) {
-                                                            productList.add(
-                                                                Product(
+                                                            productEntityList.add(
+                                                                ProductEntity(
                                                                     id = itemProductId,
                                                                     name = productName,
                                                                     categoryId = productCategoryId,
@@ -1408,7 +1408,7 @@ suspend fun handleJsonImport(
                     producers = producerList,
                     categories = categoryList,
                     transactions = transactionList,
-                    products = productList,
+                    productEntities = productEntityList,
                     variants = variantList,
                     entities = itemEntityList
                 )

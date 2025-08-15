@@ -1,8 +1,8 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -14,7 +14,7 @@ interface ImportRepositorySource {
         producers: List<ProductProducerEntity>,
         categories: List<ProductCategoryEntity>,
         transactions: List<TransactionEntity>,
-        products: List<Product>,
+        productEntities: List<ProductEntity>,
         variants: List<ProductVariantEntity>,
         entities: List<ItemEntity>
     )

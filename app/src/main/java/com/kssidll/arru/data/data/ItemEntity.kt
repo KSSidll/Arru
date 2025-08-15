@@ -30,7 +30,7 @@ import kotlin.math.log10
             onUpdate = ForeignKey.RESTRICT,
         ),
         ForeignKey(
-            entity = Product::class,
+            entity = ProductEntity::class,
             parentColumns = ["id"],
             childColumns = ["productId"],
             onDelete = ForeignKey.RESTRICT,
@@ -236,7 +236,7 @@ data class FullItem(
     val id: Long,
     val quantity: Long,
     val price: Long,
-    val product: Product,
+    val product: ProductEntity,
     val variant: ProductVariantEntity?,
     val category: ProductCategoryEntity,
     val producer: ProductProducerEntity?,
@@ -257,7 +257,7 @@ data class FullItem(
                 id = itemId,
                 quantity = generateRandomLongValue(),
                 price = generateRandomLongValue(),
-                product = Product.generate(),
+                product = ProductEntity.generate(),
                 variant = ProductVariantEntity.generate(),
                 category = ProductCategoryEntity.generate(),
                 producer = ProductProducerEntity.generate(),
@@ -463,7 +463,7 @@ data class ItemSpentByCategory(
 }
 
 data class ProductPriceByShopByTime(
-    @Embedded val product: Product?,
+    @Embedded val product: ProductEntity?,
     val variantName: String?,
     val producerName: String?,
     val price: Long?,
@@ -473,7 +473,7 @@ data class ProductPriceByShopByTime(
     companion object {
         fun generate(productId: Long = 0): ProductPriceByShopByTime {
             return ProductPriceByShopByTime(
-                product = Product.generate(productId),
+                product = ProductEntity.generate(productId),
                 variantName = generateRandomStringValue(),
                 producerName = generateRandomStringValue(),
                 price = generateRandomLongValue(),

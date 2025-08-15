@@ -13,7 +13,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = Product::class,
+            entity = ProductEntity::class,
             parentColumns = ["id"],
             childColumns = ["productId"],
             onDelete = ForeignKey.RESTRICT,

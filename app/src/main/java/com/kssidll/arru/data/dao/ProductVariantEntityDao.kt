@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -29,8 +29,8 @@ interface ProductVariantEntityDao {
 
     // Helper
 
-    @Query("SELECT product.* FROM product WHERE product.id = :productId")
-    suspend fun getProduct(productId: Long): Product?
+    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
+    suspend fun getProduct(productId: Long): ProductEntity?
 
     @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.variantId = :variantId")
     suspend fun getItems(variantId: Long): List<ItemEntity>

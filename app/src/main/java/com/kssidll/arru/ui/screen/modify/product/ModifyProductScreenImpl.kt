@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
@@ -39,7 +39,7 @@ import androidx.compose.material3.Surface as Surface1
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [Product]
+ * [ModifyScreen] implementation for [ProductEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyProductScreenState] instance representing the screen state
  * @param categories Categories that can be set for the product
@@ -74,11 +74,11 @@ fun ModifyProductScreenImpl(
     onCategoryAddButtonClick: (query: String?) -> Unit,
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onDelete: (() -> Unit)? = null,
-    onMerge: ((candidate: Product) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<Product>>> = flowOf(),
+    onMerge: ((candidate: ProductEntity) -> Unit)? = null,
+    mergeCandidates: Flow<Data<ImmutableList<ProductEntity>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
-    chosenMergeCandidate: Product? = null,
-    onChosenMergeCandidateChange: ((Product?) -> Unit)? = null,
+    chosenMergeCandidate: ProductEntity? = null,
+    onChosenMergeCandidateChange: ((ProductEntity?) -> Unit)? = null,
     showMergeConfirmDialog: Boolean = false,
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_add),

@@ -2,8 +2,8 @@ package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -15,7 +15,7 @@ class ImportRepository(private val dao: ImportDao): ImportRepositorySource {
         producers: List<ProductProducerEntity>,
         categories: List<ProductCategoryEntity>,
         transactions: List<TransactionEntity>,
-        products: List<Product>,
+        productEntities: List<ProductEntity>,
         variants: List<ProductVariantEntity>,
         entities: List<ItemEntity>
     ) {
@@ -24,7 +24,7 @@ class ImportRepository(private val dao: ImportDao): ImportRepositorySource {
             producers = producers,
             categories = categories,
             transactionEntities = transactions,
-            products = products,
+            productEntities = productEntities,
             variantEntities = variants,
             itemEntities = entities
         )

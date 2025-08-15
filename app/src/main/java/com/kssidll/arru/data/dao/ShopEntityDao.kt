@@ -8,8 +8,8 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -37,8 +37,8 @@ interface ShopEntityDao {
 
     // Helper
 
-    @Query("SELECT * FROM product WHERE product.id = :productId")
-    suspend fun productById(productId: Long): Product
+    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
+    suspend fun productById(productId: Long): ProductEntity
 
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducerEntity
@@ -64,7 +64,7 @@ interface ShopEntityDao {
         SELECT ItemEntity.*
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        JOIN product ON product.id = ItemEntity.productId
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productId
         WHERE TransactionEntity.shopEntityId = :shopId
         ORDER BY date DESC
         LIMIT :count

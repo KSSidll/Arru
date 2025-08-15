@@ -4,7 +4,7 @@ import android.content.Context
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProductCategoryEntityDao
-import com.kssidll.arru.data.dao.ProductDao
+import com.kssidll.arru.data.dao.ProductEntityDao
 import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.dao.ShopEntityDao
@@ -105,13 +105,13 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProductDao(appDatabase: AppDatabase): ProductDao {
-        return appDatabase.getProductDao()
+    fun provideProductDao(appDatabase: AppDatabase): ProductEntityDao {
+        return appDatabase.getProductEntityDao()
     }
 
     @Provides
-    fun provideProductRepository(productDao: ProductDao): ProductRepositorySource {
-        return ProductRepository(productDao)
+    fun provideProductRepository(dao: ProductEntityDao): ProductRepositorySource {
+        return ProductRepository(dao)
     }
 
     @Provides

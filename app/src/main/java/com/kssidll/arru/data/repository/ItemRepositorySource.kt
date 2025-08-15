@@ -1,7 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.Data
@@ -64,7 +64,7 @@ interface ItemRepositorySource {
     /**
      * Inserts [ItemEntity]
      * @param transactionId id of the [TransactionEntity] to add the [ItemEntity] to
-     * @param productId id of the [Product] in the [ItemEntity]
+     * @param productId id of the [ProductEntity] in the [ItemEntity]
      * @param variantId id of the [ProductVariantEntity] in the [ItemEntity]
      * @param quantity quantity of the [ItemEntity]
      * @param price price of the [ItemEntity]
@@ -83,7 +83,7 @@ interface ItemRepositorySource {
     /**
      * Updates [ItemEntity] with [itemId] to provided [productId], [variantId], [quantity] and [price]
      * @param itemId id to match [ItemEntity]
-     * @param productId [Product] id to update the matching [ItemEntity] to
+     * @param productId [ProductEntity] id to update the matching [ItemEntity] to
      * @param variantId [ProductVariantEntity] id to update the matching [ItemEntity] to
      * @param quantity quantity to update the matching [ItemEntity] to
      * @param price price to update the matching [ItemEntity] to
