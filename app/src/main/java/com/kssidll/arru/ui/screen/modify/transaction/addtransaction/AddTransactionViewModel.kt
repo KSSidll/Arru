@@ -41,7 +41,7 @@ class AddTransactionViewModel @Inject constructor(
         val latest = transactionRepository.newest()
 
         if (latest != null) {
-            val shop = latest.shopId?.let { shopRepository.get(it) }
+            val shop = latest.shopEntityId?.let { shopRepository.get(it) }
 
             screenState.selectedShop.value = Field.Loaded(shop)
 

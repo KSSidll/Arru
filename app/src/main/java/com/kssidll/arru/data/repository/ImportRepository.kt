@@ -6,12 +6,12 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 
 class ImportRepository(private val dao: ImportDao): ImportRepositorySource {
     override suspend fun insertAll(
-        shops: List<Shop>,
+        shopEntities: List<ShopEntity>,
         producers: List<ProductProducer>,
         categories: List<ProductCategory>,
         transactions: List<TransactionEntity>,
@@ -20,13 +20,13 @@ class ImportRepository(private val dao: ImportDao): ImportRepositorySource {
         entities: List<ItemEntity>
     ) {
         dao.insertAll(
-            shops = shops,
+            shopEntities = shopEntities,
             producers = producers,
             categories = categories,
-            transactions = transactions,
+            transactionEntities = transactions,
             products = products,
             variants = variants,
-            entities = entities
+            itemEntities = entities
         )
     }
 

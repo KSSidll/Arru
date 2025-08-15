@@ -14,7 +14,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -40,8 +40,8 @@ interface CategoryDao {
 
     // Helper
 
-    @Query("SELECT * FROM shop WHERE shop.id = :shopId")
-    suspend fun shopById(shopId: Long): Shop
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
+    suspend fun shopById(shopId: Long): ShopEntity
 
     @Query("SELECT * FROM product WHERE product.id = :productId")
     suspend fun productById(productId: Long): Product
@@ -320,7 +320,7 @@ interface CategoryDao {
             val product = productById(entity.productId)
             val variant = entity.variantId?.let { variantById(it) }
             val producer = product.producerId?.let { producerById(it) }
-            val shop = transactionEntity.shopId?.let { shopById(it) }
+            val shop = transactionEntity.shopEntityId?.let { shopById(it) }
 
             FullItem(
                 id = entity.id,

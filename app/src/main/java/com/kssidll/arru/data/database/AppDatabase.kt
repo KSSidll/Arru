@@ -19,6 +19,7 @@ import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.dao.ShopDao
+import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.dao.VariantDao
 import com.kssidll.arru.data.data.DatabaseBackup
@@ -27,7 +28,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
@@ -94,7 +95,7 @@ suspend fun Context.currentDbBackupDirectory(): File {
         Product::class,
         ProductVariant::class,
         ProductCategory::class,
-        Shop::class,
+        ShopEntity::class,
         ProductProducer::class,
     ],
     autoMigrations = [
@@ -119,7 +120,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getProductDao(): ProductDao
     abstract fun getVariantDao(): VariantDao
     abstract fun getCategoryDao(): CategoryDao
-    abstract fun getShopDao(): ShopDao
+    abstract fun getShopEntityDao(): ShopEntityDao
     abstract fun getProducerDao(): ProducerDao
     abstract fun getImportDao(): ImportDao
 

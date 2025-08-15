@@ -13,7 +13,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
@@ -39,8 +39,8 @@ interface TransactionEntityDao {
 
     // Helper
 
-    @Query("SELECT * FROM shop WHERE shop.id = :shopId")
-    suspend fun shopById(shopId: Long): Shop?
+    @Query("SELECT * FROM ShopEntity WHERE ShopEntity.id = :shopId")
+    suspend fun shopById(shopId: Long): ShopEntity?
 
     @Query("SELECT * FROM ItemEntity WHERE ItemEntity.id = :itemId")
     suspend fun itemById(itemId: Long): ItemEntity?
@@ -76,7 +76,7 @@ interface TransactionEntityDao {
             val variant = item.variantId?.let { variantById(it) }
             val category = categoryById(product.categoryId)!!
             val producer = product.producerId?.let { producerById(it) }
-            val shop = transactionBasket.shopId?.let { shopById(it) }
+            val shop = transactionBasket.shopEntityId?.let { shopById(it) }
 
             FullItem(
                 id = item.id,
@@ -103,7 +103,7 @@ interface TransactionEntityDao {
                 val variant = item.variantId?.let { variantById(it) }
                 val category = categoryById(product.categoryId)!!
                 val producer = product.producerId?.let { producerById(it) }
-                val shop = transactionBasket.shopId?.let { shopById(it) }
+                val shop = transactionBasket.shopEntityId?.let { shopById(it) }
 
                 FullItem(
                     id = item.id,
@@ -263,7 +263,7 @@ interface TransactionEntityDao {
             startPosition,
             count
         ).map { basket ->
-            val shop = basket.shopId?.let { shopById(it) }
+            val shop = basket.shopEntityId?.let { shopById(it) }
             val items = fullItemsByTransactionBasketId(basket.id)
 
             TransactionBasketWithItems(
@@ -283,7 +283,7 @@ interface TransactionEntityDao {
     fun transactionBasketWithItems(transactionEntityId: Long): Flow<TransactionBasketWithItems?> {
         return getFlow(transactionEntityId).map { basket ->
             if (basket != null) {
-                val shop = basket.shopId?.let { shopById(it) }
+                val shop = basket.shopEntityId?.let { shopById(it) }
                 val items = fullItemsByTransactionBasketId(basket.id)
 
                 return@map TransactionBasketWithItems(

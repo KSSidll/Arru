@@ -2,7 +2,7 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.domain.data.Data
@@ -73,18 +73,18 @@ interface ShopRepositorySource {
     // Create
 
     /**
-     * Inserts [Shop]
-     * @param name name of the [Shop] to insert
-     * @return [InsertResult] with id of the newly inserted [Shop] or an error if any
+     * Inserts [ShopEntity]
+     * @param name name of the [ShopEntity] to insert
+     * @return [InsertResult] with id of the newly inserted [ShopEntity] or an error if any
      */
     suspend fun insert(name: String): InsertResult
 
     // Update
 
     /**
-     * Updates [Shop] with [shopId] to provided [name]
-     * @param shopId id to match [Shop]
-     * @param name name to update the matching [Shop] to
+     * Updates [ShopEntity] with [shopId] to provided [name]
+     * @param shopId id to match [ShopEntity]
+     * @param name name to update the matching [ShopEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
@@ -94,20 +94,20 @@ interface ShopRepositorySource {
 
     /**
      * Merges [shop] into [mergingInto]
-     * @param shop [Shop] to merge
-     * @param mergingInto [Shop] to merge the [shop] into
+     * @param shop [ShopEntity] to merge
+     * @param mergingInto [ShopEntity] to merge the [shop] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        shop: Shop,
-        mergingInto: Shop
+        shop: ShopEntity,
+        mergingInto: ShopEntity
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [Shop] matching [shopId]
-     * @param shopId id fo the [Shop] to delete
+     * Deletes [ShopEntity] matching [shopId]
+     * @param shopId id fo the [ShopEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
@@ -119,51 +119,51 @@ interface ShopRepositorySource {
     // Read
 
     /**
-     * @param shopId id of the [Shop]
-     * @return [Shop] matching [shopId] id or null if none match
+     * @param shopId id of the [ShopEntity]
+     * @return [ShopEntity] matching [shopId] id or null if none match
      */
-    suspend fun get(shopId: Long): Shop?
+    suspend fun get(shopId: Long): ShopEntity?
 
     /**
-     * @param shopId id of the [Shop]
-     * @return [Shop] matching [shopId] id or null if none match, as flow
+     * @param shopId id of the [ShopEntity]
+     * @return [ShopEntity] matching [shopId] id or null if none match, as flow
      */
-    fun getFlow(shopId: Long): Flow<Data<Shop?>>
+    fun getFlow(shopId: Long): Flow<Data<ShopEntity?>>
 
     /**
-     * @param shop [Shop] to get the total spending from
-     * @return float representing total spending for the [shop] as flow
+     * @param entity [ShopEntity] to get the total spending from
+     * @return float representing total spending for the [entity] as flow
      */
-    fun totalSpentFlow(shop: Shop): Flow<Data<Float?>>
+    fun totalSpentFlow(entity: ShopEntity): Flow<Data<Float?>>
 
     /**
-     * @param shop [Shop] to get the total spending by day from
+     * @param entity [ShopEntity] to get the total spending by day from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by day as flow
      */
-    fun totalSpentByDayFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByDayFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
-     * @param shop [Shop] to get the total spending by week from
+     * @param entity [ShopEntity] to get the total spending by week from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by week as flow
      */
-    fun totalSpentByWeekFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByWeekFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
-     * @param shop [Shop] to get the total spending by month from
+     * @param entity [ShopEntity] to get the total spending by month from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by month as flow
      */
-    fun totalSpentByMonthFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByMonthFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
-     * @param shop [Shop] to get the total spending by year from
+     * @param entity [ShopEntity] to get the total spending by year from
      * @return list of [TransactionTotalSpentByTime] representing total spending groupped by year as flow
      */
-    fun totalSpentByYearFlow(shop: Shop): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
+    fun totalSpentByYearFlow(entity: ShopEntity): Flow<Data<ImmutableList<TransactionTotalSpentByTime>>>
 
     /**
-     * @param shop [Shop] to match the items to
+     * @param shopEntity [ShopEntity] to match the items to
      */
-    fun fullItemsPagedFlow(shop: Shop): Flow<PagingData<FullItem>>
+    fun fullItemsPagedFlow(entity: ShopEntity): Flow<PagingData<FullItem>>
 
     /**
      * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop
@@ -181,12 +181,12 @@ interface ShopRepositorySource {
     ): Flow<ImmutableList<TransactionTotalSpentByShop>>
 
     /**
-     * @return list of all [Shop] as flow
+     * @return list of all [ShopEntity] as flow
      */
-    fun allFlow(): Flow<Data<ImmutableList<Shop>>>
+    fun allFlow(): Flow<Data<ImmutableList<ShopEntity>>>
 
     /**
-     * @return total count of [Shop]
+     * @return total count of [ShopEntity]
      */
     suspend fun totalCount(): Int
 
@@ -196,5 +196,5 @@ interface ShopRepositorySource {
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): ImmutableList<Shop>
+    ): ImmutableList<ShopEntity>
 }

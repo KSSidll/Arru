@@ -10,16 +10,16 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 
 @Dao
 interface ImportDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertShops(entities: List<Shop>)
+    suspend fun insertShops(entities: List<ShopEntity>)
 
-    @Query("DELETE FROM Shop")
+    @Query("DELETE FROM ShopEntity")
     suspend fun deleteShops()
 
 
@@ -78,22 +78,22 @@ interface ImportDao {
 
     @Transaction
     suspend fun insertAll(
-        shops: List<Shop>,
+        shopEntities: List<ShopEntity>,
         producers: List<ProductProducer>,
         categories: List<ProductCategory>,
-        transactions: List<TransactionEntity>,
+        transactionEntities: List<TransactionEntity>,
         products: List<Product>,
         variants: List<ProductVariant>,
-        entities: List<ItemEntity>
+        itemEntities: List<ItemEntity>
     ) {
         deleteAll()
 
-        insertShops(shops)
+        insertShops(shopEntities)
         insertProducers(producers)
         insertCategories(categories)
-        insertTransactions(transactions)
+        insertTransactions(transactionEntities)
         insertProducts(products)
         insertVariants(variants)
-        insertItems(entities)
+        insertItems(itemEntities)
     }
 }

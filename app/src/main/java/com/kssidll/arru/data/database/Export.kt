@@ -10,7 +10,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.asCsvList
 import com.kssidll.arru.data.repository.CategoryRepositorySource
@@ -217,7 +217,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(shopCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    Shop.csvHeaders()
+                    ShopEntity.csvHeaders()
                         .toByteArray()
                 )
 
@@ -372,7 +372,7 @@ suspend fun exportDataAsCompactCsv(
 
                     transactions.forEach { transactionData ->
                         val shop =
-                            transactionData.shopId?.let { shopRepository.get(it) }?.name ?: "null"
+                            transactionData.shopEntityId?.let { shopRepository.get(it) }?.name ?: "null"
                         val items = itemRepository.getByTransaction(transactionData.id)
 
                         if (items.isEmpty()) {
@@ -486,7 +486,7 @@ suspend fun exportDataAsJson(
 
                     transactions.forEach { transactionData ->
                         val shop =
-                            transactionData.shopId?.let { shopRepository.get(it) }
+                            transactionData.shopEntityId?.let { shopRepository.get(it) }
                         val items = itemRepository.getByTransaction(transactionData.id)
 
                         writer.beginObject()

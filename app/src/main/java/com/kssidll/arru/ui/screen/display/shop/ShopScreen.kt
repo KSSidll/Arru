@@ -62,7 +62,7 @@ import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.Data
@@ -100,7 +100,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun ShopScreen(
     onBack: () -> Unit,
-    shop: Shop?,
+    shop: ShopEntity?,
     transactionItems: LazyPagingItems<FullItem>,
     spentByTimeData: Data<ImmutableList<TransactionTotalSpentByTime>>,
     totalSpentData: Data<Float?>,

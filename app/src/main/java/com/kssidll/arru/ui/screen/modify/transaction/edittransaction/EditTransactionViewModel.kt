@@ -2,7 +2,7 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
@@ -43,7 +43,7 @@ class EditTransactionViewModel @Inject constructor(
     private suspend fun updateStateForTransaction(
         transaction: TransactionEntity?
     ) {
-        val shop: Shop? = transaction?.shopId?.let { shopRepository.get(it) }
+        val shop: ShopEntity? = transaction?.shopEntityId?.let { shopRepository.get(it) }
 
         screenState.date.apply {
             value = Field.Loaded(transaction?.date)

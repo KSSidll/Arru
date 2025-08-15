@@ -20,9 +20,9 @@ import kotlin.math.log10
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = Shop::class,
+            entity = ShopEntity::class,
             parentColumns = ["id"],
-            childColumns = ["shopId"],
+            childColumns = ["shopEntityId"],
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
@@ -33,7 +33,7 @@ import kotlin.math.log10
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) val date: Long,
-    @ColumnInfo(index = true) val shopId: Long?,
+    @ColumnInfo(index = true) val shopEntityId: Long?,
     val totalCost: Long,
     val note: String?,
 ) {
@@ -64,7 +64,7 @@ data class TransactionEntity(
      */
     @Ignore
     fun formatAsCsvString(): String {
-        return "${id};${date};${shopId};${actualTotalCost()};${note}"
+        return "${id};${date};${shopEntityId};${actualTotalCost()};${note}"
     }
 
     companion object {
@@ -121,7 +121,7 @@ data class TransactionEntity(
             return TransactionEntity(
                 id = transactionId,
                 date = generateRandomTime(),
-                shopId = generateRandomLongValue(),
+                shopEntityId = generateRandomLongValue(),
                 totalCost = generateRandomLongValue(),
                 note = generateRandomStringValue()
             )
@@ -156,7 +156,7 @@ data class TransactionEntity(
 data class TransactionBasketWithItems(
     val id: Long,
     val date: Long,
-    val shop: Shop?,
+    val shop: ShopEntity?,
     val totalCost: Long,
     val note: String?,
     val items: List<FullItem>,
@@ -166,7 +166,7 @@ data class TransactionBasketWithItems(
             return TransactionBasketWithItems(
                 id = transactionBasketWithItemsId,
                 date = generateRandomTime(),
-                shop = Shop.generate(),
+                shop = ShopEntity.generate(),
                 totalCost = generateRandomLongValue(),
                 note = generateRandomStringValue(),
                 items = FullItem.generateList(),

@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
@@ -26,12 +26,12 @@ import javax.inject.Inject
 class EditShopViewModel @Inject constructor(
     override val shopRepository: ShopRepositorySource,
 ): ModifyShopViewModel() {
-    private var mShop: Shop? = null
+    private var mShop: ShopEntity? = null
 
     private val mMergeMessageShopName: MutableState<String> = mutableStateOf(String())
     val mergeMessageShopName get() = mMergeMessageShopName.value
 
-    val chosenMergeCandidate: MutableState<Shop?> = mutableStateOf(null)
+    val chosenMergeCandidate: MutableState<ShopEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
     /**
@@ -59,7 +59,7 @@ class EditShopViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(shopId: Long): Flow<Data<ImmutableList<Shop>>> {
+    fun allMergeCandidates(shopId: Long): Flow<Data<ImmutableList<ShopEntity>>> {
         return shopRepository.allFlow()
             .map {
                 if (it is Data.Loaded) {
@@ -143,7 +143,7 @@ class EditShopViewModel @Inject constructor(
      * Tries to delete merge shop into provided [mergeCandidate]
      * @return resulting [MergeResult]
      */
-    suspend fun mergeWith(mergeCandidate: Shop) = viewModelScope.async {
+    suspend fun mergeWith(mergeCandidate: ShopEntity) = viewModelScope.async {
         if (mShop == null) {
             Log.e(
                 "InvalidId",

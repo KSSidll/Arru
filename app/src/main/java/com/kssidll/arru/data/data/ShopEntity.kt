@@ -15,17 +15,18 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
             value = ["name"],
             unique = true
         )
-    ]
+    ],
+    tableName = "ShopEntity"
 )
-data class Shop(
+data class ShopEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
 ): FuzzySearchSource, NameSource {
     /**
-     * Converts the [Shop] data to a string with csv format
+     * Converts the [ShopEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
-     * @return [Shop] data as [String] with csv format
+     * @return [ShopEntity] data as [String] with csv format
      */
     @Ignore
     fun formatAsCsvString(): String {
@@ -34,8 +35,8 @@ data class Shop(
 
     companion object {
         /**
-         * Returns the [String] representing the [Shop] csv format headers
-         * @return [String] representing the [Shop] csv format headers
+         * Returns the [String] representing the [ShopEntity] csv format headers
+         * @return [String] representing the [ShopEntity] csv format headers
          */
         @Ignore
         fun csvHeaders(): String {
@@ -43,15 +44,15 @@ data class Shop(
         }
 
         @Ignore
-        fun generate(shopId: Long = 0): Shop {
-            return Shop(
+        fun generate(shopId: Long = 0): ShopEntity {
+            return ShopEntity(
                 id = shopId,
                 name = generateRandomStringValue(),
             )
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<Shop> {
+        fun generateList(amount: Int = 10): List<ShopEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -89,14 +90,14 @@ data class Shop(
 }
 
 /**
- * Converts a list of [Shop] data to a list of strings with csv format
+ * Converts a list of [ShopEntity] data to a list of strings with csv format
  * @param includeHeaders whether to include the csv headers
- * @return [Shop] data as list of string with csv format
+ * @return [ShopEntity] data as list of string with csv format
  */
-fun List<Shop>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+fun List<ShopEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(Shop.csvHeaders() + "\n")
+        add(ShopEntity.csvHeaders() + "\n")
     }
 
     // Add rows

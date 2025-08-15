@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FuzzySearchSource
@@ -81,8 +81,8 @@ fun ModifyTransactionScreenImpl(
     isExpandedScreen: Boolean,
     onBack: () -> Unit,
     state: ModifyTransactionScreenState,
-    shops: Data<ImmutableList<Shop>>,
-    onNewShopSelected: (shop: Shop?) -> Unit,
+    shops: Data<ImmutableList<ShopEntity>>,
+    onNewShopSelected: (shop: ShopEntity?) -> Unit,
     onSubmit: () -> Unit,
     onShopAddButtonClick: (query: String?) -> Unit,
     onDelete: (() -> Unit)? = null,
@@ -176,7 +176,7 @@ fun ModifyTransactionScreenImpl(
 @Composable
 private fun ModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
-    shops: Data<ImmutableList<Shop>>,
+    shops: Data<ImmutableList<ShopEntity>>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
@@ -371,7 +371,7 @@ private fun ModifyTransactionScreenContent(
 @Composable
 private fun ExpandedModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
-    shops: Data<ImmutableList<Shop>>,
+    shops: Data<ImmutableList<ShopEntity>>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {

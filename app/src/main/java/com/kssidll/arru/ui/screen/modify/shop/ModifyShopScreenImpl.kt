@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.flowOf
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [Shop]
+ * [ModifyScreen] implementation for [ShopEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyShopScreenState] instance representing the screen state
  * @param onSubmit Callback called when the submit action is triggered
@@ -53,11 +53,11 @@ fun ModifyShopScreenImpl(
     state: ModifyShopScreenState,
     onSubmit: () -> Unit,
     onDelete: (() -> Unit)? = null,
-    onMerge: ((candidate: Shop) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<Shop>>> = flowOf(),
+    onMerge: ((candidate: ShopEntity) -> Unit)? = null,
+    mergeCandidates: Flow<Data<ImmutableList<ShopEntity>>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
-    chosenMergeCandidate: Shop? = null,
-    onChosenMergeCandidateChange: ((Shop?) -> Unit)? = null,
+    chosenMergeCandidate: ShopEntity? = null,
+    onChosenMergeCandidateChange: ((ShopEntity?) -> Unit)? = null,
     showMergeConfirmDialog: Boolean = false,
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_shop_add),

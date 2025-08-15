@@ -14,7 +14,7 @@ import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -37,8 +37,8 @@ interface ProductDao {
 
     // Helper
 
-    @Query("SELECT * FROM shop WHERE shop.id = :shopId")
-    suspend fun shopById(shopId: Long): Shop
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
+    suspend fun shopById(shopId: Long): ShopEntity
 
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer?
@@ -298,7 +298,7 @@ interface ProductDao {
             val variant = entity.variantId?.let { variantById(it) }
             val category = categoryById(product.categoryId)!!
             val producer = product.producerId?.let { producerById(it) }
-            val shop = transactionEntity.shopId?.let { shopById(it) }
+            val shop = transactionEntity.shopEntityId?.let { shopById(it) }
 
             FullItem(
                 id = entity.id,
@@ -330,17 +330,17 @@ interface ProductDao {
             FROM date_series
             WHERE date_series.end_date > date_series.start_date
         )
-        SELECT product.*, AVG(ItemEntity.price) AS price, shop.name AS shopName, productvariant.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
+        SELECT product.*, AVG(ItemEntity.price) AS price, ShopEntity.name AS shopName, productvariant.name as variantName, productproducer.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
         FROM date_series
         LEFT JOIN TransactionEntity ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch'))
         JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
             AND ItemEntity.productId = :productId
-        LEFT JOIN shop ON TransactionEntity.shopId = shop.id
+        LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
         LEFT JOIN productvariant ON ItemEntity.variantId = productvariant.id
         LEFT JOIN product ON ItemEntity.productId = product.id
         LEFT JOIN productproducer ON product.producerId = productproducer.id
         WHERE time IS NOT NULL
-        GROUP BY time, shopId, variantId, producerId
+        GROUP BY time, shopEntityId, variantId, producerId
         ORDER BY time
     """
     )

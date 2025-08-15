@@ -68,7 +68,7 @@ class TransactionBasketRepository(
         val newTransaction = transaction.copy(
             date = date,
             totalCost = totalCost,
-            shopId = shopId,
+            shopEntityId = shopId,
             note = note
         )
 
@@ -196,7 +196,7 @@ class TransactionBasketRepository(
                     TransactionBasketWithItems(
                         id = transaction.id,
                         date = transaction.date,
-                        shop = transaction.shopId?.let { dao.shopById(it) },
+                        shop = transaction.shopEntityId?.let { dao.shopById(it) },
                         totalCost = transaction.totalCost,
                         items = dao.fullItemsByTransactionBasketId(transaction.id),
                         note = transaction.note

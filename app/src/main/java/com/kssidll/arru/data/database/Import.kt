@@ -12,7 +12,7 @@ import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
 import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ImportRepositorySource
 import java.io.BufferedReader
@@ -196,7 +196,7 @@ suspend fun handleCsvImport(
     }
 
     // Prepare data
-    val shopList = mutableListOf<Shop>()
+    val shopEntityList = mutableListOf<ShopEntity>()
     val producerList = mutableListOf<ProductProducer>()
     val categoryList = mutableListOf<ProductCategory>()
     val transactionList = mutableListOf<TransactionEntity>()
@@ -361,8 +361,8 @@ suspend fun handleCsvImport(
             data.shop?.let { shop ->
                 if (shops[shop] == null) {
                     shops.put(shop, shops.size.toLong() + 1) // id of 0 causes a foreign key constraint fail
-                    shopList.add(
-                        Shop(
+                    shopEntityList.add(
+                        ShopEntity(
                             id = shops[shop]!!,
                             name = shop
                         )
@@ -409,7 +409,7 @@ suspend fun handleCsvImport(
                     TransactionEntity(
                         id = transactions[data.transactionId]!!,
                         date = data.transactionDate,
-                        shopId = data.shop?.let { shops[it] },
+                        shopEntityId = data.shop?.let { shops[it] },
                         totalCost = data.transactionTotalPrice,
                         note = data.transactionNote
                     )
@@ -486,7 +486,7 @@ suspend fun handleCsvImport(
         onProgressChange(2)
 
         importRepository.insertAll(
-            shops = shopList,
+            shopEntities = shopEntityList,
             producers = producerList,
             categories = categoryList,
             transactions = transactionList,
@@ -575,8 +575,8 @@ suspend fun handleCsvImport(
                             val id = text[0].toLong()
                             val name = text[1]
 
-                            shopList.add(
-                                Shop(
+                            shopEntityList.add(
+                                ShopEntity(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     name = name
                                 )
@@ -709,7 +709,7 @@ suspend fun handleCsvImport(
                                     TransactionEntity(
                                         id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                         date = date,
-                                        shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                        shopEntityId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
                                         totalCost = totalCost,
                                         note = note
                                     )
@@ -737,7 +737,7 @@ suspend fun handleCsvImport(
                                     TransactionEntity(
                                         id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                         date = date,
-                                        shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                        shopEntityId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
                                         totalCost = totalCost,
                                         note = null
                                     )
@@ -903,7 +903,7 @@ suspend fun handleCsvImport(
         onProgressChange(7)
 
         importRepository.insertAll(
-            shops = shopList,
+            shopEntities = shopEntityList,
             producers = producerList,
             categories = categoryList,
             transactions = transactionList,
@@ -969,7 +969,7 @@ suspend fun handleJsonImport(
     }
 
     // Prepare data
-    val shopList = mutableListOf<Shop>()
+    val shopEntityList = mutableListOf<ShopEntity>()
     val producerList = mutableListOf<ProductProducer>()
     val categoryList = mutableListOf<ProductCategory>()
     val transactionList = mutableListOf<TransactionEntity>()
@@ -1070,8 +1070,8 @@ suspend fun handleJsonImport(
                                     // File version 1.0, @since v2.5.0
                                     if (transactionShopId != null && shopName != null) {
                                         if (shops.add(transactionShopId)) {
-                                            shopList.add(
-                                                Shop(
+                                            shopEntityList.add(
+                                                ShopEntity(
                                                     id = transactionShopId,
                                                     name = shopName,
                                                 )
@@ -1388,7 +1388,7 @@ suspend fun handleJsonImport(
                                 TransactionEntity(
                                     id = id,
                                     date = date,
-                                    shopId = transactionShopId,
+                                    shopEntityId = transactionShopId,
                                     totalCost = cost,
                                     note = transactionNote
                                 )
@@ -1404,7 +1404,7 @@ suspend fun handleJsonImport(
                 onProgressChange(1)
 
                 importRepository.insertAll(
-                    shops = shopList,
+                    shopEntities = shopEntityList,
                     producers = producerList,
                     categories = categoryList,
                     transactions = transactionList,

@@ -1,7 +1,7 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
@@ -79,8 +79,8 @@ interface TransactionBasketRepositorySource {
      * Inserts [TransactionEntity]
      * @param date date of the [TransactionEntity]
      * @param totalCost total cost of the [TransactionEntity]
-     * @param shopId id of the [Shop] in the [TransactionEntity]
-     * @param note note of the [Shop] in the [TransactionEntity]
+     * @param shopId id of the [ShopEntity] in the [TransactionEntity]
+     * @param note note of the [ShopEntity] in the [TransactionEntity]
      * @return [InsertResult] with id of the newly inserted [TransactionEntity] or an error if any
      */
     suspend fun insert(
@@ -97,7 +97,7 @@ interface TransactionBasketRepositorySource {
      * @param transactionId id to match [TransactionEntity]
      * @param date date to update the matching [TransactionEntity] to
      * @param totalCost total cost to update the matching [TransactionEntity] to
-     * @param shopId id of the [Shop] to update the matching [TransactionEntity] to
+     * @param shopId id of the [ShopEntity] to update the matching [TransactionEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(

@@ -241,7 +241,7 @@ data class FullItem(
     val category: ProductCategory,
     val producer: ProductProducer?,
     val date: Long,
-    val shop: Shop?,
+    val shop: ShopEntity?,
 ) {
     fun actualQuantity(): Float {
         return ItemEntity.actualQuantity(quantity)
@@ -262,7 +262,7 @@ data class FullItem(
                 category = ProductCategory.generate(),
                 producer = ProductProducer.generate(),
                 date = generateRandomDate().time,
-                shop = Shop.generate(),
+                shop = ShopEntity.generate(),
             )
         }
 
@@ -380,13 +380,13 @@ data class TransactionTotalSpentByTime(
 }
 
 data class TransactionTotalSpentByShop(
-    @Embedded val shop: Shop,
+    @Embedded val shop: ShopEntity,
     val total: Long,
 ): RankSource {
     companion object {
         fun generate(shopId: Long = 0): TransactionTotalSpentByShop {
             return TransactionTotalSpentByShop(
-                shop = Shop.generate(shopId),
+                shop = ShopEntity.generate(shopId),
                 total = generateRandomLongValue(),
             )
         }

@@ -45,7 +45,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.Shop
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -61,7 +61,7 @@ fun FullItemCard(
     onItemLongClick: ((item: FullItem) -> Unit)? = null,
     onCategoryClick: ((category: ProductCategory) -> Unit)? = null,
     onProducerClick: ((producer: ProductProducer) -> Unit)? = null,
-    onShopClick: ((shop: Shop) -> Unit)? = null,
+    onShopClick: ((shop: ShopEntity) -> Unit)? = null,
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current
 
