@@ -153,7 +153,7 @@ interface TransactionBasketDao {
         """
         WITH date_series AS (
             SELECT MIN(transactionbasket.date) AS start_date,
-                   UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
+                   STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM transactionbasket
             UNION ALL
             SELECT (start_date + 86400000) AS start_date, end_date
@@ -178,7 +178,7 @@ interface TransactionBasketDao {
         """
         WITH date_series AS (
         SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
-                 ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
+                 ((STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM transactionbasket
         UNION ALL
         SELECT (start_date + 604800000) AS start_date, end_date

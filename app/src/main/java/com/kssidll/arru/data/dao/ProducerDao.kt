@@ -186,7 +186,7 @@ interface ProducerDao {
         """
         WITH date_series AS (
             SELECT MIN(transactionbasket.date) AS start_date,
-                   UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
+                   STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM item
             JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
             INNER JOIN product ON product.id = item.productId
@@ -217,7 +217,7 @@ interface ProducerDao {
         """
         WITH date_series AS (
         SELECT (((MIN(transactionbasket.date) / 86400000) - ((MIN(transactionbasket.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
-                 ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
+                 ((STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM item
         JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
         INNER JOIN product ON product.id = item.productId
