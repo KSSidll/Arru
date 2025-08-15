@@ -158,7 +158,7 @@ interface ProductEntityDao {
         """
         WITH date_series AS (
             SELECT MIN(TransactionEntity.date) AS start_date,
-                   UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000 AS end_date
+                   STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000 AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
@@ -189,7 +189,7 @@ interface ProductEntityDao {
         """
         WITH date_series AS (
         SELECT (((MIN(TransactionEntity.date) / 86400000) - ((MIN(TransactionEntity.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
-                 ((UNIXEPOCH(DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
+                 ((STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
         FROM ItemEntity
         JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
         INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
