@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.repository.ItemRepositorySource
@@ -125,7 +125,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         screenState.price.apply { value = value.toLoading() }
         screenState.quantity.apply { value = value.toLoading() }
 
-        val lastItem: Item? = product?.let {
+        val lastItem: ItemEntity? = product?.let {
             productRepository.newestItem(it)
         }
 
@@ -147,7 +147,7 @@ abstract class ModifyItemViewModel: ViewModel() {
     protected fun loadLastItem() = viewModelScope.launch {
         screenState.allToLoading()
 
-        val lastItem: Item? = itemRepository.newest()
+        val lastItem: ItemEntity? = itemRepository.newest()
 
         updateStateForItem(lastItem)
     }
@@ -180,7 +180,7 @@ abstract class ModifyItemViewModel: ViewModel() {
      * Updates the state to represent [item], doesn't switch state to loading status as it should be done before fetching the item
      */
     protected suspend fun updateStateForItem(
-        item: Item?,
+        item: ItemEntity?,
     ) {
         val product: Product? = item?.productId?.let { productRepository.get(it) }
         val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }

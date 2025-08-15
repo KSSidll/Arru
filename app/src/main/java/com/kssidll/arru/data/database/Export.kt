@@ -5,7 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.JsonWriter
 import androidx.core.provider.DocumentsContractCompat
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
@@ -139,7 +139,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(itemCsvFileUri, "w")?.use { parcelFileDescriptor ->
             FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
                 outputStream.write(
-                    Item.csvHeaders()
+                    ItemEntity.csvHeaders()
                         .toByteArray()
                 )
 

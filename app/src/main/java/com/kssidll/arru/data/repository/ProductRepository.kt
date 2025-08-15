@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
@@ -190,7 +190,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                        ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }
@@ -259,7 +259,7 @@ class ProductRepository(private val dao: ProductDao): ProductRepositorySource {
             .flow
     }
 
-    override suspend fun newestItem(product: Product): Item? {
+    override suspend fun newestItem(product: Product): ItemEntity? {
         return dao.newestItem(product.id)
     }
 

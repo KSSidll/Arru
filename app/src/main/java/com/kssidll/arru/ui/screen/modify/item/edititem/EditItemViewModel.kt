@@ -3,7 +3,7 @@ package com.kssidll.arru.ui.screen.modify.item.edititem
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
@@ -21,7 +21,7 @@ class EditItemViewModel @Inject constructor(
     override val productRepository: ProductRepositorySource,
     override val variantsRepository: VariantRepositorySource,
 ): ModifyItemViewModel() {
-    private var mItem: Item? = null
+    private var mItem: ItemEntity? = null
 
     /**
      * Updates data in the screen state
@@ -50,12 +50,12 @@ class EditItemViewModel @Inject constructor(
 
         val result = itemRepository.update(
             itemId = itemId,
-            productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
+            productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
-            quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
-                ?: Item.INVALID_QUANTITY,
-            price = screenState.price.value.data?.let { Item.priceFromString(it) }
-                ?: Item.INVALID_PRICE,
+            quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }
+                ?: ItemEntity.INVALID_QUANTITY,
+            price = screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
+                ?: ItemEntity.INVALID_PRICE,
         )
 
         if (result.isError()) {

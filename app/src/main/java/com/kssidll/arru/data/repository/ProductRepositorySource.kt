@@ -2,7 +2,7 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
@@ -183,10 +183,10 @@ interface ProductRepositorySource {
     fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>>
 
     /**
-     * @param product [Product] to match the [Item] with
-     * @return newest [Item] that matches [product], null if none match
+     * @param product [Product] to match the [ItemEntity] with
+     * @return newest [ItemEntity] that matches [product], null if none match
      */
-    suspend fun newestItem(product: Product): Item?
+    suspend fun newestItem(product: Product): ItemEntity?
 
     /**
      * @param product [Product] to match the data with

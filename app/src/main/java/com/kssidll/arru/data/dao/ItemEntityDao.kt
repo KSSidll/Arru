@@ -5,28 +5,28 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
 import com.kssidll.arru.data.data.TransactionBasket
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ItemDao {
+interface ItemEntityDao {
     // Create
 
     @Insert
-    suspend fun insert(item: Item): Long
+    suspend fun insert(entity: ItemEntity): Long
 
     // Update
 
     @Update
-    suspend fun update(item: Item)
+    suspend fun update(entity: ItemEntity)
 
     // Delete
 
     @Delete
-    suspend fun delete(item: Item)
+    suspend fun delete(entity: ItemEntity)
 
     // Helper
 
@@ -41,24 +41,24 @@ interface ItemDao {
 
     // Read
 
-    @Query("SELECT item.* FROM item WHERE item.id = :itemId")
-    suspend fun get(itemId: Long): Item?
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.id = :entityId")
+    suspend fun get(entityId: Long): ItemEntity?
 
-    @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    suspend fun newest(): Item?
+    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
+    suspend fun newest(): ItemEntity?
 
-    @Query("SELECT item.* FROM item ORDER BY id DESC LIMIT 1")
-    fun newestFlow(): Flow<Item?>
+    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
+    fun newestFlow(): Flow<ItemEntity?>
 
-    @Query("SELECT COUNT(*) FROM item")
+    @Query("SELECT COUNT(*) FROM ItemEntity")
     suspend fun totalCount(): Int
 
-    @Query("SELECT item.* FROM item ORDER BY id LIMIT :limit OFFSET :offset")
+    @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id LIMIT :limit OFFSET :offset")
     suspend fun getPagedList(
         limit: Int,
         offset: Int
-    ): List<Item>
+    ): List<ItemEntity>
 
-    @Query("SELECT item.* FROM item WHERE item.transactionBasketId = :transactionId")
-    suspend fun getByTransaction(transactionId: Long): List<Item>
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.transactionBasketId = :transactionId")
+    suspend fun getByTransaction(transactionId: Long): List<ItemEntity>
 }

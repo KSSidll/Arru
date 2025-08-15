@@ -3,7 +3,7 @@ package com.kssidll.arru.di.module
 import android.content.Context
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.dao.ImportDao
-import com.kssidll.arru.data.dao.ItemDao
+import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.dao.ProducerDao
 import com.kssidll.arru.data.dao.ProductDao
 import com.kssidll.arru.data.dao.ShopDao
@@ -95,13 +95,13 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideItemDao(appDatabase: AppDatabase): ItemDao {
-        return appDatabase.getItemDao()
+    fun provideItemDao(appDatabase: AppDatabase): ItemEntityDao {
+        return appDatabase.getItemEntityDao()
     }
 
     @Provides
-    fun provideItemRepository(itemDao: ItemDao): ItemRepositorySource {
-        return ItemRepository(itemDao)
+    fun provideItemRepository(dao: ItemEntityDao): ItemRepositorySource {
+        return ItemRepository(dao)
     }
 
     @Provides

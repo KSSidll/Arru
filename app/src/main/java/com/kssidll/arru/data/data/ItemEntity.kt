@@ -43,9 +43,10 @@ import kotlin.math.log10
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         )
-    ]
+    ],
+    tableName = "ItemEntity"
 )
-data class Item(
+data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(index = true) var transactionBasketId: Long,
     @ColumnInfo(index = true) var productId: Long,
@@ -82,10 +83,10 @@ data class Item(
     }
 
     /**
-     * Converts the [Item] data to a string with csv format
+     * Converts the [ItemEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
-     * @return [Item] data as [String] with csv format
+     * @return [ItemEntity] data as [String] with csv format
      */
     @Ignore
     fun formatAsCsvString(): String {
@@ -121,8 +122,8 @@ data class Item(
         }
 
         /**
-         * Returns the [String] representing the [Item] csv format headers
-         * @return [String] representing the [Item] csv format headers
+         * Returns the [String] representing the [ItemEntity] csv format headers
+         * @return [String] representing the [ItemEntity] csv format headers
          */
         @Ignore
         fun csvHeaders(): String {
@@ -130,8 +131,8 @@ data class Item(
         }
 
         @Ignore
-        fun generate(itemId: Long = 0): Item {
-            return Item(
+        fun generate(itemId: Long = 0): ItemEntity {
+            return ItemEntity(
                 id = itemId,
                 transactionBasketId = generateRandomLongValue(),
                 productId = generateRandomLongValue(),
@@ -190,7 +191,7 @@ data class Item(
         }
 
         @Ignore
-        fun generateList(amount: Int = 10): List<Item> {
+        fun generateList(amount: Int = 10): List<ItemEntity> {
             return List(amount) {
                 generate(it.toLong())
             }
@@ -215,14 +216,14 @@ data class Item(
 }
 
 /**
- * Converts a list of [Item] data to a list of strings with csv format
+ * Converts a list of [ItemEntity] data to a list of strings with csv format
  * @param includeHeaders whether to include the csv headers
- * @return [Item] data as list of string with csv format
+ * @return [ItemEntity] data as list of string with csv format
  */
-fun List<Item>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
+fun List<ItemEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(Item.csvHeaders() + "\n")
+        add(ItemEntity.csvHeaders() + "\n")
     }
 
     // Add rows
@@ -243,11 +244,11 @@ data class FullItem(
     val shop: Shop?,
 ) {
     fun actualQuantity(): Float {
-        return Item.actualQuantity(quantity)
+        return ItemEntity.actualQuantity(quantity)
     }
 
     fun actualPrice(): Float {
-        return Item.actualPrice(price)
+        return ItemEntity.actualPrice(price)
     }
 
     companion object {
@@ -295,7 +296,7 @@ data class ItemSpentByTime(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -440,7 +441,7 @@ data class ItemSpentByCategory(
 
     override fun value(): Float {
         return total.toFloat()
-            .div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {

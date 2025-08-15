@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
@@ -42,8 +42,8 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM shop WHERE shop.id = :shopId")
     suspend fun shopById(shopId: Long): Shop?
 
-    @Query("SELECT * FROM item WHERE item.id = :itemId")
-    suspend fun itemById(itemId: Long): Item?
+    @Query("SELECT * FROM ItemEntity WHERE ItemEntity.id = :itemId")
+    suspend fun itemById(itemId: Long): ItemEntity?
 
     @Query("SELECT * FROM product WHERE product.id = :productId")
     suspend fun productById(productId: Long): Product?
@@ -57,11 +57,11 @@ interface TransactionBasketDao {
     @Query("SELECT * FROM productproducer WHERE productproducer.id = :producerId")
     suspend fun producerById(producerId: Long): ProductProducer?
 
-    @Query("SELECT item.* FROM item WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
-    suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<Item>
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<ItemEntity>
 
-    @Query("SELECT item.* FROM item WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
-    fun itemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<Item>>
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE transactionBasketId = :transactionBasketId ORDER BY id DESC")
+    fun itemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<ItemEntity>>
 
     @Transaction
     suspend fun fullItemsByTransactionBasketId(transactionBasketId: Long): List<FullItem> {
@@ -121,7 +121,7 @@ interface TransactionBasketDao {
     }
 
     @Delete
-    suspend fun deleteItems(items: List<Item>)
+    suspend fun deleteItems(entities: List<ItemEntity>)
 
     // Read
 

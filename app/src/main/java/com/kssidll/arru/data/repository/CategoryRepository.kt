@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.CategoryDao
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategory
@@ -143,7 +143,7 @@ class CategoryRepository(private val dao: CategoryDao): CategoryRepositorySource
             .map {
                 Data.Loaded(
                     it?.toFloat()
-                        ?.div(Item.PRICE_DIVISOR * Item.QUANTITY_DIVISOR)
+                        ?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
                 )
             }
             .onStart { Data.Loading<Long>() }

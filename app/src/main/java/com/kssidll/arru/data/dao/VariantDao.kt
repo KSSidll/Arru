@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductVariant
 import kotlinx.coroutines.flow.Flow
@@ -32,14 +32,14 @@ interface VariantDao {
     @Query("SELECT product.* FROM product WHERE product.id = :productId")
     suspend fun getProduct(productId: Long): Product?
 
-    @Query("SELECT item.* FROM item WHERE item.variantId = :variantId")
-    suspend fun getItems(variantId: Long): List<Item>
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.variantId = :variantId")
+    suspend fun getItems(variantId: Long): List<ItemEntity>
 
     @Update
-    suspend fun updateItems(items: List<Item>)
+    suspend fun updateItems(entities: List<ItemEntity>)
 
     @Delete
-    suspend fun deleteItems(items: List<Item>)
+    suspend fun deleteItems(entities: List<ItemEntity>)
 
     // Read
 

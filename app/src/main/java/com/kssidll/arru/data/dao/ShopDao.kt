@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
@@ -52,19 +52,19 @@ interface ShopDao {
     @Query(
         """
         SELECT transactionbasket.*
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        WHERE item.id = :itemId
+        FROM ItemEntity
+        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        WHERE ItemEntity.id = :itemEntityId
     """
     )
-    suspend fun transactionBasketByItemId(itemId: Long): TransactionBasket
+    suspend fun transactionBasketByItemEntityId(itemEntityId: Long): TransactionBasket
 
     @Query(
         """
-        SELECT item.*
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        JOIN product ON product.id = item.productId
+        SELECT ItemEntity.*
+        FROM ItemEntity
+        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        JOIN product ON product.id = ItemEntity.productId
         WHERE transactionbasket.shopId = :shopId
         ORDER BY date DESC
         LIMIT :count
@@ -75,17 +75,17 @@ interface ShopDao {
         shopId: Long,
         count: Int,
         offset: Int
-    ): List<Item>
+    ): List<ItemEntity>
 
     @Query(
         """
-        SELECT item.*
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
+        SELECT ItemEntity.*
+        FROM ItemEntity
+        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
         WHERE shopId = :shopId
     """
     )
-    suspend fun getItems(shopId: Long): List<Item>
+    suspend fun getItems(shopId: Long): List<ItemEntity>
 
     @Query("SELECT transactionbasket.* FROM transactionbasket WHERE transactionbasket.shopId = :shopId")
     suspend fun getTransactionBaskets(shopId: Long): List<TransactionBasket>
@@ -97,31 +97,31 @@ interface ShopDao {
     suspend fun deleteTransactionBaskets(baskets: List<TransactionBasket>)
 
     @Delete
-    suspend fun deleteItems(items: List<Item>)
+    suspend fun deleteItems(entities: List<ItemEntity>)
 
     @Query(
         """
         SELECT COUNT(*)
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        WHERE item.id < :itemId AND transactionbasket.shopId = :shopId
+        FROM ItemEntity
+        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        WHERE ItemEntity.id < :itemEntityId AND transactionbasket.shopId = :shopId
     """
     )
     suspend fun countItemsBefore(
-        itemId: Long,
+        itemEntityId: Long,
         shopId: Long
     ): Int
 
     @Query(
         """
         SELECT COUNT(*)
-        FROM item
-        JOIN transactionbasket ON transactionBasket.id = item.transactionBasketId
-        WHERE item.id > :itemId AND transactionbasket.shopId = :shopId
+        FROM ItemEntity
+        JOIN transactionbasket ON transactionBasket.id = ItemEntity.transactionBasketId
+        WHERE ItemEntity.id > :itemEntityId AND transactionbasket.shopId = :shopId
     """
     )
     suspend fun countItemsAfter(
-        itemId: Long,
+        itemEntityId: Long,
         shopId: Long
     ): Int
 
@@ -156,7 +156,7 @@ interface ShopDao {
             SELECT (start_date + 86400000) AS start_date, end_date
             FROM date_series
                 WHERE date_series.end_date > date_series.start_date
-        ), items AS (
+        ), ItemEntities AS (
             SELECT (transactionbasket.date / 86400000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
             FROM transactionbasket
             WHERE transactionbasket.shopId = :shopId
@@ -164,7 +164,7 @@ interface ShopDao {
         )
         SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total
         FROM date_series
-        LEFT JOIN items ON (date_series.start_date / 86400000) = transaction_time
+        LEFT JOIN ItemEntities ON (date_series.start_date / 86400000) = transaction_time
         WHERE time IS NOT NULL
         GROUP BY time
         ORDER BY time
@@ -183,16 +183,16 @@ interface ShopDao {
         SELECT (start_date + 604800000) AS start_date, end_date
         FROM date_series
             WHERE date_series.end_date >= date_series.start_date
-    ), items AS (
+    ), ItemEntities AS (
         SELECT ((transactionbasket.date - 345600000) / 604800000) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket
-        JOIN item ON item.transactionBasketId = transactionbasket.id
+        JOIN ItemEntity ON ItemEntity.transactionBasketId = transactionbasket.id
             AND transactionbasket.shopId = :shopId
         GROUP BY transaction_time
     )
     SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(transaction_total, 0) AS total
     FROM date_series
-    LEFT JOIN items ON (date_series.start_date / 604800000) = transaction_time
+    LEFT JOIN ItemEntities ON (date_series.start_date / 604800000) = transaction_time
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
@@ -211,7 +211,7 @@ interface ShopDao {
         SELECT DATE(start_date, '+1 month') AS start_date, end_date
         FROM date_series
             WHERE date_series.end_date > date_series.start_date
-    ), items AS (
+    ), ItemEntities AS (
         SELECT STRFTIME('%Y-%m', DATE(transactionbasket.date / 1000, 'unixepoch')) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket
         WHERE transactionbasket.shopId = :shopId
@@ -219,7 +219,7 @@ interface ShopDao {
     )
     SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(transaction_total, 0) AS total
     FROM date_series
-    LEFT JOIN items ON STRFTIME('%Y-%m', date_series.start_date) = transaction_time
+    LEFT JOIN ItemEntities ON STRFTIME('%Y-%m', date_series.start_date) = transaction_time
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
@@ -238,7 +238,7 @@ interface ShopDao {
         SELECT DATE(start_date, '+1 year') AS start_date, end_date
         FROM date_series
             WHERE date_series.end_date > date_series.start_date
-    ), items AS (
+    ), ItemEntities AS (
         SELECT STRFTIME('%Y', DATE(transactionbasket.date / 1000, 'unixepoch')) AS transaction_time, SUM(transactionbasket.totalCost) AS transaction_total
         FROM transactionbasket
         WHERE transactionbasket.shopId = :shopId
@@ -246,7 +246,7 @@ interface ShopDao {
     )
     SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(transaction_total, 0) AS total
     FROM date_series
-    LEFT JOIN items ON STRFTIME('%Y', date_series.start_date) = transaction_time
+    LEFT JOIN ItemEntities ON STRFTIME('%Y', date_series.start_date) = transaction_time
     WHERE time IS NOT NULL
     GROUP BY time
     ORDER BY time
@@ -262,25 +262,25 @@ interface ShopDao {
     ): List<FullItem> {
         val shop = get(shopId) ?: return emptyList()
 
-        val items = itemsByShop(
+        val itemEntities = itemsByShop(
             shopId,
             count,
             offset
         )
 
-        if (items.isEmpty()) return emptyList()
+        if (itemEntities.isEmpty()) return emptyList()
 
-        return items.map { item ->
-            val transactionBasket = transactionBasketByItemId(item.id)
-            val product = productById(item.productId)
-            val variant = item.variantId?.let { variantById(it) }
+        return itemEntities.map { entity ->
+            val transactionBasket = transactionBasketByItemEntityId(entity.id)
+            val product = productById(entity.productId)
+            val variant = entity.variantId?.let { variantById(it) }
             val category = categoryById(product.categoryId)
             val producer = product.producerId?.let { producerById(it) }
 
             FullItem(
-                id = item.id,
-                quantity = item.quantity,
-                price = item.price,
+                id = entity.id,
+                quantity = entity.quantity,
+                price = entity.price,
                 product = product,
                 variant = variant,
                 category = category,

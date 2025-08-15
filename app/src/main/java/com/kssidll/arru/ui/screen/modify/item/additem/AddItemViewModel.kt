@@ -2,7 +2,7 @@ package com.kssidll.arru.ui.screen.modify.item.additem
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.TransactionBasket
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
@@ -35,12 +35,12 @@ class AddItemViewModel @Inject constructor(
 
         val result = itemRepository.insert(
             transactionId = transactionId,
-            productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
+            productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
-            quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
-                ?: Item.INVALID_QUANTITY,
-            price = screenState.price.value.data?.let { Item.priceFromString(it) }
-                ?: Item.INVALID_PRICE,
+            quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }
+                ?: ItemEntity.INVALID_QUANTITY,
+            price = screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
+                ?: ItemEntity.INVALID_PRICE,
         )
 
         if (result.isError()) {

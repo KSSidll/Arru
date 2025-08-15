@@ -7,7 +7,7 @@ import android.util.JsonReader
 import android.util.JsonToken
 import android.util.Log
 import androidx.core.provider.DocumentsContractCompat
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.Product
 import com.kssidll.arru.data.data.ProductCategory
 import com.kssidll.arru.data.data.ProductProducer
@@ -202,7 +202,7 @@ suspend fun handleCsvImport(
     val transactionList = mutableListOf<TransactionBasket>()
     val productList = mutableListOf<Product>()
     val variantList = mutableListOf<ProductVariant>()
-    val itemList = mutableListOf<Item>()
+    val itemEntityList = mutableListOf<ItemEntity>()
 
     // Process
 
@@ -465,9 +465,9 @@ suspend fun handleCsvImport(
             // handle items
             data.quantity?.let { quantity ->
                 data.price?.let { price ->
-                    itemList.add(
-                        Item(
-                            id = itemList.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
+                    itemEntityList.add(
+                        ItemEntity(
+                            id = itemEntityList.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
                             transactionBasketId = transactions[data.transactionId]!!,
                             productId = products[data.product]!!,
                             variantId = data.variant?.let {
@@ -492,7 +492,7 @@ suspend fun handleCsvImport(
             transactions = transactionList,
             products = productList,
             variants = variantList,
-            items = itemList
+            entities = itemEntityList
         )
 
         onProgressChange(3)
@@ -879,8 +879,8 @@ suspend fun handleCsvImport(
                                 text[5].split(".", ",")
                                     .let { (it[0].toLong() * priceDivisor) + it[1].padEnd(2, '0').toLong() }
 
-                            itemList.add(
-                                Item(
+                            itemEntityList.add(
+                                ItemEntity(
                                     id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     transactionBasketId = transactionBasketId + 1, // id can be 0 but 0 causes a foreign key constraint fail
                                     productId = productId + 1, // id can be 0 but 0 causes a foreign key constraint fail
@@ -909,7 +909,7 @@ suspend fun handleCsvImport(
             transactions = transactionList,
             products = productList,
             variants = variantList,
-            items = itemList
+            entities = itemEntityList
         )
 
         onProgressChange(8)
@@ -975,7 +975,7 @@ suspend fun handleJsonImport(
     val transactionList = mutableListOf<TransactionBasket>()
     val productList = mutableListOf<Product>()
     val variantList = mutableListOf<ProductVariant>()
-    val itemList = mutableListOf<Item>()
+    val itemEntityList = mutableListOf<ItemEntity>()
 
     // Process
 
@@ -1016,7 +1016,7 @@ suspend fun handleJsonImport(
                     var date: Long? = null
                     var cost: Long? = null
                     var transactionShopId: Long? = null
-                    val transactionItems = mutableListOf<Item>()
+                    val transactionItemEntities = mutableListOf<ItemEntity>()
                     var transactionNote: String? = null
 
                     while (reader.hasNext()) {
@@ -1341,8 +1341,8 @@ suspend fun handleJsonImport(
                                                     variantList.add(it) // also add to list
                                                 }
 
-                                                transactionItems.add(
-                                                    Item(
+                                                transactionItemEntities.add(
+                                                    ItemEntity(
                                                         id = itemId,
                                                         transactionBasketId = -1, // temporarily assume -1 as transaction id could technically not be set
                                                         price = itemPrice,
@@ -1378,11 +1378,11 @@ suspend fun handleJsonImport(
                         && cost != null
                     ) {
                         if (transactions.add(id)) {
-                            transactionItems.forEach {
+                            transactionItemEntities.forEach {
                                 it.transactionBasketId = id
                             }
 
-                            itemList.addAll(transactionItems)
+                            itemEntityList.addAll(transactionItemEntities)
 
                             transactionList.add(
                                 TransactionBasket(
@@ -1410,7 +1410,7 @@ suspend fun handleJsonImport(
                     transactions = transactionList,
                     products = productList,
                     variants = variantList,
-                    items = itemList
+                    entities = itemEntityList
                 )
 
                 onProgressChange(2)

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.domain.utils.orZero
@@ -185,7 +185,7 @@ fun ShopPriceCompareChart(
                         lines.forEach { line ->
                             line.points.forEachIndexed { index, point ->
                                 builder.append(
-                                    point.entry.y.toFloat().div(Item.PRICE_DIVISOR).formatToCurrency(currencyLocale),
+                                    point.entry.y.toFloat().div(ItemEntity.PRICE_DIVISOR).formatToCurrency(currencyLocale),
                                     ForegroundColorSpan(point.color),
                                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                                 )
