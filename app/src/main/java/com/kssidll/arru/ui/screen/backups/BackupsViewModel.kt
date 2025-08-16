@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.database.AppDatabase
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BackupsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val transactionBasketRepository: TransactionBasketRepositorySource,
+    private val transactionBasketRepository: TransactionRepositorySource,
 ): ViewModel() {
     val availableBackups: SnapshotStateList<DatabaseBackup> = mutableStateListOf()
 
@@ -66,13 +66,13 @@ class BackupsViewModel @Inject constructor(
         Dispatchers.IO.invoke {
             // TODO add notification when you create maybe?
             val totalTransactions = transactionBasketRepository.count()
-            val totalSpending = transactionBasketRepository.totalSpentLong()
+            val totalSpending = transactionBasketRepository.totalSpentLong().first()
 
-            if (totalSpending is Data.Loaded) {
+            if (totalSpending != null) {
                 AppDatabase.saveDbBackup(
                     context = context,
                     totalTransactions = totalTransactions,
-                    totalSpending = totalSpending.data ?: 0,
+                    totalSpending = totalSpending,
                 )
             }
             refreshAvailableBackups()

@@ -1,8 +1,8 @@
 package com.kssidll.arru.ui.screen.modify.category.addcategory
 
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
-    override val categoryRepository: CategoryRepositorySource,
+    override val categoryRepository: ProductCategoryRepositorySource,
 ): ModifyCategoryViewModel() {
 
     /**

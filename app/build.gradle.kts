@@ -41,7 +41,6 @@ android {
     }
 
     androidResources {
-        @Suppress("UnstableApiUsage")
         generateLocaleConfig = true
     }
 
@@ -151,6 +150,12 @@ dependencies {
     // Chart
     implementation(libs.dev.chart.vico.compose)
     implementation(libs.dev.chart.vico.compose.m3)
+
+    // Testing
+    androidTestImplementation(libs.test.android.core)
+    androidTestImplementation(libs.test.android.rules)
+    androidTestImplementation(libs.test.android.junit)
+    androidTestImplementation(libs.test.android.coroutines)
 }
 
 ksp {

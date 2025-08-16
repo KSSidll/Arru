@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.domain.data.RankSource
+import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.list.RankingList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme

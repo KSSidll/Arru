@@ -34,12 +34,12 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.domain.data.ChartSource
-import com.kssidll.arru.domain.data.avg
-import com.kssidll.arru.domain.data.median
-import com.kssidll.arru.domain.data.movingAverageChartData
-import com.kssidll.arru.domain.data.movingMedianChartData
-import com.kssidll.arru.domain.data.movingTotalChartData
+import com.kssidll.arru.domain.data.interfaces.ChartSource
+import com.kssidll.arru.domain.data.interfaces.avg
+import com.kssidll.arru.domain.data.interfaces.median
+import com.kssidll.arru.domain.data.interfaces.movingAverageChartData
+import com.kssidll.arru.domain.data.interfaces.movingMedianChartData
+import com.kssidll.arru.domain.data.interfaces.movingTotalChartData
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.chart.rememberMarker
@@ -106,12 +106,14 @@ fun TotalAverageAndMedianSpendingComponent(
                     newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                 }
 
-                totalChartEntryModelProducer.runTransaction {
-                    lineSeries {
-                        series(
-                            x = newData.map { it.first },
-                            y = newData.map { it.second }
-                        )
+                if (newData.isNotEmpty()) {
+                    totalChartEntryModelProducer.runTransaction {
+                        lineSeries {
+                            series(
+                                x = newData.map { it.first },
+                                y = newData.map { it.second }
+                            )
+                        }
                     }
                 }
             }
@@ -190,12 +192,14 @@ fun TotalAverageAndMedianSpendingComponent(
                         newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                     }
 
-                    averageChartEntryModelProducer.runTransaction {
-                        lineSeries {
-                            series(
-                                x = newData.map { it.first },
-                                y = newData.map { it.second }
-                            )
+                    if (newData.isNotEmpty()) {
+                        averageChartEntryModelProducer.runTransaction {
+                            lineSeries {
+                                series(
+                                    x = newData.map { it.first },
+                                    y = newData.map { it.second }
+                                )
+                            }
                         }
                     }
                 }
@@ -275,12 +279,14 @@ fun TotalAverageAndMedianSpendingComponent(
                         newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                     }
 
-                    medianChartEntryModelProducer.runTransaction {
-                        lineSeries {
-                            series(
-                                x = newData.map { it.first },
-                                y = newData.map { it.second }
-                            )
+                    if (newData.isNotEmpty()) {
+                        medianChartEntryModelProducer.runTransaction {
+                            lineSeries {
+                                series(
+                                    x = newData.map { it.first },
+                                    y = newData.map { it.second }
+                                )
+                            }
                         }
                     }
                 }

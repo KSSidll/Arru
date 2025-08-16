@@ -3,25 +3,26 @@ package com.kssidll.arru.ui.screen.modify.item.edititem
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
 class EditItemViewModel @Inject constructor(
     override val itemRepository: ItemRepositorySource,
     override val productRepository: ProductRepositorySource,
-    override val variantsRepository: VariantRepositorySource,
+    override val variantsRepository: ProductVariantRepositorySource,
 ): ModifyItemViewModel() {
-    private var mItem: Item? = null
+    private var mItem: ItemEntity? = null
 
     /**
      * Updates data in the screen state
@@ -33,7 +34,7 @@ class EditItemViewModel @Inject constructor(
 
         screenState.allToLoading()
 
-        mItem = itemRepository.get(itemId)
+        mItem = itemRepository.get(itemId).first()
 
         updateStateForItem(mItem)
 
@@ -49,13 +50,13 @@ class EditItemViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = itemRepository.update(
-            itemId = itemId,
-            productId = screenState.selectedProduct.value.data?.id ?: Item.INVALID_PRODUCT_ID,
+            id = itemId,
+            productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
-            quantity = screenState.quantity.value.data?.let { Item.quantityFromString(it) }
-                ?: Item.INVALID_QUANTITY,
-            price = screenState.price.value.data?.let { Item.priceFromString(it) }
-                ?: Item.INVALID_PRICE,
+            quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }
+                ?: ItemEntity.INVALID_QUANTITY,
+            price = screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
+                ?: ItemEntity.INVALID_PRICE,
         )
 
         if (result.isError()) {

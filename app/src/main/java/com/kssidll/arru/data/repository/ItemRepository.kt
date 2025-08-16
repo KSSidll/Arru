@@ -1,20 +1,15 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.dao.ItemDao
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.dao.ItemEntityDao
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.first
 
-class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
+class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
     // Create
 
     override suspend fun insert(
@@ -24,10 +19,10 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
         quantity: Long,
         price: Long
     ): InsertResult {
-        val item = Item(
-            transactionBasketId = transactionId,
-            productId = productId,
-            variantId = variantId,
+        val entity = ItemEntity(
+            transactionEntityId = transactionId,
+            productEntityId = productId,
+            productVariantEntityId = variantId,
             quantity = quantity,
             price = price
         )
@@ -44,19 +39,19 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
             return InsertResult.Error(InsertResult.InvalidVariantId)
         }
 
-        if (item.validQuantity()
+        if (entity.validQuantity()
                 .not()
         ) {
             return InsertResult.Error(InsertResult.InvalidQuantity)
         }
 
-        if (item.validPrice()
+        if (entity.validPrice()
                 .not()
         ) {
             return InsertResult.Error(InsertResult.InvalidPrice)
         }
 
-        val itemId = dao.insert(item)
+        val itemId = dao.insert(entity)
 
         return InsertResult.Success(itemId)
     }
@@ -64,16 +59,16 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
     // Update
 
     override suspend fun update(
-        itemId: Long,
+        id: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
         price: Long
     ): UpdateResult {
-        val item = dao.get(itemId) ?: return UpdateResult.Error(UpdateResult.InvalidId)
+        val item = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
-        item.productId = productId
-        item.variantId = variantId
+        item.productEntityId = productId
+        item.productVariantEntityId = variantId
         item.quantity = quantity
         item.price = price
 
@@ -104,8 +99,8 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
 
     // Delete
 
-    override suspend fun delete(itemId: Long): DeleteResult {
-        val item = dao.get(itemId) ?: return DeleteResult.Error(DeleteResult.InvalidId)
+    override suspend fun delete(id: Long): DeleteResult {
+        val item = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         dao.delete(item)
 
@@ -114,37 +109,14 @@ class ItemRepository(private val dao: ItemDao): ItemRepositorySource {
 
     // Read
 
-    override suspend fun get(itemId: Long): Item? {
-        return dao.get(itemId)
-    }
+    override fun get(id: Long): Flow<ItemEntity?> = dao.get(id).cancellable()
 
-    override suspend fun newest(): Item? {
+
+
+
+
+
+    override fun newest(): Flow<ItemEntity?> {
         return dao.newest()
-    }
-
-    override fun newestFlow(): Flow<Data<Item?>> {
-        return dao.newestFlow()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { Data.Loaded(it) }
-            .onStart { Data.Loading<Item>() }
-    }
-
-    override suspend fun totalCount(): Int {
-        return dao.totalCount()
-    }
-
-    override suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<Item> {
-        return dao.getPagedList(
-            limit,
-            offset
-        ).toImmutableList()
-    }
-
-    override suspend fun getByTransaction(transactionId: Long): ImmutableList<Item> {
-        return dao.getByTransaction(transactionId).toImmutableList()
     }
 }

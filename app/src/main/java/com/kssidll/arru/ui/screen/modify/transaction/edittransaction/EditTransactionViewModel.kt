@@ -2,25 +2,26 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
 class EditTransactionViewModel @Inject constructor(
-    private val transactionRepository: TransactionBasketRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
-    private var mTransaction: TransactionBasket? = null
+    private var mTransaction: TransactionEntity? = null
 
     /**
      * Updates data in the screen state
@@ -32,7 +33,7 @@ class EditTransactionViewModel @Inject constructor(
 
         screenState.allToLoading()
 
-        mTransaction = transactionRepository.get(transactionId)
+        mTransaction = transactionRepository.get(transactionId).first()
 
         updateStateForTransaction(mTransaction)
 
@@ -41,9 +42,9 @@ class EditTransactionViewModel @Inject constructor(
         .await()
 
     private suspend fun updateStateForTransaction(
-        transaction: TransactionBasket?
+        transaction: TransactionEntity?
     ) {
-        val shop: Shop? = transaction?.shopId?.let { shopRepository.get(it) }
+        val shop: ShopEntity? = transaction?.shopEntityId?.let { shopRepository.get(it).first() }
 
         screenState.date.apply {
             value = Field.Loaded(transaction?.date)
@@ -73,14 +74,14 @@ class EditTransactionViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = transactionRepository.update(
-            transactionId = transactionId,
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
+            id = transactionId,
+            date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
             totalCost = screenState.totalCost.value.data?.let {
-                TransactionBasket.totalCostFromString(
+                TransactionEntity.totalCostFromString(
                     it
                 )
             }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
+                ?: TransactionEntity.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id,
             note = screenState.note.value.data?.trim()
         )

@@ -17,6 +17,6 @@ class ShopRankingViewModel @Inject constructor(
      * @return List of data points representing shop spending in time as flow
      */
     fun shopTotalSpentFlow(): Flow<ImmutableList<TransactionTotalSpentByShop>> {
-        return shopRepository.totalSpentByShopFlow()
+        return shopRepository.totalSpentByShop()
     }
 }

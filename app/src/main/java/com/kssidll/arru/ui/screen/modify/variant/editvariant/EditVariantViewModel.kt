@@ -3,22 +3,23 @@ package com.kssidll.arru.ui.screen.modify.variant.editvariant
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.repository.VariantRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.data.ProductVariantEntity
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.variant.ModifyVariantViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
 class EditVariantViewModel @Inject constructor(
-    override val variantRepository: VariantRepositorySource,
+    override val variantRepository: ProductVariantRepositorySource,
 ): ModifyVariantViewModel() {
-    private var mVariant: ProductVariant? = null
+    private var mVariant: ProductVariantEntity? = null
 
     /**
      * Updates data in the screen state
@@ -30,14 +31,14 @@ class EditVariantViewModel @Inject constructor(
 
         screenState.name.apply { value = value.toLoading() }
 
-        val variant = variantRepository.get(variantId)
+        val variant = variantRepository.get(variantId).first()
 
         screenState.name.apply {
             value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
         }
 
         screenState.isVariantGlobal.apply {
-            value = Field.Loading(variant?.productId == null)
+            value = Field.Loading(variant?.productEntityId == null)
         }
 
         return@async variant != null

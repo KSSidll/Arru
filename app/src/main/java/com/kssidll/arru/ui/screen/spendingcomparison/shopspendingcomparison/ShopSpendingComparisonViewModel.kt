@@ -19,7 +19,7 @@ class ShopSpendingComparisonViewModel @Inject constructor(
         year: Int,
         month: Int
     ): Flow<List<TransactionTotalSpentByShop>> {
-        return shopRepository.totalSpentByShopByMonthFlow(
+        return shopRepository.totalSpentByShopByMonth(
             year,
             month
         )
@@ -42,7 +42,7 @@ class ShopSpendingComparisonViewModel @Inject constructor(
             localMonth -= 1
         }
 
-        return shopRepository.totalSpentByShopByMonthFlow(
+        return shopRepository.totalSpentByShopByMonth(
             localYear,
             localMonth
         )

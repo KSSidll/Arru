@@ -7,13 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Product
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.TimePeriodFlowHandler
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
+import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -22,57 +23,55 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val productRepository: ProductRepositorySource,
+    private val getItemsForProductUseCase: GetItemsForProductUseCase
 ): ViewModel() {
-    private val mProduct: MutableState<Product?> = mutableStateOf(null)
-    val product: Product? by mProduct
+    private val mProduct: MutableState<ProductEntity?> = mutableStateOf(null)
+    val product: ProductEntity? by mProduct
 
     private var mProductListener: Job? = null
 
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<ImmutableList<ItemSpentByTime>>>? = null
-    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<Data<ImmutableList<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ItemSpentByTime>>? = null
+    val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
+    val spentByTimeData: Flow<ImmutableList<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun productTotalSpent(): Flow<Data<Float?>>? {
-        if (product == null) return null
-
-        return productRepository.totalSpentFlow(product!!)
+    fun productTotalSpent(): Flow<Float?>? {
+        return product?.let { productRepository.totalSpent(it) }
     }
 
-    fun productPriceByShop(): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>? {
-        if (product == null) return null
-
-        return productRepository.averagePriceByVariantByShopByMonthFlow(product!!)
+    fun productPriceByShop(): Flow<ImmutableList<ProductPriceByShopByTime>>? {
+        return product?.let { productRepository.averagePriceByVariantByShopByMonth(it) }
     }
 
     /**
      * @return paging data of full item for current product as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
-        if (product == null) return emptyFlow()
-        return productRepository.fullItemsPagedFlow(product!!)
+    fun transactions(): Flow<PagingData<Item>> {
+        return product?.let { getItemsForProductUseCase(it.id) } ?: emptyFlow()
     }
 
     /**
      * Switches the state period to [newPeriod]
      * @param newPeriod Period to switch the state to
      */
-    fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        mTimePeriodFlowHandler?.switchPeriod(newPeriod)
+    fun switchPeriod(newPeriod: SpendingSummaryPeriod) {
+        val nPeriod = TimePeriodFlowHandler.Periods.valueOf(newPeriod.name)
+        mTimePeriodFlowHandler?.switchPeriod(nPeriod)
     }
 
     /**
      * @return True if provided [productId] was valid, false otherwise
      */
     suspend fun performDataUpdate(productId: Long) = viewModelScope.async {
-        val product = productRepository.get(productId) ?: return@async false
+        val product = productRepository.get(productId).first() ?: return@async false
 
         // We ignore the possiblity of changing category while one is already loaded
         // as not doing that would increase complexity too much
@@ -81,13 +80,9 @@ class ProductViewModel @Inject constructor(
 
         mProductListener?.cancel()
         mProductListener = viewModelScope.launch {
-            productRepository.getFlow(productId)
+            productRepository.get(productId)
                 .collectLatest {
-                    if (it is Data.Loaded) {
-                        mProduct.value = it.data
-                    } else {
-                        mProduct.value = null
-                    }
+                    mProduct.value = it
                 }
         }
 
@@ -95,17 +90,17 @@ class ProductViewModel @Inject constructor(
 
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
-            dayFlow = {
-                productRepository.totalSpentByDayFlow(product)
+            day = {
+                productRepository.totalSpentByDay(product)
             },
-            weekFlow = {
-                productRepository.totalSpentByWeekFlow(product)
+            week = {
+                productRepository.totalSpentByWeek(product)
             },
-            monthFlow = {
-                productRepository.totalSpentByMonthFlow(product)
+            month = {
+                productRepository.totalSpentByMonth(product)
             },
-            yearFlow = {
-                productRepository.totalSpentByYearFlow(product)
+            year = {
+                productRepository.totalSpentByYear(product)
             },
         )
 

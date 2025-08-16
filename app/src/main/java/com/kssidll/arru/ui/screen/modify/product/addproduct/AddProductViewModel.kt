@@ -1,9 +1,9 @@
 package com.kssidll.arru.ui.screen.modify.product.addproduct
 
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.FieldError
@@ -15,8 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
     override val productRepository: ProductRepositorySource,
-    override val categoryRepository: CategoryRepositorySource,
-    override val producerRepository: ProducerRepositorySource,
+    override val categoryRepository: ProductCategoryRepositorySource,
+    override val producerRepository: ProductProducerRepositorySource,
 ): ModifyProductViewModel() {
 
     /**
@@ -29,7 +29,7 @@ class AddProductViewModel @Inject constructor(
         val result = productRepository.insert(
             name = screenState.name.value.data.orEmpty(),
             categoryId = screenState.selectedProductCategory.value.data?.id
-                ?: Product.INVALID_CATEGORY_ID,
+                ?: ProductEntity.INVALID_CATEGORY_ID,
             producerId = screenState.selectedProductProducer.value.data?.id
         )
 

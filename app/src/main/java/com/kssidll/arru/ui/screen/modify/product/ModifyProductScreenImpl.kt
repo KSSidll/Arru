@@ -1,6 +1,7 @@
 package com.kssidll.arru.ui.screen.modify.product
 
 
+import android.R.attr.label
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,13 +20,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.loadedData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
@@ -33,6 +31,7 @@ import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import androidx.compose.material3.Surface as Surface1
@@ -40,7 +39,7 @@ import androidx.compose.material3.Surface as Surface1
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [Product]
+ * [ModifyScreen] implementation for [ProductEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyProductScreenState] instance representing the screen state
  * @param categories Categories that can be set for the product
@@ -66,20 +65,20 @@ private val ItemHorizontalPadding: Dp = 20.dp
 fun ModifyProductScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductScreenState,
-    categories: Data<ImmutableList<ProductCategoryWithAltNames>>,
-    producers: Data<ImmutableList<ProductProducer>>,
-    onNewProducerSelected: (producer: ProductProducer?) -> Unit,
-    onNewCategorySelected: (category: ProductCategory?) -> Unit,
+    categories: ImmutableList<ProductCategoryEntity>,
+    producers: ImmutableList<ProductProducerEntity>,
+    onNewProducerSelected: (producer: ProductProducerEntity?) -> Unit,
+    onNewCategorySelected: (category: ProductCategoryEntity?) -> Unit,
     onSubmit: () -> Unit,
     onProducerAddButtonClick: (query: String?) -> Unit,
     onCategoryAddButtonClick: (query: String?) -> Unit,
     onItemProducerLongClick: (producerId: Long) -> Unit,
     onDelete: (() -> Unit)? = null,
-    onMerge: ((candidate: Product) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<Product>>> = flowOf(),
+    onMerge: ((candidate: ProductEntity) -> Unit)? = null,
+    mergeCandidates: Flow<ImmutableList<ProductEntity>> = flowOf(),
     mergeConfirmMessageTemplate: String = String(),
-    chosenMergeCandidate: Product? = null,
-    onChosenMergeCandidateChange: ((Product?) -> Unit)? = null,
+    chosenMergeCandidate: ProductEntity? = null,
+    onChosenMergeCandidateChange: ((ProductEntity?) -> Unit)? = null,
     showMergeConfirmDialog: Boolean = false,
     onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
@@ -135,16 +134,16 @@ fun ModifyProductScreenImpl(
                 },
                 items = categories,
                 onItemClick = {
-                    onNewCategorySelected(it?.category)
+                    onNewCategorySelected(it)
                     state.isCategorySearchDialogExpanded.value = false
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
                     state.isCategorySearchDialogExpanded.value = false
-                    onItemCategoryLongClick(it.category.id)
+                    onItemCategoryLongClick(it.id)
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                itemText = { it.category.name },
+                itemText = { it.name },
                 onAddButtonClick = onCategoryAddButtonClick,
                 addButtonDescription = stringResource(R.string.item_product_category_add_description),
                 calculateScore = { item, query ->
@@ -187,9 +186,9 @@ fun ModifyProductScreenImpl(
                     enabled = state.selectedProductProducer.value.isEnabled(),
                     value = state.selectedProductProducer.value.data?.name ?: String(),
                     onClick = {
-                        if (producers.loadedData()) {
+                        if (producers.isNotEmpty()) {
                             state.isProducerSearchDialogExpanded.value = true
-                        } else if (producers.loadedEmpty()) {
+                        } else {
                             onProducerAddButtonClick(null)
                         }
                     },
@@ -215,9 +214,9 @@ fun ModifyProductScreenImpl(
                     enabled = state.selectedProductCategory.value.isEnabled(),
                     value = state.selectedProductCategory.value.data?.name ?: String(),
                     onClick = {
-                        if (categories.loadedData()) {
+                        if (categories.isNotEmpty()) {
                             state.isCategorySearchDialogExpanded.value = true
-                        } else if (categories.loadedEmpty()) {
+                        } else {
                             onCategoryAddButtonClick(null)
                         }
                     },
@@ -255,8 +254,8 @@ private fun ModifyProductScreenImplPreview() {
             ModifyProductScreenImpl(
                 onBack = {},
                 state = ModifyProductScreenState(),
-                categories = Data.Loading(),
-                producers = Data.Loading(),
+                categories = emptyList<ProductCategoryEntity>().toImmutableList(),
+                producers = emptyList<ProductProducerEntity>().toImmutableList(),
                 onNewProducerSelected = {},
                 onNewCategorySelected = {},
                 onSubmit = {},

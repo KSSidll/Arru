@@ -5,14 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Item
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.ProductWithAltNames
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 import kotlinx.collections.immutable.ImmutableList
@@ -20,6 +18,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -33,7 +32,7 @@ abstract class ModifyItemViewModel: ViewModel() {
 
     protected abstract val itemRepository: ItemRepositorySource
     protected abstract val productRepository: ProductRepositorySource
-    protected abstract val variantsRepository: VariantRepositorySource
+    protected abstract val variantsRepository: ProductVariantRepositorySource
 
     internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
 
@@ -45,8 +44,8 @@ abstract class ModifyItemViewModel: ViewModel() {
             screenState.selectedProduct.apply { value = value.toLoading() }
             screenState.selectedVariant.apply { value = value.toLoading() }
 
-            val product: Product? = providedProductId.let { productRepository.get(it) }
-            val variant: ProductVariant? = providedVariantId?.let { variantsRepository.get(it) }
+            val product: ProductEntity? = providedProductId.let { productRepository.get(it).first() }
+            val variant: ProductVariantEntity? = providedVariantId?.let { variantsRepository.get(it).first() }
 
             // providedVariantId is null only when we create a new product
             // doing this allows us to skip data re-update on variant change
@@ -62,7 +61,7 @@ abstract class ModifyItemViewModel: ViewModel() {
     }
 
     suspend fun onNewProductSelected(
-        product: Product?,
+        product: ProductEntity?,
         loadLastItemProductData: Boolean = true
     ) {
         // Don't do anything if the product is the same as already selected
@@ -82,7 +81,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         }
     }
 
-    fun onNewVariantSelected(variant: ProductVariant?) {
+    fun onNewVariantSelected(variant: ProductVariantEntity?) {
         // Don't do anything if the variant is the same as already selected
         if (screenState.selectedVariant.value.data == variant) {
             screenState.selectedVariant.apply { value = value.toLoaded() }
@@ -93,44 +92,40 @@ abstract class ModifyItemViewModel: ViewModel() {
         setNewVariantListener(variant)
     }
 
-    private fun setNewProductListener(product: Product?) {
+    private fun setNewProductListener(product: ProductEntity?) {
         mProductListener?.cancel()
         if (product != null) {
             mProductListener = viewModelScope.launch {
-                productRepository.getFlow(product.id)
+                productRepository.get(product.id)
                     .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedProduct.value = Field.Loaded(it.data)
-                        }
+                        screenState.selectedProduct.value = Field.Loaded(it)
                     }
             }
         }
     }
 
-    private fun setNewVariantListener(variant: ProductVariant?) {
+    private fun setNewVariantListener(variant: ProductVariantEntity?) {
         mVariantListener?.cancel()
         if (variant != null) {
             mVariantListener = viewModelScope.launch {
-                variantsRepository.getFlow(variant.id)
+                variantsRepository.get(variant.id)
                     .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedVariant.value = Field.Loaded(it.data)
-                        }
+                        screenState.selectedVariant.value = Field.Loaded(it)
                     }
             }
         }
     }
 
-    private suspend fun loadLastItemDataForProduct(product: Product?) {
+    private suspend fun loadLastItemDataForProduct(product: ProductEntity?) {
         screenState.selectedVariant.apply { value = value.toLoading() }
         screenState.price.apply { value = value.toLoading() }
         screenState.quantity.apply { value = value.toLoading() }
 
-        val lastItem: Item? = product?.let {
+        val lastItem: ItemEntity? = product?.let {
             productRepository.newestItem(it)
         }
 
-        val variant: ProductVariant? = lastItem?.variantId?.let { variantsRepository.get(it) }
+        val variant: ProductVariantEntity? = lastItem?.productVariantEntityId?.let { variantsRepository.get(it).first() }
         val price: String? = lastItem?.actualPrice()
             ?.toString()
         val quantity: String? = lastItem?.actualQuantity()
@@ -148,7 +143,7 @@ abstract class ModifyItemViewModel: ViewModel() {
     protected fun loadLastItem() = viewModelScope.launch {
         screenState.allToLoading()
 
-        val lastItem: Item? = itemRepository.newest()
+        val lastItem: ItemEntity? = itemRepository.newest().first()
 
         updateStateForItem(lastItem)
     }
@@ -156,13 +151,13 @@ abstract class ModifyItemViewModel: ViewModel() {
     /**
      * @return List of all products
      */
-    fun allProducts(): Flow<Data<ImmutableList<ProductWithAltNames>>> {
-        return productRepository.allWithAltNamesFlow()
+    fun allProducts(): Flow<ImmutableList<ProductEntity>> {
+        return productRepository.all()
     }
 
-    private val mProductVariants: MutableState<Flow<Data<ImmutableList<ProductVariant>>>> =
+    private val mProductVariants: MutableState<Flow<ImmutableList<ProductVariantEntity>>> =
         mutableStateOf(emptyFlow())
-    val productVariants: Flow<Data<ImmutableList<ProductVariant>>> by mProductVariants
+    val productVariants: Flow<ImmutableList<ProductVariantEntity>> by mProductVariants
     private var mUpdateProductVariantsJob: Job? = null
 
     /**
@@ -172,7 +167,7 @@ abstract class ModifyItemViewModel: ViewModel() {
         mUpdateProductVariantsJob?.cancel()
         mUpdateProductVariantsJob = viewModelScope.launch {
             mProductVariants.value =
-                screenState.selectedProduct.value.data?.let { variantsRepository.byProductFlow(it, true) }
+                screenState.selectedProduct.value.data?.let { variantsRepository.byProduct(it, true) }
                     ?: emptyFlow()
         }
     }
@@ -181,10 +176,10 @@ abstract class ModifyItemViewModel: ViewModel() {
      * Updates the state to represent [item], doesn't switch state to loading status as it should be done before fetching the item
      */
     protected suspend fun updateStateForItem(
-        item: Item?,
+        item: ItemEntity?,
     ) {
-        val product: Product? = item?.productId?.let { productRepository.get(it) }
-        val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }
+        val product: ProductEntity? = item?.productEntityId?.let { productRepository.get(it).first() }
+        val variant: ProductVariantEntity? = item?.productVariantEntityId?.let { variantsRepository.get(it).first() }
         val price: String? = item?.actualPrice()
             ?.toString()
         val quantity: String? = item?.actualQuantity()
@@ -204,8 +199,8 @@ abstract class ModifyItemViewModel: ViewModel() {
  * Data representing [ModifyItemScreenImpl] screen state
  */
 data class ModifyItemScreenState(
-    val selectedProduct: MutableState<Field<Product>> = mutableStateOf(Field.Loaded()),
-    val selectedVariant: MutableState<Field<ProductVariant?>> = mutableStateOf(Field.Loaded()),
+    val selectedProduct: MutableState<Field<ProductEntity>> = mutableStateOf(Field.Loaded()),
+    val selectedVariant: MutableState<Field<ProductVariantEntity?>> = mutableStateOf(Field.Loaded()),
     val quantity: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
     val price: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
 

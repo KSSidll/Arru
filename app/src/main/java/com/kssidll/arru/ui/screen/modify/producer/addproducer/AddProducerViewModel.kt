@@ -1,8 +1,8 @@
 package com.kssidll.arru.ui.screen.modify.producer.addproducer
 
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddProducerViewModel @Inject constructor(
-    override val producerRepository: ProducerRepositorySource,
+    override val producerRepository: ProductProducerRepositorySource,
 ): ModifyProducerViewModel() {
 
     /**

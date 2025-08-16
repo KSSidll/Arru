@@ -2,7 +2,6 @@ package com.kssidll.arru.ui.screen.display.transaction
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import com.kssidll.arru.domain.data.Data
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
@@ -21,8 +20,7 @@ fun TransactionRoute(
 
     TransactionScreen(
         onBack = navigateBack,
-        transaction = viewModel.transaction(transactionId)
-            .collectAsState(initial = Data.Loading()).value,
+        transaction = viewModel.transaction(transactionId).collectAsState(initial = null).value,
         onEditAction = {
             navigateTransactionEdit(transactionId)
         },

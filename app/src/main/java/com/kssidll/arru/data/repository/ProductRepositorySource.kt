@@ -2,15 +2,13 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
-import com.kssidll.arru.data.data.ProductCategory
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductWithAltNames
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -33,22 +31,6 @@ interface ProductRepositorySource {
             data object InvalidProducerId: Errors()
         }
 
-        sealed class AltInsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): AltInsertResult(id)
-            class Error(error: Errors): AltInsertResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-        }
-
         sealed class UpdateResult(
             val error: Errors? = null
         ) {
@@ -64,22 +46,6 @@ interface ProductRepositorySource {
             data object DuplicateName: Errors()
             data object InvalidCategoryId: Errors()
             data object InvalidProducerId: Errors()
-        }
-
-        sealed class AltUpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: AltUpdateResult()
-            class Error(error: Errors): AltUpdateResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidProductId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
         }
 
         sealed class MergeResult(
@@ -114,11 +80,11 @@ interface ProductRepositorySource {
     // Create
 
     /**
-     * Inserts [Product]
-     * @param name name of the [Product] to insert
-     * @param categoryId id of the [ProductCategory] of the [Product] to insert
-     * @param producerId id of the [ProductProducer] of the [Product] to insert
-     * @return [InsertResult] with id of the newly inserted [Product] or an error if any
+     * Inserts [ProductEntity]
+     * @param name name of the [ProductEntity] to insert
+     * @param categoryId id of the [ProductCategoryEntity] of the [ProductEntity] to insert
+     * @param producerId id of the [ProductProducerEntity] of the [ProductEntity] to insert
+     * @return [InsertResult] with id of the newly inserted [ProductEntity] or an error if any
      */
     suspend fun insert(
         name: String,
@@ -126,159 +92,122 @@ interface ProductRepositorySource {
         producerId: Long?
     ): InsertResult
 
-    /**
-     * Inserts [ProductAltName]
-     * @param product [Product] to add the [alternativeName] to
-     * @param alternativeName alternative name to add to the [product]
-     * @return [AltInsertResult] with id of the newly inserted [Product] or an error if any
-     */
-    suspend fun insertAltName(
-        product: Product,
-        alternativeName: String
-    ): AltInsertResult
-
     // Update
 
     /**
-     * Updates [Product] with [productId] id to provided [name], [categoryId] and [producerId]
-     * @param productId id to match [Product]
-     * @param name name to update the matching [Product] to
-     * @param categoryId id of the [ProductCategory] to update the matching [Product] to
-     * @param producerId id of the [ProductProducer] to update the matching [Product] to
+     * Updates [ProductEntity] with [id] id to provided [name], [categoryId] and [producerId]
+     * @param id id to match [ProductEntity]
+     * @param name name to update the matching [ProductEntity] to
+     * @param categoryId id of the [ProductCategoryEntity] to update the matching [ProductEntity] to
+     * @param producerId id of the [ProductProducerEntity] to update the matching [ProductEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        productId: Long,
+        id: Long,
         name: String,
         categoryId: Long,
         producerId: Long?
     ): UpdateResult
 
     /**
-     * Updates [ProductAltName] with [alternativeNameId] id to provided [productId] and [name]
-     * @param alternativeNameId id to match [ProductAltName]
-     * @param productId product id to update the matching [ProductAltName] to
-     * @param name name to update the matching [ProductAltName] to
-     * @return [UpdateResult] with the result
-     */
-    suspend fun updateAltName(
-        alternativeNameId: Long,
-        productId: Long,
-        name: String
-    ): AltUpdateResult
-
-    /**
-     * Merges [product] into [mergingInto]
-     * @param product [Product] to merge
-     * @param mergingInto [Product] to merge the [product] into
+     * Merges [entity] into [mergingInto]
+     * @param entity [ProductEntity] to merge
+     * @param mergingInto [ProductEntity] to merge the [entity] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        product: Product,
-        mergingInto: Product,
+        entity: ProductEntity,
+        mergingInto: ProductEntity,
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [Product] matching [productId]
-     * @param productId id of the [Product] to delete
+     * Deletes [ProductEntity] matching [id]
+     * @param id id of the [ProductEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        productId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
-
-    /**
-     * Deletes [ProductAltName] matching [alternativeNameId]
-     * @param alternativeNameId id of the [ProductAltName] to delete
-     * @return [DeleteResult] with the result
-     */
-    suspend fun deleteAltName(alternativeNameId: Long): DeleteResult
 
     // Read
 
     /**
-     * @param productId id of the [Product]
-     * @return [Product] matching [productId] id or null if none match
+     * @param id id of the [ProductEntity]
+     * @return [ProductEntity] matching [id] id or null if none match
      */
-    suspend fun get(productId: Long): Product?
+    fun get(id: Long): Flow<ProductEntity?>
 
     /**
-     * @param productId id of the [Product]
-     * @return [Product] matching [productId] id or null if none match, as flow
+     * @param id id of the [ProductEntity]
+     * @return [PagingData] of [Item] that is of [ProductEntity] [id]
      */
-    fun getFlow(productId: Long): Flow<Data<Product?>>
+    fun itemsFor(id: Long): Flow<PagingData<Item>>
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
-     * @param product [Product] to get the total spending from
-     * @return float representing total spending for the [product] as flow
+     * @return list of all [ProductEntity]
      */
-    fun totalSpentFlow(product: Product): Flow<Data<Float?>>
+    fun all(): Flow<ImmutableList<ProductEntity>>
 
     /**
-     * @param product [Product] to get the total spending by day from
-     * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
+     * @param entity [ProductEntity] to get the total spending from
+     * @return float representing total spending for the [entity]
      */
-    fun totalSpentByDayFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpent(entity: ProductEntity): Flow<Float?>
 
     /**
-     * @param product [Product] to get the total spending by week from
-     * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
+     * @param entity [ProductEntity] to get the total spending by day from
+     * @return list of [ItemSpentByTime] representing total spending groupped by day
      */
-    fun totalSpentByWeekFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByDay(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
-     * @param product [Product] to get the total spending by month from
-     * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
+     * @param entity [ProductEntity] to get the total spending by week from
+     * @return list of [ItemSpentByTime] representing total spending groupped by week
      */
-    fun totalSpentByMonthFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByWeek(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
-     * @param product [Product] to get the total spending by year from
-     * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
+     * @param entity [ProductEntity] to get the total spending by month from
+     * @return list of [ItemSpentByTime] representing total spending groupped by month
      */
-    fun totalSpentByYearFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByMonth(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
-     * @param product [Product] to match the items to
+     * @param entity [ProductEntity] to get the total spending by year from
+     * @return list of [ItemSpentByTime] representing total spending groupped by year
      */
-    fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>>
+    fun totalSpentByYear(entity: ProductEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
-     * @param product [Product] to match the [Item] with
-     * @return newest [Item] that matches [product], null if none match
+     * @param entity [ProductEntity] to match the items to
      */
-    suspend fun newestItem(product: Product): Item?
+    fun fullItemsPaged(entity: ProductEntity): Flow<PagingData<FullItem>>
 
     /**
-     * @return list of all [ProductWithAltNames] as flow
+     * @param entity [ProductEntity] to match the [ItemEntity] with
+     * @return newest [ItemEntity] that matches [entity], null if none match
      */
-    fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductWithAltNames>>>
+    suspend fun newestItem(entity: ProductEntity): ItemEntity?
 
     /**
-     * @param product [Product] to match the data with
-     * @return list of [ProductPriceByShopByTime] representing the average price of [product] groupped by variant, shop and month as flow
+     * @param entity [ProductEntity] to match the data with
+     * @return list of [ProductPriceByShopByTime] representing the average price of [entity] groupped by variant, shop and month
      */
-    fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>
-
-    /**
-     * @return list of all [Product] as flow
-     */
-    fun allFlow(): Flow<Data<ImmutableList<Product>>>
-
-    /**
-     * @return total count of [Product]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] products offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<Product>
+    fun averagePriceByVariantByShopByMonth(entity: ProductEntity): Flow<ImmutableList<ProductPriceByShopByTime>>
 }

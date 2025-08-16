@@ -2,13 +2,13 @@ package com.kssidll.arru.ui.screen.modify.transaction.addtransaction
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getTransactionDate
 import com.kssidll.arru.data.preference.setTransactionDate
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
     @param:ApplicationContext private val appContext: Context,
-    private val transactionRepository: TransactionBasketRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
 
@@ -38,10 +38,10 @@ class AddTransactionViewModel @Inject constructor(
         screenState.selectedShop.apply { value = value.toLoading() }
         screenState.date.apply { value = value.toLoading() }
 
-        val latest = transactionRepository.newest()
+        val latest = transactionRepository.newest().first()
 
         if (latest != null) {
-            val shop = latest.shopId?.let { shopRepository.get(it) }
+            val shop = latest.shopEntityId?.let { shopRepository.get(it).first() }
 
             screenState.selectedShop.value = Field.Loaded(shop)
 
@@ -71,13 +71,13 @@ class AddTransactionViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = transactionRepository.insert(
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
+            date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
             totalCost = screenState.totalCost.value.data?.let {
-                TransactionBasket.totalCostFromString(
+                TransactionEntity.totalCostFromString(
                     it
                 )
             }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
+                ?: TransactionEntity.INVALID_TOTAL_COST,
             shopId = screenState.selectedShop.value.data?.id,
             note = screenState.note.value.data?.trim(),
         )

@@ -5,12 +5,11 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryViewModel
@@ -19,19 +18,20 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
-    override val categoryRepository: CategoryRepositorySource,
+    override val categoryRepository: ProductCategoryRepositorySource,
 ): ModifyCategoryViewModel() {
-    private var mCategory: ProductCategory? = null
+    private var mCategory: ProductCategoryEntity? = null
 
     private val mMergeMessageCategoryName: MutableState<String> = mutableStateOf(String())
     val mergeMessageCategoryName get() = mMergeMessageCategoryName.value
 
-    val chosenMergeCandidate: MutableState<ProductCategory?> = mutableStateOf(null)
+    val chosenMergeCandidate: MutableState<ProductCategoryEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
     /**
@@ -44,7 +44,7 @@ class EditCategoryViewModel @Inject constructor(
 
         screenState.name.value = screenState.name.value.toLoading()
 
-        mCategory = categoryRepository.get(categoryId)
+        mCategory = categoryRepository.get(categoryId).first()
         mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
 
         screenState.name.apply {
@@ -58,12 +58,10 @@ class EditCategoryViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(categoryId: Long): Flow<Data<ImmutableList<ProductCategory>>> {
-        return categoryRepository.allFlow()
+    fun allMergeCandidates(categoryId: Long): Flow<ImmutableList<ProductCategoryEntity>> {
+        return categoryRepository.all()
             .map {
-                if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != categoryId }.toImmutableList())
-                } else it
+                it.filter { item -> item.id != categoryId }.toImmutableList()
             }
     }
 
@@ -142,7 +140,7 @@ class EditCategoryViewModel @Inject constructor(
      * Tries to delete merge category into provided [mergeCandidate]
      * @return resulting [MergeResult]
      */
-    suspend fun mergeWith(mergeCandidate: ProductCategory) = viewModelScope.async {
+    suspend fun mergeWith(mergeCandidate: ProductCategoryEntity) = viewModelScope.async {
         if (mCategory == null) {
             Log.e(
                 "InvalidId",

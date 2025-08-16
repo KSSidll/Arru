@@ -5,12 +5,11 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.MergeResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerViewModel
@@ -19,19 +18,20 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
 class EditProducerViewModel @Inject constructor(
-    override val producerRepository: ProducerRepositorySource,
+    override val producerRepository: ProductProducerRepositorySource,
 ): ModifyProducerViewModel() {
-    private var mProducer: ProductProducer? = null
+    private var mProducer: ProductProducerEntity? = null
 
     private val mMergeMessageProducerName: MutableState<String> = mutableStateOf(String())
     val mergeMessageProducerName get() = mMergeMessageProducerName.value
 
-    val chosenMergeCandidate: MutableState<ProductProducer?> = mutableStateOf(null)
+    val chosenMergeCandidate: MutableState<ProductProducerEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
     /**
@@ -44,7 +44,7 @@ class EditProducerViewModel @Inject constructor(
 
         screenState.name.apply { value = value.toLoading() }
 
-        mProducer = producerRepository.get(producerId)
+        mProducer = producerRepository.get(producerId).first()
         mMergeMessageProducerName.value = mProducer?.name.orEmpty()
 
         screenState.name.apply {
@@ -58,12 +58,10 @@ class EditProducerViewModel @Inject constructor(
     /**
      * @return list of merge candidates as flow
      */
-    fun allMergeCandidates(producerId: Long): Flow<Data<ImmutableList<ProductProducer>>> {
-        return producerRepository.allFlow()
+    fun allMergeCandidates(producerId: Long): Flow<ImmutableList<ProductProducerEntity>> {
+        return producerRepository.all()
             .map {
-                if (it is Data.Loaded) {
-                    Data.Loaded(it.data.filter { item -> item.id != producerId }.toImmutableList())
-                } else it
+                it.filter { item -> item.id != producerId }.toImmutableList()
             }
     }
 
@@ -142,7 +140,7 @@ class EditProducerViewModel @Inject constructor(
      * Tries to delete merge producer into provided [mergeCandidate]
      * @return resulting [MergeResult]
      */
-    suspend fun mergeWith(mergeCandidate: ProductProducer) = viewModelScope.async {
+    suspend fun mergeWith(mergeCandidate: ProductProducerEntity) = viewModelScope.async {
         if (mProducer == null) {
             Log.e(
                 "InvalidId",

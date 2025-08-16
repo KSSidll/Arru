@@ -9,10 +9,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.TimePeriodFlowHandler
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.usecase.data.GetItemsForProductProducerUseCase
+import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
+import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -21,51 +24,51 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProducerViewModel @Inject constructor(
-    private val producerRepository: ProducerRepositorySource,
+    private val producerRepository: ProductProducerRepositorySource,
+    private val getItemsForProductProducerUseCase: GetItemsForProductProducerUseCase
 ): ViewModel() {
-    private val mProducer: MutableState<ProductProducer?> = mutableStateOf(null)
-    val producer: ProductProducer? by mProducer
+    private val mProducer: MutableState<ProductProducerEntity?> = mutableStateOf(null)
+    val producer: ProductProducerEntity? by mProducer
 
     private var mProducerListener: Job? = null
 
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<Data<ImmutableList<ItemSpentByTime>>>? = null
-    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
-    val spentByTimeData: Flow<Data<ImmutableList<ItemSpentByTime>>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ItemSpentByTime>>? = null
+    val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
+    val spentByTimeData: Flow<ImmutableList<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
-    fun producerTotalSpent(): Flow<Data<Float?>>? {
-        if (producer == null) return null
-
-        return producerRepository.totalSpentFlow(producer!!)
+    fun producerTotalSpent(): Flow<Float?>? {
+        return producer?.let { producerRepository.totalSpent(it) }
     }
 
     /**
      * @return paging data of full item for current producer as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
-        if (producer == null) return emptyFlow()
-        return producerRepository.fullItemsPagedFlow(producer!!)
+    fun transactions(): Flow<PagingData<Item>> {
+        return producer?.let { getItemsForProductProducerUseCase(it.id) } ?: emptyFlow()
     }
 
     /**
      * Switches the state period to [newPeriod]
      * @param newPeriod Period to switch the state to
      */
-    fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        mTimePeriodFlowHandler?.switchPeriod(newPeriod)
+    fun switchPeriod(newPeriod: SpendingSummaryPeriod) {
+        val nPeriod = TimePeriodFlowHandler.Periods.valueOf(newPeriod.name)
+        mTimePeriodFlowHandler?.switchPeriod(nPeriod)
     }
 
     /**
      * @return true if provided [producerId] was valid, false otherwise
      */
     suspend fun performDataUpdate(producerId: Long) = viewModelScope.async {
-        val producer = producerRepository.get(producerId) ?: return@async false
+        val producer = producerRepository.get(producerId).first() ?: return@async false
 
         // We ignore the possiblity of changing category while one is already loaded
         // as not doing that would increase complexity too much
@@ -74,13 +77,9 @@ class ProducerViewModel @Inject constructor(
 
         mProducerListener?.cancel()
         mProducerListener = viewModelScope.launch {
-            producerRepository.getFlow(producerId)
+            producerRepository.get(producerId)
                 .collectLatest {
-                    if (it is Data.Loaded) {
-                        mProducer.value = it.data
-                    } else {
-                        mProducer.value = null
-                    }
+                    mProducer.value = it
                 }
         }
 
@@ -88,17 +87,17 @@ class ProducerViewModel @Inject constructor(
 
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
-            dayFlow = {
-                producerRepository.totalSpentByDayFlow(producer)
+            day = {
+                producerRepository.totalSpentByDay(producer)
             },
-            weekFlow = {
-                producerRepository.totalSpentByWeekFlow(producer)
+            week = {
+                producerRepository.totalSpentByWeek(producer)
             },
-            monthFlow = {
-                producerRepository.totalSpentByMonthFlow(producer)
+            month = {
+                producerRepository.totalSpentByMonth(producer)
             },
-            yearFlow = {
-                producerRepository.totalSpentByYearFlow(producer)
+            year = {
+                producerRepository.totalSpentByYear(producer)
             },
         )
 

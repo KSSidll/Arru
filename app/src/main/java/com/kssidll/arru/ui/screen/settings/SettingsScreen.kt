@@ -68,7 +68,6 @@ import androidx.compose.ui.util.fastJoinToString
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
@@ -235,15 +234,15 @@ fun SettingsScreen(
             if (isCurrencyFormatSearchExpanded) {
                 SearchableListDialog(
                     showAddButton = false,
-                    items = Data.Loaded(CurrencyLocaleData.items),
+                    items = CurrencyLocaleData.items,
                     itemText = {
                         buildString {
                             append(it.first)
                             append(" | ")
-                            append(it.second.map {
+                            append(it.second.map { tag ->
                                 NumberFormat.getCurrencyInstance(
                                     Locale.forLanguageTag(
-                                        it
+                                        tag
                                     )
                                 ).currency?.symbol ?: String()
                             }.distinct().fastJoinToString(" "))

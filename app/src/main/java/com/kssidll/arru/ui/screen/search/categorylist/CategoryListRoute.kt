@@ -3,9 +3,10 @@ package com.kssidll.arru.ui.screen.search.categorylist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.ui.screen.search.shared.SearchList
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun CategoryListRoute(
@@ -19,12 +20,12 @@ fun CategoryListRoute(
             viewModel.filter = it
         },
         items = viewModel.items()
-            .collectAsState(initial = Data.Loading()).value,
+            .collectAsState(initial = emptyList<ProductCategoryEntity>().toImmutableList()).value,
         onItemClick = {
-            onCategoryClick(it.category.id)
+            onCategoryClick(it.id)
         },
         onItemLongClick = {
-            onCategoryLongClick(it.category.id)
+            onCategoryLongClick(it.id)
         },
     )
 }

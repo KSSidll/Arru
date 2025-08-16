@@ -3,7 +3,7 @@ package com.kssidll.arru.ui.screen.search.shoplist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.search.shared.SearchList
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
@@ -19,7 +19,7 @@ internal fun ShopListRoute(
             viewModel.filter = it
         },
         items = viewModel.items()
-            .collectAsState(initial = Data.Loading()).value,
+            .collectAsState(initial = emptyImmutableList()).value,
         onItemClick = {
             onShopClick(it.id)
         },

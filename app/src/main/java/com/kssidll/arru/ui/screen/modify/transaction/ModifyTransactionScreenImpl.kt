@@ -41,13 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.FuzzySearchSource
-import com.kssidll.arru.domain.data.loadedData
-import com.kssidll.arru.domain.data.loadedEmpty
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
@@ -58,13 +55,14 @@ import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerScreenState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
- * [ModifyScreen] implementation for [ProductProducer]
+ * [ModifyScreen] implementation for [ProductProducerEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
  * @param state [ModifyProducerScreenState] instance representing the screen state
  * @param shops Shops that can be set for the transaction
@@ -81,8 +79,8 @@ fun ModifyTransactionScreenImpl(
     isExpandedScreen: Boolean,
     onBack: () -> Unit,
     state: ModifyTransactionScreenState,
-    shops: Data<ImmutableList<Shop>>,
-    onNewShopSelected: (shop: Shop?) -> Unit,
+    shops: ImmutableList<ShopEntity>,
+    onNewShopSelected: (shop: ShopEntity?) -> Unit,
     onSubmit: () -> Unit,
     onShopAddButtonClick: (query: String?) -> Unit,
     onDelete: (() -> Unit)? = null,
@@ -176,7 +174,7 @@ fun ModifyTransactionScreenImpl(
 @Composable
 private fun ModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
-    shops: Data<ImmutableList<Shop>>,
+    shops: ImmutableList<ShopEntity>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
@@ -345,9 +343,9 @@ private fun ModifyTransactionScreenContent(
             optional = true,
             value = state.selectedShop.value.data?.name ?: String(),
             onClick = {
-                if (shops.loadedData()) {
+                if (shops.isNotEmpty()) {
                     state.isShopSearchDialogExpanded.value = true
-                } else if (shops.loadedEmpty()) {
+                } else {
                     onShopAddButtonClick(null)
                 }
             },
@@ -371,7 +369,7 @@ private fun ModifyTransactionScreenContent(
 @Composable
 private fun ExpandedModifyTransactionScreenContent(
     state: ModifyTransactionScreenState,
-    shops: Data<ImmutableList<Shop>>,
+    shops: ImmutableList<ShopEntity>,
     onShopAddButtonClick: (query: String?) -> Unit,
     onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
@@ -534,9 +532,9 @@ private fun ExpandedModifyTransactionScreenContent(
             optional = true,
             value = state.selectedShop.value.data?.name ?: String(),
             onClick = {
-                if (shops.loadedData()) {
+                if (shops.isNotEmpty()) {
                     state.isShopSearchDialogExpanded.value = true
-                } else if (shops.loadedEmpty()) {
+                } else {
                     onShopAddButtonClick(null)
                 }
             },
@@ -566,7 +564,7 @@ private fun ModifyTransactionScreenImplPreview() {
                 isExpandedScreen = false,
                 onBack = {},
                 state = ModifyTransactionScreenState(),
-                shops = Data.Loading(),
+                shops = emptyList<ShopEntity>().toImmutableList(),
                 onNewShopSelected = {},
                 onSubmit = {},
                 onShopAddButtonClick = {},
@@ -585,7 +583,7 @@ private fun ExpandedModifyTransactionScreenImplPreview() {
                 isExpandedScreen = true,
                 onBack = {},
                 state = ModifyTransactionScreenState(),
-                shops = Data.Loading(),
+                shops = emptyList<ShopEntity>().toImmutableList(),
                 onNewShopSelected = {},
                 onSubmit = {},
                 onShopAddButtonClick = {},

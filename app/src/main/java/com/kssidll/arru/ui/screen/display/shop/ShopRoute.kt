@@ -5,10 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kssidll.arru.data.data.TransactionTotalSpentByTime
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.orEmpty
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ShopRoute(
@@ -30,12 +29,9 @@ fun ShopRoute(
     ShopScreen(
         onBack = navigateBack,
         shop = viewModel.shop,
-        transactionItems = viewModel.transactions()
-            .collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = Data.Loading())?.value
-            ?: Data.Loaded(emptyList<TransactionTotalSpentByTime>().toImmutableList()),
-        totalSpentData = viewModel.shopTotalSpent()
-            ?.collectAsState(initial = Data.Loading())?.value ?: Data.Loaded(0F),
+        transactionItems = viewModel.transactions().collectAsLazyPagingItems(),
+        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
+        totalSpentData = viewModel.shopTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
         spentByTimePeriod = viewModel.spentByTimePeriod,
         onSpentByTimePeriodSwitch = {
             viewModel.switchPeriod(it)
