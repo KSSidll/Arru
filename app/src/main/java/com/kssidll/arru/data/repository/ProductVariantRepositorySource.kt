@@ -70,25 +70,25 @@ interface ProductVariantRepositorySource {
     // Update
 
     /**
-     * Updates [ProductVariantEntity] with [variantId] id to provided [name]
-     * @param variantId id to match [ProductVariantEntity]
+     * Updates [ProductVariantEntity] with [id] id to provided [name]
+     * @param id id to match [ProductVariantEntity]
      * @param name name to update the matching [ProductVariantEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        variantId: Long,
+        id: Long,
         name: String
     ): UpdateResult
 
     /**
-     * Updates [ProductVariantEntity] with [variantId] id to provided [productId] and [name]
-     * @param variantId id to match [ProductVariantEntity]
+     * Updates [ProductVariantEntity] with [id] id to provided [productId] and [name]
+     * @param id id to match [ProductVariantEntity]
      * @param productId [ProductEntity] id to update the matching [ProductVariantEntity] to, null for global [ProductVariantEntity]
      * @param name name to update the matching [ProductVariantEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        variantId: Long,
+        id: Long,
         productId: Long?,
         name: String
     ): UpdateResult
@@ -97,22 +97,33 @@ interface ProductVariantRepositorySource {
 
     /**
      * Deletes [ProductVariantEntity]
-     * @param variantId id of the [ProductVariantEntity] to delete
+     * @param id id of the [ProductVariantEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        variantId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
 
     // Read
 
     /**
-     * @param variantId id of the [ProductVariantEntity]
-     * @return [ProductVariantEntity] matching [variantId] id or null if none match
+     * @param id id of the [ProductVariantEntity]
+     * @return [ProductVariantEntity] matching [id] id or null if none match
      */
-    fun get(variantId: Long): Flow<ProductVariantEntity?>
+    fun get(id: Long): Flow<ProductVariantEntity?>
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @param productEntity [ProductEntity] to match the [ProductVariantEntity] with

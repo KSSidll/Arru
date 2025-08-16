@@ -94,15 +94,15 @@ interface ProductRepositorySource {
     // Update
 
     /**
-     * Updates [ProductEntity] with [productId] id to provided [name], [categoryId] and [producerId]
-     * @param productId id to match [ProductEntity]
+     * Updates [ProductEntity] with [id] id to provided [name], [categoryId] and [producerId]
+     * @param id id to match [ProductEntity]
      * @param name name to update the matching [ProductEntity] to
      * @param categoryId id of the [ProductCategoryEntity] to update the matching [ProductEntity] to
      * @param producerId id of the [ProductProducerEntity] to update the matching [ProductEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        productId: Long,
+        id: Long,
         name: String,
         categoryId: Long,
         producerId: Long?
@@ -122,23 +122,36 @@ interface ProductRepositorySource {
     // Delete
 
     /**
-     * Deletes [ProductEntity] matching [productId]
-     * @param productId id of the [ProductEntity] to delete
+     * Deletes [ProductEntity] matching [id]
+     * @param id id of the [ProductEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        productId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
 
     // Read
 
     /**
-     * @param productId id of the [ProductEntity]
-     * @return [ProductEntity] matching [productId] id or null if none match
+     * @param id id of the [ProductEntity]
+     * @return [ProductEntity] matching [id] id or null if none match
      */
-    fun get(productId: Long): Flow<ProductEntity?>
+    fun get(id: Long): Flow<ProductEntity?>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @return list of all [ProductEntity]

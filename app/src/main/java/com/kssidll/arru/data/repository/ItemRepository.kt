@@ -6,6 +6,7 @@ import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteRes
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.first
 
 class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
@@ -58,13 +59,13 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
     // Update
 
     override suspend fun update(
-        itemId: Long,
+        id: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
         price: Long
     ): UpdateResult {
-        val item = dao.get(itemId).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
+        val item = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         item.productEntityId = productId
         item.productVariantEntityId = variantId
@@ -98,8 +99,8 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
 
     // Delete
 
-    override suspend fun delete(itemId: Long): DeleteResult {
-        val item = dao.get(itemId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+    override suspend fun delete(id: Long): DeleteResult {
+        val item = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         dao.delete(item)
 
@@ -108,9 +109,12 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
 
     // Read
 
-    override suspend fun get(itemId: Long): Flow<ItemEntity?> {
-        return dao.get(itemId)
-    }
+    override suspend fun get(id: Long): Flow<ItemEntity?> = dao.get(id).cancellable()
+
+
+
+
+
 
     override suspend fun newest(): Flow<ItemEntity?> {
         return dao.newest()

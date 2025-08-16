@@ -67,10 +67,10 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
     // Update
 
     override suspend fun update(
-        variantId: Long,
+        id: Long,
         name: String
     ): UpdateResult {
-        val variant = dao.get(variantId).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
+        val variant = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         variant.name = name.trim()
 
@@ -96,11 +96,11 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
     }
 
     override suspend fun update(
-        variantId: Long,
+        id: Long,
         productId: Long?,
         name: String
     ): UpdateResult {
-        if (dao.get(variantId).first() == null) {
+        if (dao.get(id).first() == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
@@ -109,7 +109,7 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
         }
 
         val variant = ProductVariantEntity(
-            id = variantId,
+            id = id,
             productEntityId = productId,
             name = name.trim(),
         )
@@ -138,12 +138,12 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
     // Delete
 
     override suspend fun delete(
-        variantId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult {
-        val variant = dao.get(variantId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+        val variant = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val items = dao.getItems(variantId)
+        val items = dao.getItems(id)
 
         if (!force && items.isNotEmpty()) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
@@ -157,11 +157,15 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
 
     // Read
 
-    override fun get(variantId: Long): Flow<ProductVariantEntity?> {
-        return dao.get(variantId)
-            .cancellable()
-            .distinctUntilChanged()
-    }
+    override fun get(id: Long): Flow<ProductVariantEntity?> = dao.get(id).cancellable()
+
+
+
+
+
+
+
+
 
     override fun byProduct(productEntity: ProductEntity, showGlobal: Boolean): Flow<ImmutableList<ProductVariantEntity>> {
         return dao.byProduct(productEntity.id, showGlobal)

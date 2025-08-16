@@ -45,10 +45,10 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
     // Update
 
     override suspend fun update(
-        producerId: Long,
+        id: Long,
         name: String
     ): UpdateResult {
-        val producer = dao.get(producerId).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
+        val producer = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         producer.name = name
 
@@ -70,10 +70,10 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
     }
 
     override suspend fun merge(
-        producer: ProductProducerEntity,
+        entity: ProductProducerEntity,
         mergingInto: ProductProducerEntity
     ): MergeResult {
-        if (dao.get(producer.id).first() == null) {
+        if (dao.get(entity.id).first() == null) {
             return MergeResult.Error(MergeResult.InvalidProducer)
         }
 
@@ -81,11 +81,11 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
             return MergeResult.Error(MergeResult.InvalidMergingInto)
         }
 
-        val products = dao.getProducts(producer.id)
+        val products = dao.getProducts(entity.id)
         products.forEach { it.productProducerEntityId = mergingInto.id }
         dao.updateProducts(products)
 
-        dao.delete(producer)
+        dao.delete(entity)
 
         return MergeResult.Success
     }
@@ -93,14 +93,14 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
     // Delete
 
     override suspend fun delete(
-        producerid: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult {
-        val producer = dao.get(producerid).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+        val producer = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val products = dao.getProducts(producerid)
-        val productVariants = dao.getProductsVariants(producerid)
-        val items = dao.getItems(producerid)
+        val products = dao.getProducts(id)
+        val productVariants = dao.getProductsVariants(id)
+        val items = dao.getItems(id)
 
         if (!force && (products.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
@@ -116,11 +116,16 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
 
     // Read
 
-    override fun get(producerId: Long): Flow<ProductProducerEntity?> {
-        return dao.get(producerId)
-            .cancellable()
-            .distinctUntilChanged()
-    }
+    override fun get(id: Long): Flow<ProductProducerEntity?> = dao.get(id).cancellable()
+
+
+
+
+
+
+
+
+
 
     override fun totalSpent(producer: ProductProducerEntity): Flow<Float?> {
         return dao.totalSpent(producer.id)

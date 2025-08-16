@@ -74,7 +74,7 @@ class EditTransactionViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = transactionRepository.update(
-            transactionId = transactionId,
+            id = transactionId,
             date = screenState.date.value.data ?: TransactionEntity.INVALID_DATE,
             totalCost = screenState.totalCost.value.data?.let {
                 TransactionEntity.totalCostFromString(

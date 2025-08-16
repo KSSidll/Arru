@@ -79,8 +79,8 @@ interface ItemRepositorySource {
     // Update
 
     /**
-     * Updates [ItemEntity] with [itemId] to provided [productId], [variantId], [quantity] and [price]
-     * @param itemId id to match [ItemEntity]
+     * Updates [ItemEntity] with [id] to provided [productId], [variantId], [quantity] and [price]
+     * @param id id to match [ItemEntity]
      * @param productId [ProductEntity] id to update the matching [ItemEntity] to
      * @param variantId [ProductVariantEntity] id to update the matching [ItemEntity] to
      * @param quantity quantity to update the matching [ItemEntity] to
@@ -88,7 +88,7 @@ interface ItemRepositorySource {
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        itemId: Long,
+        id: Long,
         productId: Long,
         variantId: Long?,
         quantity: Long,
@@ -99,18 +99,26 @@ interface ItemRepositorySource {
 
     /**
      * Deletes [ItemEntity]
-     * @param itemId id of the [ItemEntity] to delete
+     * @param id id of the [ItemEntity] to delete
      * @return [DeleteResult] with the result
      */
-    suspend fun delete(itemId: Long): DeleteResult
+    suspend fun delete(id: Long): DeleteResult
 
     // Read
 
     /**
-     * @param itemId id of the [ItemEntity]
-     * @return [ItemEntity] with [itemId] id or null if none match
+     * @param id id of the [ItemEntity]
+     * @return [ItemEntity] with [id] id or null if none match
      */
-    suspend fun get(itemId: Long): Flow<ItemEntity?>
+    suspend fun get(id: Long): Flow<ItemEntity?>
+
+
+
+
+
+
+
+
 
     /**
      * @return newest [ItemEntity], null if none found

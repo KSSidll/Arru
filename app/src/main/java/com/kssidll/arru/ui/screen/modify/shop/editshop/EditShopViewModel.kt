@@ -74,7 +74,7 @@ class EditShopViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = shopRepository.update(
-            shopId = shopId,
+            id = shopId,
             name = screenState.name.value.data.orEmpty()
         )
 

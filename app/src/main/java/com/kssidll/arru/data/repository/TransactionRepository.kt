@@ -55,14 +55,14 @@ class TransactionRepository(
     // Update
 
     override suspend fun update(
-        transactionId: Long,
+        id: Long,
         date: Long,
         totalCost: Long,
         shopId: Long?,
         note: String?
     ): UpdateResult {
         val transaction =
-            dao.get(transactionId).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
+            dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         val newTransaction = transaction.copy(
             date = date,
@@ -91,13 +91,13 @@ class TransactionRepository(
     // Delete
 
     override suspend fun delete(
-        transactionId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult {
         val transaction =
-            dao.get(transactionId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+            dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val items = dao.itemsByTransactionBasketId(transactionId)
+        val items = dao.itemsByTransactionBasketId(id)
 
         if (!force && (items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
@@ -111,20 +111,30 @@ class TransactionRepository(
 
     // Read
 
+    override fun get(id: Long): Flow<TransactionEntity?> = dao.get(id).cancellable()
+
+
+
+
+
+
+
+
+
+
+
+
+
     override suspend fun count(): Int {
         return dao.count()
     }
 
-    override suspend fun countBefore(transactionBasketId: Long): Int {
-        return dao.countBefore(transactionBasketId)
+    override suspend fun countBefore(id: Long): Int {
+        return dao.countBefore(id)
     }
 
-    override suspend fun countAfter(transactionBasketId: Long): Int {
-        return dao.countAfter(transactionBasketId)
-    }
-
-    override fun get(transactionBasketId: Long): Flow<TransactionEntity?> {
-        return dao.get(transactionBasketId)
+    override suspend fun countAfter(id: Long): Int {
+        return dao.countAfter(id)
     }
 
     override fun newest(): Flow<TransactionEntity?> {

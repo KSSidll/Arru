@@ -81,47 +81,59 @@ interface ShopRepositorySource {
     // Update
 
     /**
-     * Updates [ShopEntity] with [shopId] to provided [name]
-     * @param shopId id to match [ShopEntity]
+     * Updates [ShopEntity] with [id] to provided [name]
+     * @param id id to match [ShopEntity]
      * @param name name to update the matching [ShopEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        shopId: Long,
+        id: Long,
         name: String
     ): UpdateResult
 
     /**
-     * Merges [shop] into [mergingInto]
-     * @param shop [ShopEntity] to merge
-     * @param mergingInto [ShopEntity] to merge the [shop] into
+     * Merges [entity] into [mergingInto]
+     * @param entity [ShopEntity] to merge
+     * @param mergingInto [ShopEntity] to merge the [entity] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        shop: ShopEntity,
+        entity: ShopEntity,
         mergingInto: ShopEntity
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [ShopEntity] matching [shopId]
-     * @param shopId id fo the [ShopEntity] to delete
+     * Deletes [ShopEntity] matching [id]
+     * @param id id fo the [ShopEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        shopId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
 
     // Read
 
     /**
-     * @param shopId id of the [ShopEntity]
-     * @return [ShopEntity] matching [shopId] id or null if none match
+     * @param id id of the [ShopEntity]
+     * @return [ShopEntity] matching [id] id or null if none match
      */
-    fun get(shopId: Long): Flow<ShopEntity?>
+    fun get(id: Long): Flow<ShopEntity?>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**

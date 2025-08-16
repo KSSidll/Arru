@@ -62,12 +62,12 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
     // Update
 
     override suspend fun update(
-        productId: Long,
+        id: Long,
         name: String,
         categoryId: Long,
         producerId: Long?
     ): UpdateResult {
-        if (dao.get(productId).first() == null) {
+        if (dao.get(id).first() == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
@@ -80,7 +80,7 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
         }
 
         val entity = ProductEntity(
-            id = productId,
+            id = id,
             name = name.trim(),
             productCategoryEntityId = categoryId,
             productProducerEntityId = producerId
@@ -149,13 +149,13 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
     // Delete
 
     override suspend fun delete(
-        productId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult {
-        val product = dao.get(productId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+        val product = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val variants = dao.variants(productId)
-        val items = dao.getItems(productId)
+        val variants = dao.variants(id)
+        val items = dao.getItems(id)
 
         if (!force && (variants.isNotEmpty() || items.isNotEmpty())) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
@@ -170,11 +170,18 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
 
     // Read
 
-    override fun get(productId: Long): Flow<ProductEntity?> {
-        return dao.get(productId)
-            .cancellable()
-            .distinctUntilChanged()
-    }
+    override fun get(id: Long): Flow<ProductEntity?> = dao.get(id).cancellable()
+
+
+
+
+
+
+
+
+
+
+
 
     override fun totalSpent(entity: ProductEntity): Flow<Float?> {
         return dao.totalSpent(entity.id)

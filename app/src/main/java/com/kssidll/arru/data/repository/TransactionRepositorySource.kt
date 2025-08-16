@@ -92,15 +92,15 @@ interface TransactionRepositorySource {
     // Update
 
     /**
-     * Updates [TransactionEntity] with [transactionId] to provided [date], [totalCost] and [shopId]
-     * @param transactionId id to match [TransactionEntity]
+     * Updates [TransactionEntity] with [id] to provided [date], [totalCost] and [shopId]
+     * @param id id to match [TransactionEntity]
      * @param date date to update the matching [TransactionEntity] to
      * @param totalCost total cost to update the matching [TransactionEntity] to
      * @param shopId id of the [ShopEntity] to update the matching [TransactionEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        transactionId: Long,
+        id: Long,
         date: Long,
         totalCost: Long,
         shopId: Long?,
@@ -111,16 +111,33 @@ interface TransactionRepositorySource {
 
     /**
      * Deletes [TransactionEntity]
-     * @param transactionId id of the [TransactionEntity] to delete
+     * @param id id of the [TransactionEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        transactionId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
 
     // Read
+
+    /**
+     * @param id id of the [TransactionEntity]
+     * @return [TransactionEntity] matching [id] id or null if none match
+     */
+    fun get(id: Long): Flow<TransactionEntity?>
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @return value representing the count of [TransactionEntity]
@@ -128,22 +145,16 @@ interface TransactionRepositorySource {
     suspend fun count(): Int
 
     /**
-     * @param [transactionBasketId] id of the [TransactionEntity] that acts as the breakpoint before which the transactions are counted
-     * @return value representing the count of [TransactionEntity] added before (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
+     * @param [id] id of the [TransactionEntity] that acts as the breakpoint before which the transactions are counted
+     * @return value representing the count of [TransactionEntity] added before (chronologically) [id], counts by id, so doesn't check if the transaction actually exists
      */
-    suspend fun countBefore(transactionBasketId: Long): Int
+    suspend fun countBefore(id: Long): Int
 
     /**
-     * @param [transactionBasketId] id of the [TransactionEntity] that acts as the breakpoint after which the transactions are counted
-     * @return value representing the count of [TransactionEntity] added after (chronologically) [transactionBasketId], counts by id, so doesn't check if the transaction actually exists
+     * @param [id] id of the [TransactionEntity] that acts as the breakpoint after which the transactions are counted
+     * @return value representing the count of [TransactionEntity] added after (chronologically) [id], counts by id, so doesn't check if the transaction actually exists
      */
-    suspend fun countAfter(transactionBasketId: Long): Int
-
-    /**
-     * @param transactionBasketId id of the [TransactionEntity]
-     * @return [TransactionEntity] matching [transactionBasketId] id or null if none match
-     */
-    fun get(transactionBasketId: Long): Flow<TransactionEntity?>
+    suspend fun countAfter(id: Long): Int
 
     /**
      * @return newest [TransactionEntity] (by time added, not transaction date) or null if none exist

@@ -126,6 +126,22 @@ interface TransactionEntityDao {
 
     // Read
 
+    @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :id")
+    fun get(id: Long): Flow<TransactionEntity?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Query("SELECT COUNT(*) FROM TransactionEntity")
     suspend fun count(): Int
 
@@ -134,9 +150,6 @@ interface TransactionEntityDao {
 
     @Query("SELECT COUNT(*) FROM TransactionEntity WHERE id > :entityId")
     suspend fun countAfter(entityId: Long): Int
-
-    @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :entityId")
-    fun get(entityId: Long): Flow<TransactionEntity?>
 
     @Query("SELECT * FROM TransactionEntity ORDER BY id DESC LIMIT 1")
     fun newest(): Flow<TransactionEntity?>

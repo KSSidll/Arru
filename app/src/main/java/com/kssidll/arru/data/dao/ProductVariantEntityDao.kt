@@ -43,8 +43,18 @@ interface ProductVariantEntityDao {
 
     // Read
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :entityId")
-    fun get(entityId: Long): Flow<ProductVariantEntity?>
+    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :id")
+    fun get(id: Long): Flow<ProductVariantEntity?>
+
+
+
+
+
+
+
+
+
+
 
     @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.name = :name")
     fun byName(

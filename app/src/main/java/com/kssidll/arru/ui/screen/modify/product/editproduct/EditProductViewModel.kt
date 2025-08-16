@@ -91,7 +91,7 @@ class EditProductViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = productRepository.update(
-            productId = productId,
+            id = productId,
             name = screenState.name.value.data.orEmpty(),
             categoryId = screenState.selectedProductCategory.value.data?.id
                 ?: ProductEntity.INVALID_CATEGORY_ID,

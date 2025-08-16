@@ -156,8 +156,19 @@ interface ProductCategoryEntityDao {
 
     // Read
 
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :entityId")
-    fun get(entityId: Long): Flow<ProductCategoryEntity?>
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id")
+    fun get(id: Long): Flow<ProductCategoryEntity?>
+
+
+
+
+
+
+
+
+
+
+
 
     @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity ORDER BY ProductCategoryEntity.id DESC")
     fun all(): Flow<List<ProductCategoryEntity>>

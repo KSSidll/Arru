@@ -50,7 +50,7 @@ class EditItemViewModel @Inject constructor(
         screenState.attemptedToSubmit.value = true
 
         val result = itemRepository.update(
-            itemId = itemId,
+            id = itemId,
             productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
             variantId = screenState.selectedVariant.value.data?.id,
             quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }

@@ -128,8 +128,20 @@ interface ShopEntityDao {
 
     // Read
 
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :entityId")
-    fun get(entityId: Long): Flow<ShopEntity?>
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :id")
+    fun get(id: Long): Flow<ShopEntity?>
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Query("SELECT ShopEntity.* FROM ShopEntity ORDER BY ShopEntity.id DESC")
     fun all(): Flow<List<ShopEntity>>

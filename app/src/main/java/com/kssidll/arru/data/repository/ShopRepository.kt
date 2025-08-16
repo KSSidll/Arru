@@ -46,15 +46,15 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
     // Update
 
     override suspend fun update(
-        shopId: Long,
+        id: Long,
         name: String
     ): UpdateResult {
-        if (dao.get(shopId).first() == null) {
+        if (dao.get(id).first() == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
 
         val shop = ShopEntity(
-            id = shopId,
+            id = id,
             name = name.trim()
         )
 
@@ -76,10 +76,10 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
     }
 
     override suspend fun merge(
-        shop: ShopEntity,
+        entity: ShopEntity,
         mergingInto: ShopEntity
     ): MergeResult {
-        if (dao.get(shop.id).first() == null) {
+        if (dao.get(entity.id).first() == null) {
             return MergeResult.Error(MergeResult.InvalidShop)
         }
 
@@ -87,7 +87,7 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
             return MergeResult.Error(MergeResult.InvalidMergingInto)
         }
 
-        val transactionBaskets = dao.getTransactionBaskets(shop.id)
+        val transactionBaskets = dao.getTransactionBaskets(entity.id)
 
         val newTransactionBaskets = transactionBaskets.map {
             it.copy(
@@ -97,7 +97,7 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
 
         dao.updateTransactionBaskets(newTransactionBaskets)
 
-        dao.delete(shop)
+        dao.delete(entity)
 
         return MergeResult.Success
     }
@@ -105,13 +105,13 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
     // Delete
 
     override suspend fun delete(
-        shopId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult {
-        val shop = dao.get(shopId).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+        val shop = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
-        val transactionBaskets = dao.getTransactionBaskets(shopId)
-        val items = dao.getItems(shopId)
+        val transactionBaskets = dao.getTransactionBaskets(id)
+        val items = dao.getItems(id)
 
         if (!force && transactionBaskets.isNotEmpty()) {
             return DeleteResult.Error(DeleteResult.DangerousDelete)
@@ -126,11 +126,17 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
 
     // Read
 
-    override fun get(shopId: Long): Flow<ShopEntity?> {
-        return dao.get(shopId)
-            .cancellable()
-            .distinctUntilChanged()
-    }
+    override fun get(id: Long): Flow<ShopEntity?> = dao.get(id).cancellable()
+
+
+
+
+
+
+
+
+
+
 
     override fun totalSpent(entity: ShopEntity): Flow<Float?> {
         return dao.totalSpent(entity.id)

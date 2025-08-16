@@ -81,47 +81,66 @@ interface ProductCategoryRepositorySource {
     // Update
 
     /**
-     * Updates [ProductCategoryEntity] with [categoryId] id to provided [name]
-     * @param categoryId id to match [ProductCategoryEntity]
+     * Updates [ProductCategoryEntity] with [id] id to provided [name]
+     * @param id id to match [ProductCategoryEntity]
      * @param name name to update the matching [ProductCategoryEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        categoryId: Long,
+        id: Long,
         name: String
     ): UpdateResult
 
     /**
-     * Merges [category] into [mergingInto]
-     * @param category [ProductCategoryEntity] to merge
-     * @param mergingInto [ProductCategoryEntity] to merge the [category] into
+     * Merges [entity] into [mergingInto]
+     * @param entity [ProductCategoryEntity] to merge
+     * @param mergingInto [ProductCategoryEntity] to merge the [entity] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        category: ProductCategoryEntity,
+        entity: ProductCategoryEntity,
         mergingInto: ProductCategoryEntity,
     ): MergeResult
 
     // Delete
 
     /**
-     * Deletes [ProductCategoryEntity] matching [productCategoryId]
-     * @param productCategoryId id of the [ProductCategoryEntity] to delete
+     * Deletes [ProductCategoryEntity] matching [id]
+     * @param id id of the [ProductCategoryEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        productCategoryId: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
 
     // Read
 
     /**
-     * @param categoryId id of the [ProductCategoryEntity]
-     * @return [ProductCategoryEntity] matching [categoryId] id or null if none match
+     * @param id id of the [ProductCategoryEntity]
+     * @return [ProductCategoryEntity] matching [id] id or null if none match
      */
-    fun get(categoryId: Long): Flow<ProductCategoryEntity?>
+    fun get(id: Long): Flow<ProductCategoryEntity?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @return list of all [ProductCategoryEntity]

@@ -81,24 +81,24 @@ interface ProductProducerRepositorySource {
     // Update
 
     /**
-     * Updates [ProductProducerEntity] with [producerId] to provided [name]
-     * @param producerId id to match [ProductProducerEntity]
+     * Updates [ProductProducerEntity] with [id] to provided [name]
+     * @param id id to match [ProductProducerEntity]
      * @param name name to update the matching [ProductProducerEntity] to
      * @return [UpdateResult] with the result
      */
     suspend fun update(
-        producerId: Long,
+        id: Long,
         name: String
     ): UpdateResult
 
     /**
-     * Merges [producer] into [mergingInto]
-     * @param producer [ProductCategoryEntity] to merge
+     * Merges [entity] into [mergingInto]
+     * @param entity [ProductCategoryEntity] to merge
      * @param mergingInto [ProductCategoryEntity] to merge the [category] into
      * @return [MergeResult] with the result
      */
     suspend fun merge(
-        producer: ProductProducerEntity,
+        entity: ProductProducerEntity,
         mergingInto: ProductProducerEntity,
     ): MergeResult
 
@@ -106,22 +106,35 @@ interface ProductProducerRepositorySource {
 
     /**
      * Deletes [ProductProducerEntity]
-     * @param producerid id of the [ProductProducerEntity] to delete
+     * @param id id of the [ProductProducerEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
     suspend fun delete(
-        producerid: Long,
+        id: Long,
         force: Boolean
     ): DeleteResult
 
     // Read
 
     /**
-     * @param producerId id of the [ProductProducerEntity]
-     * @return [ProductProducerEntity] matching [producerId] id or null if none match
+     * @param id id of the [ProductProducerEntity]
+     * @return [ProductProducerEntity] matching [id] id or null if none match
      */
-    fun get(producerId: Long): Flow<ProductProducerEntity?>
+    fun get(id: Long): Flow<ProductProducerEntity?>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
