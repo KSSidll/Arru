@@ -6,10 +6,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.MergeResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerViewModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProducerViewModel @Inject constructor(
-    override val producerRepository: ProducerRepositorySource,
+    override val producerRepository: ProductProducerRepositorySource,
 ): ModifyProducerViewModel() {
     private var mProducer: ProductProducerEntity? = null
 

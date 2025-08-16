@@ -8,7 +8,7 @@ import com.kssidll.arru.data.data.ProductProducerEntity
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
-interface ProducerRepositorySource {
+interface ProductProducerRepositorySource {
     companion object {
         sealed class InsertResult(
             val id: Long? = null,

@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
  */
 abstract class ModifyProductViewModel: ViewModel() {
     protected abstract val productRepository: ProductRepositorySource
-    protected abstract val producerRepository: ProducerRepositorySource
-    protected abstract val categoryRepository: CategoryRepositorySource
+    protected abstract val producerRepository: ProductProducerRepositorySource
+    protected abstract val categoryRepository: ProductCategoryRepositorySource
     internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 
     private var mProducerListener: Job? = null

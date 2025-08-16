@@ -7,7 +7,7 @@ import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class AddItemViewModel @Inject constructor(
     override val itemRepository: ItemRepositorySource,
     override val productRepository: ProductRepositorySource,
-    override val variantsRepository: VariantRepositorySource,
+    override val variantsRepository: ProductVariantRepositorySource,
 ): ModifyItemViewModel() {
 
     init {

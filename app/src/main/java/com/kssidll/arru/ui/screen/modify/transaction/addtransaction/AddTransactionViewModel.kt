@@ -7,8 +7,8 @@ import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getTransactionDate
 import com.kssidll.arru.data.preference.setTransactionDate
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
     @param:ApplicationContext private val appContext: Context,
-    private val transactionRepository: TransactionBasketRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
 

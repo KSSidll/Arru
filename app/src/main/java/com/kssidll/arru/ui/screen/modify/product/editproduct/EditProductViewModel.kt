@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
@@ -28,8 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditProductViewModel @Inject constructor(
     override val productRepository: ProductRepositorySource,
-    override val producerRepository: ProducerRepositorySource,
-    override val categoryRepository: CategoryRepositorySource,
+    override val producerRepository: ProductProducerRepositorySource,
+    override val categoryRepository: ProductCategoryRepositorySource,
 ): ModifyProductViewModel() {
     private var mProduct: ProductEntity? = null
 

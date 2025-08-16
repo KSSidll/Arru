@@ -8,7 +8,7 @@ import com.kssidll.arru.data.data.TransactionSpentByTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
-interface TransactionBasketRepositorySource {
+interface TransactionRepositorySource {
     companion object {
         sealed class InsertResult(
             val id: Long? = null,

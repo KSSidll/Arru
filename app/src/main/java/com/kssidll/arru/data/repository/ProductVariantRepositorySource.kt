@@ -5,7 +5,7 @@ import com.kssidll.arru.data.data.ProductVariantEntity
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
-interface VariantRepositorySource {
+interface ProductVariantRepositorySource {
     companion object {
         sealed class InsertResult(
             val id: Long? = null,

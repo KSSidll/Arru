@@ -10,7 +10,7 @@ import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 import kotlinx.collections.immutable.ImmutableList
@@ -32,7 +32,7 @@ abstract class ModifyItemViewModel: ViewModel() {
 
     protected abstract val itemRepository: ItemRepositorySource
     protected abstract val productRepository: ProductRepositorySource
-    protected abstract val variantsRepository: VariantRepositorySource
+    protected abstract val variantsRepository: ProductVariantRepositorySource
 
     internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
 

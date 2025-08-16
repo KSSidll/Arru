@@ -15,9 +15,9 @@ import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
-import com.kssidll.arru.data.repository.CategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -111,8 +111,8 @@ fun Flow<PagingData<TransactionBasketWithItems>>.toDisplayData(): Flow<PagingDat
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val transactionRepository: TransactionBasketRepositorySource,
-    private val categoryRepository: CategoryRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
+    private val categoryRepository: ProductCategoryRepositorySource,
     private val shopRepository: ShopRepositorySource,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(

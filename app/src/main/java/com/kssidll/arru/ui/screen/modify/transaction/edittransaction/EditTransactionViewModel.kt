@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditTransactionViewModel @Inject constructor(
-    private val transactionRepository: TransactionBasketRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
     override val shopRepository: ShopRepositorySource
 ): ModifyTransactionViewModel() {
     private var mTransaction: TransactionEntity? = null

@@ -10,7 +10,7 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProducerViewModel @Inject constructor(
-    private val producerRepository: ProducerRepositorySource,
+    private val producerRepository: ProductProducerRepositorySource,
 ): ViewModel() {
     private val mProducer: MutableState<ProductProducerEntity?> = mutableStateOf(null)
     val producer: ProductProducerEntity? by mProducer

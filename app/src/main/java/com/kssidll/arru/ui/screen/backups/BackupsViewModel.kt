@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.database.AppDatabase
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BackupsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val transactionBasketRepository: TransactionBasketRepositorySource,
+    private val transactionBasketRepository: TransactionRepositorySource,
 ): ViewModel() {
     val availableBackups: SnapshotStateList<DatabaseBackup> = mutableStateListOf()
 

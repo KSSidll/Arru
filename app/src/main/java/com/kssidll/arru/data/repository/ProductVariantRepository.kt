@@ -3,9 +3,9 @@ package com.kssidll.arru.data.repository
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.VariantRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.UpdateResult
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class VariantRepository(private val dao: ProductVariantEntityDao): VariantRepositorySource {
+class ProductVariantRepository(private val dao: ProductVariantEntityDao): ProductVariantRepositorySource {
     // Create
 
     override suspend fun insert(

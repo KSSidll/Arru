@@ -16,24 +16,24 @@ import com.kssidll.arru.data.database.downloadsDbFile
 import com.kssidll.arru.data.database.externalDbFile
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
-import com.kssidll.arru.data.repository.CategoryRepository
-import com.kssidll.arru.data.repository.CategoryRepositorySource
 import com.kssidll.arru.data.repository.ExportRepository
 import com.kssidll.arru.data.repository.ExportRepositorySource
 import com.kssidll.arru.data.repository.ImportRepository
 import com.kssidll.arru.data.repository.ImportRepositorySource
 import com.kssidll.arru.data.repository.ItemRepository
 import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepository
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepository
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepository
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepository
 import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepository
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.data.repository.ShopRepository
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepository
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.VariantRepository
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepository
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -103,8 +103,8 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideTransactionBasketRepository(dao: TransactionEntityDao): TransactionBasketRepositorySource {
-        return TransactionBasketRepository(dao)
+    fun provideTransactionBasketRepository(dao: TransactionEntityDao): TransactionRepositorySource {
+        return TransactionRepository(dao)
     }
 
     @Provides
@@ -133,8 +133,8 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideVariantRepository(dao: ProductVariantEntityDao): VariantRepositorySource {
-        return VariantRepository(dao)
+    fun provideVariantRepository(dao: ProductVariantEntityDao): ProductVariantRepositorySource {
+        return ProductVariantRepository(dao)
     }
 
     @Provides
@@ -144,8 +144,8 @@ class DatabaseModule {
 
 
     @Provides
-    fun provideCategoryRepository(dao: ProductCategoryEntityDao): CategoryRepositorySource {
-        return CategoryRepository(dao)
+    fun provideCategoryRepository(dao: ProductCategoryEntityDao): ProductCategoryRepositorySource {
+        return ProductCategoryRepository(dao)
     }
 
     @Provides
@@ -164,7 +164,7 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideProducerRepository(dao: ProductProducerEntityDao): ProducerRepositorySource {
-        return ProducerRepository(dao)
+    fun provideProducerRepository(dao: ProductProducerEntityDao): ProductProducerRepositorySource {
+        return ProductProducerRepository(dao)
     }
 }

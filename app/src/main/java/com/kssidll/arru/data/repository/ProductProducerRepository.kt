@@ -9,10 +9,10 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.paging.FullItemPagingSource
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ProducerRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.MergeResult
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.UpdateResult
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class ProducerRepository(private val dao: ProductProducerEntityDao): ProducerRepositorySource {
+class ProductProducerRepository(private val dao: ProductProducerEntityDao): ProductProducerRepositorySource {
     // Create
 
     override suspend fun insert(name: String): InsertResult {

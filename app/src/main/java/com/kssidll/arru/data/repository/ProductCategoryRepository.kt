@@ -10,10 +10,10 @@ import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.paging.FullItemPagingSource
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.UpdateResult
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class CategoryRepository(private val dao: ProductCategoryEntityDao): CategoryRepositorySource {
+class ProductCategoryRepository(private val dao: ProductCategoryEntityDao): ProductCategoryRepositorySource {
     // Create
 
     override suspend fun insert(name: String): InsertResult {

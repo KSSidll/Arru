@@ -8,9 +8,9 @@ import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
+import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -19,9 +19,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class TransactionBasketRepository(
+class TransactionRepository(
     private val dao: TransactionEntityDao
-): TransactionBasketRepositorySource {
+): TransactionRepositorySource {
     // Create
 
     override suspend fun insert(

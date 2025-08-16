@@ -6,10 +6,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.CategoryRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.DeleteResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.category.ModifyCategoryViewModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
-    override val categoryRepository: CategoryRepositorySource,
+    override val categoryRepository: ProductCategoryRepositorySource,
 ): ModifyCategoryViewModel() {
     private var mCategory: ProductCategoryEntity? = null
 
