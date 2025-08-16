@@ -106,12 +106,14 @@ fun TotalAverageAndMedianSpendingComponent(
                     newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                 }
 
-                totalChartEntryModelProducer.runTransaction {
-                    lineSeries {
-                        series(
-                            x = newData.map { it.first },
-                            y = newData.map { it.second }
-                        )
+                if (newData.isNotEmpty()) {
+                    totalChartEntryModelProducer.runTransaction {
+                        lineSeries {
+                            series(
+                                x = newData.map { it.first },
+                                y = newData.map { it.second }
+                            )
+                        }
                     }
                 }
             }
@@ -190,12 +192,14 @@ fun TotalAverageAndMedianSpendingComponent(
                         newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                     }
 
-                    averageChartEntryModelProducer.runTransaction {
-                        lineSeries {
-                            series(
-                                x = newData.map { it.first },
-                                y = newData.map { it.second }
-                            )
+                    if (newData.isNotEmpty()) {
+                        averageChartEntryModelProducer.runTransaction {
+                            lineSeries {
+                                series(
+                                    x = newData.map { it.first },
+                                    y = newData.map { it.second }
+                                )
+                            }
                         }
                     }
                 }
@@ -275,12 +279,14 @@ fun TotalAverageAndMedianSpendingComponent(
                         newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
                     }
 
-                    medianChartEntryModelProducer.runTransaction {
-                        lineSeries {
-                            series(
-                                x = newData.map { it.first },
-                                y = newData.map { it.second }
-                            )
+                    if (newData.isNotEmpty()) {
+                        medianChartEntryModelProducer.runTransaction {
+                            lineSeries {
+                                series(
+                                    x = newData.map { it.first },
+                                    y = newData.map { it.second }
+                                )
+                            }
                         }
                     }
                 }
