@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.dialog
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -45,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.domain.data.searchSort
+import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.component.list.BaseClickableListItem

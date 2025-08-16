@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch

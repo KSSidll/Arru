@@ -28,7 +28,7 @@ import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArrugarqTheme

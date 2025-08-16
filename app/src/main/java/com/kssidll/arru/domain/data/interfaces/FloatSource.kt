@@ -1,4 +1,4 @@
-package com.kssidll.arru.domain.data
+package com.kssidll.arru.domain.data.interfaces
 
 import androidx.collection.FloatFloatPair
 

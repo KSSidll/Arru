@@ -44,7 +44,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog

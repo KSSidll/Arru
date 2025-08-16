@@ -7,7 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.generateRandomDateString

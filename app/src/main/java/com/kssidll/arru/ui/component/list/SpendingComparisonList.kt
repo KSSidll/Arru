@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.domain.data.RankSource
+import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.optionalAlpha

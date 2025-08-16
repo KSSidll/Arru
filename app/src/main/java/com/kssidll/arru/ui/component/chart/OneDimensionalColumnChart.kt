@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState

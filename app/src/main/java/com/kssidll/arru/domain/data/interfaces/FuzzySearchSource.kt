@@ -1,4 +1,4 @@
-package com.kssidll.arru.domain.data
+package com.kssidll.arru.domain.data.interfaces
 
 interface FuzzySearchSource {
     fun fuzzyScore(query: String): Int

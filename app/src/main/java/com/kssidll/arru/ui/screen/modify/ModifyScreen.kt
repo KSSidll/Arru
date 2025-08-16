@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.FuzzySearchSource
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.ui.component.dialog.DeleteWarningConfirmDialog
 import com.kssidll.arru.ui.component.dialog.MergeConfirmDialog
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog

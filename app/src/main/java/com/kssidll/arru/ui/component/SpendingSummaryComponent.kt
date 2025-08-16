@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.TimePeriodFlowHandler
-import com.kssidll.arru.domain.data.ChartSource
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.getTranslation
 import com.kssidll.arru.ui.component.chart.OneDimensionalColumnChart
 import com.kssidll.arru.ui.component.chart.oneDimensionalColumnChartDefaultScrollState

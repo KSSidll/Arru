@@ -37,9 +37,9 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.domain.data.FuzzySearchSource
-import com.kssidll.arru.domain.data.NameSource
-import com.kssidll.arru.domain.data.searchSort
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
+import com.kssidll.arru.domain.data.interfaces.NameSource
+import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.screen.search.component.SearchItem
