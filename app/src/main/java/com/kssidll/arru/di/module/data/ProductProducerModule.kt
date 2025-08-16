@@ -1,8 +1,8 @@
 package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetItemsForProductProducerUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductProducerEntityUseCase
-import com.kssidll.arru.domain.usecase.data.GetProductProducerUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +26,19 @@ class ProductProducerModule {
 
     /** DOMAIN */
 
+    // @Provides
+    // @Singleton
+    // fun provideGetProductProducerUseCase(
+    //     getProductProducerEntityUseCase: GetProductProducerEntityUseCase
+    // ): GetProductProducerUseCase {
+    //     return GetProductProducerUseCase(getProductProducerEntityUseCase)
+    // }
+
     @Provides
     @Singleton
-    fun provideGetProductProducerUseCase(
-        getProductProducerEntityUseCase: GetProductProducerEntityUseCase
-    ): GetProductProducerUseCase {
-        return GetProductProducerUseCase(getProductProducerEntityUseCase)
+    fun provideGetItemsForProductProducerUseCase(
+        productProducerRepositorySource: ProductProducerRepositorySource
+    ): GetItemsForProductProducerUseCase {
+        return GetItemsForProductProducerUseCase(productProducerRepositorySource)
     }
 }

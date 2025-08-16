@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 9,
-    "identityHash": "d33732b4ce76a95c21034122552852ee",
+    "identityHash": "94f26c0b667ed0379c9b63e9fd8b1b48",
     "entities": [
       {
         "tableName": "TransactionEntity",
@@ -444,9 +444,15 @@
         ]
       }
     ],
+    "views": [
+      {
+        "viewName": "ItemView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    ItemEntity.id               AS id,\n    ProductEntity.id            AS productId,\n    productCategoryEntity.id    AS productCategoryId,\n    productProducerEntity.id    AS productProducerId,\n    productVariantEntity.id     AS productVariantId,\n    TransactionEntity.id        AS transactionId,\n    ShopEntity.id               AS shopId,\n    ItemEntity.quantity         AS quantity,\n    ItemEntity.price            AS price,\n    TransactionEntity.date      AS date,\n    ProductEntity.name          AS productName,\n    ProductVariantEntity.name   AS productVariantName,\n    ProductCategoryEntity.name  AS productCategoryName,\n    ProductProducerEntity.name  AS productProducerName,\n    ShopEntity.name             AS shopName\nFROM ItemEntity\nLEFT JOIN ProductEntity         ON ProductEntity.id         = ItemEntity.productEntityId\nLEFT JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId\nLEFT JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId\nLEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId\nLEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId \nLEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd33732b4ce76a95c21034122552852ee')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '94f26c0b667ed0379c9b63e9fd8b1b48')"
     ]
   }
 }

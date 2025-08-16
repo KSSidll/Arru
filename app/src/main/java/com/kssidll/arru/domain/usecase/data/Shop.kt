@@ -1,11 +1,9 @@
 package com.kssidll.arru.domain.usecase.data
 
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.domain.data.data.Shop
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
 
@@ -15,21 +13,28 @@ class GetShopEntityUseCase(
     suspend operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = withContext(dispatcher) {
-        shopRepository.get(id)
-    }
+    ) = shopRepository.get(id).flowOn(dispatcher)
 }
 
 
 /** DOMAIN */
 
-class GetShopUseCase(
-    private val getShopEntityUseCase: GetShopEntityUseCase,
+// class GetShopUseCase(
+//     private val getShopEntityUseCase: GetShopEntityUseCase,
+// ) {
+//     operator fun invoke(
+//         id: Long,
+//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+//     ) = getShopEntityUseCase(id, dispatcher).map {
+//         it?.let { Shop.fromEntity(it) }
+//     }
+// }
+
+class GetItemsForShopUseCase(
+    private val shopRepository: ShopRepositorySource,
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = getShopEntityUseCase(id, dispatcher).map {
-        it?.let { Shop.fromEntity(it) }
-    }
+    ) = shopRepository.itemsFor(id).flowOn(dispatcher)
 }

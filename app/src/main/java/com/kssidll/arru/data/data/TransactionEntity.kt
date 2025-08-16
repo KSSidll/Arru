@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
@@ -163,7 +164,7 @@ data class TransactionBasketWithItems(
     val shop: ShopEntity?,
     val totalCost: Long,
     val note: String?,
-    val items: List<FullItem>,
+    val items: List<Item>,
 ) {
     companion object {
         fun generate(transactionBasketWithItemsId: Long = 0): TransactionBasketWithItems {
@@ -173,7 +174,7 @@ data class TransactionBasketWithItems(
                 shop = ShopEntity.generate(),
                 totalCost = generateRandomLongValue(),
                 note = generateRandomStringValue(),
-                items = FullItem.generateList(),
+                items = Item.generateList(),
             )
         }
 

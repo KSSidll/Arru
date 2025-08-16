@@ -2,7 +2,6 @@ package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
-import com.kssidll.arru.domain.usecase.data.GetProductVariantUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +25,11 @@ class ProductVariantModule {
 
     /** DOMAIN */
 
-    @Provides
-    @Singleton
-    fun provideGetProductVariantUseCase(
-        getProductVariantEntityUseCase: GetProductVariantEntityUseCase
-    ): GetProductVariantUseCase {
-        return GetProductVariantUseCase(getProductVariantEntityUseCase)
-    }
+    // @Provides
+    // @Singleton
+    // fun provideGetProductVariantUseCase(
+    //     getProductVariantEntityUseCase: GetProductVariantEntityUseCase
+    // ): GetProductVariantUseCase {
+    //     return GetProductVariantUseCase(getProductVariantEntityUseCase)
+    // }
 }

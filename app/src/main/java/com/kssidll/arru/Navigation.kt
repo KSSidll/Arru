@@ -16,7 +16,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalConfiguration
 import com.kssidll.arru.ui.screen.backups.BackupsRoute
-import com.kssidll.arru.ui.screen.display.category.CategoryRoute
+import com.kssidll.arru.ui.screen.display.category.DisplayCategoryRoute
 import com.kssidll.arru.ui.screen.display.producer.ProducerRoute
 import com.kssidll.arru.ui.screen.display.product.ProductRoute
 import com.kssidll.arru.ui.screen.display.shop.ShopRoute
@@ -737,7 +737,7 @@ fun Navigation(
             }
 
             is Screen.Category -> {
-                CategoryRoute(
+                DisplayCategoryRoute(
                     categoryId = screen.categoryId,
                     navigateBack = navigateBack,
                     navigateProduct = navigateProduct,

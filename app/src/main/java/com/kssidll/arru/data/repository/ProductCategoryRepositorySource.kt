@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -123,8 +124,17 @@ interface ProductCategoryRepositorySource {
      */
     fun get(id: Long): Flow<ProductCategoryEntity?>
 
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return float representing total spending for [ProductCategoryEntity] matching [id] id or null if none match
+     */
+    fun totalSpent(id: Long): Flow<Float?>
 
-
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return [PagingData] of [Item] that is of [ProductCategoryEntity] [id]
+     */
+    fun itemsFor(id: Long): Flow<PagingData<Item>>
 
 
 
@@ -146,12 +156,6 @@ interface ProductCategoryRepositorySource {
      * @return list of all [ProductCategoryEntity]
      */
     fun all(): Flow<ImmutableList<ProductCategoryEntity>>
-
-    /**
-     * @param category [ProductCategoryEntity] to get the total spending from
-     * @return float representing total spending for the [category]
-     */
-    fun totalSpent(category: ProductCategoryEntity): Flow<Float?>
 
     /**
      * @param category [ProductCategoryEntity] to get the total spending by day from

@@ -14,6 +14,7 @@ import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteRes
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -128,7 +129,14 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
 
     override fun get(id: Long): Flow<ShopEntity?> = dao.get(id).cancellable()
 
-
+    override fun itemsFor(id: Long): Flow<PagingData<Item>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = { dao.itemsFor(id) }
+        ).flow.cancellable()
 
 
 

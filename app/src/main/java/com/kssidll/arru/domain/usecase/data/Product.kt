@@ -1,35 +1,40 @@
 package com.kssidll.arru.domain.usecase.data
 
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.domain.data.data.Product
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
 
 class GetProductEntityUseCase(
     private val productRepository: ProductRepositorySource,
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = withContext(dispatcher) {
-        productRepository.get(id)
-    }
+    ) = productRepository.get(id).flowOn(dispatcher)
 }
 
 
 /** DOMAIN */
 
-class GetProductUseCase(
-    private val getProductEntityUseCase: GetProductEntityUseCase,
+// class GetProductUseCase(
+//     private val getProductEntityUseCase: GetProductEntityUseCase,
+// ) {
+//     operator fun invoke(
+//         id: Long,
+//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+//     ) = getProductEntityUseCase(id, dispatcher).map {
+//         it?.let { Product.fromEntity(it) }
+//     }
+// }
+
+class GetItemsForProductUseCase(
+    private val productRepository: ProductRepositorySource,
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = getProductEntityUseCase(id, dispatcher).map {
-        it?.let { Product.fromEntity(it) }
-    }
+    ) = productRepository.itemsFor(id).flowOn(dispatcher)
 }

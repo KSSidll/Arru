@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -15,6 +16,7 @@ import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.view.Item
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -152,7 +154,8 @@ interface ProductProducerEntityDao {
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :id")
     fun get(id: Long): Flow<ProductProducerEntity?>
 
-
+    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productProducerId = :id")
+    fun itemsFor(id: Long): PagingSource<Int, Item>
 
 
 

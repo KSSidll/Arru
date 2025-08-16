@@ -17,6 +17,7 @@ import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionSpentByTime
+import com.kssidll.arru.data.view.Item
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -93,6 +94,9 @@ interface TransactionEntityDao {
         }
     }
 
+    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.transactionId = :id")
+    suspend fun _itemsByTransactionBasketId(id: Long): List<Item>
+
     fun fullItemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<FullItem>> {
         val itemsFlow = itemsByTransactionBasketIdFlow(transactionBasketId)
 
@@ -128,7 +132,6 @@ interface TransactionEntityDao {
 
     @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :id")
     fun get(id: Long): Flow<TransactionEntity?>
-
 
 
 
@@ -272,7 +275,7 @@ interface TransactionEntityDao {
             count
         ).map { basket ->
             val shop = basket.shopEntityId?.let { shopById(it) }
-            val items = fullItemsByTransactionBasketId(basket.id)
+            val items = _itemsByTransactionBasketId(basket.id)
 
             TransactionBasketWithItems(
                 id = basket.id,
@@ -292,7 +295,7 @@ interface TransactionEntityDao {
         return get(transactionEntityId).map { basket ->
             if (basket != null) {
                 val shop = basket.shopEntityId?.let { shopById(it) }
-                val items = fullItemsByTransactionBasketId(basket.id)
+                val items = _itemsByTransactionBasketId(basket.id)
 
                 return@map TransactionBasketWithItems(
                     id = basket.id,

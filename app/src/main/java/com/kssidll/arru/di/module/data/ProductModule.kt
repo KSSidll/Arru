@@ -1,8 +1,8 @@
 package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
-import com.kssidll.arru.domain.usecase.data.GetProductUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +26,19 @@ class ProductModule {
 
     /** DOMAIN */
 
+    // @Provides
+    // @Singleton
+    // fun provideGetProductUseCase(
+    //     getProductEntityUseCase: GetProductEntityUseCase
+    // ): GetProductUseCase {
+    //     return GetProductUseCase(getProductEntityUseCase)
+    // }
+
     @Provides
     @Singleton
-    fun provideGetProductUseCase(
-        getProductEntityUseCase: GetProductEntityUseCase
-    ): GetProductUseCase {
-        return GetProductUseCase(getProductEntityUseCase)
+    fun provideGetItemsForProductUseCase(
+        productRepositorySource: ProductRepositorySource
+    ): GetItemsForProductUseCase {
+        return GetItemsForProductUseCase(productRepositorySource)
     }
 }

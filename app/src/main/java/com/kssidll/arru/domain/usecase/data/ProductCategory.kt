@@ -1,35 +1,49 @@
 package com.kssidll.arru.domain.usecase.data
 
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
-import com.kssidll.arru.domain.data.data.ProductCategory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
 
 class GetProductCategoryEntityUseCase(
     private val productCategoryRepository: ProductCategoryRepositorySource,
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = withContext(dispatcher) {
-        productCategoryRepository.get(id)
-    }
+    ) = productCategoryRepository.get(id).flowOn(dispatcher)
 }
 
 
 /** DOMAIN */
 
-class GetProductCategoryUseCase(
-    private val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase,
+// class GetProductCategoryUseCase(
+//     private val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase,
+// ) {
+//     operator fun invoke(
+//         id: Long,
+//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+//     ) = getProductCategoryEntityUseCase(id, dispatcher).map {
+//         it?.let { ProductCategory.fromEntity(it) }
+//     }
+// }
+
+class GetTotalSpentForProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource,
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = getProductCategoryEntityUseCase(id, dispatcher).map {
-        it?.let { ProductCategory.fromEntity(it) }
-    }
+    ) = productCategoryRepository.totalSpent(id).flowOn(dispatcher)
+}
+
+class GetItemsForProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productCategoryRepository.itemsFor(id).flowOn(dispatcher)
 }

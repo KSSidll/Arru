@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -16,6 +17,7 @@ import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
+import com.kssidll.arru.data.view.Item
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -131,7 +133,8 @@ interface ShopEntityDao {
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :id")
     fun get(id: Long): Flow<ShopEntity?>
 
-
+    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.shopId = :id")
+    fun itemsFor(id: Long): PagingSource<Int, Item>
 
 
 

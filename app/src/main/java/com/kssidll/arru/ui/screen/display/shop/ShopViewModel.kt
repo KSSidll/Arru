@@ -7,11 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
+import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -27,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShopViewModel @Inject constructor(
     private val shopRepository: ShopRepositorySource,
+    private val getItemsForShopUseCase: GetItemsForShopUseCase
 ): ViewModel() {
     private val mShop: MutableState<ShopEntity?> = mutableStateOf(null)
     val shop: ShopEntity? by mShop
@@ -37,7 +40,7 @@ class ShopViewModel @Inject constructor(
 
     private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<TransactionTotalSpentByTime>>? =
         null
-    val spentByTimePeriod: TimePeriodFlowHandler.Periods? get() = mTimePeriodFlowHandler?.currentPeriod
+    val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
     val spentByTimeData: Flow<ImmutableList<TransactionTotalSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun shopTotalSpent(): Flow<Float?>? {
@@ -47,16 +50,17 @@ class ShopViewModel @Inject constructor(
     /**
      * @return paging data of full item for current shop as flow
      */
-    fun transactions(): Flow<PagingData<FullItem>> {
-        return shop?.let { shopRepository.fullItemsPaged(it) } ?: emptyFlow()
+    fun transactions(): Flow<PagingData<Item>> {
+        return shop?.let { getItemsForShopUseCase(it.id) } ?: emptyFlow()
     }
 
     /**
      * Switches the state period to [newPeriod]
      * @param newPeriod Period to switch the state to
      */
-    fun switchPeriod(newPeriod: TimePeriodFlowHandler.Periods) {
-        mTimePeriodFlowHandler?.switchPeriod(newPeriod)
+    fun switchPeriod(newPeriod: SpendingSummaryPeriod) {
+        val nPeriod = TimePeriodFlowHandler.Periods.valueOf(newPeriod.name)
+        mTimePeriodFlowHandler?.switchPeriod(nPeriod)
     }
 
     /**

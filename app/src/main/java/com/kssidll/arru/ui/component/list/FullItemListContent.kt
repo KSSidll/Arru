@@ -22,10 +22,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.DAY_IN_MILIS
-import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.coroutines.flow.flowOf
@@ -34,16 +31,16 @@ import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.fullItemListContent(
-    transactionItems: LazyPagingItems<FullItem>,
-    onItemClick: ((item: FullItem) -> Unit)? = null,
-    onItemLongClick: ((item: FullItem) -> Unit)? = null,
-    onCategoryClick: ((category: ProductCategoryEntity) -> Unit)? = null,
-    onProducerClick: ((producer: ProductProducerEntity) -> Unit)? = null,
-    onShopClick: ((shop: ShopEntity) -> Unit)? = null,
+    transactionItems: LazyPagingItems<Item>,
+    onItemClick: ((item: Item) -> Unit)? = null,
+    onItemLongClick: ((item: Item) -> Unit)? = null,
+    onCategoryClick: ((item: Item) -> Unit)? = null,
+    onProducerClick: ((item: Item) -> Unit)? = null,
+    onShopClick: ((item: Item) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val itemCount = transactionItems.itemCount
-    var lastItem: FullItem? = null
+    var lastItem: Item? = null
 
     // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
     for (index in 0 until itemCount) {
@@ -122,7 +119,7 @@ private fun FullItemListContentPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             val transactionItems =
-                flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems()
+                flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems()
             LazyColumn {
                 fullItemListContent(
                     transactionItems = transactionItems,

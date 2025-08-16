@@ -1,8 +1,8 @@
 package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
-import com.kssidll.arru.domain.usecase.data.GetShopUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +26,19 @@ class ShopModule {
 
     /** DOMAIN */
 
+    // @Provides
+    // @Singleton
+    // fun provideGetShopUseCase(
+    //     getShopEntityUseCase: GetShopEntityUseCase
+    // ): GetShopUseCase {
+    //     return GetShopUseCase(getShopEntityUseCase)
+    // }
+
     @Provides
     @Singleton
-    fun provideGetShopUseCase(
-        getShopEntityUseCase: GetShopEntityUseCase
-    ): GetShopUseCase {
-        return GetShopUseCase(getShopEntityUseCase)
+    fun provideGetItemsForShopUseCase(
+        shopRepositorySource: ShopRepositorySource
+    ): GetItemsForShopUseCase {
+        return GetItemsForShopUseCase(shopRepositorySource)
     }
 }

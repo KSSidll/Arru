@@ -13,6 +13,7 @@ import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companio
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -118,6 +119,14 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
 
     override fun get(id: Long): Flow<ProductProducerEntity?> = dao.get(id).cancellable()
 
+    override fun itemsFor(id: Long): Flow<PagingData<Item>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = { dao.itemsFor(id) }
+        ).flow.cancellable()
 
 
 

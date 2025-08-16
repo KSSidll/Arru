@@ -109,14 +109,14 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
 
     // Read
 
-    override suspend fun get(id: Long): Flow<ItemEntity?> = dao.get(id).cancellable()
+    override fun get(id: Long): Flow<ItemEntity?> = dao.get(id).cancellable()
 
 
 
 
 
 
-    override suspend fun newest(): Flow<ItemEntity?> {
+    override fun newest(): Flow<ItemEntity?> {
         return dao.newest()
     }
 }

@@ -103,16 +103,16 @@ fun LazyListScope.transactionBasketCard(
                         FullItemCard(
                             item = item,
                             onItemClick = {
-                                onItemClick(it.product.id)
+                                // onItemClick(it.productId)
                             },
                             onItemLongClick = {
-                                onItemLongClick(it.id)
+                                // onItemLongClick(it.id)
                             },
                             onCategoryClick = {
-                                onItemCategoryClick(it.id)
+                                // onItemCategoryClick(it.id)
                             },
                             onProducerClick = {
-                                onItemProducerClick(it.id)
+                                // onItemProducerClick(it.id)
                             },
                         )
                     }

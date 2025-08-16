@@ -14,6 +14,7 @@ import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companio
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -125,8 +126,17 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao): Prod
 
     override fun get(id: Long): Flow<ProductCategoryEntity?> = dao.get(id).cancellable()
 
+    override fun totalSpent(id: Long): Flow<Float?> = dao.totalSpent(id).cancellable()
+        .map { it?.toFloat()?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR) }
 
-
+    override fun itemsFor(id: Long): Flow<PagingData<Item>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = { dao.itemsFor(id) }
+        ).flow.cancellable()
 
 
 
@@ -139,14 +149,6 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao): Prod
             .map { it.toImmutableList() }
     }
 
-    override fun totalSpent(category: ProductCategoryEntity): Flow<Float?> {
-        return dao.totalSpent(category.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map {
-                it?.toFloat()?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
-            }
-    }
 
     override fun totalSpentByDay(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>> {
         return dao.totalSpentByDay(category.id)

@@ -56,15 +56,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
@@ -73,51 +70,23 @@ import com.kssidll.arru.ui.component.list.fullItemListContent
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
-/**
- * @param onBack Called to request a back navigation
- * @param category Category for which the data is displayed
- * @param transactionItems Transaction items of [category]
- * @param spentByTimeData Data list representing [category] spending for current [spentByTimePeriod]
- * @param totalSpentData Value representing total [category] spending
- * @param spentByTimePeriod Time period to get the [spentByTimeData] by
- * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
- * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
- * @param onItemClick Callback called when the item is clicked. Provides product id as parameter
- * @param onItemProducerClick Callback called when the item producer label is clicked. Provides producer id as parameter
- * @param onItemShopClick Callback called when the item shop label is clicked. Provides shop id as parameter
- * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as parameter
- * @param onEditAction Callback called when the 'edit' action is triggered
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CategoryScreen(
-    onBack: () -> Unit,
-    category: ProductCategoryEntity?,
-    transactionItems: LazyPagingItems<FullItem>,
-    spentByTimeData: ImmutableList<ItemSpentByTime>,
-    totalSpentData: Float?,
-    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    chartEntryModelProducer: CartesianChartModelProducer,
-    onItemClick: (productId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onEditAction: () -> Unit,
+internal fun DisplayCategoryScreen(
+    uiState: DisplayCategoryUiState,
+    onEvent: (event: DisplayCategoryEvent) -> Unit,
 ) {
+   val items = uiState.items.collectAsLazyPagingItems()
+
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = onBack,
+                onBack = { onEvent(DisplayCategoryEvent.Test) },
                 title = {
                     Text(
-                        text = category?.name.orEmpty(),
+                        text = uiState.categoryName,
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
@@ -125,7 +94,7 @@ internal fun CategoryScreen(
                     // 'edit' action
                     IconButton(
                         onClick = {
-                            onEditAction()
+                            onEvent(DisplayCategoryEvent.Test)
                         }
                     ) {
                         Icon(
@@ -148,7 +117,7 @@ internal fun CategoryScreen(
                 .fillMaxSize()
         ) {
             AnimatedVisibility(
-                visible = transactionItems.loadedEmpty() && spentByTimeData.isEmpty(),
+                visible = items.loadedEmpty() && uiState.spentByTime.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier.align(Alignment.Center)
@@ -166,22 +135,11 @@ internal fun CategoryScreen(
             }
 
             AnimatedVisibility(
-                visible = transactionItems.itemCount != 0 || spentByTimeData.isNotEmpty(),
+                visible = items.itemCount != 0 || uiState.spentByTime.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                CategoryScreenContent(
-                    transactionItems = transactionItems,
-                    spentByTimeData = spentByTimeData,
-                    totalSpentData = totalSpentData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                    chartEntryModelProducer = chartEntryModelProducer,
-                    onItemClick = onItemClick,
-                    onItemProducerClick = onItemProducerClick,
-                    onItemShopClick = onItemShopClick,
-                    onItemLongClick = onItemLongClick,
-                )
+                DisplayCategoryScreenContent(uiState, items, onEvent)
             }
         }
     }
@@ -189,17 +147,10 @@ internal fun CategoryScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CategoryScreenContent(
-    transactionItems: LazyPagingItems<FullItem>,
-    spentByTimeData: ImmutableList<ItemSpentByTime>,
-    totalSpentData: Float?,
-    spentByTimePeriod: TimePeriodFlowHandler.Periods?,
-    onSpentByTimePeriodSwitch: (TimePeriodFlowHandler.Periods) -> Unit,
-    chartEntryModelProducer: CartesianChartModelProducer,
-    onItemClick: (productId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
+private fun DisplayCategoryScreenContent(
+    uiState: DisplayCategoryUiState,
+    items: LazyPagingItems<Item>,
+    onEvent: (event: DisplayCategoryEvent) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -277,21 +228,19 @@ private fun CategoryScreenContent(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
-                    val totalSpent = totalSpentData ?: 0f
-
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = spentByTimeData,
-                        totalSpentData = totalSpent,
+                        spentByTimeData = uiState.spentByTime,
+                        totalSpentData = uiState.totalSpent,
                     )
 
                     Spacer(Modifier.height(28.dp))
 
-                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                    AnimatedVisibility(visible = uiState.spentByTime.isNotEmpty()) {
                         SpendingSummaryComponent(
-                            spentByTimeData = spentByTimeData,
-                            spentByTimePeriod = spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                            columnChartEntryModelProducer = chartEntryModelProducer,
+                            spentByTimeData = uiState.spentByTime,
+                            spentByTimePeriod = uiState.spentByTimePeriod,
+                            onSpentByTimePeriodUpdate = { onEvent(DisplayCategoryEvent.Test) },
+                            columnChartEntryModelProducer = uiState.chartEntryModelProducer,
                         )
 
                         Spacer(Modifier.height(12.dp))
@@ -300,18 +249,18 @@ private fun CategoryScreenContent(
             }
 
             fullItemListContent(
-                transactionItems = transactionItems,
+                transactionItems = items,
                 onItemClick = {
-                    onItemClick(it.product.id)
+                    onEvent(DisplayCategoryEvent.Test)
                 },
                 onItemLongClick = {
-                    onItemLongClick(it.id)
+                    onEvent(DisplayCategoryEvent.Test)
                 },
                 onProducerClick = {
-                    onItemProducerClick(it.id)
+                    onEvent(DisplayCategoryEvent.Test)
                 },
                 onShopClick = {
-                    onItemShopClick(it.id)
+                    onEvent(DisplayCategoryEvent.Test)
                 }
             )
         }
@@ -320,23 +269,15 @@ private fun CategoryScreenContent(
 
 @PreviewLightDark
 @Composable
-private fun CategoryScreenPreview() {
+private fun DisplayCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            CategoryScreen(
-                onBack = {},
-                category = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
-                totalSpentData = generateRandomFloatValue(),
-                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemProducerClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+            DisplayCategoryScreen(
+                uiState = DisplayCategoryUiState(
+                    spentByTime = ItemSpentByTime.generateList(),
+                    totalSpent = generateRandomFloatValue()
+                ),
+                onEvent = {}
             )
         }
     }
@@ -344,23 +285,12 @@ private fun CategoryScreenPreview() {
 
 @PreviewLightDark
 @Composable
-private fun EmptyCategoryScreenPreview() {
+private fun EmptyDisplayCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            CategoryScreen(
-                onBack = {},
-                category = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<ItemSpentByTime>().toImmutableList(),
-                totalSpentData = null,
-                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemProducerClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+            DisplayCategoryScreen(
+                uiState = DisplayCategoryUiState(),
+                onEvent = {}
             )
         }
     }
@@ -368,23 +298,15 @@ private fun EmptyCategoryScreenPreview() {
 
 @PreviewExpanded
 @Composable
-private fun ExpandedCategoryScreenPreview() {
+private fun ExpandedDisplayCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            CategoryScreen(
-                onBack = {},
-                category = null,
-                transactionItems = flowOf(PagingData.from(FullItem.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
-                totalSpentData = generateRandomFloatValue(),
-                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemProducerClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+            DisplayCategoryScreen(
+                uiState = DisplayCategoryUiState(
+                    spentByTime = ItemSpentByTime.generateList(),
+                    totalSpent = generateRandomFloatValue()
+                ),
+                onEvent = {}
             )
         }
     }
@@ -392,23 +314,12 @@ private fun ExpandedCategoryScreenPreview() {
 
 @PreviewExpanded
 @Composable
-private fun ExpandedEmptyCategoryScreenPreview() {
+private fun ExpandedEmptyDisplayCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            CategoryScreen(
-                onBack = {},
-                category = null,
-                transactionItems = flowOf(PagingData.from(emptyList<FullItem>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<ItemSpentByTime>().toImmutableList(),
-                totalSpentData = null,
-                spentByTimePeriod = TimePeriodFlowHandler.Periods.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemProducerClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+            DisplayCategoryScreen(
+                uiState = DisplayCategoryUiState(),
+                onEvent = {}
             )
         }
     }

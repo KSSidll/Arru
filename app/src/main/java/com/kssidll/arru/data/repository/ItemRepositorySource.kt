@@ -110,7 +110,7 @@ interface ItemRepositorySource {
      * @param id id of the [ItemEntity]
      * @return [ItemEntity] with [id] id or null if none match
      */
-    suspend fun get(id: Long): Flow<ItemEntity?>
+    fun get(id: Long): Flow<ItemEntity?>
 
 
 
@@ -123,5 +123,5 @@ interface ItemRepositorySource {
     /**
      * @return newest [ItemEntity], null if none found
      */
-    suspend fun newest(): Flow<ItemEntity?>
+    fun newest(): Flow<ItemEntity?>
 }

@@ -32,6 +32,7 @@ import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
+import com.kssidll.arru.data.view.Item
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -97,6 +98,9 @@ suspend fun Context.currentDbBackupDirectory(): File {
         ProductCategoryEntity::class,
         ShopEntity::class,
         ProductProducerEntity::class,
+    ],
+    views = [
+        Item::class
     ],
     autoMigrations = [
         AutoMigration(
@@ -944,6 +948,33 @@ val MIGRATION_8_9 = object: Migration(
         db.execSQL(
             """
             CREATE INDEX IF NOT EXISTS index_ItemEntity_productVariantEntityId ON ItemEntity(productVariantEntityId)
+        """.trimIndent())
+
+        db.execSQL(
+            """
+            CREATE VIEW `ItemView` AS SELECT
+                ItemEntity.id               AS id,
+                ProductEntity.id            AS productId,
+                productCategoryEntity.id    AS productCategoryId,
+                productProducerEntity.id    AS productProducerId,
+                productVariantEntity.id     AS productVariantId,
+                TransactionEntity.id        AS transactionId,
+                ShopEntity.id               AS shopId,
+                ItemEntity.quantity         AS quantity,
+                ItemEntity.price            AS price,
+                TransactionEntity.date      AS date,
+                ProductEntity.name          AS productName,
+                ProductVariantEntity.name   AS productVariantName,
+                ProductCategoryEntity.name  AS productCategoryName,
+                ProductProducerEntity.name  AS productProducerName,
+                ShopEntity.name             AS shopName
+            FROM ItemEntity
+            LEFT JOIN ProductEntity         ON ProductEntity.id         = ItemEntity.productEntityId
+            LEFT JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
+            LEFT JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId
+            LEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId
+            LEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId 
+            LEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId
         """.trimIndent())
     }
 }

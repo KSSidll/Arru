@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -123,6 +124,11 @@ interface ProductProducerRepositorySource {
      */
     fun get(id: Long): Flow<ProductProducerEntity?>
 
+    /**
+     * @param id id of the [ProductProducerEntity]
+     * @return [PagingData] of [Item] that is of [ProductProducerEntity] [id]
+     */
+    fun itemsFor(id: Long): Flow<PagingData<Item>>
 
 
 

@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -16,6 +17,7 @@ import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.view.Item
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -159,7 +161,17 @@ interface ProductCategoryEntityDao {
     @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id")
     fun get(id: Long): Flow<ProductCategoryEntity?>
 
+    @Query("""
+        SELECT SUM(ItemEntity.price * ItemEntity.quantity)
+        FROM ItemEntity
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
+        WHERE ProductCategoryEntity.id = :entityId
+    """)
+    fun totalSpent(entityId: Long): Flow<Long?>
 
+    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productCategoryId = :id")
+    fun itemsFor(id: Long): PagingSource<Int, Item>
 
 
 
@@ -175,17 +187,6 @@ interface ProductCategoryEntityDao {
 
     @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name")
     fun byName(name: String): Flow<ProductCategoryEntity?>
-
-    @Query(
-        """
-        SELECT SUM(ItemEntity.price * ItemEntity.quantity)
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
-        WHERE ProductCategoryEntity.id = :entityId
-    """
-    )
-    fun totalSpent(entityId: Long): Flow<Long?>
 
     @Query(
         """

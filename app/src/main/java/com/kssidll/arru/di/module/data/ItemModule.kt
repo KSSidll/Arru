@@ -2,7 +2,6 @@ package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetItemEntityUseCase
-import com.kssidll.arru.domain.usecase.data.GetItemUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +25,11 @@ class ItemModule {
 
     /** DOMAIN */
 
-    @Provides
-    @Singleton
-    fun provideGetItemUseCase(
-        getItemEntityUseCase: GetItemEntityUseCase
-    ): GetItemUseCase {
-        return GetItemUseCase(getItemEntityUseCase)
-    }
+    // @Provides
+    // @Singleton
+    // fun provideGetItemUseCase(
+    //     getItemEntityUseCase: GetItemEntityUseCase
+    // ): GetItemUseCase {
+    //     return GetItemUseCase(getItemEntityUseCase)
+    // }
 }

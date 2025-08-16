@@ -207,7 +207,7 @@ class TransactionRepository(
                         date = transaction.date,
                         shop = transaction.shopEntityId?.let { dao.shopById(it) },
                         totalCost = transaction.totalCost,
-                        items = dao.fullItemsByTransactionBasketId(transaction.id),
+                        items = dao._itemsByTransactionBasketId(transaction.id),
                         note = transaction.note
                     )
                 }

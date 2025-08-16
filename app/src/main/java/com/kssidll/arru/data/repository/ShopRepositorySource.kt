@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.data.TransactionTotalSpentByTime
+import com.kssidll.arru.data.view.Item
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -123,6 +124,11 @@ interface ShopRepositorySource {
      */
     fun get(id: Long): Flow<ShopEntity?>
 
+    /**
+     * @param id id of the [ShopEntity]
+     * @return [PagingData] of [Item] that is of [ShopEntity] [id]
+     */
+    fun itemsFor(id: Long): Flow<PagingData<Item>>
 
 
 

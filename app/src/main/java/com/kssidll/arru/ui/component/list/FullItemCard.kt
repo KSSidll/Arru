@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.component.list
 
+import android.R.attr.category
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -56,12 +58,12 @@ import com.kssidll.arru.ui.theme.Typography
 )
 @Composable
 fun FullItemCard(
-    item: FullItem,
-    onItemClick: ((item: FullItem) -> Unit)? = null,
-    onItemLongClick: ((item: FullItem) -> Unit)? = null,
-    onCategoryClick: ((category: ProductCategoryEntity) -> Unit)? = null,
-    onProducerClick: ((producer: ProductProducerEntity) -> Unit)? = null,
-    onShopClick: ((shop: ShopEntity) -> Unit)? = null,
+    item: Item,
+    onItemClick: ((item: Item) -> Unit)? = null,
+    onItemLongClick: ((item: Item) -> Unit)? = null,
+    onCategoryClick: ((item: Item) -> Unit)? = null,
+    onProducerClick: ((item: Item) -> Unit)? = null,
+    onShopClick: ((item: Item) -> Unit)? = null,
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current
 
@@ -103,7 +105,7 @@ fun FullItemCard(
                 ) {
                     Text(
                         modifier = Modifier.align(Alignment.CenterStart),
-                        text = item.product.name,
+                        text = item.productName,
                         style = Typography.titleLarge,
                     )
                 }
@@ -115,7 +117,7 @@ fun FullItemCard(
                         modifier = Modifier.size(17.dp),
                     )
                     Text(
-                        text = item.variant?.name
+                        text = item.productVariantName
                             ?: stringResource(R.string.item_product_variant_default_value),
                         textAlign = TextAlign.Center,
                         style = Typography.labelMedium,
@@ -207,11 +209,10 @@ fun FullItemCard(
                 verticalArrangement = Arrangement.Center,
             ) {
                 if (onCategoryClick != null) {
-                    val category = item.category
                     Button(
                         modifier = Modifier.padding(end = 3.dp),
                         onClick = {
-                            onCategoryClick.invoke(category)
+                            onCategoryClick.invoke(item)
                         },
                         contentPadding = PaddingValues(
                             vertical = 0.dp,
@@ -223,7 +224,7 @@ fun FullItemCard(
                         ),
                     ) {
                         Text(
-                            text = category.name,
+                            text = item.productCategoryName,
                             textAlign = TextAlign.Center,
                             style = Typography.labelMedium,
                         )
@@ -232,12 +233,11 @@ fun FullItemCard(
                 }
 
                 if (onProducerClick != null) {
-                    val producer = item.producer
-                    if (producer != null) {
+                    if (item.productProducerName != null) {
                         Button(
                             modifier = Modifier.padding(end = 3.dp),
                             onClick = {
-                                onProducerClick.invoke(producer)
+                                onProducerClick.invoke(item)
                             },
                             contentPadding = PaddingValues(
                                 vertical = 0.dp,
@@ -254,7 +254,7 @@ fun FullItemCard(
                                 modifier = Modifier.size(17.dp),
                             )
                             Text(
-                                text = producer.name,
+                                text = item.productProducerName,
                                 textAlign = TextAlign.Center,
                                 style = Typography.labelMedium,
                             )
@@ -264,11 +264,10 @@ fun FullItemCard(
             }
 
             if (onShopClick != null) {
-                val shop = item.shop
-                if (shop != null) {
+                if (item.shopName != null) {
                     Button(
                         onClick = {
-                            onShopClick.invoke(shop)
+                            onShopClick.invoke(item)
                         },
                         contentPadding = PaddingValues(
                             vertical = 0.dp,
@@ -280,7 +279,7 @@ fun FullItemCard(
                         ),
                     ) {
                         Text(
-                            text = shop.name,
+                            text = item.shopName,
                             textAlign = TextAlign.Center,
                             style = Typography.labelMedium,
                         )
@@ -302,7 +301,7 @@ private fun FullItemCardPreview() {
     ArrugarqTheme {
         Surface(Modifier.fillMaxWidth()) {
             FullItemCard(
-                item = FullItem.generate(),
+                item = Item.generate(),
                 onItemClick = {},
                 onItemLongClick = {},
                 onCategoryClick = {},

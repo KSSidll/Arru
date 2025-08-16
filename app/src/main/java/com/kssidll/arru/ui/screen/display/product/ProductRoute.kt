@@ -29,8 +29,7 @@ fun ProductRoute(
     ProductScreen(
         onBack = navigateBack,
         product = viewModel.product,
-        transactionItems = viewModel.transactions()
-            .collectAsLazyPagingItems(),
+        transactionItems = viewModel.transactions().collectAsLazyPagingItems(),
         spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
         productPriceByShopByTimeData = viewModel.productPriceByShop()?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
         totalSpentData = viewModel.productTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
