@@ -9,7 +9,6 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
@@ -17,6 +16,7 @@ import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -154,10 +154,190 @@ interface ProductProducerEntityDao {
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :id")
     fun get(id: Long): Flow<ProductProducerEntity?>
 
+    @Query(
+        """
+        SELECT SUM(ItemEntity.price * ItemEntity.quantity)
+        FROM ItemEntity
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+        WHERE ProductEntity.productProducerEntityId = :id
+    """
+    )
+    fun totalSpent(id: Long): Flow<Long?>
+
     @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productProducerId = :id")
     fun itemsFor(id: Long): PagingSource<Int, Item>
 
+    @Query(
+        """
+        WITH date_series AS (
+            SELECT 
+                DATE(MIN(TransactionEntity.date / 1000), 'unixepoch') AS day,
+                DATE(current_timestamp, 'localtime') AS end_date
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            UNION ALL
+            SELECT DATE(day, '+1 day') AS day, end_date
+            FROM date_series
+            WHERE date_series.day < date_series.end_date
+        ), spent_by_day AS (
+            SELECT DATE(TransactionEntity.date / 1000, 'unixepoch') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            GROUP BY day
+        ), full_spent_by_day AS (
+            SELECT
+                date_series.day AS date, 
+                COALESCE(spent_by_day.spent, 0) AS spent
+            FROM date_series
+            LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
+            WHERE date_series.day IS NOT NULL
+        ), full_spent_by_day_row AS (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                date,
+                spent AS value
+            FROM full_spent_by_day
+        )
+        SELECT * FROM full_spent_by_day_row
+        ORDER BY date ASC
+    """
+    )
+    fun totalSpentByDay(id: Long): Flow<List<ItemSpentChartData>>
 
+    @Query(
+        """
+        WITH date_series AS (
+            SELECT 
+                DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'weekday 1') AS day,
+                DATE(current_timestamp, 'localtime') AS end_date
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            UNION ALL
+            SELECT DATE(day, '+7 days') AS day, end_date
+            FROM date_series
+            WHERE DATE(date_series.day, '+7 days') <= date_series.end_date
+        ), spent_by_day AS (
+            SELECT DATE(TransactionEntity.date / 1000, 'unixepoch', 'weekday 1') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            GROUP BY day
+        ), full_spent_by_day AS (
+            SELECT
+                date_series.day AS date, 
+                COALESCE(spent_by_day.spent, 0) AS spent
+            FROM date_series
+            LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
+            WHERE date_series.day IS NOT NULL
+        ), full_spent_by_day_row AS (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                date,
+                spent AS value
+            FROM full_spent_by_day
+        )
+        SELECT * FROM full_spent_by_day_row
+        ORDER BY date ASC
+    """
+    )
+    fun totalSpentByWeek(id: Long): Flow<List<ItemSpentChartData>>
+
+    @Query(
+        """
+        WITH date_series AS (
+            SELECT 
+                DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'start of month') AS day,
+                DATE(current_timestamp, 'localtime') AS end_date
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            UNION ALL
+            SELECT DATE(day, '+1 month') AS day, end_date
+            FROM date_series
+            WHERE DATE(date_series.day, '+1 month') <= date_series.end_date
+        ), spent_by_day AS (
+            SELECT DATE(TransactionEntity.date / 1000, 'unixepoch', 'start of month') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            GROUP BY day
+        ), full_spent_by_day AS (
+            SELECT
+            STRFTIME('%Y-%m', date_series.day) AS date, 
+                COALESCE(spent_by_day.spent, 0) AS spent
+            FROM date_series
+            LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
+            WHERE date_series.day IS NOT NULL
+        ), full_spent_by_day_row AS (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                date,
+                spent AS value
+            FROM full_spent_by_day
+        )
+        SELECT * FROM full_spent_by_day_row
+        ORDER BY date ASC
+    """
+    )
+    fun totalSpentByMonth(id: Long): Flow<List<ItemSpentChartData>>
+
+    @Query(
+        """
+        WITH date_series AS (
+            SELECT 
+                DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'start of year') AS day,
+                DATE(current_timestamp, 'localtime') AS end_date
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            UNION ALL
+            SELECT DATE(day, '+1 year') AS day, end_date
+            FROM date_series
+            WHERE DATE(date_series.day, '+1 year') <= date_series.end_date
+        ), spent_by_day AS (
+            SELECT DATE(TransactionEntity.date / 1000, 'unixepoch', 'start of year') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            INNER JOIN ProductEntity 
+                ON ProductEntity.id = ItemEntity.productEntityId
+                AND ProductEntity.productProducerEntityId = :id
+            GROUP BY day
+        ), full_spent_by_day AS (
+            SELECT
+            STRFTIME('%Y', date_series.day) AS date, 
+                COALESCE(spent_by_day.spent, 0) AS spent
+            FROM date_series
+            LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
+            WHERE date_series.day IS NOT NULL
+        ), full_spent_by_day_row AS (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                date,
+                spent AS value
+            FROM full_spent_by_day
+        )
+        SELECT * FROM full_spent_by_day_row
+        ORDER BY date ASC
+    """
+    )
+    fun totalSpentByYear(id: Long): Flow<List<ItemSpentChartData>>
 
 
 
@@ -173,140 +353,6 @@ interface ProductProducerEntityDao {
 
     @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.name = :name")
     suspend fun byName(name: String): ProductProducerEntity?
-
-    @Query(
-        """
-        SELECT SUM(ItemEntity.price * ItemEntity.quantity)
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.productProducerEntityId = :entityId
-    """
-    )
-    fun totalSpent(entityId: Long): Flow<Long?>
-
-    @Query(
-        """
-        WITH date_series AS (
-            SELECT MIN(TransactionEntity.date) AS start_date,
-                   STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000 AS end_date
-            FROM ItemEntity
-            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-                AND productProducerEntityId = :entityId
-            UNION ALL
-            SELECT (start_date + 86400000) AS start_date, end_date
-            FROM date_series
-            WHERE date_series.end_date > date_series.start_date
-        ), ItemEntities AS (
-            SELECT (TransactionEntity.date / 86400000) AS transaction_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
-            FROM ItemEntity
-            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-            INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-                AND productProducerEntityId = :entityId
-            GROUP BY transaction_time
-        )
-        SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
-        FROM date_series
-        LEFT JOIN ItemEntities ON (date_series.start_date / 86400000) = transaction_time
-        WHERE time IS NOT NULL
-        GROUP BY time
-        ORDER BY time
-    """
-    )
-    fun totalSpentByDay(entityId: Long): Flow<List<ItemSpentByTime>>
-
-    @Query(
-        """
-        WITH date_series AS (
-        SELECT (((MIN(TransactionEntity.date) / 86400000) - ((MIN(TransactionEntity.date - 345600000) / 86400000) % 7 )) * 86400000) AS start_date,
-                 ((STRFTIME('%s', DATE(current_timestamp, 'localtime')) * 1000) - 604800000) AS end_date
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND productProducerEntityId = :entityId
-        UNION ALL
-        SELECT (start_date + 604800000) AS start_date, end_date
-        FROM date_series
-        WHERE date_series.end_date >= date_series.start_date
-    ), ItemEntities AS (
-        SELECT ((TransactionEntity.date - 345600000) / 604800000) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND productProducerEntityId = :entityId
-        GROUP BY ItemEntities_time
-    )
-    SELECT DATE(date_series.start_date / 1000, 'unixepoch') AS time, COALESCE(ItemEntity_total, 0) AS total
-    FROM date_series
-    LEFT JOIN ItemEntities ON (date_series.start_date / 604800000) = ItemEntities_time
-    WHERE time IS NOT NULL
-    GROUP BY time
-    ORDER BY time
-    """
-    )
-    fun totalSpentByWeek(entityId: Long): Flow<List<ItemSpentByTime>>
-
-    @Query(
-        """
-        WITH date_series AS (
-        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS start_date,
-               DATE(current_timestamp, 'localtime', 'start of month') AS end_date
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND productProducerEntityId = :entityId
-        UNION ALL
-        SELECT DATE(start_date, '+1 month') AS start_date, end_date
-        FROM date_series
-        WHERE date_series.end_date > date_series.start_date
-    ), ItemEntities AS (
-        SELECT STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND productProducerEntityId = :entityId
-        GROUP BY ItemEntities_time
-    )
-    SELECT STRFTIME('%Y-%m', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
-    FROM date_series
-    LEFT JOIN ItemEntities ON STRFTIME('%Y-%m', date_series.start_date) = ItemEntities_time
-    WHERE time IS NOT NULL
-    GROUP BY time
-    ORDER BY time
-    """
-    )
-    fun totalSpentByMonth(entityId: Long): Flow<List<ItemSpentByTime>>
-
-    @Query(
-        """
-        WITH date_series AS (
-        SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of year') AS start_date,
-               DATE(current_timestamp, 'localtime', 'start of year') AS end_date
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND productProducerEntityId = :entityId
-        UNION ALL
-        SELECT DATE(start_date, '+1 year') AS start_date, end_date
-        FROM date_series
-        WHERE date_series.end_date > date_series.start_date
-    ), ItemEntities AS (
-        SELECT STRFTIME('%Y', DATE(TransactionEntity.date / 1000, 'unixepoch')) AS ItemEntities_time, SUM(ItemEntity.price * ItemEntity.quantity) AS ItemEntity_total
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        INNER JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-            AND productProducerEntityId = :entityId
-        GROUP BY ItemEntities_time
-    )
-    SELECT STRFTIME('%Y', date_series.start_date) AS time, COALESCE(ItemEntity_total, 0) AS total
-    FROM date_series
-    LEFT JOIN ItemEntities ON STRFTIME('%Y', date_series.start_date) = ItemEntities_time
-    WHERE time IS NOT NULL
-    GROUP BY time
-    ORDER BY time
-    """
-    )
-    fun totalSpentByYear(entityId: Long): Flow<List<ItemSpentByTime>>
 
     @Transaction
     suspend fun fullItems(

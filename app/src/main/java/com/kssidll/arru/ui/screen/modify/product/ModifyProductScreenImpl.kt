@@ -24,6 +24,7 @@ import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
@@ -254,8 +255,8 @@ private fun ModifyProductScreenImplPreview() {
             ModifyProductScreenImpl(
                 onBack = {},
                 state = ModifyProductScreenState(),
-                categories = emptyList<ProductCategoryEntity>().toImmutableList(),
-                producers = emptyList<ProductProducerEntity>().toImmutableList(),
+                categories = emptyImmutableList(),
+                producers = emptyImmutableList(),
                 onNewProducerSelected = {},
                 onNewCategorySelected = {},
                 onSubmit = {},

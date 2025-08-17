@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
@@ -38,13 +38,13 @@ class ShopViewModel @Inject constructor(
 
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<TransactionTotalSpentByTime>>? =
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>>? =
         null
     val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
-    val spentByTimeData: Flow<ImmutableList<TransactionTotalSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<ImmutableList<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun shopTotalSpent(): Flow<Float?>? {
-        return shop?.let { shopRepository.totalSpent(it) }
+        return shop?.let { shopRepository.totalSpent(it.id) }
     }
 
     /**
@@ -87,16 +87,16 @@ class ShopViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             day = {
-                shopRepository.totalSpentByDay(shop)
+                shopRepository.totalSpentByDay(shopId)
             },
             week = {
-                shopRepository.totalSpentByWeek(shop)
+                shopRepository.totalSpentByWeek(shopId)
             },
             month = {
-                shopRepository.totalSpentByMonth(shop)
+                shopRepository.totalSpentByMonth(shopId)
             },
             year = {
-                shopRepository.totalSpentByYear(shop)
+                shopRepository.totalSpentByYear(shopId)
             },
         )
 

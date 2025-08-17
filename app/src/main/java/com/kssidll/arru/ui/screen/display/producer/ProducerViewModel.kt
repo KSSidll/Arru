@@ -7,14 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductProducerUseCase
-import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,12 +38,12 @@ class ProducerViewModel @Inject constructor(
 
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ItemSpentByTime>>? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>>? = null
     val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
-    val spentByTimeData: Flow<ImmutableList<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<ImmutableList<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun producerTotalSpent(): Flow<Float?>? {
-        return producer?.let { producerRepository.totalSpent(it) }
+        return producer?.let { producerRepository.totalSpent(it.id) }
     }
 
     /**
@@ -88,16 +86,16 @@ class ProducerViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             day = {
-                producerRepository.totalSpentByDay(producer)
+                producerRepository.totalSpentByDay(producerId)
             },
             week = {
-                producerRepository.totalSpentByWeek(producer)
+                producerRepository.totalSpentByWeek(producerId)
             },
             month = {
-                producerRepository.totalSpentByMonth(producer)
+                producerRepository.totalSpentByMonth(producerId)
             },
             year = {
-                producerRepository.totalSpentByYear(producer)
+                producerRepository.totalSpentByYear(producerId)
             },
         )
 

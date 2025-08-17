@@ -1,13 +1,11 @@
 package com.kssidll.arru.data.data
 
-import androidx.collection.FloatFloatPair
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
@@ -276,127 +274,6 @@ data class FullItem(
                 generate(it.toLong())
             }
         }
-    }
-}
-
-
-data class ItemSpentByTime(
-    val time: String,
-    val total: Long,
-): ChartSource {
-    companion object {
-        fun generate(): ItemSpentByTime {
-            return ItemSpentByTime(
-                time = generateRandomDateString(),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): ImmutableList<ItemSpentByTime> {
-            return List(amount) {
-                generate()
-            }.toImmutableList()
-        }
-    }
-
-    override fun dataOrder(): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun value(): Float {
-        return total.toFloat()
-            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun chartEntry(): FloatFloatPair {
-        TODO("Not yet implemented")
-    }
-
-    override fun chartEntry(x: Int): FloatFloatPair {
-        return FloatFloatPair(
-            x.toFloat(),
-            value()
-        )
-    }
-
-    override fun startAxisLabel(locale: Locale): String? {
-        return null
-    }
-
-    override fun topAxisLabel(locale: Locale): String? {
-        return value().formatToCurrency(locale, dropDecimal = true)
-    }
-
-    override fun bottomAxisLabel(locale: Locale): String? {
-        return time
-    }
-
-    override fun endAxisLabel(locale: Locale): String? {
-        return null
-    }
-}
-
-data class TransactionTotalSpentByTime(
-    val time: String,
-    val total: Long,
-): ChartSource {
-    companion object {
-        fun generate(): TransactionTotalSpentByTime {
-            return TransactionTotalSpentByTime(
-                time = generateRandomDateString(),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): ImmutableList<TransactionTotalSpentByTime> {
-            return List(amount) {
-                generate()
-            }.toImmutableList()
-        }
-    }
-
-    override fun dataOrder(): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun value(): Float {
-        return total.toFloat()
-            .div(TransactionEntity.COST_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun chartEntry(): FloatFloatPair {
-        TODO("Not yet implemented")
-    }
-
-    override fun chartEntry(x: Int): FloatFloatPair {
-        return FloatFloatPair(
-            x.toFloat(),
-            value()
-        )
-    }
-
-    override fun startAxisLabel(locale: Locale): String? {
-        return null
-    }
-
-    override fun topAxisLabel(locale: Locale): String? {
-        return value().formatToCurrency(locale, dropDecimal = true)
-    }
-
-    override fun bottomAxisLabel(locale: Locale): String? {
-        return time
-    }
-
-    override fun endAxisLabel(locale: Locale): String? {
-        return null
     }
 }
 

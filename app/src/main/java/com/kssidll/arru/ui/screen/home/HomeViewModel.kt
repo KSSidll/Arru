@@ -13,18 +13,17 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.TransactionBasketWithItems
-import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,12 +34,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
+import kotlin.collections.isNotEmpty
 
 @Immutable
 data class HomeUiState(
     val totalSpent: Float = 0f,
 
-    val dashboardSpentByTimeChartData: ImmutableList<TransactionSpentByTime> = emptyImmutableList(),
+    val dashboardSpentByTimeChartData: ImmutableList<ChartSource> = emptyImmutableList(),
     val dashboardSpentByTimeChartCurrentPeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
     val dashboardCategorySpendingRankingData: ImmutableList<ItemSpentByCategory> = emptyImmutableList(),
     val dashboardShopSpendingRankingData: ImmutableList<TransactionTotalSpentByShop> = emptyImmutableList(),
@@ -119,7 +119,7 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val mTimePeriodFlowHandler: TimePeriodFlowHandler<List<TransactionSpentByTime>> =
+    private val mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>> =
         TimePeriodFlowHandler(
             scope = viewModelScope,
             day = {
@@ -260,7 +260,7 @@ class HomeViewModel @Inject constructor(
             mTimePeriodFlowHandler.spentByTimeData.collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        dashboardSpentByTimeChartData = it.toImmutableList()
+                        dashboardSpentByTimeChartData = it
                     )
                 }
             }

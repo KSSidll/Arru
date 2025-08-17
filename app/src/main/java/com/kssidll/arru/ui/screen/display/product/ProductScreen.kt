@@ -60,10 +60,12 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
@@ -79,6 +81,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlin.collections.isNotEmpty
 
 /**
  * @param onBack Called to request a back navigation
@@ -102,7 +105,7 @@ internal fun ProductScreen(
     onBack: () -> Unit,
     product: ProductEntity?,
     transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ItemSpentByTime>,
+    spentByTimeData: ImmutableList<ChartSource>,
     productPriceByShopByTimeData: ImmutableList<ProductPriceByShopByTime>,
     totalSpentData: Float?,
     spentByTimePeriod: SpendingSummaryPeriod?,
@@ -193,7 +196,7 @@ internal fun ProductScreen(
 @Composable
 private fun ProductScreenContent(
     transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ItemSpentByTime>,
+    spentByTimeData: ImmutableList<ChartSource>,
     productPriceByShopByTimeData: ImmutableList<ProductPriceByShopByTime>,
     totalSpentData: Float?,
     spentByTimePeriod: SpendingSummaryPeriod?,
@@ -352,7 +355,7 @@ private fun ProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimeData = ItemSpentChartData.generateList(),
                 productPriceByShopByTimeData = ProductPriceByShopByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
@@ -377,8 +380,8 @@ private fun EmptyProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<ItemSpentByTime>().toImmutableList(),
-                productPriceByShopByTimeData = emptyList<ProductPriceByShopByTime>().toImmutableList(),
+                spentByTimeData = emptyImmutableList(),
+                productPriceByShopByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -402,7 +405,7 @@ private fun ExpandedProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimeData = ItemSpentChartData.generateList(),
                 productPriceByShopByTimeData = ProductPriceByShopByTime.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
@@ -427,8 +430,8 @@ private fun ExpandedEmptyProductScreenPreview() {
                 onBack = {},
                 product = null,
                 transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<ItemSpentByTime>().toImmutableList(),
-                productPriceByShopByTimeData = emptyList<ProductPriceByShopByTime>().toImmutableList(),
+                spentByTimeData = emptyImmutableList(),
+                productPriceByShopByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},

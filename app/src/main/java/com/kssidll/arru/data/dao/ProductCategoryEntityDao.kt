@@ -5,21 +5,15 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 @Dao
 interface ProductCategoryEntityDao {
@@ -42,49 +36,6 @@ interface ProductCategoryEntityDao {
     suspend fun delete(entity: ProductCategoryEntity)
 
     // Helper
-
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
-    suspend fun shopById(shopId: Long): ShopEntity
-
-    @Query("SELECT * FROM ProductEntity WHERE ProductEntity.id = :productId")
-    suspend fun productById(productId: Long): ProductEntity
-
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
-    suspend fun variantById(variantId: Long): ProductVariantEntity
-
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
-    suspend fun categoryById(categoryId: Long): ProductCategoryEntity
-
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
-    suspend fun producerById(producerId: Long): ProductProducerEntity
-
-    @Query(
-        """
-        SELECT TransactionEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        WHERE ItemEntity.id = :itemEntityId
-    """
-    )
-    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.TransactionEntityId
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.productCategoryEntityId = :categoryId
-        ORDER BY date DESC
-        LIMIT :count
-        OFFSET :offset
-    """
-    )
-    suspend fun itemsByCategory(
-        categoryId: Long,
-        count: Int,
-        offset: Int
-    ): List<ItemEntity>
 
     @Query(
         """
@@ -130,45 +81,21 @@ interface ProductCategoryEntityDao {
     @Update
     suspend fun updateProducts(entities: List<ProductEntity>)
 
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ItemEntity.id < :itemEntityId AND ProductEntity.productCategoryEntityId = :categoryId
-    """
-    )
-    suspend fun countItemsBefore(
-        itemEntityId: Long,
-        categoryId: Long
-    ): Int
-
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ItemEntity.id > :itemEntityId AND ProductEntity.productCategoryEntityId = :categoryId
-    """
-    )
-    suspend fun countItemsAfter(
-        itemEntityId: Long,
-        categoryId: Long
-    ): Int
-
     // Read
 
     @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id")
     fun get(id: Long): Flow<ProductCategoryEntity?>
 
-    @Query("""
+    @Query(
+        """
         SELECT SUM(ItemEntity.price * ItemEntity.quantity)
         FROM ItemEntity
         JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
         JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
-        WHERE ProductCategoryEntity.id = :entityId
-    """)
-    fun totalSpent(entityId: Long): Flow<Long?>
+        WHERE ProductCategoryEntity.id = :id
+    """
+    )
+    fun totalSpent(id: Long): Flow<Long?>
 
     @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productCategoryId = :id")
     fun itemsFor(id: Long): PagingSource<Int, Item>
@@ -183,7 +110,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
             SELECT DATE(day, '+1 day') AS day, end_date
             FROM date_series
@@ -194,7 +121,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
@@ -226,7 +153,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
             SELECT DATE(day, '+7 days') AS day, end_date
             FROM date_series
@@ -237,7 +164,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
@@ -269,7 +196,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
             SELECT DATE(day, '+1 month') AS day, end_date
             FROM date_series
@@ -280,7 +207,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
@@ -312,7 +239,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
             SELECT DATE(day, '+1 year') AS day, end_date
             FROM date_series
@@ -323,7 +250,7 @@ interface ProductCategoryEntityDao {
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             INNER JOIN ProductEntity 
                 ON ProductEntity.id = ItemEntity.productEntityId
-                AND productCategoryEntityId = :id
+                AND ProductEntity.productCategoryEntityId = :id
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
@@ -357,43 +284,6 @@ interface ProductCategoryEntityDao {
 
     @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name")
     fun byName(name: String): Flow<ProductCategoryEntity?>
-
-    @Transaction
-    suspend fun fullItems(
-        entityId: Long,
-        count: Int,
-        offset: Int
-    ): List<FullItem> {
-        val category = get(entityId).first() ?: return emptyList()
-
-        val itemEntities = itemsByCategory(
-            entityId,
-            count,
-            offset
-        )
-
-        if (itemEntities.isEmpty()) return emptyList()
-
-        return itemEntities.map { entity ->
-            val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val productEntity = productById(entity.productEntityId)
-            val productVariantEntity = entity.productVariantEntityId?.let { variantById(it) }
-            val productProducerEntity = productEntity.productProducerEntityId?.let { producerById(it) }
-            val shopEntity = transactionEntity.shopEntityId?.let { shopById(it) }
-
-            FullItem(
-                id = entity.id,
-                quantity = entity.quantity,
-                price = entity.price,
-                product = productEntity,
-                variant = productVariantEntity,
-                category = category,
-                producer = productProducerEntity,
-                date = transactionEntity.date,
-                shop = shopEntity,
-            )
-        }
-    }
 
     @Query(
         """

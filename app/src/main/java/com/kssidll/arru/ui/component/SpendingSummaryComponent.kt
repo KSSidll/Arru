@@ -26,8 +26,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.chart.OneDimensionalColumnChart
 import com.kssidll.arru.ui.component.chart.oneDimensionalColumnChartDefaultScrollState
@@ -152,7 +152,7 @@ private fun SpendingSummaryComponentPreview() {
     ArrugarqTheme {
         Surface {
             SpendingSummaryComponent(
-                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimeData = ItemSpentChartData.generateList(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodUpdate = {},
             )

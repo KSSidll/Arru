@@ -4,7 +4,8 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.data.TransactionSpentByTime
+import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -128,7 +129,35 @@ interface TransactionRepositorySource {
      */
     fun get(id: Long): Flow<TransactionEntity?>
 
+    /**
+     * @return float representing total spending
+     */
+    fun totalSpent(): Flow<Float?>
 
+    /**
+     * @return [PagingData] of all [Item]
+     */
+    fun items(): Flow<PagingData<Item>>
+
+    /**
+     * @return List of [TransactionSpentChartData] representing total spending partitioned by day
+     */
+    fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentChartData>>
+
+    /**
+     * @return List of [TransactionSpentChartData] representing total spending partitioned by week
+     */
+    fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentChartData>>
+
+    /**
+     * @return List of [TransactionSpentChartData] representing total spending partitioned by month
+     */
+    fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentChartData>>
+
+    /**
+     * @return List of [TransactionSpentChartData] representing total spending partitioned by year
+     */
+    fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>>
 
 
 
@@ -165,31 +194,6 @@ interface TransactionRepositorySource {
      * @return long representing total spending for the [category]
      */
     fun totalSpentLong(): Flow<Long?>
-
-    /**
-     * @return float representing total spending for the [category]
-     */
-    fun totalSpent(): Flow<Float?>
-
-    /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by day
-     */
-    fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentByTime>>
-
-    /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by week
-     */
-    fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentByTime>>
-
-    /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by month
-     */
-    fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentByTime>>
-
-    /**
-     * @return list of [TransactionSpentByTime] representing total spending groupped by year
-     */
-    fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentByTime>>
 
     /**
      * @param startPosition position, from 0 up, to get next [count] items from

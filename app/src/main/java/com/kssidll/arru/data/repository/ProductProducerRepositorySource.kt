@@ -2,10 +2,10 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -126,9 +126,39 @@ interface ProductProducerRepositorySource {
 
     /**
      * @param id id of the [ProductProducerEntity]
+     * @return float representing total spending for [ProductProducerEntity] matching [id] id or null if none match
+     */
+    fun totalSpent(id: Long): Flow<Float?>
+
+    /**
+     * @param id id of the [ProductProducerEntity]
      * @return [PagingData] of [Item] that is of [ProductProducerEntity] [id]
      */
     fun itemsFor(id: Long): Flow<PagingData<Item>>
+
+    /**
+     * @param id id of the [ProductProducerEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by day
+     */
+    fun totalSpentByDay(id: Long): Flow<ImmutableList<ItemSpentChartData>>
+
+    /**
+     * @param id id of the [ProductProducerEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by week
+     */
+    fun totalSpentByWeek(id: Long): Flow<ImmutableList<ItemSpentChartData>>
+
+    /**
+     * @param id id of the [ProductProducerEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by month
+     */
+    fun totalSpentByMonth(id: Long): Flow<ImmutableList<ItemSpentChartData>>
+
+    /**
+     * @param id id of the [ProductProducerEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by year
+     */
+    fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
 
 
@@ -147,36 +177,6 @@ interface ProductProducerRepositorySource {
      * @return list of all [ProductProducerEntity]
      */
     fun all(): Flow<ImmutableList<ProductProducerEntity>>
-
-    /**
-     * @param producer [ProductProducerEntity] to get the total spending from
-     * @return float representing total spending for the [producer]
-     */
-    fun totalSpent(producer: ProductProducerEntity): Flow<Float?>
-
-    /**
-     * @param producer [ProductProducerEntity] to get the total spending by day from
-     * @return list of [ItemSpentByTime] representing total spending groupped by day
-     */
-    fun totalSpentByDay(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param producer [ProductProducerEntity] to get the total spending by week from
-     * @return list of [ItemSpentByTime] representing total spending groupped by week
-     */
-    fun totalSpentByWeek(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param producer [ProductProducerEntity] to get the total spending by month from
-     * @return list of [ItemSpentByTime] representing total spending groupped by month
-     */
-    fun totalSpentByMonth(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param producer [ProductProducerEntity] to get the total spending by year from
-     * @return list of [ItemSpentByTime] representing total spending groupped by year
-     */
-    fun totalSpentByYear(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>>
 
     /**
      * @param producer [ProductProducerEntity] to match the items to

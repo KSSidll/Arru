@@ -7,10 +7,11 @@ import androidx.paging.map
 import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.data.TransactionSpentByTime
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
+import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -113,7 +114,29 @@ class TransactionRepository(
 
     override fun get(id: Long): Flow<TransactionEntity?> = dao.get(id).cancellable()
 
+    override fun totalSpent(): Flow<Float?> = dao.totalSpent().cancellable()
+        .map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
 
+    override fun items(): Flow<PagingData<Item>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 8,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = { dao.items() }
+        ).flow.cancellable()
+
+    override fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByDay().cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByWeek().cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByMonth().cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByYear().cancellable()
+        .map { it.toImmutableList() }
 
 
 
@@ -143,41 +166,6 @@ class TransactionRepository(
 
     override fun totalSpentLong(): Flow<Long?> {
         return dao.totalSpent()
-    }
-
-    override fun totalSpent(): Flow<Float?> {
-        return dao.totalSpent()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
-    }
-
-    override fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByDay()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByWeek()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByMonth()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentByTime>> {
-        return dao.totalSpentByYear()
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
     }
 
     override suspend fun transactionBasketsWithItems(

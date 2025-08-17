@@ -61,8 +61,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.TransactionSpentChartData
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
@@ -99,7 +101,7 @@ internal fun ShopScreen(
     onBack: () -> Unit,
     shop: ShopEntity?,
     transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<TransactionTotalSpentByTime>,
+    spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float?,
     spentByTimePeriod: SpendingSummaryPeriod?,
     onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
@@ -189,7 +191,7 @@ internal fun ShopScreen(
 @Composable
 private fun ShopScreenContent(
     transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<TransactionTotalSpentByTime>,
+    spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float?,
     spentByTimePeriod: SpendingSummaryPeriod?,
     onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
@@ -329,7 +331,7 @@ private fun ShopScreenPreview() {
                 onBack = {},
                 shop = null,
                 transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = TransactionTotalSpentByTime.generateList(),
+                spentByTimeData = TransactionSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -353,7 +355,7 @@ private fun EmptyShopScreenPreview() {
                 onBack = {},
                 shop = null,
                 transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<TransactionTotalSpentByTime>().toImmutableList(),
+                spentByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -377,7 +379,7 @@ private fun ExpandedShopScreenPreview() {
                 onBack = {},
                 shop = null,
                 transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = TransactionTotalSpentByTime.generateList(),
+                spentByTimeData = TransactionSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -401,7 +403,7 @@ private fun ExpandedEmptyShopScreenPreview() {
                 onBack = {},
                 shop = null,
                 transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<TransactionTotalSpentByTime>().toImmutableList(),
+                spentByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},

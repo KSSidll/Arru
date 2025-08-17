@@ -6,7 +6,6 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.DeleteResult
@@ -14,6 +13,7 @@ import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companio
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -119,6 +119,9 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
 
     override fun get(id: Long): Flow<ProductProducerEntity?> = dao.get(id).cancellable()
 
+    override fun totalSpent(id: Long): Flow<Float?> = dao.totalSpent(id).cancellable()
+        .map { it?.toFloat()?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR) }
+
     override fun itemsFor(id: Long): Flow<PagingData<Item>> =
         Pager(
             config = PagingConfig(
@@ -128,6 +131,17 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
             pagingSourceFactory = { dao.itemsFor(id) }
         ).flow.cancellable()
 
+    override fun totalSpentByDay(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByDay(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByWeek(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByWeek(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByMonth(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByMonth(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByYear(id).cancellable()
+        .map { it.toImmutableList() }
 
 
 
@@ -136,42 +150,6 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao): Prod
 
 
 
-    override fun totalSpent(producer: ProductProducerEntity): Flow<Float?> {
-        return dao.totalSpent(producer.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map {
-                it?.toFloat()?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
-            }
-    }
-
-    override fun totalSpentByDay(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByDay(producer.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByWeek(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByWeek(producer.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByMonth(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByMonth(producer.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByYear(producer: ProductProducerEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByYear(producer.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
 
     override fun fullItemsPaged(producer: ProductProducerEntity): Flow<PagingData<FullItem>> {
         return Pager(

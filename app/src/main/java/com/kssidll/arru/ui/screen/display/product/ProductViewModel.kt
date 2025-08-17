@@ -7,12 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
@@ -39,12 +39,12 @@ class ProductViewModel @Inject constructor(
 
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ItemSpentByTime>>? = null
+    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>>? = null
     val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
-    val spentByTimeData: Flow<ImmutableList<ItemSpentByTime>>? get() = mTimePeriodFlowHandler?.spentByTimeData
+    val spentByTimeData: Flow<ImmutableList<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
 
     fun productTotalSpent(): Flow<Float?>? {
-        return product?.let { productRepository.totalSpent(it) }
+        return product?.let { productRepository.totalSpent(it.id) }
     }
 
     fun productPriceByShop(): Flow<ImmutableList<ProductPriceByShopByTime>>? {
@@ -91,16 +91,16 @@ class ProductViewModel @Inject constructor(
         mTimePeriodFlowHandler = TimePeriodFlowHandler(
             scope = viewModelScope,
             day = {
-                productRepository.totalSpentByDay(product)
+                productRepository.totalSpentByDay(productId)
             },
             week = {
-                productRepository.totalSpentByWeek(product)
+                productRepository.totalSpentByWeek(productId)
             },
             month = {
-                productRepository.totalSpentByMonth(product)
+                productRepository.totalSpentByMonth(productId)
             },
             year = {
-                productRepository.totalSpentByYear(product)
+                productRepository.totalSpentByYear(productId)
             },
         )
 

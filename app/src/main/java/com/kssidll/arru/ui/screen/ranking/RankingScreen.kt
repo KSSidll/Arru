@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.list.RankingList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
@@ -155,7 +156,7 @@ private fun EmptyRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = emptyList<ItemSpentByCategory>().toImmutableList(),
+                data = emptyImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -191,7 +192,7 @@ private fun ExpandedEmptyRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = emptyList<ItemSpentByCategory>().toImmutableList(),
+                data = emptyImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},

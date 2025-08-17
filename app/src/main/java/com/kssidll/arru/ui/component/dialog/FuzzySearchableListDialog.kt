@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
@@ -241,7 +242,7 @@ private fun EmptyFuzzySearchableListDialogPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = emptyList<ProductEntity>().toImmutableList(),
+                items = emptyImmutableList<ProductEntity>(),
                 itemText = { "test" },
                 calculateScore = { _, _ -> 0 }
             )

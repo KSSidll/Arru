@@ -60,8 +60,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
@@ -279,7 +279,7 @@ private fun DisplayCategoryScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayCategoryScreen(
                 uiState = DisplayCategoryUiState(
-                    spentByTime = ItemSpentByTime.generateList(),
+                    spentByTime = ItemSpentChartData.generateList(),
                     totalSpent = generateRandomFloatValue()
                 ),
                 onEvent = {}
@@ -308,7 +308,7 @@ private fun ExpandedDisplayCategoryScreenPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayCategoryScreen(
                 uiState = DisplayCategoryUiState(
-                    spentByTime = ItemSpentByTime.generateList(),
+                    spentByTime = ItemSpentChartData.generateList(),
                     totalSpent = generateRandomFloatValue()
                 ),
                 onEvent = {}

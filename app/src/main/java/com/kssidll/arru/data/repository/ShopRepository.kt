@@ -8,13 +8,13 @@ import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
-import com.kssidll.arru.data.data.TransactionTotalSpentByTime
 import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -129,6 +129,9 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
 
     override fun get(id: Long): Flow<ShopEntity?> = dao.get(id).cancellable()
 
+    override fun totalSpent(id: Long): Flow<Float?> = dao.totalSpent(id).cancellable()
+        .map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
+
     override fun itemsFor(id: Long): Flow<PagingData<Item>> =
         Pager(
             config = PagingConfig(
@@ -138,6 +141,17 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
             pagingSourceFactory = { dao.itemsFor(id) }
         ).flow.cancellable()
 
+    override fun totalSpentByDay(id: Long): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByDay(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByWeek(id: Long): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByWeek(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByMonth(id: Long): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByMonth(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByYear(id: Long): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByYear(id).cancellable()
+        .map { it.toImmutableList() }
 
 
 
@@ -146,42 +160,6 @@ class ShopRepository(private val dao: ShopEntityDao): ShopRepositorySource {
 
 
 
-    override fun totalSpent(entity: ShopEntity): Flow<Float?> {
-        return dao.totalSpent(entity.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map {
-                it?.toFloat()?.div(TransactionEntity.COST_DIVISOR)
-            }
-    }
-
-    override fun totalSpentByDay(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>> {
-        return dao.totalSpentByDay(entity.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByWeek(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>> {
-        return dao.totalSpentByWeek(entity.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByMonth(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>> {
-        return dao.totalSpentByMonth(entity.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByYear(entity: ShopEntity): Flow<ImmutableList<TransactionTotalSpentByTime>> {
-        return dao.totalSpentByYear(entity.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
 
     override fun fullItemsPaged(entity: ShopEntity): Flow<PagingData<FullItem>> {
         return Pager(

@@ -4,6 +4,7 @@ package com.kssidll.arru.ui.screen.search.categorylist
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.search.shared.SearchList
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -20,7 +21,7 @@ fun CategoryListRoute(
             viewModel.filter = it
         },
         items = viewModel.items()
-            .collectAsState(initial = emptyList<ProductCategoryEntity>().toImmutableList()).value,
+            .collectAsState(initial = emptyImmutableList()).value,
         onItemClick = {
             onCategoryClick(it.id)
         },

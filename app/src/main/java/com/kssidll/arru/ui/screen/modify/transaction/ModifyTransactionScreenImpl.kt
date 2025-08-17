@@ -44,6 +44,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
@@ -564,7 +565,7 @@ private fun ModifyTransactionScreenImplPreview() {
                 isExpandedScreen = false,
                 onBack = {},
                 state = ModifyTransactionScreenState(),
-                shops = emptyList<ShopEntity>().toImmutableList(),
+                shops = emptyImmutableList(),
                 onNewShopSelected = {},
                 onSubmit = {},
                 onShopAddButtonClick = {},
@@ -583,7 +584,7 @@ private fun ExpandedModifyTransactionScreenImplPreview() {
                 isExpandedScreen = true,
                 onBack = {},
                 state = ModifyTransactionScreenState(),
-                shops = emptyList<ShopEntity>().toImmutableList(),
+                shops = emptyImmutableList(),
                 onNewShopSelected = {},
                 onSubmit = {},
                 onShopAddButtonClick = {},

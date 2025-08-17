@@ -37,6 +37,7 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.StringHelper
@@ -462,8 +463,8 @@ private fun ModifyItemScreenImplPreview() {
             ModifyItemScreenImpl(
                 onBack = {},
                 state = ModifyItemScreenState(),
-                products = emptyList<ProductEntity>().toImmutableList(),
-                variants = emptyList<ProductVariantEntity>().toImmutableList(),
+                products = emptyImmutableList(),
+                variants = emptyImmutableList(),
                 onNewProductSelected = {},
                 onNewVariantSelected = {},
                 onSubmit = {},

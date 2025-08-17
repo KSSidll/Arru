@@ -60,9 +60,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
@@ -99,7 +101,7 @@ internal fun ProducerScreen(
     onBack: () -> Unit,
     producer: ProductProducerEntity?,
     transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ItemSpentByTime>,
+    spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float?,
     spentByTimePeriod: SpendingSummaryPeriod?,
     onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
@@ -189,7 +191,7 @@ internal fun ProducerScreen(
 @Composable
 private fun ProducerScreenContent(
     transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ItemSpentByTime>,
+    spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float?,
     spentByTimePeriod: SpendingSummaryPeriod?,
     onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
@@ -328,7 +330,7 @@ private fun ProducerScreenPreview() {
                 onBack = {},
                 producer = null,
                 transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimeData = ItemSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -352,7 +354,7 @@ private fun EmptyProducerScreenPreview() {
                 onBack = {},
                 producer = null,
                 transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<ItemSpentByTime>().toImmutableList(),
+                spentByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -376,7 +378,7 @@ private fun ExpandedProducerScreenPreview() {
                 onBack = {},
                 producer = null,
                 transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimeData = ItemSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},
@@ -400,7 +402,7 @@ private fun ExpandedEmptyProducerScreenPreview() {
                 onBack = {},
                 producer = null,
                 transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyList<ItemSpentByTime>().toImmutableList(),
+                spentByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
                 onSpentByTimePeriodSwitch = {},

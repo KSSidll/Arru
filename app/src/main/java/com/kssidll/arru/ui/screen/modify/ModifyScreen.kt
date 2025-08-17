@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.ui.component.dialog.DeleteWarningConfirmDialog
 import com.kssidll.arru.ui.component.dialog.MergeConfirmDialog
@@ -125,7 +126,7 @@ fun <T> ModifyScreen(
                 onDismissRequest = {
                     showMergeSearchDialog = false
                 },
-                items = mergeCandidates.collectAsState(initial = emptyList<T>().toImmutableList()).value,
+                items = mergeCandidates.collectAsState(initial = emptyImmutableList()).value,
                 itemText = {
                     mergeCandidatesTextTransformation?.invoke(it)
                         .orEmpty()

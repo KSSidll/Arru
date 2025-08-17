@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.domain.data.interfaces.NameSource
 import com.kssidll.arru.domain.data.interfaces.searchSort
@@ -208,7 +209,7 @@ private fun EmptyListScreenPreview() {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = emptyList<ProductEntity>().toImmutableList(),
+                items = emptyImmutableList(),
                 onItemClick = {},
                 onItemLongClick = {},
             )

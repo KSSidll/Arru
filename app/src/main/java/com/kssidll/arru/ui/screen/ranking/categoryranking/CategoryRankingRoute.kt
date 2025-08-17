@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.ranking.RankingScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -21,7 +22,7 @@ fun CategoryRankingRoute(
         onBack = navigateBack,
         title = stringResource(R.string.categories),
         data = viewModel.categoryTotalSpentFlow()
-            .collectAsState(emptyList<ItemSpentByCategory>().toImmutableList()).value,
+            .collectAsState(emptyImmutableList()).value,
         onItemClick = {
             navigateCategory(it.category.id)
         },

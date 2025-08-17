@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.data.interfaces.avg
 import com.kssidll.arru.domain.data.interfaces.median
@@ -354,7 +354,7 @@ private fun TotalAverageAndMedianSpendingComponentPreview() {
     ArrugarqTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(
-                spentByTimeData = ItemSpentByTime.generateList(),
+                spentByTimeData = ItemSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
             )
         }

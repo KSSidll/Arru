@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
-import com.kssidll.arru.data.data.ItemSpentByTime
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -137,7 +137,7 @@ private fun OneDimesionalColumnChartPreview() {
     ArrugarqTheme {
         Surface {
             OneDimensionalColumnChart(
-                data = ItemSpentByTime.generateList(),
+                data = ItemSpentChartData.generateList(),
             )
         }
     }
