@@ -3,6 +3,10 @@ package com.kssidll.arru.di.module.data
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductCategoryUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthForProductCategoryUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForProductCategoryUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductCategoryUseCase
 import dagger.Module
 import dagger.Provides
@@ -49,5 +53,37 @@ class ProductCategoryModule {
         productCategoryRepositorySource: ProductCategoryRepositorySource
     ): GetItemsForProductCategoryUseCase {
         return GetItemsForProductCategoryUseCase(productCategoryRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByDayForProductCategoryUseCase(
+        productCategoryRepositorySource: ProductCategoryRepositorySource
+    ): GetTotalSpentByDayForProductCategoryUseCase {
+        return GetTotalSpentByDayForProductCategoryUseCase(productCategoryRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByWeekForProductCategoryUseCase(
+        productCategoryRepositorySource: ProductCategoryRepositorySource
+    ): GetTotalSpentByWeekForProductCategoryUseCase {
+        return GetTotalSpentByWeekForProductCategoryUseCase(productCategoryRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByMonthForProductCategoryUseCase(
+        productCategoryRepositorySource: ProductCategoryRepositorySource
+    ): GetTotalSpentByMonthForProductCategoryUseCase {
+        return GetTotalSpentByMonthForProductCategoryUseCase(productCategoryRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByYearForProductCategoryUseCase(
+        productCategoryRepositorySource: ProductCategoryRepositorySource
+    ): GetTotalSpentByYearForProductCategoryUseCase {
+        return GetTotalSpentByYearForProductCategoryUseCase(productCategoryRepositorySource)
     }
 }

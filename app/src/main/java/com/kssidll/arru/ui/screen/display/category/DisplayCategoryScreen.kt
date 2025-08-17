@@ -74,16 +74,17 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun DisplayCategoryScreen(
+fun DisplayCategoryScreen(
     uiState: DisplayCategoryUiState,
     onEvent: (event: DisplayCategoryEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
    val items = uiState.items.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = { onEvent(DisplayCategoryEvent.Test) },
+                onBack = { onEvent(DisplayCategoryEvent.NavigateBack) },
                 title = {
                     Text(
                         text = uiState.categoryName,
@@ -94,7 +95,7 @@ internal fun DisplayCategoryScreen(
                     // 'edit' action
                     IconButton(
                         onClick = {
-                            onEvent(DisplayCategoryEvent.Test)
+                            onEvent(DisplayCategoryEvent.NavigateCategoryEdit)
                         }
                     ) {
                         Icon(
@@ -108,7 +109,7 @@ internal fun DisplayCategoryScreen(
             )
         },
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        modifier = modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -239,7 +240,7 @@ private fun DisplayCategoryScreenContent(
                         SpendingSummaryComponent(
                             spentByTimeData = uiState.spentByTime,
                             spentByTimePeriod = uiState.spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = { onEvent(DisplayCategoryEvent.Test) },
+                            onSpentByTimePeriodUpdate = { onEvent(DisplayCategoryEvent.SetSpentByTimePeriod(it)) },
                             columnChartEntryModelProducer = uiState.chartEntryModelProducer,
                         )
 
@@ -251,16 +252,20 @@ private fun DisplayCategoryScreenContent(
             fullItemListContent(
                 transactionItems = items,
                 onItemClick = {
-                    onEvent(DisplayCategoryEvent.Test)
+                    onEvent(DisplayCategoryEvent.NavigateProduct(it.productId))
                 },
                 onItemLongClick = {
-                    onEvent(DisplayCategoryEvent.Test)
+                    onEvent(DisplayCategoryEvent.NavigateItemEdit(it.id))
                 },
                 onProducerClick = {
-                    onEvent(DisplayCategoryEvent.Test)
+                    it.productProducerId?.let { producerId ->
+                        onEvent(DisplayCategoryEvent.NavigateProducer(producerId))
+                    }
                 },
                 onShopClick = {
-                    onEvent(DisplayCategoryEvent.Test)
+                    it.shopId?.let { shopId ->
+                        onEvent(DisplayCategoryEvent.NavigateShop(shopId))
+                    }
                 }
             )
         }

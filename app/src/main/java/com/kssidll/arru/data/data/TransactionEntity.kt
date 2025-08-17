@@ -222,6 +222,10 @@ data class TransactionSpentByTime(
         }
     }
 
+    override fun dataOrder(): Long {
+        TODO("Not yet implemented")
+    }
+
     override fun value(): Float {
         return total.toFloat()
             .div(TransactionEntity.COST_DIVISOR)
@@ -229,6 +233,10 @@ data class TransactionSpentByTime(
 
     override fun sortValue(): Long {
         return total
+    }
+
+    override fun chartEntry(): FloatFloatPair {
+        TODO("Not yet implemented")
     }
 
     override fun chartEntry(x: Int): FloatFloatPair {

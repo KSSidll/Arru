@@ -25,8 +25,16 @@ fun DisplayCategoryRoute(
 
     DisplayCategoryScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
-        onEvent = {
-
+        onEvent = { event ->
+            when (event) {
+                is DisplayCategoryEvent.NavigateBack -> navigateBack()
+                is DisplayCategoryEvent.NavigateCategoryEdit -> navigateCategoryEdit()
+                is DisplayCategoryEvent.NavigateProduct -> navigateProduct(event.productId)
+                is DisplayCategoryEvent.NavigateItemEdit -> navigateItemEdit(event.itemId)
+                is DisplayCategoryEvent.NavigateProducer -> navigateProducer(event.productProducerId)
+                is DisplayCategoryEvent.NavigateShop -> navigateShop(event.shopId)
+                is DisplayCategoryEvent.SetSpentByTimePeriod -> viewModel.handleEvent(event)
+            }
         }
     )
 }

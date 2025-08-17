@@ -47,3 +47,39 @@ class GetItemsForProductCategoryUseCase(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) = productCategoryRepository.itemsFor(id).flowOn(dispatcher)
 }
+
+class GetTotalSpentByDayForProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productCategoryRepository.totalSpentByDay(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByWeekForProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productCategoryRepository.totalSpentByWeek(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByMonthForProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productCategoryRepository.totalSpentByMonth(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByYearForProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productCategoryRepository.totalSpentByYear(id).flowOn(dispatcher)
+}

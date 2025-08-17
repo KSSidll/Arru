@@ -74,17 +74,19 @@ fun OneDimensionalColumnChart(
             )
         }
 
-        chartEntryModelProducer.runTransaction {
-            columnSeries {
-                series(
-                    x = newData.map { it.first.first },
-                    y = newData.map { it.first.second }
-                )
-            }
+        if (newData.isNotEmpty()) {
+            chartEntryModelProducer.runTransaction {
+                columnSeries {
+                    series(
+                        x = newData.map { it.first.first },
+                        y = newData.map { it.first.second }
+                    )
+                }
 
-            extras { extraStore ->
-                extraStore[TopAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.second) } }
-                extraStore[BottomAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.third) } }
+                extras { extraStore ->
+                    extraStore[TopAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.second) } }
+                    extraStore[BottomAxisLabelKey] = buildMap { newData.forEach { put(it.first.first, it.third) } }
+                }
             }
         }
     }

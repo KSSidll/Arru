@@ -1,11 +1,10 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -136,9 +135,29 @@ interface ProductCategoryRepositorySource {
      */
     fun itemsFor(id: Long): Flow<PagingData<Item>>
 
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by day
+     */
+    fun totalSpentByDay(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by week
+     */
+    fun totalSpentByWeek(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by month
+     */
+    fun totalSpentByMonth(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by year
+     */
+    fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
 
 
@@ -156,35 +175,6 @@ interface ProductCategoryRepositorySource {
      * @return list of all [ProductCategoryEntity]
      */
     fun all(): Flow<ImmutableList<ProductCategoryEntity>>
-
-    /**
-     * @param category [ProductCategoryEntity] to get the total spending by day from
-     * @return list of [ItemSpentByTime] representing total spending groupped by day
-     */
-    fun totalSpentByDay(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param category [ProductCategoryEntity] to get the total spending by week from
-     * @return list of [ItemSpentByTime] representing total spending groupped by week
-     */
-    fun totalSpentByWeek(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param category [ProductCategoryEntity] to get the total spending by month from
-     * @return list of [ItemSpentByTime] representing total spending groupped by month
-     */
-    fun totalSpentByMonth(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param category [ProductCategoryEntity] to get the total spending by year from
-     * @return list of [ItemSpentByTime] representing total spending groupped by year
-     */
-    fun totalSpentByYear(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>>
-
-    /**
-     * @param category [ProductCategoryEntity] to match the items to
-     */
-    fun fullItemsPaged(category: ProductCategoryEntity): Flow<PagingData<FullItem>>
 
     /**
      * @return list of [ItemSpentByCategory] representing total spending groupped by category

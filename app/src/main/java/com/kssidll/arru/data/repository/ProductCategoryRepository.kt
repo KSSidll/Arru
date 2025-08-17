@@ -4,17 +4,15 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductCategoryEntityDao
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.data.data.ItemSpentByTime
 import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -138,6 +136,19 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao): Prod
             pagingSourceFactory = { dao.itemsFor(id) }
         ).flow.cancellable()
 
+    override fun totalSpentByDay(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByDay(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByWeek(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByWeek(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByMonth(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByMonth(id).cancellable()
+        .map { it.toImmutableList() }
+
+    override fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByYear(id).cancellable()
+        .map { it.toImmutableList() }
+
+
 
 
 
@@ -147,66 +158,6 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao): Prod
             .cancellable()
             .distinctUntilChanged()
             .map { it.toImmutableList() }
-    }
-
-
-    override fun totalSpentByDay(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByDay(category.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByWeek(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByWeek(category.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByMonth(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByMonth(category.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByYear(category: ProductCategoryEntity): Flow<ImmutableList<ItemSpentByTime>> {
-        return dao.totalSpentByYear(category.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
-
-    override fun fullItemsPaged(category: ProductCategoryEntity): Flow<PagingData<FullItem>> {
-        return Pager(
-            config = PagingConfig(pageSize = 3),
-            initialKey = 0,
-            pagingSourceFactory = {
-                FullItemPagingSource(
-                    query = { start, loadSize ->
-                        dao.fullItems(
-                            category.id,
-                            loadSize,
-                            start
-                        )
-                    },
-                    itemsBefore = {
-                        dao.countItemsBefore(
-                            it,
-                            category.id
-                        )
-                    },
-                    itemsAfter = {
-                        dao.countItemsAfter(
-                            it,
-                            category.id
-                        )
-                    },
-                )
-            }
-        )
-            .flow
     }
 
     override fun totalSpentByCategory(): Flow<ImmutableList<ItemSpentByCategory>> {
