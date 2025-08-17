@@ -26,6 +26,8 @@ android {
 
     namespace = "com.kssidll.arru"
     compileSdk = 36
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "29.0.13846066 rc3"
 
     defaultConfig {
         applicationId = "com.kssidll.arru"
