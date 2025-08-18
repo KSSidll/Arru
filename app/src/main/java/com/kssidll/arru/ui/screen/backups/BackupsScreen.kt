@@ -48,7 +48,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.DAY_IN_MILIS
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
@@ -61,8 +60,8 @@ import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.disabledAlpha
 import com.kssidll.arru.ui.theme.optionalAlpha
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -133,10 +132,7 @@ fun BackupsScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     var lastDate: Long? = null
                     availableBackups.forEach {
-                        // TODO test if this fixes backup day being wrong until current timezone
-                        // fixes for polish time zone, but wasn't tested on others
-                        val offset = Calendar.getInstance().timeZone.rawOffset
-                        val currentDate = ((it.time + offset) / DAY_IN_MILIS) * DAY_IN_MILIS
+                        val currentDate = it.time
 
                         if (lastDate == null || currentDate != lastDate) {
                             stickyHeader {
@@ -162,7 +158,7 @@ fun BackupsScreen(
                                                 text = SimpleDateFormat(
                                                     "MMM d, yyyy",
                                                     Locale.getDefault()
-                                                ).format(currentDate),
+                                                ).format(currentDate - TimeZone.getDefault().getOffset(currentDate)),
                                                 style = Typography.headlineMedium,
                                             )
                                         }
