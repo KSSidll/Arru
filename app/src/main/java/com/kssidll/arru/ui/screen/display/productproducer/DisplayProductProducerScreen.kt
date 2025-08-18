@@ -54,74 +54,45 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
-import com.kssidll.arru.domain.data.emptyImmutableList
-import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
-import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
 import com.kssidll.arru.ui.component.list.fullItemListContent
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
-/**
- * @param onBack Called to request a back navigation
- * @param producer Producer for which the data is displayed
- * @param transactionItems Transaction items of [producer]
- * @param spentByTimeData Data list representing [producer] spending for current [spentByTimePeriod]
- * @param totalSpentData Value representing total [producer] spending
- * @param spentByTimePeriod Time period to get the [spentByTimeData] by
- * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new
- *   period as argument
- * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
- * @param onItemClick Callback called when the item is clicked. Provides product id as parameter
- * @param onItemCategoryClick Callback called when the item category label is clicked. Provides
- *   category id as parameter
- * @param onItemShopClick Callback called when the item shop label is clicked. Provides shop id as
- *   parameter
- * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as
- *   parameter
- * @param onEditAction Callback called when the 'edit' action is triggered
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayProductProducerScreen(
-    onBack: () -> Unit,
-    producer: ProductProducerEntity?,
-    transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ChartSource>,
-    totalSpentData: Float?,
-    spentByTimePeriod: SpendingSummaryPeriod?,
-    onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
-    chartEntryModelProducer: CartesianChartModelProducer,
-    onItemClick: (productId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onEditAction: () -> Unit,
+    uiState: DisplayProductProducerUiState,
+    onEvent: (event: DisplayProductProducerEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    val items = uiState.items.collectAsLazyPagingItems()
+
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = onBack,
-                title = { Text(text = producer?.name.orEmpty(), overflow = TextOverflow.Ellipsis) },
+                onBack = { onEvent(DisplayProductProducerEvent.NavigateBack) },
+                title = {
+                    Text(text = uiState.productProducerName, overflow = TextOverflow.Ellipsis)
+                },
                 actions = {
                     // 'edit' action
-                    IconButton(onClick = { onEditAction() }) {
+                    IconButton(
+                        onClick = {
+                            onEvent(DisplayProductProducerEvent.NavigateEditProductProducer)
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
@@ -135,7 +106,7 @@ fun DisplayProductProducerScreen(
         contentWindowInsets =
             ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
         modifier =
-            Modifier.windowInsetsPadding(
+            modifier.windowInsetsPadding(
                 WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
             ),
     ) { paddingValues ->
@@ -144,7 +115,7 @@ fun DisplayProductProducerScreen(
                 Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxSize()
         ) {
             AnimatedVisibility(
-                visible = transactionItems.loadedEmpty() && spentByTimeData.isEmpty(),
+                visible = items.loadedEmpty() && uiState.spentByTime.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier.align(Alignment.Center),
@@ -162,22 +133,11 @@ fun DisplayProductProducerScreen(
             }
 
             AnimatedVisibility(
-                visible = transactionItems.itemCount != 0 || spentByTimeData.isNotEmpty(),
+                visible = items.itemCount != 0 || uiState.spentByTime.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                DisplayProductProducerScreenContent(
-                    transactionItems = transactionItems,
-                    spentByTimeData = spentByTimeData,
-                    totalSpentData = totalSpentData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                    chartEntryModelProducer = chartEntryModelProducer,
-                    onItemClick = onItemClick,
-                    onItemCategoryClick = onItemCategoryClick,
-                    onItemShopClick = onItemShopClick,
-                    onItemLongClick = onItemLongClick,
-                )
+                DisplayProductProducerScreenContent(uiState, items, onEvent)
             }
         }
     }
@@ -185,16 +145,9 @@ fun DisplayProductProducerScreen(
 
 @Composable
 private fun DisplayProductProducerScreenContent(
-    transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ChartSource>,
-    totalSpentData: Float?,
-    spentByTimePeriod: SpendingSummaryPeriod?,
-    onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
-    chartEntryModelProducer: CartesianChartModelProducer,
-    onItemClick: (productId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
+    uiState: DisplayProductProducerUiState,
+    items: LazyPagingItems<Item>,
+    onEvent: (event: DisplayProductProducerEvent) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -258,21 +211,21 @@ private fun DisplayProductProducerScreenContent(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
-                    val totalSpent = totalSpentData ?: 0f
-
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = spentByTimeData,
-                        totalSpentData = totalSpent,
+                        spentByTimeData = uiState.spentByTime,
+                        totalSpentData = uiState.totalSpent,
                     )
 
                     Spacer(Modifier.height(28.dp))
 
-                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                    AnimatedVisibility(visible = uiState.spentByTime.isNotEmpty()) {
                         SpendingSummaryComponent(
-                            spentByTimeData = spentByTimeData,
-                            spentByTimePeriod = spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                            columnChartEntryModelProducer = chartEntryModelProducer,
+                            spentByTimeData = uiState.spentByTime,
+                            spentByTimePeriod = uiState.spentByTimePeriod,
+                            onSpentByTimePeriodUpdate = {
+                                onEvent(DisplayProductProducerEvent.SetSpentByTimePeriod(it))
+                            },
+                            columnChartEntryModelProducer = uiState.chartEntryModelProducer,
                         )
 
                         Spacer(Modifier.height(12.dp))
@@ -281,18 +234,22 @@ private fun DisplayProductProducerScreenContent(
             }
 
             fullItemListContent(
-                transactionItems = transactionItems,
+                transactionItems = items,
                 onItemClick = {
-                    // onItemClick(it.product.id)
+                    onEvent(DisplayProductProducerEvent.NavigateDisplayProduct(it.productId))
                 },
-                onItemLongClick = {
-                    // onItemLongClick(it.id)
-                },
+                onItemLongClick = { onEvent(DisplayProductProducerEvent.NavigateEditItem(it.id)) },
                 onCategoryClick = {
-                    // onItemCategoryClick(it.id)
+                    onEvent(
+                        DisplayProductProducerEvent.NavigateDisplayProductCategory(
+                            it.productCategoryId
+                        )
+                    )
                 },
                 onShopClick = {
-                    // onItemShopClick(it.id)
+                    it.shopId?.let { shopId ->
+                        onEvent(DisplayProductProducerEvent.NavigateDisplayShop(shopId))
+                    }
                 },
             )
 
@@ -307,20 +264,12 @@ private fun DisplayProductProducerScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductProducerScreen(
-                onBack = {},
-                producer = null,
-                transactionItems =
-                    flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentChartData.generateList(),
-                totalSpentData = generateRandomFloatValue(),
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+                uiState =
+                    DisplayProductProducerUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -331,22 +280,7 @@ private fun DisplayProductProducerScreenPreview() {
 private fun EmptyDisplayProductProducerScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayProductProducerScreen(
-                onBack = {},
-                producer = null,
-                transactionItems =
-                    flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyImmutableList(),
-                totalSpentData = null,
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
-            )
+            DisplayProductProducerScreen(uiState = DisplayProductProducerUiState(), onEvent = {})
         }
     }
 }
@@ -357,20 +291,12 @@ private fun ExpandedDisplayProductProducerScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductProducerScreen(
-                onBack = {},
-                producer = null,
-                transactionItems =
-                    flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = ItemSpentChartData.generateList(),
-                totalSpentData = generateRandomFloatValue(),
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+                uiState =
+                    DisplayProductProducerUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -381,22 +307,7 @@ private fun ExpandedDisplayProductProducerScreenPreview() {
 private fun ExpandedEmptyDisplayProductProducerScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayProductProducerScreen(
-                onBack = {},
-                producer = null,
-                transactionItems =
-                    flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyImmutableList(),
-                totalSpentData = null,
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemShopClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
-            )
+            DisplayProductProducerScreen(uiState = DisplayProductProducerUiState(), onEvent = {})
         }
     }
 }
