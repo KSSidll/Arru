@@ -2,10 +2,7 @@ package com.kssidll.arru.ui.screen.display.shop
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.kssidll.arru.domain.data.emptyImmutableList
-import com.kssidll.arru.domain.data.orEmpty
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
@@ -26,22 +23,20 @@ fun DisplayShopRoute(
     }
 
     DisplayShopScreen(
-        onBack = navigateBack,
-        shop = viewModel.shop,
-        transactionItems = viewModel.transactions().collectAsLazyPagingItems(),
-        spentByTimeData =
-            viewModel.spentByTimeData
-                ?.collectAsState(initial = emptyImmutableList())
-                ?.value
-                .orEmpty(),
-        totalSpentData = viewModel.shopTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
-        spentByTimePeriod = viewModel.spentByTimePeriod,
-        onSpentByTimePeriodSwitch = { viewModel.switchPeriod(it) },
-        chartEntryModelProducer = viewModel.chartEntryModelProducer,
-        onItemClick = navigateDisplayProduct,
-        onItemCategoryClick = navigateDisplayProductCategory,
-        onItemProducerClick = navigateDisplayProductProducer,
-        onItemLongClick = navigateEditItem,
-        onEditAction = navigateEditShop,
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
+            when (event) {
+                is DisplayShopEvent.NavigateBack -> navigateBack()
+                is DisplayShopEvent.NavigateDisplayProduct ->
+                    navigateDisplayProduct(event.productId)
+                is DisplayShopEvent.NavigateDisplayProductCategory ->
+                    navigateDisplayProductCategory(event.productCategoryId)
+                is DisplayShopEvent.NavigateDisplayProductProducer ->
+                    navigateDisplayProductProducer(event.productProducerId)
+                is DisplayShopEvent.NavigateEditItem -> navigateEditItem(event.itemId)
+                is DisplayShopEvent.NavigateEditShop -> navigateEditShop()
+                is DisplayShopEvent.SetSpentByTimePeriod -> viewModel.handleEvent(event)
+            }
+        },
     )
 }

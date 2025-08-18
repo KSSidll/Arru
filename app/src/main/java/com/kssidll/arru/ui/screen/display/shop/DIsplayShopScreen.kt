@@ -55,74 +55,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.view.Item
-import com.kssidll.arru.domain.data.data.TransactionSpentChartData
-import com.kssidll.arru.domain.data.emptyImmutableList
-import com.kssidll.arru.domain.data.interfaces.ChartSource
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
-import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
 import com.kssidll.arru.ui.component.list.fullItemListContent
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
-/**
- * @param onBack Called to request a back navigation
- * @param shop Shop for which the data is displayed
- * @param transactionItems Transaction items of [shop]
- * @param spentByTimeData Data list representing [shop] spending for current [spentByTimePeriod]
- * @param totalSpentData Value representing total [shop] spending
- * @param spentByTimePeriod Time period to get the [spentByTimeData] by
- * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new
- *   period as argument
- * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
- * @param onItemClick Callback called when the item is clicked. Provides product id as parameter
- * @param onItemCategoryClick Callback called when the item category label is clicked. Provides
- *   category id as parameter
- * @param onItemProducerClick Callback called when the item producer label is clicked. Provides
- *   producer id as parameter
- * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as
- *   parameter
- * @param onEditAction Callback called when the 'edit' action is triggered
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayShopScreen(
-    onBack: () -> Unit,
-    shop: ShopEntity?,
-    transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ChartSource>,
-    totalSpentData: Float?,
-    spentByTimePeriod: SpendingSummaryPeriod?,
-    onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
-    chartEntryModelProducer: CartesianChartModelProducer,
-    onItemClick: (productId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onEditAction: () -> Unit,
+    uiState: DisplayShopUiState,
+    onEvent: (event: DisplayShopEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    val items = uiState.items.collectAsLazyPagingItems()
+
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = onBack,
-                title = { Text(text = shop?.name.orEmpty(), overflow = TextOverflow.Ellipsis) },
+                onBack = { onEvent(DisplayShopEvent.NavigateBack) },
+                title = { Text(text = uiState.shopName, overflow = TextOverflow.Ellipsis) },
                 actions = {
                     // 'edit' action
-                    IconButton(onClick = { onEditAction() }) {
+                    IconButton(onClick = { onEvent(DisplayShopEvent.NavigateEditShop) }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
@@ -136,7 +101,7 @@ fun DisplayShopScreen(
         contentWindowInsets =
             ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
         modifier =
-            Modifier.windowInsetsPadding(
+            modifier.windowInsetsPadding(
                 WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
             ),
     ) { paddingValues ->
@@ -145,7 +110,7 @@ fun DisplayShopScreen(
                 Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxSize()
         ) {
             AnimatedVisibility(
-                visible = transactionItems.loadedEmpty() && spentByTimeData.isEmpty(),
+                visible = items.loadedEmpty() && uiState.spentByTime.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier.align(Alignment.Center),
@@ -163,22 +128,11 @@ fun DisplayShopScreen(
             }
 
             AnimatedVisibility(
-                visible = transactionItems.itemCount != 0 || spentByTimeData.isNotEmpty(),
+                visible = items.itemCount != 0 || uiState.spentByTime.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                DisplayShopScreenContent(
-                    transactionItems = transactionItems,
-                    spentByTimeData = spentByTimeData,
-                    totalSpentData = totalSpentData,
-                    spentByTimePeriod = spentByTimePeriod,
-                    onSpentByTimePeriodSwitch = onSpentByTimePeriodSwitch,
-                    chartEntryModelProducer = chartEntryModelProducer,
-                    onItemClick = onItemClick,
-                    onItemCategoryClick = onItemCategoryClick,
-                    onItemProducerClick = onItemProducerClick,
-                    onItemLongClick = onItemLongClick,
-                )
+                DisplayShopScreenContent(uiState, items, onEvent)
             }
         }
     }
@@ -186,16 +140,9 @@ fun DisplayShopScreen(
 
 @Composable
 private fun DisplayShopScreenContent(
-    transactionItems: LazyPagingItems<Item>,
-    spentByTimeData: ImmutableList<ChartSource>,
-    totalSpentData: Float?,
-    spentByTimePeriod: SpendingSummaryPeriod?,
-    onSpentByTimePeriodSwitch: (SpendingSummaryPeriod) -> Unit,
-    chartEntryModelProducer: CartesianChartModelProducer,
-    onItemClick: (productId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
+    uiState: DisplayShopUiState,
+    items: LazyPagingItems<Item>,
+    onEvent: (event: DisplayShopEvent) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -263,21 +210,21 @@ private fun DisplayShopScreenContent(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
-                    val totalSpent = totalSpentData ?: 0f
-
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = spentByTimeData,
-                        totalSpentData = totalSpent,
+                        spentByTimeData = uiState.spentByTime,
+                        totalSpentData = uiState.totalSpent,
                     )
 
                     Spacer(Modifier.height(28.dp))
 
-                    AnimatedVisibility(visible = spentByTimeData.isNotEmpty()) {
+                    AnimatedVisibility(visible = uiState.spentByTime.isNotEmpty()) {
                         SpendingSummaryComponent(
-                            spentByTimeData = spentByTimeData,
-                            spentByTimePeriod = spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = onSpentByTimePeriodSwitch,
-                            columnChartEntryModelProducer = chartEntryModelProducer,
+                            spentByTimeData = uiState.spentByTime,
+                            spentByTimePeriod = uiState.spentByTimePeriod,
+                            onSpentByTimePeriodUpdate = {
+                                onEvent(DisplayShopEvent.SetSpentByTimePeriod(it))
+                            },
+                            columnChartEntryModelProducer = uiState.chartEntryModelProducer,
                         )
                     }
 
@@ -286,18 +233,16 @@ private fun DisplayShopScreenContent(
             }
 
             fullItemListContent(
-                transactionItems = transactionItems,
-                onItemClick = {
-                    // onItemClick(it.product.id)
-                },
-                onItemLongClick = {
-                    // onItemLongClick(it.id)
-                },
+                transactionItems = items,
+                onItemClick = { onEvent(DisplayShopEvent.NavigateDisplayProduct(it.productId)) },
+                onItemLongClick = { onEvent(DisplayShopEvent.NavigateEditItem(it.id)) },
                 onCategoryClick = {
-                    // onItemCategoryClick(it.id)
+                    onEvent(DisplayShopEvent.NavigateDisplayProductCategory(it.productCategoryId))
                 },
                 onProducerClick = {
-                    // onItemProducerClick(it.id)
+                    it.productProducerId?.let { productProducerId ->
+                        onEvent(DisplayShopEvent.NavigateDisplayProductProducer(productProducerId))
+                    }
                 },
                 modifier = Modifier.width(600.dp),
             )
@@ -320,20 +265,12 @@ private fun DisplayShopScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayShopScreen(
-                onBack = {},
-                shop = null,
-                transactionItems =
-                    flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = TransactionSpentChartData.generateList(),
-                totalSpentData = generateRandomFloatValue(),
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemProducerClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+                uiState =
+                    DisplayShopUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -344,22 +281,7 @@ private fun DisplayShopScreenPreview() {
 private fun EmptyDisplayShopScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayShopScreen(
-                onBack = {},
-                shop = null,
-                transactionItems =
-                    flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyImmutableList(),
-                totalSpentData = null,
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemProducerClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
-            )
+            DisplayShopScreen(uiState = DisplayShopUiState(), onEvent = {})
         }
     }
 }
@@ -370,20 +292,12 @@ private fun ExpandedDisplayShopScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayShopScreen(
-                onBack = {},
-                shop = null,
-                transactionItems =
-                    flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
-                spentByTimeData = TransactionSpentChartData.generateList(),
-                totalSpentData = generateRandomFloatValue(),
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemProducerClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
+                uiState =
+                    DisplayShopUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -394,22 +308,7 @@ private fun ExpandedDisplayShopScreenPreview() {
 private fun ExpandedEmptyDisplayShopScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayShopScreen(
-                onBack = {},
-                shop = null,
-                transactionItems =
-                    flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
-                spentByTimeData = emptyImmutableList(),
-                totalSpentData = null,
-                spentByTimePeriod = SpendingSummaryPeriod.Month,
-                onSpentByTimePeriodSwitch = {},
-                chartEntryModelProducer = CartesianChartModelProducer(),
-                onItemClick = {},
-                onItemCategoryClick = {},
-                onItemProducerClick = {},
-                onItemLongClick = {},
-                onEditAction = {},
-            )
+            DisplayShopScreen(uiState = DisplayShopUiState(), onEvent = {})
         }
     }
 }

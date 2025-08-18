@@ -1,17 +1,19 @@
 package com.kssidll.arru.ui.screen.display.shop
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.view.Item
-import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
+import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForShopUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthForShopUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForShopUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForShopUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentForShopUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,81 +22,138 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+@Immutable
+data class DisplayShopUiState(
+    val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val spentByTime: ImmutableList<ChartSource> = emptyImmutableList(),
+    val spentByTimePeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
+    val shopName: String = String(),
+    val totalSpent: Float = 0f,
+    val items: Flow<PagingData<Item>> = emptyFlow(),
+)
+
+@Immutable
+sealed class DisplayShopEvent {
+    data object NavigateBack : DisplayShopEvent()
+
+    data class NavigateDisplayProduct(val productId: Long) : DisplayShopEvent()
+
+    data class NavigateDisplayProductCategory(val productCategoryId: Long) : DisplayShopEvent()
+
+    data class NavigateDisplayProductProducer(val productProducerId: Long) : DisplayShopEvent()
+
+    data class NavigateEditItem(val itemId: Long) : DisplayShopEvent()
+
+    data object NavigateEditShop : DisplayShopEvent()
+
+    data class SetSpentByTimePeriod(val newPeriod: SpendingSummaryPeriod) : DisplayShopEvent()
+}
 
 @HiltViewModel
 class DisplayShopViewModel
 @Inject
 constructor(
-    private val shopRepository: ShopRepositorySource,
+    private val getShopEntityUseCase: GetShopEntityUseCase,
     private val getItemsForShopUseCase: GetItemsForShopUseCase,
+    private val getTotalSpentForShopUseCase: GetTotalSpentForShopUseCase,
+    private val getTotalSpentByDayForShopUseCase: GetTotalSpentByDayForShopUseCase,
+    private val getTotalSpentByWeekForShopUseCase: GetTotalSpentByWeekForShopUseCase,
+    private val getTotalSpentByMonthForShopUseCase: GetTotalSpentByMonthForShopUseCase,
+    private val getTotalSpentByYearForShopUseCase: GetTotalSpentByYearForShopUseCase,
 ) : ViewModel() {
-    private val mShop: MutableState<ShopEntity?> = mutableStateOf(null)
-    val shop: ShopEntity? by mShop
+    private val _uiState = MutableStateFlow(DisplayShopUiState())
+    val uiState = _uiState.asStateFlow()
 
-    private var mShopListener: Job? = null
+    private var job: Job? = null
+    private var chartJob: Job? = null
 
-    val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
-
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>>? = null
-    val spentByTimePeriod: SpendingSummaryPeriod?
-        get() =
-            mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
-
-    val spentByTimeData: Flow<ImmutableList<ChartSource>>?
-        get() = mTimePeriodFlowHandler?.spentByTimeData
-
-    fun shopTotalSpent(): Flow<Float?>? {
-        return shop?.let { shopRepository.totalSpent(it.id) }
-    }
-
-    /** @return paging data of full item for current shop as flow */
-    fun transactions(): Flow<PagingData<Item>> {
-        return shop?.let { getItemsForShopUseCase(it.id) } ?: emptyFlow()
-    }
-
-    /**
-     * Switches the state period to [newPeriod]
-     *
-     * @param newPeriod Period to switch the state to
-     */
-    fun switchPeriod(newPeriod: SpendingSummaryPeriod) {
-        val nPeriod = TimePeriodFlowHandler.Periods.valueOf(newPeriod.name)
-        mTimePeriodFlowHandler?.switchPeriod(nPeriod)
-    }
+    private var _shopId: Long? = null
 
     /** @return True if provided [shopId] was valid, false otherwise */
     suspend fun performDataUpdate(shopId: Long) =
         viewModelScope
             .async {
-                val shop = shopRepository.get(shopId).first() ?: return@async false
+                val shop = getShopEntityUseCase(shopId).first() ?: return@async false
+                _shopId = shop.id
 
-                // We ignore the possiblity of changing shop while one is already loaded
-                // as not doing that would increase complexity too much
-                // and if it happens somehow, it would be considered a bug
-                if (mShop.value != null || shopId == mShop.value?.id) return@async true
-
-                mShopListener?.cancel()
-                mShopListener =
+                job?.cancel()
+                job =
                     viewModelScope.launch {
-                        shopRepository.get(shopId).collectLatest { mShop.value = it }
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                shopName = shop.name,
+                                items = getItemsForShopUseCase(shopId),
+                            )
+                        }
                     }
 
-                mShop.value = shop
+                viewModelScope.launch {
+                    getTotalSpentForShopUseCase(shopId).collectLatest {
+                        _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                    }
+                }
 
-                mTimePeriodFlowHandler =
-                    TimePeriodFlowHandler(
-                        scope = viewModelScope,
-                        day = { shopRepository.totalSpentByDay(shopId) },
-                        week = { shopRepository.totalSpentByWeek(shopId) },
-                        month = { shopRepository.totalSpentByMonth(shopId) },
-                        year = { shopRepository.totalSpentByYear(shopId) },
-                    )
+                updateChartJob(_uiState.value.spentByTimePeriod, shopId)
 
                 return@async true
             }
             .await()
+
+    fun handleEvent(event: DisplayShopEvent) {
+        when (event) {
+            is DisplayShopEvent.NavigateBack -> {}
+            is DisplayShopEvent.NavigateDisplayProduct -> {}
+            is DisplayShopEvent.NavigateDisplayProductCategory -> {}
+            is DisplayShopEvent.NavigateDisplayProductProducer -> {}
+            is DisplayShopEvent.NavigateEditItem -> {}
+            is DisplayShopEvent.NavigateEditShop -> {}
+            is DisplayShopEvent.SetSpentByTimePeriod -> setSpentByTimePeriod((event.newPeriod))
+        }
+    }
+
+    private fun setSpentByTimePeriod(newPeriod: SpendingSummaryPeriod) {
+        _uiState.update { currentState -> currentState.copy(spentByTimePeriod = newPeriod) }
+
+        _shopId?.let { updateChartJob(newPeriod, it) }
+    }
+
+    private fun updateChartJob(period: SpendingSummaryPeriod, productId: Long) {
+        chartJob?.cancel()
+        chartJob =
+            viewModelScope.launch {
+                when (period) {
+                    SpendingSummaryPeriod.Day -> {
+                        getTotalSpentByDayForShopUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                        }
+                    }
+
+                    SpendingSummaryPeriod.Week -> {
+                        getTotalSpentByWeekForShopUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                        }
+                    }
+
+                    SpendingSummaryPeriod.Month -> {
+                        getTotalSpentByMonthForShopUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                        }
+                    }
+
+                    SpendingSummaryPeriod.Year -> {
+                        getTotalSpentByYearForShopUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                        }
+                    }
+                }
+            }
+    }
 }
