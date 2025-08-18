@@ -1,1 +1,1 @@
-- Fix crash on empty chart
+- Fix date formatting issues

@@ -57,6 +57,7 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 import kotlinx.collections.immutable.ImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
@@ -190,7 +191,9 @@ private fun ModifyTransactionScreenContent(
         SearchField(
             enabled = state.date.value.isEnabled(),
             value =
-                if (date != null) SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                if (date != null)
+                    SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                        .format(date - TimeZone.getDefault().getOffset(date))
                 else String(),
             showAddButton = false,
             label = stringResource(R.string.item_date),
@@ -360,7 +363,8 @@ private fun ExpandedModifyTransactionScreenContent(
                 enabled = state.date.value.isEnabled(),
                 value =
                     if (date != null)
-                        SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                        SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                            .format(date - TimeZone.getDefault().getOffset(date))
                     else String(),
                 showAddButton = false,
                 label = stringResource(R.string.item_date),

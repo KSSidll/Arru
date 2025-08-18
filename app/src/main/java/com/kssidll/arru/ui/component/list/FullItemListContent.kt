@@ -27,6 +27,7 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 import kotlinx.coroutines.flow.flowOf
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -68,7 +69,10 @@ fun LazyListScope.fullItemListContent(
                                         modifier = Modifier.align(Alignment.Center),
                                         text =
                                             SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
-                                                .format(item.date),
+                                                .format(
+                                                    item.date -
+                                                        TimeZone.getDefault().getOffset(item.date)
+                                                ),
                                         style = Typography.headlineMedium,
                                     )
                                 }

@@ -47,6 +47,7 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 private val HEADER_HEIGHT: Dp = 105.dp
 
@@ -158,7 +159,10 @@ fun LazyListScope.transactionBasketCardHeader(
                         Text(
                             text =
                                 SimpleDateFormat("d MMMM, yyyy", Locale.getDefault())
-                                    .format(transaction.date),
+                                    .format(
+                                        transaction.date -
+                                            TimeZone.getDefault().getOffset(transaction.date)
+                                    ),
                             style = Typography.headlineSmall,
                         )
 
