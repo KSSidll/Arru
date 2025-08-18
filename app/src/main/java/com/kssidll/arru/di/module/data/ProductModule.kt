@@ -1,6 +1,7 @@
 package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetAveragePriceByShopByVariantByProducerByDayForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductUseCase
@@ -91,5 +92,13 @@ class ProductModule {
         productRepositorySource: ProductRepositorySource
     ): GetTotalSpentByYearForProductUseCase {
         return GetTotalSpentByYearForProductUseCase(productRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAveragePriceByShopByVariantByProducerByDayForProductUseCase(
+        productRepositorySource: ProductRepositorySource
+    ): GetAveragePriceByShopByVariantByProducerByDayForProductUseCase {
+        return GetAveragePriceByShopByVariantByProducerByDayForProductUseCase(productRepositorySource)
     }
 }

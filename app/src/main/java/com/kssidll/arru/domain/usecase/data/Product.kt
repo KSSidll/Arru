@@ -89,3 +89,12 @@ class GetTotalSpentByYearForProductUseCase(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) = productRepository.totalSpentByYear(id).flowOn(dispatcher)
 }
+
+class GetAveragePriceByShopByVariantByProducerByDayForProductUseCase(
+    private val productRepository: ProductRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productRepository.averagePriceByShopByVariantByProducerByDay(id).flowOn(dispatcher)
+}

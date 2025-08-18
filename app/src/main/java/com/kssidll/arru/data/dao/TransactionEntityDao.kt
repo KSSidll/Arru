@@ -136,7 +136,7 @@ interface TransactionEntityDao {
     @Query("SELECT SUM(TransactionEntity.totalCost) FROM TransactionEntity")
     fun totalSpent(): Flow<Long?>
 
-    @Query("SELECT ItemView.* FROM ItemView")
+    @Query("SELECT ItemView.* FROM ItemView ORDER BY date DESC")
     fun items(): PagingSource<Int, Item>
 
     @Query(
@@ -169,7 +169,7 @@ interface TransactionEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByDay(): Flow<List<TransactionSpentChartData>>
@@ -204,7 +204,7 @@ interface TransactionEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByWeek(): Flow<List<TransactionSpentChartData>>
@@ -239,7 +239,7 @@ interface TransactionEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByMonth(): Flow<List<TransactionSpentChartData>>
@@ -274,7 +274,7 @@ interface TransactionEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByYear(): Flow<List<TransactionSpentChartData>>

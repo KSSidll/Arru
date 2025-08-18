@@ -142,7 +142,7 @@ interface ShopEntityDao {
     )
     fun totalSpent(id: Long): Flow<Long?>
 
-    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.shopId = :id")
+    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.shopId = :id ORDER BY date DESC")
     fun itemsFor(id: Long): PagingSource<Int, Item>
 
     @Query(
@@ -177,7 +177,7 @@ interface ShopEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByDay(id: Long): Flow<List<TransactionSpentChartData>>
@@ -214,7 +214,7 @@ interface ShopEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByWeek(id: Long): Flow<List<TransactionSpentChartData>>
@@ -251,7 +251,7 @@ interface ShopEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByMonth(id: Long): Flow<List<TransactionSpentChartData>>
@@ -288,7 +288,7 @@ interface ShopEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByYear(id: Long): Flow<List<TransactionSpentChartData>>

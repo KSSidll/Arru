@@ -1,6 +1,7 @@
 package com.kssidll.arru.domain.data.data
 
 import androidx.collection.FloatFloatPair
+import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
 import com.kssidll.arru.data.data.ItemEntity
@@ -12,6 +13,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import java.util.Locale
 
+@Immutable
 data class ItemSpentChartData(
     @ColumnInfo("data_order") val dataOrder: Long,
     val date: String,

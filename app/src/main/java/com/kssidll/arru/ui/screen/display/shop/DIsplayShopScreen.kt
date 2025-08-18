@@ -316,6 +316,10 @@ private fun DisplayShopScreenContent(
                 },
                 modifier = Modifier.width(600.dp)
             )
+
+            item {
+                Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
+            }
         }
     }
 }

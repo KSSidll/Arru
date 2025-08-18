@@ -10,11 +10,7 @@ import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.generateRandomDate
-import com.kssidll.arru.helper.generateRandomDateString
 import com.kssidll.arru.helper.generateRandomLongValue
-import com.kssidll.arru.helper.generateRandomStringValue
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import java.util.Locale
 import kotlin.math.log10
 
@@ -357,33 +353,5 @@ data class ItemSpentByCategory(
 
     override fun identificator(): Long {
         return category.id
-    }
-}
-
-data class ProductPriceByShopByTime(
-    @Embedded val product: ProductEntity?,
-    val variantName: String?,
-    val producerName: String?,
-    val price: Long?,
-    val shopName: String?,
-    val time: String,
-) {
-    companion object {
-        fun generate(productId: Long = 0): ProductPriceByShopByTime {
-            return ProductPriceByShopByTime(
-                product = ProductEntity.generate(productId),
-                variantName = generateRandomStringValue(),
-                producerName = generateRandomStringValue(),
-                price = generateRandomLongValue(),
-                shopName = generateRandomStringValue(),
-                time = generateRandomDateString(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): ImmutableList<ProductPriceByShopByTime> {
-            return List(amount) {
-                generate(it.toLong())
-            }.toImmutableList()
-        }
     }
 }

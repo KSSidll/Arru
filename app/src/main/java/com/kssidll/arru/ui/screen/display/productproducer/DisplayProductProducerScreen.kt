@@ -315,6 +315,10 @@ private fun DisplayProductProducerScreenContent(
                     // onItemShopClick(it.id)
                 },
             )
+
+            item {
+                Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
+            }
         }
     }
 }

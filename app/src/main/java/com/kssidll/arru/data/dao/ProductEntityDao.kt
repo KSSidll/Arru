@@ -5,21 +5,18 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
+import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 @Dao
 interface ProductEntityDao {
@@ -149,7 +146,7 @@ interface ProductEntityDao {
     )
     fun totalSpent(id: Long): Flow<Long?>
 
-    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productId = :id")
+    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productId = :id ORDER BY date DESC")
     fun itemsFor(id: Long): PagingSource<Int, Item>
 
     @Query(
@@ -186,7 +183,7 @@ interface ProductEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByDay(id: Long): Flow<List<ItemSpentChartData>>
@@ -196,14 +193,14 @@ interface ProductEntityDao {
         WITH date_series AS (
             SELECT 
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'weekday 1') AS day,
-                DATE(current_timestamp, 'localtime') AS end_date
+                DATE(current_timestamp, 'localtime', 'weekday 1') AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             WHERE ItemEntity.productEntityId = :id
             UNION ALL
             SELECT DATE(day, '+7 days') AS day, end_date
             FROM date_series
-            WHERE DATE(date_series.day, '+7 days') <= date_series.end_date
+            WHERE date_series.day < date_series.end_date
         ), spent_by_day AS (
             SELECT DATE(TransactionEntity.date / 1000, 'unixepoch', 'weekday 1') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
             FROM ItemEntity
@@ -225,7 +222,7 @@ interface ProductEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByWeek(id: Long): Flow<List<ItemSpentChartData>>
@@ -235,14 +232,14 @@ interface ProductEntityDao {
         WITH date_series AS (
             SELECT 
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'start of month') AS day,
-                DATE(current_timestamp, 'localtime') AS end_date
+                DATE(current_timestamp, 'localtime', 'start of month') AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             WHERE ItemEntity.productEntityId = :id
             UNION ALL
             SELECT DATE(day, '+1 month') AS day, end_date
             FROM date_series
-            WHERE DATE(date_series.day, '+1 month') <= date_series.end_date
+            WHERE date_series.day < date_series.end_date
         ), spent_by_day AS (
             SELECT DATE(TransactionEntity.date / 1000, 'unixepoch', 'start of month') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
             FROM ItemEntity
@@ -251,7 +248,7 @@ interface ProductEntityDao {
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
-            STRFTIME('%Y-%m', date_series.day) AS date, 
+                STRFTIME('%Y-%m', date_series.day) AS date, 
                 COALESCE(spent_by_day.spent, 0) AS spent
             FROM date_series
             LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
@@ -264,7 +261,7 @@ interface ProductEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByMonth(id: Long): Flow<List<ItemSpentChartData>>
@@ -274,14 +271,14 @@ interface ProductEntityDao {
         WITH date_series AS (
             SELECT 
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'start of year') AS day,
-                DATE(current_timestamp, 'localtime') AS end_date
+                DATE(current_timestamp, 'localtime', 'start of year') AS end_date
             FROM ItemEntity
             JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
             WHERE ItemEntity.productEntityId = :id
             UNION ALL
             SELECT DATE(day, '+1 year') AS day, end_date
             FROM date_series
-            WHERE DATE(date_series.day, '+1 year') <= date_series.end_date
+            WHERE date_series.day < date_series.end_date
         ), spent_by_day AS (
             SELECT DATE(TransactionEntity.date / 1000, 'unixepoch', 'start of year') AS day, SUM(ItemEntity.price * ItemEntity.quantity) AS spent
             FROM ItemEntity
@@ -290,7 +287,7 @@ interface ProductEntityDao {
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
-            STRFTIME('%Y', date_series.day) AS date, 
+                STRFTIME('%Y', date_series.day) AS date, 
                 COALESCE(spent_by_day.spent, 0) AS spent
             FROM date_series
             LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
@@ -303,10 +300,63 @@ interface ProductEntityDao {
             FROM full_spent_by_day
         )
         SELECT * FROM full_spent_by_day_row
-        ORDER BY date ASC
+        ORDER BY data_order ASC
     """
     )
     fun totalSpentByYear(id: Long): Flow<List<ItemSpentChartData>>
+
+    @Query(
+        """
+        WITH date_series AS (
+            SELECT 
+                DATE(MIN(TransactionEntity.date / 1000), 'unixepoch') AS day,
+                DATE(current_timestamp, 'localtime') AS end_date
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            WHERE ItemEntity.productEntityId = :id
+            UNION ALL
+            SELECT DATE(day, '+1 day') AS day, end_date
+            FROM date_series
+            WHERE date_series.day < date_series.end_date
+        ), date_series_row AS (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY day ASC) data_order,
+                day
+            FROM date_series
+        ), spent_by_day AS (
+            SELECT 
+                DATE(TransactionEntity.date / 1000, 'unixepoch') AS day,
+                AVG(ItemEntity.price) AS spent,
+                ShopEntity.name AS shopName,
+                ProductVariantEntity.name AS productVariantName,
+                ProductProducerEntity.name AS productProducerName
+            FROM ItemEntity
+            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
+            LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
+            LEFT JOIN ProductVariantEntity ON ItemEntity.productVariantEntityId = ProductVariantEntity.id
+            LEFT JOIN ProductEntity ON ItemEntity.productEntityId = ProductEntity.id
+            LEFT JOIN ProductProducerEntity ON ProductEntity.productProducerEntityId = ProductProducerEntity.id
+            WHERE ItemEntity.productEntityId = :id
+            GROUP BY day, shopName, productVariantName, productProducerName
+        ), full_spent_by_day AS (
+            SELECT
+                date_series_row.data_order,
+                date_series_row.day AS date, 
+                spent_by_day.spent AS value,
+                shopName,
+                productVariantName,
+                productProducerName
+            FROM date_series_row
+            LEFT JOIN spent_by_day ON date_series_row.day = spent_by_day.day
+            WHERE date_series_row.day IS NOT NULL
+        )
+        SELECT * FROM full_spent_by_day
+        ORDER BY data_order ASC
+    """
+    )
+    fun averagePriceByShopByVariantByProducerByDay(id: Long): Flow<List<ProductPriceByShopByVariantByProducerByTime>>
+
+
 
 
 
@@ -321,72 +371,6 @@ interface ProductEntityDao {
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
     fun byName(name: String): Flow<ProductEntity?>
 
-    @Transaction
-    suspend fun fullItems(
-        entityId: Long,
-        count: Int,
-        offset: Int
-    ): List<FullItem> {
-        val product = get(entityId).first() ?: return emptyList()
-
-        val itemEntities = itemsByProduct(
-            entityId,
-            count,
-            offset
-        )
-
-        if (itemEntities.isEmpty()) return emptyList()
-
-        return itemEntities.map { entity ->
-            val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val variantEntity = entity.productVariantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(product.productCategoryEntityId)!!
-            val productProducerEntity = product.productProducerEntityId?.let { producerById(it) }
-            val shopEntity = transactionEntity.shopEntityId?.let { shopById(it) }
-
-            FullItem(
-                id = entity.id,
-                quantity = entity.quantity,
-                price = entity.price,
-                product = product,
-                variant = variantEntity,
-                category = productCategoryEntity,
-                producer = productProducerEntity,
-                date = transactionEntity.date,
-                shop = shopEntity,
-            )
-        }
-    }
-
     @Query("SELECT ItemEntity.* FROM ProductEntity JOIN ItemEntity ON ItemEntity.productEntityId = ProductEntity.id WHERE ProductEntity.id = :entityId ORDER BY ItemEntity.id DESC LIMIT 1")
     suspend fun newestItem(entityId: Long): ItemEntity?
-
-    @Query(
-        """
-        WITH date_series AS (
-            SELECT DATE(MIN(TransactionEntity.date) / 1000, 'unixepoch', 'start of month') AS start_date,
-                   DATE(current_timestamp, 'localtime', 'start of month') AS end_date
-            FROM ItemEntity
-            JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-            WHERE productEntityId = :entityId
-            UNION ALL
-            SELECT DATE(start_date, '+1 month') AS start_date, end_date
-            FROM date_series
-            WHERE date_series.end_date > date_series.start_date
-        )
-        SELECT ProductEntity.*, AVG(ItemEntity.price) AS price, ShopEntity.name AS shopName, ProductVariantEntity.name as variantName, ProductProducerEntity.name as producerName, STRFTIME('%Y-%m', date_series.start_date) AS time
-        FROM date_series
-        LEFT JOIN TransactionEntity ON STRFTIME('%Y-%m', date_series.start_date) = STRFTIME('%Y-%m', DATE(TransactionEntity.date / 1000, 'unixepoch'))
-        JOIN ItemEntity ON ItemEntity.transactionEntityId = TransactionEntity.id
-            AND ItemEntity.productEntityId = :entityId
-        LEFT JOIN ShopEntity ON TransactionEntity.shopEntityId = ShopEntity.id
-        LEFT JOIN ProductVariantEntity ON ItemEntity.productVariantEntityId = ProductVariantEntity.id
-        LEFT JOIN ProductEntity ON ItemEntity.productEntityId = ProductEntity.id
-        LEFT JOIN ProductProducerEntity ON ProductEntity.productProducerEntityId = ProductProducerEntity.id
-        WHERE time IS NOT NULL
-        GROUP BY time, shopEntityId, productVariantEntityId, productProducerEntityId
-        ORDER BY time
-    """
-    )
-    fun averagePriceByVariantByShopByMonth(entityId: Long): Flow<List<ProductPriceByShopByTime>>
 }

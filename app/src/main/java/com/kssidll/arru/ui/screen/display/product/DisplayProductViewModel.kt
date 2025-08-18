@@ -1,19 +1,22 @@
 package com.kssidll.arru.ui.screen.display.product
 
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.view.Item
-import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.ChartSource
+import com.kssidll.arru.domain.usecase.data.GetAveragePriceByShopByVariantByProducerByDayForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthForProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,90 +24,166 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Immutable
+data class DisplayProductUiState(
+    val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val productPriceByTime: ImmutableList<ProductPriceByShopByVariantByProducerByTime> = emptyImmutableList(),
+    val spentByTime: ImmutableList<ChartSource> = emptyImmutableList(),
+    val spentByTimePeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
+    val productName: String = String(),
+    val totalSpent: Float = 0f,
+    val items: Flow<PagingData<Item>> = emptyFlow(),
+)
+
+@Immutable
+sealed class DisplayProductEvent {
+    data object NavigateBack: DisplayProductEvent()
+    data class NavigateDisplayProductCategory(val productCategoryId: Long): DisplayProductEvent()
+    data class NavigateDisplayProductProducer(val productProducerId: Long): DisplayProductEvent()
+    data class NavigateDisplayShop(val shopId: Long): DisplayProductEvent()
+    data class NavigateEditItem(val itemId: Long): DisplayProductEvent()
+    data object NavigateEditProduct: DisplayProductEvent()
+
+    data class SetSpentByTimePeriod(val newPeriod: SpendingSummaryPeriod): DisplayProductEvent()
+}
+
 @HiltViewModel
 class DisplayProductViewModel @Inject constructor(
-    private val productRepository: ProductRepositorySource,
-    private val getItemsForProductUseCase: GetItemsForProductUseCase
+    private val getProductEntityUseCase: GetProductEntityUseCase,
+    private val getTotalSpentForProductUseCase: GetTotalSpentForProductUseCase,
+    private val getItemsForProductUseCase: GetItemsForProductUseCase,
+    private val getTotalSpentByDayForProductUseCase: GetTotalSpentByDayForProductUseCase,
+    private val getTotalSpentByWeekForProductUseCase: GetTotalSpentByWeekForProductUseCase,
+    private val getTotalSpentByMonthForProductUseCase: GetTotalSpentByMonthForProductUseCase,
+    private val getTotalSpentByYearForProductUseCase: GetTotalSpentByYearForProductUseCase,
+    private val getAveragePriceByShopByVariantByProducerByDayForProductUseCase: GetAveragePriceByShopByVariantByProducerByDayForProductUseCase
 ): ViewModel() {
-    private val mProduct: MutableState<ProductEntity?> = mutableStateOf(null)
-    val product: ProductEntity? by mProduct
+    private val _uiState = MutableStateFlow(DisplayProductUiState())
+    val uiState = _uiState.asStateFlow()
 
-    private var mProductListener: Job? = null
+    private var job: Job? = null
+    private var chartJob: Job? = null
 
-    val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer()
-
-    private var mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>>? = null
-    val spentByTimePeriod: SpendingSummaryPeriod? get() = mTimePeriodFlowHandler?.currentPeriod?.let { SpendingSummaryPeriod.valueOf(it.name) }
-    val spentByTimeData: Flow<ImmutableList<ChartSource>>? get() = mTimePeriodFlowHandler?.spentByTimeData
-
-    fun productTotalSpent(): Flow<Float?>? {
-        return product?.let { productRepository.totalSpent(it.id) }
-    }
-
-    fun productPriceByShop(): Flow<ImmutableList<ProductPriceByShopByTime>>? {
-        return product?.let { productRepository.averagePriceByVariantByShopByMonth(it) }
-    }
-
-    /**
-     * @return paging data of full item for current product as flow
-     */
-    fun transactions(): Flow<PagingData<Item>> {
-        return product?.let { getItemsForProductUseCase(it.id) } ?: emptyFlow()
-    }
-
-    /**
-     * Switches the state period to [newPeriod]
-     * @param newPeriod Period to switch the state to
-     */
-    fun switchPeriod(newPeriod: SpendingSummaryPeriod) {
-        val nPeriod = TimePeriodFlowHandler.Periods.valueOf(newPeriod.name)
-        mTimePeriodFlowHandler?.switchPeriod(nPeriod)
-    }
+    private var _productId: Long? = null
 
     /**
      * @return True if provided [productId] was valid, false otherwise
      */
     suspend fun performDataUpdate(productId: Long) = viewModelScope.async {
-        val product = productRepository.get(productId).first() ?: return@async false
+        val product = getProductEntityUseCase(productId).first() ?: return@async false
+        _productId = productId
 
-        // We ignore the possiblity of changing category while one is already loaded
-        // as not doing that would increase complexity too much
-        // and if it happens somehow, it would be considered a bug
-        if (mProduct.value != null || productId == mProduct.value?.id) return@async true
-
-        mProductListener?.cancel()
-        mProductListener = viewModelScope.launch {
-            productRepository.get(productId)
-                .collectLatest {
-                    mProduct.value = it
-                }
+        job?.cancel()
+        job = viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    productName = product.name,
+                    items = getItemsForProductUseCase(productId)
+                )
+            }
         }
 
-        mProduct.value = product
+        viewModelScope.launch {
+            getTotalSpentForProductUseCase(productId).collectLatest {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        totalSpent = it ?: 0f
+                    )
+                }
+            }
+        }
 
-        mTimePeriodFlowHandler = TimePeriodFlowHandler(
-            scope = viewModelScope,
-            day = {
-                productRepository.totalSpentByDay(productId)
-            },
-            week = {
-                productRepository.totalSpentByWeek(productId)
-            },
-            month = {
-                productRepository.totalSpentByMonth(productId)
-            },
-            year = {
-                productRepository.totalSpentByYear(productId)
-            },
-        )
+        viewModelScope.launch {
+            getAveragePriceByShopByVariantByProducerByDayForProductUseCase(productId).collectLatest {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        productPriceByTime = it
+                    )
+                }
+            }
+        }
+
+        updateChartJob(_uiState.value.spentByTimePeriod, productId)
 
         return@async true
     }
         .await()
+
+    fun handleEvent(event: DisplayProductEvent) {
+        when (event) {
+            is DisplayProductEvent.NavigateBack                   -> {}
+            is DisplayProductEvent.NavigateDisplayProductCategory -> {}
+            is DisplayProductEvent.NavigateDisplayProductProducer -> {}
+            is DisplayProductEvent.NavigateDisplayShop            -> {}
+            is DisplayProductEvent.NavigateEditItem               -> {}
+            is DisplayProductEvent.NavigateEditProduct            -> {}
+            is DisplayProductEvent.SetSpentByTimePeriod           -> setSpentByTimePeriod(event.newPeriod)
+        }
+    }
+
+    private fun setSpentByTimePeriod(newPeriod: SpendingSummaryPeriod) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                spentByTimePeriod = newPeriod
+            )
+        }
+
+        _productId?.let { updateChartJob(newPeriod, it) }
+    }
+
+    private fun updateChartJob(period: SpendingSummaryPeriod, productId: Long) {
+        chartJob?.cancel()
+        chartJob = viewModelScope.launch {
+            when (period) {
+                SpendingSummaryPeriod.Day   -> {
+                    getTotalSpentByDayForProductUseCase(productId).collectLatest {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                spentByTime = it
+                            )
+                        }
+                    }
+                }
+
+                SpendingSummaryPeriod.Week  -> {
+                    getTotalSpentByWeekForProductUseCase(productId).collectLatest {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                spentByTime = it
+                            )
+                        }
+                    }
+                }
+
+                SpendingSummaryPeriod.Month -> {
+                    getTotalSpentByMonthForProductUseCase(productId).collectLatest {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                spentByTime = it
+                            )
+                        }
+                    }
+                }
+
+                SpendingSummaryPeriod.Year  -> {
+                    getTotalSpentByYearForProductUseCase(productId).collectLatest {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                spentByTime = it
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

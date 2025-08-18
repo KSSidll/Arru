@@ -25,9 +25,8 @@ import androidx.compose.ui.unit.sp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
+import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.domain.utils.orZero
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
@@ -43,6 +42,7 @@ import com.patrykandpatrick.vico.compose.common.shader.verticalGradient
 import com.patrykandpatrick.vico.compose.common.vicoTheme
 import com.patrykandpatrick.vico.core.cartesian.AutoScrollCondition
 import com.patrykandpatrick.vico.core.cartesian.Scroll
+import com.patrykandpatrick.vico.core.cartesian.Zoom
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
@@ -57,14 +57,13 @@ import kotlinx.collections.immutable.ImmutableList
 private val LegendLabelKey = ExtraStore.Key<List<String>>()
 
 @Composable
-fun ShopPriceCompareChart(
-    items: ImmutableList<ProductPriceByShopByTime>,
+fun ProductPriceCompareChart(
+    items: ImmutableList<ProductPriceByShopByVariantByProducerByTime>,
     chartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
     chartMinimumLineElements: Int = 2,
 ) {
     var linesOnChart by remember { mutableIntStateOf(0) }
 
-    val data: MutableMap<String, MutableList<FloatFloatPair>> = remember { mutableMapOf() }
 
     val defaultVariantName = stringResource(id = R.string.item_product_variant_default_value)
 
@@ -78,51 +77,54 @@ fun ShopPriceCompareChart(
     )
 
     LaunchedEffect(items.size) {
-        val dateMap: MutableMap<String, Int> = mutableMapOf()
-        dateMap.putAll(
-            items.mapIndexed { index, it ->
-                Pair(
-                    it.time,
-                    index
-                )
-            }
-                .toMap()
-        )
+        val data: MutableMap<String, MutableList<FloatFloatPair>> = mutableMapOf()
 
-        data.clear()
-
-        items.forEach {
-            if (it.shopName == null) return@forEach
-
+        items.filter { it.value != null }.sortedBy { it.dataOrder }.forEach {
             val item = buildString {
-                append(it.shopName)
+                append(it.productVariantName ?: defaultVariantName)
+
+                if (it.shopName.isNullOrBlank() && it.productProducerName.isNullOrBlank())
+                    return@buildString
+
+                if (!it.productProducerName.isNullOrBlank()) {
+                    append(" (")
+                    append(it.productProducerName)
+                    append(")")
+                }
 
                 append(" - ")
-                append(it.variantName ?: defaultVariantName)
 
-                if (!it.producerName.isNullOrBlank()) {
-                    append(" (")
-                    append(it.producerName)
-                    append(")")
+                if (!it.shopName.isNullOrBlank()) {
+                    append(it.shopName)
                 }
             }
 
-            data.getOrPut(item) {
-                mutableListOf()
-            }
-                .add(
-                    FloatFloatPair(
-                        dateMap[it.time]!!.toFloat(),
-                        it.price!!.toFloat()
-                    )
+            val list = data.getOrPut(item) { mutableListOf() }
+
+            list.add(
+                FloatFloatPair(
+                    it.dataOrder.toFloat(),
+                    it.value!!.toFloat().div(ItemEntity.PRICE_DIVISOR)
                 )
+            )
         }
 
-        val filteredData = data.filter { it.value.size >= chartMinimumLineElements }
+        val filteredData = data.filter { it.value.isNotEmpty() }
 
-        if (filteredData.isEmpty()) {
-            linesOnChart = 0
-        } else {
+        filteredData.forEach { line ->
+            if (line.value.size == 1) {
+                val value = line.value.first()
+                line.value.add(
+                    FloatFloatPair(
+                        value.first + 1,
+                        value.second
+                    )
+                )
+            }
+        }
+
+        linesOnChart = filteredData.size
+        if (filteredData.isNotEmpty()) {
             chartEntryModelProducer.runTransaction {
                 lineSeries {
                     filteredData.forEach { lineData ->
@@ -137,10 +139,7 @@ fun ShopPriceCompareChart(
                     extraStore[LegendLabelKey] = filteredData.map { it.key }
                 }
             }
-
-            linesOnChart = filteredData.maxOfOrNull { it.value.size }.orZero()
         }
-
     }
 
     AnimatedVisibility(
@@ -157,7 +156,8 @@ fun ShopPriceCompareChart(
                 autoScrollAnimationSpec = tween(1200)
             ),
             zoomState = rememberVicoZoomState(
-                zoomEnabled = false
+                zoomEnabled = false,
+                initialZoom = Zoom.fixed(0.03f)
             ),
             chart = rememberCartesianChart(
                 rememberLineCartesianLayer(
@@ -185,7 +185,7 @@ fun ShopPriceCompareChart(
                         lines.forEach { line ->
                             line.points.forEachIndexed { index, point ->
                                 builder.append(
-                                    point.entry.y.toFloat().div(ItemEntity.PRICE_DIVISOR).formatToCurrency(currencyLocale),
+                                    point.entry.y.toFloat().formatToCurrency(currencyLocale),
                                     ForegroundColorSpan(point.color),
                                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                                 )
@@ -226,11 +226,11 @@ fun ShopPriceCompareChart(
 
 @PreviewLightDark
 @Composable
-private fun ShopPriceCompareChartPreview() {
+private fun ProductPriceCompareChartPreview() {
     ArrugarqTheme {
         Surface {
-            ShopPriceCompareChart(
-                items = ProductPriceByShopByTime.generateList(),
+            ProductPriceCompareChart(
+                items = ProductPriceByShopByVariantByProducerByTime.generateList(),
             )
         }
     }

@@ -66,9 +66,9 @@ fun OneDimensionalColumnChart(
 
     LaunchedEffect(data) {
         // Peak engineering
-        val newData = data.mapIndexed { index, it ->
+        val newData = data.map { it ->
             Triple(
-                it.chartEntry(index),
+                it.chartEntry(),
                 it.topAxisLabel(currencyLocale) ?: "??",
                 it.bottomAxisLabel(currencyLocale) ?: "??"
             )

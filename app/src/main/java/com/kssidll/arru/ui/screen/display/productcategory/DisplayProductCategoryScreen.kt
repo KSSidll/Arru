@@ -268,6 +268,10 @@ private fun DisplayProductCategoryScreenContent(
                     }
                 }
             )
+
+            item {
+                Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
+            }
         }
     }
 }

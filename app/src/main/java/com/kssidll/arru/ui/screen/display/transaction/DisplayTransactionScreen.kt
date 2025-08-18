@@ -3,6 +3,7 @@ package com.kssidll.arru.ui.screen.display.transaction
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -105,6 +106,10 @@ fun DisplayTransactionScreen(
                         currencyLocale = currencyLocale,
                         modifier = Modifier.width(600.dp)
                     )
+
+                    item {
+                        Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
+                    }
                 }
             }
         }

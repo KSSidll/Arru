@@ -1,14 +1,13 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
+import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -177,6 +176,11 @@ interface ProductRepositorySource {
      */
     fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
+    /**
+     * @param id id of the [ProductEntity]
+     * @return List of [ProductPriceByShopByVariantByProducerByTime] representing average spending partitioned by shop, variant, producer and day
+     */
+    fun averagePriceByShopByVariantByProducerByDay(id: Long): Flow<ImmutableList<ProductPriceByShopByVariantByProducerByTime>>
 
 
 
@@ -195,19 +199,8 @@ interface ProductRepositorySource {
     fun all(): Flow<ImmutableList<ProductEntity>>
 
     /**
-     * @param entity [ProductEntity] to match the items to
-     */
-    fun fullItemsPaged(entity: ProductEntity): Flow<PagingData<FullItem>>
-
-    /**
      * @param entity [ProductEntity] to match the [ItemEntity] with
      * @return newest [ItemEntity] that matches [entity], null if none match
      */
     suspend fun newestItem(entity: ProductEntity): ItemEntity?
-
-    /**
-     * @param entity [ProductEntity] to match the data with
-     * @return list of [ProductPriceByShopByTime] representing the average price of [entity] groupped by variant, shop and month
-     */
-    fun averagePriceByVariantByShopByMonth(entity: ProductEntity): Flow<ImmutableList<ProductPriceByShopByTime>>
 }

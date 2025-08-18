@@ -4,17 +4,15 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductEntityDao
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
 import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
+import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -197,6 +195,8 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
     override fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>> = dao.totalSpentByYear(id).cancellable()
         .map { it.toImmutableList() }
 
+    override fun averagePriceByShopByVariantByProducerByDay(id: Long): Flow<ImmutableList<ProductPriceByShopByVariantByProducerByTime>> = dao.averagePriceByShopByVariantByProducerByDay(id).cancellable()
+        .map { it.toImmutableList() }
 
 
 
@@ -205,46 +205,10 @@ class ProductRepository(private val dao: ProductEntityDao): ProductRepositorySou
 
 
 
-    override fun fullItemsPaged(entity: ProductEntity): Flow<PagingData<FullItem>> {
-        return Pager(
-            config = PagingConfig(pageSize = 3),
-            initialKey = 0,
-            pagingSourceFactory = {
-                FullItemPagingSource(
-                    query = { start, loadSize ->
-                        dao.fullItems(
-                            entity.id,
-                            loadSize,
-                            start
-                        )
-                    },
-                    itemsBefore = {
-                        dao.countItemsBefore(
-                            it,
-                            entity.id
-                        )
-                    },
-                    itemsAfter = {
-                        dao.countItemsAfter(
-                            it,
-                            entity.id
-                        )
-                    },
-                )
-            }
-        )
-            .flow
-    }
+
 
     override suspend fun newestItem(entity: ProductEntity): ItemEntity? {
         return dao.newestItem(entity.id)
-    }
-
-    override fun averagePriceByVariantByShopByMonth(entity: ProductEntity): Flow<ImmutableList<ProductPriceByShopByTime>> {
-        return dao.averagePriceByVariantByShopByMonth(entity.id)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
     }
 
     override fun all(): Flow<ImmutableList<ProductEntity>> {
