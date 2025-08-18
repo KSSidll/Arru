@@ -20,6 +20,7 @@ class ProductCategoryModule {
 
     /** ENTITY */
 
+
     @Provides
     @Singleton
     fun provideGetProductCategoryEntityUseCase(
@@ -30,6 +31,7 @@ class ProductCategoryModule {
 
 
     /** DOMAIN */
+
 
     // @Provides
     // @Singleton
@@ -54,6 +56,10 @@ class ProductCategoryModule {
     ): GetItemsForProductCategoryUseCase {
         return GetItemsForProductCategoryUseCase(productCategoryRepositorySource)
     }
+
+
+    /** DOMAIN CHART */
+
 
     @Provides
     @Singleton

@@ -52,11 +52,10 @@ import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.screen.modify.producer.ModifyProducerScreenState
+import com.kssidll.arru.ui.screen.modify.productproducer.ModifyProductProducerScreenState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -65,7 +64,7 @@ private val ItemHorizontalPadding: Dp = 20.dp
 /**
  * [ModifyScreen] implementation for [ProductProducerEntity]
  * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [ModifyProducerScreenState] instance representing the screen state
+ * @param state [ModifyProductProducerScreenState] instance representing the screen state
  * @param shops Shops that can be set for the transaction
  * @param onNewShopSelected Callback called when a new shop is selected. Provides newly selected shop as parameter
  * @param onSubmit Callback called when the submit action is triggered

@@ -14,28 +14,28 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import com.kssidll.arru.ui.screen.backups.BackupsRoute
-import com.kssidll.arru.ui.screen.display.category.DisplayCategoryRoute
-import com.kssidll.arru.ui.screen.display.producer.ProducerRoute
-import com.kssidll.arru.ui.screen.display.product.ProductRoute
-import com.kssidll.arru.ui.screen.display.shop.ShopRoute
-import com.kssidll.arru.ui.screen.display.transaction.TransactionRoute
+import com.kssidll.arru.ui.screen.display.product.DisplayProductRoute
+import com.kssidll.arru.ui.screen.display.productcategory.DisplayProductCategoryRoute
+import com.kssidll.arru.ui.screen.display.productproducer.DisplayProductProducerRoute
+import com.kssidll.arru.ui.screen.display.shop.DisplayShopRoute
+import com.kssidll.arru.ui.screen.display.transaction.DisplayTransactionRoute
 import com.kssidll.arru.ui.screen.home.HomeRoute
-import com.kssidll.arru.ui.screen.modify.category.addcategory.AddCategoryRoute
-import com.kssidll.arru.ui.screen.modify.category.editcategory.EditCategoryRoute
 import com.kssidll.arru.ui.screen.modify.item.additem.AddItemRoute
 import com.kssidll.arru.ui.screen.modify.item.edititem.EditItemRoute
-import com.kssidll.arru.ui.screen.modify.producer.addproducer.AddProducerRoute
-import com.kssidll.arru.ui.screen.modify.producer.editproducer.EditProducerRoute
 import com.kssidll.arru.ui.screen.modify.product.addproduct.AddProductRoute
 import com.kssidll.arru.ui.screen.modify.product.editproduct.EditProductRoute
+import com.kssidll.arru.ui.screen.modify.productcategory.addproductcategory.AddProductCategoryRoute
+import com.kssidll.arru.ui.screen.modify.productcategory.editproductcategory.EditProductCategoryRoute
+import com.kssidll.arru.ui.screen.modify.productproducer.addproductproducer.AddProductProducerRoute
+import com.kssidll.arru.ui.screen.modify.productproducer.editproductproducer.EditProductProducerRoute
+import com.kssidll.arru.ui.screen.modify.productvariant.addproductvariant.AddProductVariantRoute
+import com.kssidll.arru.ui.screen.modify.productvariant.editproductvariant.EditProductVariantRoute
 import com.kssidll.arru.ui.screen.modify.shop.addshop.AddShopRoute
 import com.kssidll.arru.ui.screen.modify.shop.editshop.EditShopRoute
 import com.kssidll.arru.ui.screen.modify.transaction.addtransaction.AddTransactionRoute
 import com.kssidll.arru.ui.screen.modify.transaction.edittransaction.EditTransactionRoute
-import com.kssidll.arru.ui.screen.modify.variant.addvariant.AddVariantRoute
-import com.kssidll.arru.ui.screen.modify.variant.editvariant.EditVariantRoute
 import com.kssidll.arru.ui.screen.ranking.categoryranking.CategoryRankingRoute
 import com.kssidll.arru.ui.screen.ranking.shopranking.ShopRankingRoute
 import com.kssidll.arru.ui.screen.search.SearchRoute
@@ -159,85 +159,85 @@ sealed class Screen: Parcelable {
     data object Search: Screen()
 
     @Stable
-    data class Transaction(val transactionId: Long): Screen()
+    data class DisplayTransaction(val transactionId: Long): Screen()
 
     @Stable
-    data class Product(val productId: Long): Screen()
+    data class DisplayProduct(val productId: Long): Screen()
 
     @Stable
-    data class Category(val categoryId: Long): Screen()
+    data class DisplayProductCategory(val categoryId: Long): Screen()
 
     @Stable
-    data class Producer(val producerId: Long): Screen()
+    data class DisplayProductProducer(val producerId: Long): Screen()
 
     @Stable
-    data class Shop(val shopId: Long): Screen()
+    data class DisplayShop(val shopId: Long): Screen()
 
     @Stable
-    data class TransactionAdd(
+    data class AddTransaction(
         override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
     ): Screen(), AcceptsShopId
 
     @Stable
-    data class ItemAdd(
+    data class AddItem(
         val transactionId: Long,
         override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
     ): Screen(), AcceptsProductId
 
     @Stable
-    data class ProductAdd(
+    data class AddProduct(
         val defaultName: String? = null,
         override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null),
     ): Screen(), AcceptsProducerId, AcceptsCategoryId
 
     @Stable
-    data class VariantAdd(
+    data class AddProductVariant(
         val productId: Long,
         val defaultName: String? = null,
     ): Screen()
 
     @Stable
-    data class CategoryAdd(val defaultName: String? = null): Screen()
+    data class AddProductCategory(val defaultName: String? = null): Screen()
 
     @Stable
-    data class ProducerAdd(val defaultName: String? = null): Screen()
+    data class AddProductProducer(val defaultName: String? = null): Screen()
 
     @Stable
-    data class ShopAdd(val defaultName: String? = null): Screen()
+    data class AddShop(val defaultName: String? = null): Screen()
 
     @Stable
-    data class TransactionEdit(
+    data class EditTransaction(
         val transactionId: Long,
         override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
     ): Screen(), AcceptsShopId
 
     @Stable
-    data class ItemEdit(
+    data class EditItem(
         val itemId: Long,
         override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
     ): Screen(), AcceptsProductId
 
     @Stable
-    data class ProductEdit(
+    data class EditProduct(
         val productId: Long,
         override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null),
     ): Screen(), AcceptsProducerId, AcceptsCategoryId
 
     @Stable
-    data class VariantEdit(val variantId: Long): Screen()
+    data class EditProductVariant(val variantId: Long): Screen()
 
     @Stable
-    data class CategoryEdit(val categoryId: Long): Screen()
+    data class EditProductCategory(val categoryId: Long): Screen()
 
     @Stable
-    data class ProducerEdit(val producerId: Long): Screen()
+    data class EditProductProducer(val producerId: Long): Screen()
 
     @Stable
-    data class ShopEdit(val shopId: Long): Screen()
+    data class EditShop(val shopId: Long): Screen()
 
     @Immutable
     data object CategoryRanking: Screen()
@@ -382,43 +382,43 @@ fun Navigation(
 
     val navigateBackDeleteShop: (shopId: Long) -> Unit = { shopId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.ShopEdit(shopId) && it != Screen.Shop(shopId)
+            it != Screen.EditShop(shopId) && it != Screen.DisplayShop(shopId)
         }
     }
 
-    val navigateBackDeleteVariant: (variantId: Long) -> Unit = { variantId ->
+    val navigateBackDeleteProductVariant: (variantId: Long) -> Unit = { variantId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.VariantEdit(variantId)
+            it != Screen.EditProductVariant(variantId)
         }
     }
 
     val navigateBackDeleteProduct: (productId: Long) -> Unit = { productId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.ProductEdit(productId) && it != Screen.Product(productId)
+            it != Screen.EditProduct(productId) && it != Screen.DisplayProduct(productId)
         }
     }
 
-    val navigateBackDeleteCategory: (categoryId: Long) -> Unit = { categoryId ->
+    val navigateBackDeleteProductCategory: (categoryId: Long) -> Unit = { categoryId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.CategoryEdit(categoryId) && it != Screen.Category(categoryId)
+            it != Screen.EditProductCategory(categoryId) && it != Screen.DisplayProductCategory(categoryId)
         }
     }
 
-    val navigateBackDeleteProducer: (producerId: Long) -> Unit = { producerId ->
+    val navigateBackDeleteProductProducer: (producerId: Long) -> Unit = { producerId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.ProducerEdit(producerId) && it != Screen.Producer(producerId)
+            it != Screen.EditProductProducer(producerId) && it != Screen.DisplayProductProducer(producerId)
         }
     }
 
     val navigateBackDeleteItem: (itemId: Long) -> Unit = { itemId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.ItemEdit(itemId)
+            it != Screen.EditItem(itemId)
         }
     }
 
     val navigateBackDeleteTransaction: (transactionId: Long) -> Unit = { transactionId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.TransactionEdit(transactionId) && it != Screen.Transaction(transactionId)
+            it != Screen.EditTransaction(transactionId) && it != Screen.DisplayTransaction(transactionId)
         }
     }
 
@@ -435,59 +435,59 @@ fun Navigation(
     }
 
 
-    val navigateTransaction: (transactionId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.Transaction) {
-            navController.navigate(Screen.Transaction(it))
+    val navigateDisplayTransaction: (transactionId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.DisplayTransaction) {
+            navController.navigate(Screen.DisplayTransaction(it))
         }
     }
 
-    val navigateProduct: (productId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.Product) {
-            navController.navigate(Screen.Product(it))
+    val navigateDisplayProduct: (productId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.DisplayProduct) {
+            navController.navigate(Screen.DisplayProduct(it))
         }
     }
 
-    val navigateCategory: (categoryId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.Category) {
-            navController.navigate(Screen.Category(it))
+    val navigateDisplayProductCategory: (categoryId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.DisplayProductCategory) {
+            navController.navigate(Screen.DisplayProductCategory(it))
         }
     }
 
-    val navigateProducer: (producerId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.Producer) {
-            navController.navigate(Screen.Producer(it))
+    val navigateDisplayProductProducer: (producerId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.DisplayProductProducer) {
+            navController.navigate(Screen.DisplayProductProducer(it))
         }
     }
 
-    val navigateShop: (shopId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.Shop) {
-            navController.navigate(Screen.Shop(it))
+    val navigateDisplayShop: (shopId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.DisplayShop) {
+            navController.navigate(Screen.DisplayShop(it))
         }
     }
 
 
-    val navigateTransactionAdd: () -> Unit = {
-        if (navController.currentDestination() !is Screen.TransactionAdd) {
-            navController.navigate(Screen.TransactionAdd())
+    val navigateAddTransaction: () -> Unit = {
+        if (navController.currentDestination() !is Screen.AddTransaction) {
+            navController.navigate(Screen.AddTransaction())
         }
     }
 
-    val navigateItemAdd: (transactionId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.ItemAdd) {
-            navController.navigate(Screen.ItemAdd(it))
+    val navigateAddItem: (transactionId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.AddItem) {
+            navController.navigate(Screen.AddItem(it))
         }
     }
 
-    val navigateProductAdd: (query: String?) -> Unit = {
-        if (navController.currentDestination() !is Screen.ProductAdd) {
-            navController.navigate(Screen.ProductAdd(it))
+    val navigateAddProduct: (query: String?) -> Unit = {
+        if (navController.currentDestination() !is Screen.AddProduct) {
+            navController.navigate(Screen.AddProduct(it))
         }
     }
 
-    val navigateVariantAdd: (productId: Long, query: String?) -> Unit = { productId, query ->
-        if (navController.currentDestination() !is Screen.VariantAdd) {
+    val navigateAddProductVariant: (productId: Long, query: String?) -> Unit = { productId, query ->
+        if (navController.currentDestination() !is Screen.AddProductVariant) {
             navController.navigate(
-                Screen.VariantAdd(
+                Screen.AddProductVariant(
                     productId,
                     query
                 )
@@ -495,64 +495,64 @@ fun Navigation(
         }
     }
 
-    val navigateCategoryAdd: (query: String?) -> Unit = {
-        if (navController.currentDestination() !is Screen.CategoryAdd) {
-            navController.navigate(Screen.CategoryAdd(it))
+    val navigateAddProductCategory: (query: String?) -> Unit = {
+        if (navController.currentDestination() !is Screen.AddProductCategory) {
+            navController.navigate(Screen.AddProductCategory(it))
         }
     }
 
-    val navigateProducerAdd: (query: String?) -> Unit = {
-        if (navController.currentDestination() !is Screen.ProducerAdd) {
-            navController.navigate(Screen.ProducerAdd(it))
+    val navigateAddProductProducer: (query: String?) -> Unit = {
+        if (navController.currentDestination() !is Screen.AddProductProducer) {
+            navController.navigate(Screen.AddProductProducer(it))
         }
     }
 
-    val navigateShopAdd: (query: String?) -> Unit = {
-        if (navController.currentDestination() !is Screen.ShopAdd) {
-            navController.navigate(Screen.ShopAdd(it))
+    val navigateAddShop: (query: String?) -> Unit = {
+        if (navController.currentDestination() !is Screen.AddShop) {
+            navController.navigate(Screen.AddShop(it))
         }
     }
 
 
-    val navigateTransactionEdit: (transactionId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.TransactionEdit) {
-            navController.navigate(Screen.TransactionEdit(it))
+    val navigateEditTransaction: (transactionId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditTransaction) {
+            navController.navigate(Screen.EditTransaction(it))
         }
     }
 
-    val navigateItemEdit: (itemId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.ItemEdit) {
-            navController.navigate(Screen.ItemEdit(it))
+    val navigateEditItem: (itemId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditItem) {
+            navController.navigate(Screen.EditItem(it))
         }
     }
 
-    val navigateProductEdit: (productId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.ProductEdit) {
-            navController.navigate(Screen.ProductEdit(it))
+    val navigateEditProduct: (productId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditProduct) {
+            navController.navigate(Screen.EditProduct(it))
         }
     }
 
-    val navigateVariantEdit: (variantId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.VariantEdit) {
-            navController.navigate(Screen.VariantEdit(it))
+    val navigateEditProductVariant: (variantId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditProductVariant) {
+            navController.navigate(Screen.EditProductVariant(it))
         }
     }
 
-    val navigateCategoryEdit: (categoryId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.CategoryEdit) {
-            navController.navigate(Screen.CategoryEdit(it))
+    val navigateEditProductCategory: (categoryId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditProductCategory) {
+            navController.navigate(Screen.EditProductCategory(it))
         }
     }
 
-    val navigateProducerEdit: (producerId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.ProducerEdit) {
-            navController.navigate(Screen.ProducerEdit(it))
+    val navigateEditProductProducer: (producerId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditProductProducer) {
+            navController.navigate(Screen.EditProductProducer(it))
         }
     }
 
-    val navigateShopEdit: (shopId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.ShopEdit) {
-            navController.navigate(Screen.ShopEdit(it))
+    val navigateEditShop: (shopId: Long) -> Unit = {
+        if (navController.currentDestination() !is Screen.EditShop) {
+            navController.navigate(Screen.EditShop(it))
         }
     }
 
@@ -597,7 +597,7 @@ fun Navigation(
         }
     }
 
-    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val screenWidth = LocalWindowInfo.current.containerSize.width
 
     AnimatedNavHost(
         controller = navController,
@@ -610,21 +610,21 @@ fun Navigation(
         }
     ) { screen ->
         when (screen) {
-            is Screen.Home -> {
+            is Screen.Home               -> {
                 HomeRoute(
                     navigateSettings = navigateSettings,
                     navigateSearch = navigateSearch,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
-                    navigateTransactionAdd = navigateTransactionAdd,
-                    navigateTransactionEdit = navigateTransactionEdit,
-                    navigateItemAdd = {
-                        navigateTransaction(it)
-                        navigateItemAdd(it)
+                    navigateDisplayProduct = navigateDisplayProduct,
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateDisplayShop = navigateDisplayShop,
+                    navigateAddTransaction = navigateAddTransaction,
+                    navigateEditTransaction = navigateEditTransaction,
+                    navigateAddItem = {
+                        navigateDisplayTransaction(it)
+                        navigateAddItem(it)
                     },
-                    navigateItemEdit = navigateItemEdit,
+                    navigateEditItem = navigateEditItem,
                     navigateCategoryRanking = navigateCategoryRanking,
                     navigateShopRanking = navigateShopRanking,
                     navigateCategorySpendingComparison = navigateCategorySpendingComparison,
@@ -632,20 +632,20 @@ fun Navigation(
                 )
             }
 
-            is Screen.ItemAdd -> {
+            is Screen.AddItem            -> {
                 AddItemRoute(
                     transactionId = screen.transactionId,
                     navigateBack = navigateBack,
-                    navigateProductAdd = navigateProductAdd,
-                    navigateVariantAdd = navigateVariantAdd,
-                    navigateProductEdit = navigateProductEdit,
-                    navigateVariantEdit = navigateVariantEdit,
+                    navigateAddProduct = navigateAddProduct,
+                    navigateAddProductVariant = navigateAddProductVariant,
+                    navigateEditProduct = navigateEditProduct,
+                    navigateEditProductVariant = navigateEditProductVariant,
                     providedProductId = screen.providedProductId.value,
                     providedVariantId = screen.providedVariantId.value,
                 )
             }
 
-            is Screen.ProductAdd -> {
+            is Screen.AddProduct             -> {
                 AddProductRoute(
                     defaultName = screen.defaultName,
                     navigateBack = {
@@ -655,17 +655,17 @@ fun Navigation(
                         }
                         navigateBack()
                     },
-                    navigateCategoryAdd = navigateCategoryAdd,
-                    navigateProducerAdd = navigateProducerAdd,
-                    navigateCategoryEdit = navigateCategoryEdit,
-                    navigateProducerEdit = navigateProducerEdit,
+                    navigateAddProductCategory = navigateAddProductCategory,
+                    navigateAddProductProducer = navigateAddProductProducer,
+                    navigateEditProductCategory = navigateEditProductCategory,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     providedProducerId = screen.providedProducerId.value,
                     providedCategoryId = screen.providedCategoryId.value,
                 )
             }
 
-            is Screen.VariantAdd -> {
-                AddVariantRoute(
+            is Screen.AddProductVariant -> {
+                AddProductVariantRoute(
                     productId = screen.productId,
                     defaultName = screen.defaultName,
                     navigateBack = {
@@ -681,8 +681,8 @@ fun Navigation(
                 )
             }
 
-            is Screen.CategoryAdd -> {
-                AddCategoryRoute(
+            is Screen.AddProductCategory -> {
+                AddProductCategoryRoute(
                     defaultName = screen.defaultName,
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
@@ -694,8 +694,8 @@ fun Navigation(
                 )
             }
 
-            is Screen.ProducerAdd -> {
-                AddProducerRoute(
+            is Screen.AddProductProducer -> {
+                AddProductProducerRoute(
                     defaultName = screen.defaultName,
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
@@ -707,7 +707,7 @@ fun Navigation(
                 )
             }
 
-            is Screen.ShopAdd -> {
+            is Screen.AddShop         -> {
                 AddShopRoute(
                     defaultName = screen.defaultName,
                     navigateBack = {
@@ -720,79 +720,79 @@ fun Navigation(
                 )
             }
 
-            is Screen.CategoryRanking -> {
+            is Screen.CategoryRanking        -> {
                 CategoryRankingRoute(
                     navigateBack = navigateBack,
-                    navigateCategory = navigateCategory,
-                    navigateCategoryEdit = navigateCategoryEdit,
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateEditProductCategory = navigateEditProductCategory,
                 )
             }
 
-            is Screen.ShopRanking -> {
+            is Screen.ShopRanking     -> {
                 ShopRankingRoute(
                     navigateBack = navigateBack,
-                    navigateShop = navigateShop,
-                    navigateShopEdit = navigateShopEdit,
+                    navigateDisplayShop = navigateDisplayShop,
+                    navigateEditShop = navigateEditShop,
                 )
             }
 
-            is Screen.Category -> {
-                DisplayCategoryRoute(
+            is Screen.DisplayProductCategory -> {
+                DisplayProductCategoryRoute(
                     categoryId = screen.categoryId,
                     navigateBack = navigateBack,
-                    navigateProduct = navigateProduct,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateCategoryEdit = {
-                        navigateCategoryEdit(screen.categoryId)
+                    navigateDisplayProduct = navigateDisplayProduct,
+                    navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateDisplayShop = navigateDisplayShop,
+                    navigateEditItem = navigateEditItem,
+                    navigateEditProductCategory = {
+                        navigateEditProductCategory(screen.categoryId)
                     },
                 )
             }
 
-            is Screen.Producer -> {
-                ProducerRoute(
+            is Screen.DisplayProductProducer -> {
+                DisplayProductProducerRoute(
                     producerId = screen.producerId,
                     navigateBack = navigateBack,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateShop = navigateShop,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateProducerEdit = {
-                        navigateProducerEdit(screen.producerId)
+                    navigateDisplayProduct = navigateDisplayProduct,
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateDisplayShop = navigateDisplayShop,
+                    navigateEditItem = navigateEditItem,
+                    navigateEditProductProducer = {
+                        navigateEditProductProducer(screen.producerId)
                     },
                 )
             }
 
-            is Screen.Product -> {
-                ProductRoute(
+            is Screen.DisplayProduct         -> {
+                DisplayProductRoute(
                     productId = screen.productId,
                     navigateBack = navigateBack,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateProductEdit = {
-                        navigateProductEdit(screen.productId)
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateDisplayShop = navigateDisplayShop,
+                    navigateEditItem = navigateEditItem,
+                    navigateEditProduct = {
+                        navigateEditProduct(screen.productId)
                     },
                 )
             }
 
-            is Screen.Shop -> {
-                ShopRoute(
+            is Screen.DisplayShop            -> {
+                DisplayShopRoute(
                     shopId = screen.shopId,
                     navigateBack = navigateBack,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateShopEdit = {
-                        navigateShopEdit(screen.shopId)
+                    navigateDisplayProduct = navigateDisplayProduct,
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateEditItem = navigateEditItem,
+                    navigateEditShop = {
+                        navigateEditShop(screen.shopId)
                     },
                 )
             }
 
-            is Screen.ShopEdit -> {
+            is Screen.EditShop        -> {
                 EditShopRoute(
                     shopId = screen.shopId,
                     navigateBack = {
@@ -804,65 +804,65 @@ fun Navigation(
                 )
             }
 
-            is Screen.VariantEdit -> {
-                EditVariantRoute(
+            is Screen.EditProductVariant -> {
+                EditProductVariantRoute(
                     variantId = screen.variantId,
                     navigateBack = {
                         navigateBack()
                     },
                     navigateBackDelete = {
-                        navigateBackDeleteVariant(screen.variantId)
+                        navigateBackDeleteProductVariant(screen.variantId)
                     }
                 )
             }
 
-            is Screen.ProductEdit -> {
+            is Screen.EditProduct            -> {
                 EditProductRoute(
                     productId = screen.productId,
                     navigateBack = navigateBack,
                     navigateBackDelete = {
                         navigateBackDeleteProduct(screen.productId)
                     },
-                    navigateCategoryAdd = navigateCategoryAdd,
-                    navigateProducerAdd = navigateProducerAdd,
-                    navigateCategoryEdit = navigateCategoryEdit,
-                    navigateProducerEdit = navigateProducerEdit,
+                    navigateAddProductCategory = navigateAddProductCategory,
+                    navigateAddProductProducer = navigateAddProductProducer,
+                    navigateEditProductCategory = navigateEditProductCategory,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     providedProducerId = screen.providedProducerId.value,
                     providedCategoryId = screen.providedCategoryId.value,
                 )
             }
 
-            is Screen.CategoryEdit -> {
-                EditCategoryRoute(
+            is Screen.EditProductCategory    -> {
+                EditProductCategoryRoute(
                     categoryId = screen.categoryId,
                     navigateBack = navigateBack,
                     navigateBackDelete = {
-                        navigateBackDeleteCategory(screen.categoryId)
+                        navigateBackDeleteProductCategory(screen.categoryId)
                     },
                 )
             }
 
-            is Screen.ProducerEdit -> {
-                EditProducerRoute(
+            is Screen.EditProductProducer    -> {
+                EditProductProducerRoute(
                     producerId = screen.producerId,
                     navigateBack = navigateBack,
                     navigateBackDelete = {
-                        navigateBackDeleteProducer(screen.producerId)
+                        navigateBackDeleteProductProducer(screen.producerId)
                     }
                 )
             }
 
-            is Screen.ItemEdit -> {
+            is Screen.EditItem           -> {
                 EditItemRoute(
                     itemId = screen.itemId,
                     navigateBack = navigateBack,
                     navigateBackDelete = {
                         navigateBackDeleteItem(screen.itemId)
                     },
-                    navigateProductAdd = navigateProductAdd,
-                    navigateVariantAdd = navigateVariantAdd,
-                    navigateProductEdit = navigateProductEdit,
-                    navigateVariantEdit = navigateVariantEdit,
+                    navigateAddProduct = navigateAddProduct,
+                    navigateAddProductVariant = navigateAddProductVariant,
+                    navigateEditProduct = navigateEditProduct,
+                    navigateEditProductVariant = navigateEditProductVariant,
                     providedProductId = screen.providedProductId.value,
                     providedVariantId = screen.providedVariantId.value,
                 )
@@ -875,17 +875,17 @@ fun Navigation(
                 )
             }
 
-            is Screen.Search -> {
+            is Screen.Search                 -> {
                 SearchRoute(
                     navigateBack = navigateBack,
-                    navigateProduct = navigateProduct,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
-                    navigateProductEdit = navigateProductEdit,
-                    navigateCategoryEdit = navigateCategoryEdit,
-                    navigateProducerEdit = navigateProducerEdit,
-                    navigateShopEdit = navigateShopEdit,
+                    navigateDisplayProduct = navigateDisplayProduct,
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateDisplayShop = navigateDisplayShop,
+                    navigateEditProduct = navigateEditProduct,
+                    navigateEditProductCategory = navigateEditProductCategory,
+                    navigateEditProductProducer = navigateEditProductProducer,
+                    navigateEditShop = navigateEditShop,
                 )
             }
 
@@ -905,40 +905,40 @@ fun Navigation(
                 )
             }
 
-            is Screen.TransactionAdd -> {
+            is Screen.AddTransaction     -> {
                 AddTransactionRoute(
                     isExpandedScreen = isExpandedScreen,
                     navigateBack = navigateBack,
-                    navigateTransaction = navigateTransaction,
-                    navigateShopAdd = navigateShopAdd,
-                    navigateShopEdit = navigateShopEdit,
+                    navigateDisplayTransaction = navigateDisplayTransaction,
+                    navigateAddShop = navigateAddShop,
+                    navigateEditShop = navigateEditShop,
                     providedShopId = screen.providedShopId.value,
                 )
             }
 
-            is Screen.TransactionEdit -> {
+            is Screen.EditTransaction -> {
                 EditTransactionRoute(
                     isExpandedScreen = isExpandedScreen,
                     transactionId = screen.transactionId,
                     navigateBack = navigateBack,
                     navigateBackDelete = navigateBackDeleteTransaction,
-                    navigateShopAdd = navigateShopAdd,
-                    navigateShopEdit = navigateShopEdit,
+                    navigateAddShop = navigateAddShop,
+                    navigateEditShop = navigateEditShop,
                     providedShopId = screen.providedShopId.value,
                 )
             }
 
-            is Screen.Transaction -> {
-                TransactionRoute(
+            is Screen.DisplayTransaction -> {
+                DisplayTransactionRoute(
                     transactionId = screen.transactionId,
                     navigateBack = navigateBack,
-                    navigateTransactionEdit = navigateTransactionEdit,
-                    navigateItemAdd = navigateItemAdd,
-                    navigateProduct = navigateProduct,
-                    navigateItemEdit = navigateItemEdit,
-                    navigateCategory = navigateCategory,
-                    navigateProducer = navigateProducer,
-                    navigateShop = navigateShop,
+                    navigateEditTransaction = navigateEditTransaction,
+                    navigateAddItem = navigateAddItem,
+                    navigateDisplayProduct = navigateDisplayProduct,
+                    navigateEditItem = navigateEditItem,
+                    navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateDisplayShop = navigateDisplayShop,
                 )
             }
 

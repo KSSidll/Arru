@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
 
+
 class GetProductProducerEntityUseCase(
     private val productProducerRepository: ProductProducerRepositorySource,
 ) {
@@ -19,6 +20,7 @@ class GetProductProducerEntityUseCase(
 
 /** DOMAIN */
 
+
 // class GetProductProducerUseCase(
 //     private val getProductProducerEntityUseCase: GetProductProducerEntityUseCase,
 // ) {
@@ -30,6 +32,15 @@ class GetProductProducerEntityUseCase(
 //     }
 // }
 
+class GetTotalSpentForProductProducerUseCase(
+    private val productProducerRepository: ProductProducerRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productProducerRepository.totalSpent(id).flowOn(dispatcher)
+}
+
 class GetItemsForProductProducerUseCase(
     private val productProducerRepository: ProductProducerRepositorySource,
 ) {
@@ -37,4 +48,44 @@ class GetItemsForProductProducerUseCase(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) = productProducerRepository.itemsFor(id).flowOn(dispatcher)
+}
+
+
+/** DOMAIN CHART */
+
+
+class GetTotalSpentByDayForProductProducerUseCase(
+    private val productProducerRepository: ProductProducerRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productProducerRepository.totalSpentByDay(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByWeekForProductProducerUseCase(
+    private val productProducerRepository: ProductProducerRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productProducerRepository.totalSpentByWeek(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByMonthForProductProducerUseCase(
+    private val productProducerRepository: ProductProducerRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productProducerRepository.totalSpentByMonth(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByYearForProductProducerUseCase(
+    private val productProducerRepository: ProductProducerRepositorySource,
+) {
+    operator fun invoke(
+        id: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productProducerRepository.totalSpentByYear(id).flowOn(dispatcher)
 }

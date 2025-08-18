@@ -13,9 +13,9 @@ import kotlinx.coroutines.launch
 fun AddTransactionRoute(
     isExpandedScreen: Boolean,
     navigateBack: () -> Unit,
-    navigateTransaction: (transactionId: Long) -> Unit,
-    navigateShopAdd: (query: String?) -> Unit,
-    navigateShopEdit: (shopId: Long) -> Unit,
+    navigateDisplayTransaction: (transactionId: Long) -> Unit,
+    navigateAddShop: (query: String?) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     providedShopId: Long?,
 ) {
     val scope = rememberCoroutineScope()
@@ -38,11 +38,11 @@ fun AddTransactionRoute(
                 val result = viewModel.addTransaction()
                 if (result.isNotError() && result.id != null) {
                     navigateBack()
-                    navigateTransaction(result.id)
+                    navigateDisplayTransaction(result.id)
                 }
             }
         },
-        onShopAddButtonClick = navigateShopAdd,
-        onTransactionShopLongClick = navigateShopEdit,
+        onShopAddButtonClick = navigateAddShop,
+        onTransactionShopLongClick = navigateEditShop,
     )
 }

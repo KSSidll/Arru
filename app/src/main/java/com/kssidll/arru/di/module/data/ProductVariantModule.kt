@@ -14,6 +14,7 @@ class ProductVariantModule {
 
     /** ENTITY */
 
+
     @Provides
     @Singleton
     fun provideGetProductVariantEntityUseCase(
@@ -24,6 +25,7 @@ class ProductVariantModule {
 
 
     /** DOMAIN */
+
 
     // @Provides
     // @Singleton

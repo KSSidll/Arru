@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
-import kotlin.collections.isNotEmpty
 
 @Immutable
 data class HomeUiState(
@@ -86,14 +85,14 @@ sealed class HomeEvent {
 
     data object NavigateSettings: HomeEvent()
     data object NavigateSearch: HomeEvent()
-    data class NavigateProduct(val productId: Long): HomeEvent()
-    data class NavigateCategory(val categoryId: Long): HomeEvent()
-    data class NavigateProducer(val producerId: Long): HomeEvent()
-    data class NavigateShop(val shopId: Long): HomeEvent()
-    data object NavigateTransactionAdd: HomeEvent()
-    data class NavigateTransactionEdit(val transactionId: Long): HomeEvent()
-    data class NavigateItemAdd(val transactionId: Long): HomeEvent()
-    data class NavigateItemEdit(val itemId: Long): HomeEvent()
+    data class NavigateDisplayProduct(val productId: Long): HomeEvent()
+    data class NavigateDisplayProductCategory(val categoryId: Long): HomeEvent()
+    data class NavigateDisplayProductProducer(val producerId: Long): HomeEvent()
+    data class NavigateDisplayShop(val shopId: Long): HomeEvent()
+    data object NavigateAddTransaction: HomeEvent()
+    data class NavigateEditTransaction(val transactionId: Long): HomeEvent()
+    data class NavigateAddItem(val transactionId: Long): HomeEvent()
+    data class NavigateEditItem(val itemId: Long): HomeEvent()
     data object NavigateCategoryRanking: HomeEvent()
     data object NavigateShopRanking: HomeEvent()
     data class NavigateCategorySpendingComparison(val year: Int, val month: Int): HomeEvent()
@@ -207,21 +206,21 @@ class HomeViewModel @Inject constructor(
 
             is HomeEvent.NavigateSearch -> {}
 
-            is HomeEvent.NavigateProduct -> {}
+            is HomeEvent.NavigateDisplayProduct -> {}
 
-            is HomeEvent.NavigateCategory -> {}
+            is HomeEvent.NavigateDisplayProductCategory -> {}
 
-            is HomeEvent.NavigateProducer -> {}
+            is HomeEvent.NavigateDisplayProductProducer -> {}
 
-            is HomeEvent.NavigateShop -> {}
+            is HomeEvent.NavigateDisplayShop -> {}
 
-            is HomeEvent.NavigateItemAdd -> {}
+            is HomeEvent.NavigateAddItem -> {}
 
-            is HomeEvent.NavigateItemEdit -> {}
+            is HomeEvent.NavigateEditItem -> {}
 
-            is HomeEvent.NavigateTransactionAdd -> {}
+            is HomeEvent.NavigateAddTransaction -> {}
 
-            is HomeEvent.NavigateTransactionEdit -> {}
+            is HomeEvent.NavigateEditTransaction -> {}
 
             is HomeEvent.NavigateCategoryRanking -> {}
 

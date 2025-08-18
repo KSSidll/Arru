@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 fun AddItemRoute(
     transactionId: Long,
     navigateBack: () -> Unit,
-    navigateProductAdd: (query: String?) -> Unit,
-    navigateVariantAdd: (productId: Long, query: String?) -> Unit,
-    navigateProductEdit: (productId: Long) -> Unit,
-    navigateVariantEdit: (variantId: Long) -> Unit,
+    navigateAddProduct: (query: String?) -> Unit,
+    navigateAddProductVariant: (productId: Long, query: String?) -> Unit,
+    navigateEditProduct: (productId: Long) -> Unit,
+    navigateEditProductVariant: (variantId: Long) -> Unit,
     providedProductId: Long?,
     providedVariantId: Long?,
 ) {
@@ -55,9 +55,9 @@ fun AddItemRoute(
                 }
             }
         },
-        onProductAddButtonClick = navigateProductAdd,
-        onVariantAddButtonClick = navigateVariantAdd,
-        onItemLongClick = navigateProductEdit,
-        onItemVariantLongClick = navigateVariantEdit,
+        onProductAddButtonClick = navigateAddProduct,
+        onVariantAddButtonClick = navigateAddProductVariant,
+        onItemLongClick = navigateEditProduct,
+        onItemVariantLongClick = navigateEditProductVariant,
     )
 }

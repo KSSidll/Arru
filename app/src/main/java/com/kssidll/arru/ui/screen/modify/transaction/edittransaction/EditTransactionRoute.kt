@@ -17,8 +17,8 @@ fun EditTransactionRoute(
     transactionId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: (transactionId: Long) -> Unit,
-    navigateShopAdd: (query: String?) -> Unit,
-    navigateShopEdit: (shopId: Long) -> Unit,
+    navigateAddShop: (query: String?) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     providedShopId: Long?,
 ) {
     val scope = rememberCoroutineScope()
@@ -61,7 +61,7 @@ fun EditTransactionRoute(
             }
         },
         submitButtonText = stringResource(id = R.string.transaction_edit),
-        onShopAddButtonClick = navigateShopAdd,
-        onTransactionShopLongClick = navigateShopEdit,
+        onShopAddButtonClick = navigateAddShop,
+        onTransactionShopLongClick = navigateEditShop,
     )
 }

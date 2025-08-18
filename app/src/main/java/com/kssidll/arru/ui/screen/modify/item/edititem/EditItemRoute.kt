@@ -17,10 +17,10 @@ fun EditItemRoute(
     itemId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: () -> Unit,
-    navigateProductAdd: (query: String?) -> Unit,
-    navigateVariantAdd: (productId: Long, query: String?) -> Unit,
-    navigateProductEdit: (productId: Long) -> Unit,
-    navigateVariantEdit: (variantId: Long) -> Unit,
+    navigateAddProduct: (query: String?) -> Unit,
+    navigateAddProductVariant: (productId: Long, query: String?) -> Unit,
+    navigateEditProduct: (productId: Long) -> Unit,
+    navigateEditProductVariant: (variantId: Long) -> Unit,
     providedProductId: Long?,
     providedVariantId: Long?,
 ) {
@@ -76,9 +76,9 @@ fun EditItemRoute(
             }
         },
         submitButtonText = stringResource(id = R.string.item_edit),
-        onProductAddButtonClick = navigateProductAdd,
-        onVariantAddButtonClick = navigateVariantAdd,
-        onItemLongClick = navigateProductEdit,
-        onItemVariantLongClick = navigateVariantEdit,
+        onProductAddButtonClick = navigateAddProduct,
+        onVariantAddButtonClick = navigateAddProductVariant,
+        onItemLongClick = navigateEditProduct,
+        onItemVariantLongClick = navigateEditProductVariant,
     )
 }

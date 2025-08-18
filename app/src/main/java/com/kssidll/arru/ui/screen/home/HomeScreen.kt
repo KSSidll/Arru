@@ -77,7 +77,7 @@ fun HomeScreen(
 
                         FloatingActionButton(
                             onClick = {
-                                onEvent(HomeEvent.NavigateTransactionAdd)
+                                onEvent(HomeEvent.NavigateAddTransaction)
                             }
                         ) {
                             Icon(
@@ -100,7 +100,7 @@ fun HomeScreen(
 
                                     ExtendedFloatingActionButton(
                                         onClick = {
-                                            onEvent(HomeEvent.NavigateTransactionAdd)
+                                            onEvent(HomeEvent.NavigateAddTransaction)
                                         },
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
@@ -162,7 +162,7 @@ fun HomeScreen(
                         header = {
                             FloatingActionButton(
                                 onClick = {
-                                    onEvent(HomeEvent.NavigateTransactionAdd)
+                                    onEvent(HomeEvent.NavigateAddTransaction)
                                 }
                             ) {
                                 Icon(

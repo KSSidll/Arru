@@ -14,10 +14,10 @@ import kotlinx.coroutines.launch
 fun AddProductRoute(
     defaultName: String?,
     navigateBack: (productId: Long?) -> Unit,
-    navigateCategoryAdd: (query: String?) -> Unit,
-    navigateProducerAdd: (query: String?) -> Unit,
-    navigateCategoryEdit: (categoryId: Long) -> Unit,
-    navigateProducerEdit: (producerId: Long) -> Unit,
+    navigateAddProductCategory: (query: String?) -> Unit,
+    navigateAddProductProducer: (query: String?) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
 ) {
@@ -57,9 +57,9 @@ fun AddProductRoute(
                 }
             }
         },
-        onCategoryAddButtonClick = navigateCategoryAdd,
-        onProducerAddButtonClick = navigateProducerAdd,
-        onItemCategoryLongClick = navigateCategoryEdit,
-        onItemProducerLongClick = navigateProducerEdit,
+        onCategoryAddButtonClick = navigateAddProductCategory,
+        onProducerAddButtonClick = navigateAddProductProducer,
+        onItemCategoryLongClick = navigateEditProductCategory,
+        onItemProducerLongClick = navigateEditProductProducer,
     )
 }

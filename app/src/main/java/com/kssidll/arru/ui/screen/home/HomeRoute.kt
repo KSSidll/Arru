@@ -53,14 +53,14 @@ enum class HomeDestinations(
 fun HomeRoute(
     navigateSettings: () -> Unit,
     navigateSearch: () -> Unit,
-    navigateProduct: (productId: Long) -> Unit,
-    navigateCategory: (categoryId: Long) -> Unit,
-    navigateProducer: (producerId: Long) -> Unit,
-    navigateShop: (shopId: Long) -> Unit,
-    navigateTransactionAdd: () -> Unit,
-    navigateTransactionEdit: (transactionId: Long) -> Unit,
-    navigateItemAdd: (transactionId: Long) -> Unit,
-    navigateItemEdit: (itemId: Long) -> Unit,
+    navigateDisplayProduct: (productId: Long) -> Unit,
+    navigateDisplayProductCategory: (categoryId: Long) -> Unit,
+    navigateDisplayProductProducer: (producerId: Long) -> Unit,
+    navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateAddTransaction: () -> Unit,
+    navigateEditTransaction: (transactionId: Long) -> Unit,
+    navigateAddItem: (transactionId: Long) -> Unit,
+    navigateEditItem: (itemId: Long) -> Unit,
     navigateCategoryRanking: () -> Unit,
     navigateShopRanking: () -> Unit,
     navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
@@ -96,36 +96,36 @@ fun HomeRoute(
                     navigateSearch()
                 }
 
-                is HomeEvent.NavigateProduct -> {
-                    navigateProduct(event.productId)
+                is HomeEvent.NavigateDisplayProduct -> {
+                    navigateDisplayProduct(event.productId)
                 }
 
-                is HomeEvent.NavigateCategory -> {
-                    navigateCategory(event.categoryId)
+                is HomeEvent.NavigateDisplayProductCategory -> {
+                    navigateDisplayProductCategory(event.categoryId)
                 }
 
-                is HomeEvent.NavigateProducer -> {
-                    navigateProducer(event.producerId)
+                is HomeEvent.NavigateDisplayProductProducer -> {
+                    navigateDisplayProductProducer(event.producerId)
                 }
 
-                is HomeEvent.NavigateShop -> {
-                    navigateShop(event.shopId)
+                is HomeEvent.NavigateDisplayShop -> {
+                    navigateDisplayShop(event.shopId)
                 }
 
-                is HomeEvent.NavigateItemAdd -> {
-                    navigateItemAdd(event.transactionId)
+                is HomeEvent.NavigateAddItem -> {
+                    navigateAddItem(event.transactionId)
                 }
 
-                is HomeEvent.NavigateItemEdit -> {
-                    navigateItemEdit(event.itemId)
+                is HomeEvent.NavigateEditItem -> {
+                    navigateEditItem(event.itemId)
                 }
 
-                is HomeEvent.NavigateTransactionAdd -> {
-                    navigateTransactionAdd()
+                is HomeEvent.NavigateAddTransaction -> {
+                    navigateAddTransaction()
                 }
 
-                is HomeEvent.NavigateTransactionEdit -> {
-                    navigateTransactionEdit(event.transactionId)
+                is HomeEvent.NavigateEditTransaction -> {
+                    navigateEditTransaction(event.transactionId)
                 }
 
                 is HomeEvent.NavigateCategoryRanking -> {

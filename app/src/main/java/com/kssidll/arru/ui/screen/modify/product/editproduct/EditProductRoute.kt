@@ -17,10 +17,10 @@ fun EditProductRoute(
     productId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: () -> Unit,
-    navigateCategoryAdd: (query: String?) -> Unit,
-    navigateProducerAdd: (query: String?) -> Unit,
-    navigateCategoryEdit: (categoryId: Long) -> Unit,
-    navigateProducerEdit: (producerId: Long) -> Unit,
+    navigateAddProductCategory: (query: String?) -> Unit,
+    navigateAddProductProducer: (query: String?) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
 ) {
@@ -96,9 +96,9 @@ fun EditProductRoute(
             viewModel.showMergeConfirmDialog.apply { value = it }
         },
         submitButtonText = stringResource(id = R.string.item_product_edit),
-        onCategoryAddButtonClick = navigateCategoryAdd,
-        onProducerAddButtonClick = navigateProducerAdd,
-        onItemCategoryLongClick = navigateCategoryEdit,
-        onItemProducerLongClick = navigateProducerEdit,
+        onCategoryAddButtonClick = navigateAddProductCategory,
+        onProducerAddButtonClick = navigateAddProductProducer,
+        onItemCategoryLongClick = navigateEditProductCategory,
+        onItemProducerLongClick = navigateEditProductProducer,
     )
 }

@@ -82,7 +82,7 @@ class MainActivity: AppCompatActivity() {
 
         val destination = intent.getStringExtra(INTENT_NAVIGATE_TO_KEY)
         val initialBackstack = if (destination == INTENT_NAVIGATE_TO_ADD_TRANSACTION) {
-            listOf(Screen.Home, Screen.TransactionAdd())
+            listOf(Screen.Home, Screen.AddTransaction())
         } else listOf(Screen.Home)
 
         val navController = if (savedInstanceState != null) {
@@ -147,7 +147,7 @@ class MainActivity: AppCompatActivity() {
         val destination = intent.getStringExtra(INTENT_NAVIGATE_TO_KEY)
 
         if (destination == INTENT_NAVIGATE_TO_ADD_TRANSACTION) {
-            mNavController?.navigate(Screen.TransactionAdd())
+            mNavController?.navigate(Screen.AddTransaction())
         }
     }
 }

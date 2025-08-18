@@ -325,25 +325,25 @@ fun TransactionScreenContent(
                             }
                         },
                         onTransactionLongClick = {
-                            onEvent(HomeEvent.NavigateTransactionEdit(it))
+                            onEvent(HomeEvent.NavigateEditTransaction(it))
                         },
                         onItemAddClick = {
-                            onEvent(HomeEvent.NavigateItemAdd(it))
+                            onEvent(HomeEvent.NavigateAddItem(it))
                         },
                         onItemClick = {
-                            onEvent(HomeEvent.NavigateProduct(it))
+                            onEvent(HomeEvent.NavigateDisplayProduct(it))
                         },
                         onItemLongClick = {
-                            onEvent(HomeEvent.NavigateItemEdit(it))
+                            onEvent(HomeEvent.NavigateEditItem(it))
                         },
                         onItemCategoryClick = {
-                            onEvent(HomeEvent.NavigateCategory(it))
+                            onEvent(HomeEvent.NavigateDisplayProductCategory(it))
                         },
                         onItemProducerClick = {
-                            onEvent(HomeEvent.NavigateProducer(it))
+                            onEvent(HomeEvent.NavigateDisplayProductProducer(it))
                         },
                         onItemShopClick = {
-                            onEvent(HomeEvent.NavigateShop(it))
+                            onEvent(HomeEvent.NavigateDisplayShop(it))
                         },
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,

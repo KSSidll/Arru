@@ -4,17 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.ranking.RankingScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ShopRankingRoute(
     navigateBack: () -> Unit,
-    navigateShop: (shopId: Long) -> Unit,
-    navigateShopEdit: (shopId: Long) -> Unit,
+    navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
 ) {
     val viewModel: ShopRankingViewModel = hiltViewModel()
 
@@ -24,11 +22,11 @@ fun ShopRankingRoute(
         data = viewModel.shopTotalSpentFlow()
             .collectAsState(emptyImmutableList()).value,
         onItemClick = {
-            navigateShop(it.shop.id)
+            navigateDisplayShop(it.shop.id)
         },
         onItemClickLabel = stringResource(id = R.string.select),
         onItemLongClick = {
-            navigateShopEdit(it.shop.id)
+            navigateEditShop(it.shop.id)
         },
         onItemLongClickLabel = stringResource(id = R.string.edit),
     )

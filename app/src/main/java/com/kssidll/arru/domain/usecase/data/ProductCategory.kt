@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
 
+
 class GetProductCategoryEntityUseCase(
     private val productCategoryRepository: ProductCategoryRepositorySource,
 ) {
@@ -18,6 +19,7 @@ class GetProductCategoryEntityUseCase(
 
 
 /** DOMAIN */
+
 
 // class GetProductCategoryUseCase(
 //     private val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase,
@@ -47,6 +49,10 @@ class GetItemsForProductCategoryUseCase(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) = productCategoryRepository.itemsFor(id).flowOn(dispatcher)
 }
+
+
+/** DOMAIN CHART */
+
 
 class GetTotalSpentByDayForProductCategoryUseCase(
     private val productCategoryRepository: ProductCategoryRepositorySource,
