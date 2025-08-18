@@ -31,7 +31,6 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +41,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -53,16 +54,16 @@ private val HEADER_HEIGHT: Dp = 105.dp
 
 fun LazyListScope.transactionBasketCard(
     modifier: Modifier = Modifier,
-    transaction: TransactionBasketWithItems,
+    transaction: Transaction,
     itemsVisible: Boolean,
-    onTransactionClick: ((transactionId: Long) -> Unit)? = null,
-    onTransactionLongClick: ((transactionId: Long) -> Unit)? = null,
-    onItemAddClick: (transactionId: Long) -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
+    onTransactionClick: (() -> Unit)? = null,
+    onTransactionLongClick: (() -> Unit)? = null,
+    onItemAddClick: () -> Unit,
+    onItemClick: (item: Item) -> Unit,
+    onItemLongClick: (item: Item) -> Unit,
+    onItemCategoryClick: (item: Item) -> Unit,
+    onItemProducerClick: (item: Item) -> Unit,
+    onItemShopClick: () -> Unit,
     headerColor: Color,
     currencyLocale: Locale,
 ) {
@@ -93,26 +94,13 @@ fun LazyListScope.transactionBasketCard(
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Column {
-                    val onItemClick = remember(onItemClick) { onItemClick }
-                    val onItemLongClick = remember(onItemLongClick) { onItemLongClick }
-                    val onItemCategoryClick = remember(onItemCategoryClick) { onItemCategoryClick }
-                    val onItemProducerClick = remember(onItemProducerClick) { onItemProducerClick }
-
                     transaction.items.forEach { item ->
                         FullItemCard(
                             item = item,
-                            onItemClick = {
-                                // onItemClick(it.productId)
-                            },
-                            onItemLongClick = {
-                                // onItemLongClick(it.id)
-                            },
-                            onCategoryClick = {
-                                // onItemCategoryClick(it.id)
-                            },
-                            onProducerClick = {
-                                // onItemProducerClick(it.id)
-                            },
+                            onItemClick = onItemClick,
+                            onItemLongClick = onItemLongClick,
+                            onCategoryClick = onItemCategoryClick,
+                            onProducerClick = onItemProducerClick,
                         )
                     }
                 }
@@ -124,12 +112,12 @@ fun LazyListScope.transactionBasketCard(
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.transactionBasketCardHeader(
     modifier: Modifier = Modifier,
-    transaction: TransactionBasketWithItems,
+    transaction: Transaction,
     itemsVisible: Boolean,
-    onTransactionClick: ((transactionId: Long) -> Unit)? = null,
-    onTransactionLongClick: ((transactionId: Long) -> Unit)? = null,
-    onItemAddClick: (transactionId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
+    onTransactionClick: (() -> Unit)? = null,
+    onTransactionLongClick: (() -> Unit)? = null,
+    onItemAddClick: () -> Unit,
+    onItemShopClick: () -> Unit,
     headerColor: Color,
     currencyLocale: Locale,
 ) {
@@ -139,11 +127,11 @@ fun LazyListScope.transactionBasketCardHeader(
                 if (onTransactionClick != null && onTransactionLongClick != null) {
                     Modifier.combinedClickable(
                         role = Role.Button,
-                        onClick = { onTransactionClick(transaction.id) },
-                        onLongClick = { onTransactionLongClick(transaction.id) },
+                        onClick = { onTransactionClick() },
+                        onLongClick = { onTransactionLongClick() },
                     )
                 } else if (onTransactionClick != null) {
-                    Modifier.clickable(role = Role.Button) { onTransactionClick(transaction.id) }
+                    Modifier.clickable(role = Role.Button) { onTransactionClick() }
                 } else Modifier
 
             Surface(color = headerColor) {
@@ -172,12 +160,9 @@ fun LazyListScope.transactionBasketCardHeader(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(start = 8.dp, end = 20.dp),
                         ) {
-                            if (transaction.shop != null) {
-                                val onItemShopClick =
-                                    remember(transaction.shop.id) { onItemShopClick }
-
+                            if (transaction.shopId != null) {
                                 Button(
-                                    onClick = { onItemShopClick(transaction.shop.id) },
+                                    onClick = onItemShopClick,
                                     contentPadding =
                                         PaddingValues(vertical = 0.dp, horizontal = 12.dp),
                                     colors =
@@ -187,7 +172,7 @@ fun LazyListScope.transactionBasketCardHeader(
                                         ),
                                 ) {
                                     Text(
-                                        text = transaction.shop.name,
+                                        text = transaction.shopName.orEmpty(),
                                         textAlign = TextAlign.Center,
                                         style = Typography.labelMedium,
                                     )
@@ -245,7 +230,7 @@ fun LazyListScope.transactionBasketCardHeader(
                         }
 
                         OutlinedIconButton(
-                            onClick = { onItemAddClick(transaction.id) },
+                            onClick = { onItemAddClick() },
                             shape = ShapeDefaults.Medium,
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                             modifier =
@@ -279,7 +264,7 @@ private fun TransactionBasketCardPreview() {
             val color = MaterialTheme.colorScheme.background
             LazyColumn {
                 transactionBasketCard(
-                    transaction = TransactionBasketWithItems.generate(),
+                    transaction = Transaction.generate(),
                     itemsVisible = true,
                     onItemAddClick = {},
                     onItemClick = {},
@@ -303,7 +288,7 @@ private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
             val color = MaterialTheme.colorScheme.background
             LazyColumn {
                 transactionBasketCardHeader(
-                    transaction = TransactionBasketWithItems.generate(),
+                    transaction = Transaction.generate(),
                     itemsVisible = false,
                     onItemAddClick = {},
                     onItemShopClick = {},

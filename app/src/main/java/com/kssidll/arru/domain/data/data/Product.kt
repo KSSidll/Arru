@@ -8,19 +8,6 @@ import com.kssidll.arru.helper.generateRandomStringValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-// @Immutable
-// data class Product(
-//     val id: Long
-// ) {
-//     companion object {
-//         fun fromEntity(entity: ProductEntity): Product {
-//             return Product(
-//                 id = entity.id
-//             )
-//         }
-//     }
-// }
-
 @Immutable
 data class ProductPriceByShopByVariantByProducerByTime(
     @ColumnInfo("data_order") val dataOrder: Long,

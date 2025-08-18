@@ -1,13 +1,13 @@
 package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.repository.TransactionRepositorySource
-import com.kssidll.arru.domain.usecase.data.GetItemsUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentUseCase
 import com.kssidll.arru.domain.usecase.data.GetTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetTransactionUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,14 +28,13 @@ class TransactionModule {
     }
 
     /** DOMAIN */
-
-    // @Provides
-    // @Singleton
-    // fun provideGetTransactionUseCase(
-    //     getTransactionEntityUseCase: GetTransactionEntityUseCase
-    // ): GetTransactionUseCase {
-    //     return GetTransactionUseCase(getTransactionEntityUseCase)
-    // }
+    @Provides
+    @Singleton
+    fun provideGetTransactionUseCase(
+        transactionRepositorySource: TransactionRepositorySource
+    ): GetTransactionUseCase {
+        return GetTransactionUseCase(transactionRepositorySource)
+    }
 
     @Provides
     @Singleton
@@ -43,14 +42,6 @@ class TransactionModule {
         transactionRepositorySource: TransactionRepositorySource
     ): GetTotalSpentUseCase {
         return GetTotalSpentUseCase(transactionRepositorySource)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetItemsUseCase(
-        transactionRepositorySource: TransactionRepositorySource
-    ): GetItemsUseCase {
-        return GetItemsUseCase(transactionRepositorySource)
     }
 
     /** DOMAIN CHART */

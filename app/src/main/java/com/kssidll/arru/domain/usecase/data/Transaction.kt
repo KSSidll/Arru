@@ -1,9 +1,13 @@
 package com.kssidll.arru.domain.usecase.data
 
 import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.domain.data.data.Transaction
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 
 /** ENTITY */
 class GetTransactionEntityUseCase(private val transactionRepository: TransactionRepositorySource) {
@@ -12,26 +16,30 @@ class GetTransactionEntityUseCase(private val transactionRepository: Transaction
 }
 
 /** DOMAIN */
-
-// class GetTransactionUseCase(
-//     private val getTransactionEntityUseCase: GetTransactionEntityUseCase,
-// ) {
-//     operator fun invoke(
-//         id: Long,
-//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-//     ) = getTransactionEntityUseCase(id, dispatcher).map {
-//         it?.let { Transaction.fromEntity(it) }
-//     }
-// }
+class GetTransactionUseCase(private val transactionRepository: TransactionRepositorySource) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        transactionRepository
+            .intermediateFor(id)
+            .map { intermediate ->
+                intermediate?.let { transaction ->
+                    Transaction(
+                        id = transaction.entity.id,
+                        date = transaction.entity.date,
+                        shopId = transaction.entity.shopEntityId,
+                        shopName = transaction.shopEntity?.name,
+                        totalCost = transaction.entity.totalCost,
+                        note = transaction.entity.note,
+                        items = transaction.items.toImmutableList(),
+                    )
+                }
+            }
+            .flowOn(dispatcher)
+}
 
 class GetTotalSpentUseCase(private val transactionRepository: TransactionRepositorySource) {
     operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         transactionRepository.totalSpent().flowOn(dispatcher)
-}
-
-class GetItemsUseCase(private val transactionRepository: TransactionRepositorySource) {
-    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
-        transactionRepository.items().flowOn(dispatcher)
 }
 
 /** DOMAIN CHART */

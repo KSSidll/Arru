@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.data
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
@@ -13,6 +14,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
     indices = [Index(value = ["name"], name = "index_ShopEntity_name")],
     tableName = "ShopEntity",
 )
+@Immutable
 data class ShopEntity(@PrimaryKey(autoGenerate = true) val id: Long, val name: String) :
     FuzzySearchSource, NameSource {
     /**

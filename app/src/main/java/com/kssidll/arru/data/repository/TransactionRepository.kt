@@ -5,12 +5,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.kssidll.arru.data.dao.TransactionEntityDao
+import com.kssidll.arru.data.data.IntermediateTransaction
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -107,10 +108,13 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
     override fun totalSpent(): Flow<Float?> =
         dao.totalSpent().cancellable().map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
 
-    override fun items(): Flow<PagingData<Item>> =
+    override fun intermediateFor(id: Long): Flow<IntermediateTransaction?> =
+        dao.intermediateFor(id).cancellable()
+
+    override fun intermediates(): Flow<PagingData<IntermediateTransaction>> =
         Pager(
                 config = PagingConfig(pageSize = 8, enablePlaceholders = true),
-                pagingSourceFactory = { dao.items() },
+                pagingSourceFactory = { dao.intermediates() },
             )
             .flow
             .cancellable()
@@ -154,21 +158,22 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
         return dao.transactionBasketsWithItems(startPosition, count).toImmutableList()
     }
 
-    override fun transactionBasketsPaged(): Flow<PagingData<TransactionBasketWithItems>> {
+    override fun transactionBasketsPaged(): Flow<PagingData<Transaction>> {
         return Pager(
                 config = PagingConfig(pageSize = 12, enablePlaceholders = true, jumpThreshold = 24),
-                pagingSourceFactory = { dao.allPaged() },
+                pagingSourceFactory = { dao.intermediates() },
             )
             .flow
             .map { pagingData ->
-                pagingData.map { transaction ->
-                    TransactionBasketWithItems(
-                        id = transaction.id,
-                        date = transaction.date,
-                        shop = transaction.shopEntityId?.let { dao.shopById(it) },
-                        totalCost = transaction.totalCost,
-                        items = dao._itemsByTransactionBasketId(transaction.id),
-                        note = transaction.note,
+                pagingData.map {
+                    Transaction(
+                        id = it.entity.id,
+                        date = it.entity.date,
+                        shopId = it.entity.shopEntityId,
+                        shopName = it.shopEntity?.name,
+                        totalCost = it.entity.totalCost,
+                        note = it.entity.note,
+                        items = it.items.toImmutableList(),
                     )
                 }
             }

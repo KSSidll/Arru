@@ -12,18 +12,6 @@ class GetShopEntityUseCase(private val shopRepository: ShopRepositorySource) {
 }
 
 /** DOMAIN */
-
-// class GetShopUseCase(
-//     private val getShopEntityUseCase: GetShopEntityUseCase,
-// ) {
-//     operator fun invoke(
-//         id: Long,
-//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-//     ) = getShopEntityUseCase(id, dispatcher).map {
-//         it?.let { Shop.fromEntity(it) }
-//     }
-// }
-
 class GetTotalSpentForShopUseCase(private val shopRepository: ShopRepositorySource) {
     operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         shopRepository.totalSpent(id).flowOn(dispatcher)

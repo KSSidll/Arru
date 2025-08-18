@@ -307,17 +307,27 @@ fun TransactionScreenContent(
                                 }
                             }
                         },
-                        onTransactionLongClick = { onEvent(HomeEvent.NavigateEditTransaction(it)) },
-                        onItemAddClick = { onEvent(HomeEvent.NavigateAddItem(it)) },
-                        onItemClick = { onEvent(HomeEvent.NavigateDisplayProduct(it)) },
-                        onItemLongClick = { onEvent(HomeEvent.NavigateEditItem(it)) },
+                        onTransactionLongClick = {
+                            onEvent(HomeEvent.NavigateEditTransaction(transaction.basket.id))
+                        },
+                        onItemAddClick = {
+                            onEvent(HomeEvent.NavigateAddItem(transaction.basket.id))
+                        },
+                        onItemClick = { onEvent(HomeEvent.NavigateDisplayProduct(it.productId)) },
+                        onItemLongClick = { onEvent(HomeEvent.NavigateEditItem(it.id)) },
                         onItemCategoryClick = {
-                            onEvent(HomeEvent.NavigateDisplayProductCategory(it))
+                            onEvent(HomeEvent.NavigateDisplayProductCategory(it.productCategoryId))
                         },
                         onItemProducerClick = {
-                            onEvent(HomeEvent.NavigateDisplayProductProducer(it))
+                            it.productProducerId?.let { productProducerId ->
+                                onEvent(HomeEvent.NavigateDisplayProductProducer(productProducerId))
+                            }
                         },
-                        onItemShopClick = { onEvent(HomeEvent.NavigateDisplayShop(it)) },
+                        onItemShopClick = {
+                            transaction.basket.shopId?.let { shopId ->
+                                onEvent(HomeEvent.NavigateDisplayShop(shopId))
+                            }
+                        },
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,
                         modifier = Modifier.widthIn(max = 600.dp),

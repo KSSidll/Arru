@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.data
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
@@ -43,6 +44,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
         ],
     tableName = "ProductEntity",
 )
+@Immutable
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     var productCategoryEntityId: Long,

@@ -1,5 +1,6 @@
 package com.kssidll.arru.data.data
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -50,6 +51,7 @@ import kotlin.math.log10
         ],
     tableName = "ItemEntity",
 )
+@Immutable
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     var transactionEntityId: Long,

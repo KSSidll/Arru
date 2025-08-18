@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.TransactionBasketWithItems
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
@@ -42,15 +42,9 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayTransactionScreen(
-    onBack: () -> Unit,
-    transaction: TransactionBasketWithItems?,
-    onEditAction: () -> Unit,
-    onItemAddClick: (transactionId: Long) -> Unit,
-    onItemClick: (productId: Long) -> Unit,
-    onItemLongClick: (itemId: Long) -> Unit,
-    onItemCategoryClick: (categoryId: Long) -> Unit,
-    onItemProducerClick: (producerId: Long) -> Unit,
-    onItemShopClick: (shopId: Long) -> Unit,
+    uiState: DisplayTransactionUiState,
+    onEvent: (event: DisplayTransactionEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current
     val headerColor = MaterialTheme.colorScheme.background
@@ -58,11 +52,13 @@ fun DisplayTransactionScreen(
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = onBack,
+                onBack = { onEvent(DisplayTransactionEvent.NavigateBack) },
                 title = {},
                 actions = {
                     // 'edit' action
-                    IconButton(onClick = { onEditAction() }) {
+                    IconButton(
+                        onClick = { onEvent(DisplayTransactionEvent.NavigateEditTransaction) }
+                    ) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(id = R.string.edit),
@@ -80,8 +76,12 @@ fun DisplayTransactionScreen(
                 WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
             ),
     ) { paddingValues ->
-        AnimatedVisibility(visible = transaction != null, enter = fadeIn(), exit = fadeOut()) {
-            if (transaction != null) {
+        AnimatedVisibility(
+            visible = uiState.transaction != null,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            if (uiState.transaction != null) {
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier =
@@ -90,14 +90,32 @@ fun DisplayTransactionScreen(
                             .consumeWindowInsets(paddingValues),
                 ) {
                     transactionBasketCard(
-                        transaction = transaction,
+                        transaction = uiState.transaction,
                         itemsVisible = true,
-                        onItemAddClick = onItemAddClick,
-                        onItemClick = onItemClick,
-                        onItemLongClick = onItemLongClick,
-                        onItemCategoryClick = onItemCategoryClick,
-                        onItemProducerClick = onItemProducerClick,
-                        onItemShopClick = onItemShopClick,
+                        onItemAddClick = { onEvent(DisplayTransactionEvent.NavigateAddItem) },
+                        onItemClick = {
+                            onEvent(DisplayTransactionEvent.NavigateDisplayProduct(it.productId))
+                        },
+                        onItemLongClick = {
+                            onEvent(DisplayTransactionEvent.NavigateEditItem(it.id))
+                        },
+                        onItemCategoryClick = {
+                            onEvent(
+                                DisplayTransactionEvent.NavigateDisplayProductCategory(
+                                    it.productCategoryId
+                                )
+                            )
+                        },
+                        onItemProducerClick = {
+                            it.productProducerId?.let { productProducerId ->
+                                onEvent(
+                                    DisplayTransactionEvent.NavigateDisplayProductProducer(
+                                        productProducerId
+                                    )
+                                )
+                            }
+                        },
+                        onItemShopClick = { onEvent(DisplayTransactionEvent.NavigateDisplayShop) },
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,
                         modifier = Modifier.width(600.dp),
@@ -124,15 +142,8 @@ private fun DisplayTransactionScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayTransactionScreen(
-                onBack = {},
-                transaction = TransactionBasketWithItems.generate(),
-                onEditAction = {},
-                onItemAddClick = {},
-                onItemClick = {},
-                onItemLongClick = {},
-                onItemCategoryClick = {},
-                onItemProducerClick = {},
-                onItemShopClick = {},
+                uiState = DisplayTransactionUiState(transaction = Transaction.generate()),
+                onEvent = {},
             )
         }
     }

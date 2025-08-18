@@ -788,8 +788,8 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                 DisplayTransactionRoute(
                     transactionId = screen.transactionId,
                     navigateBack = navigateBack,
-                    navigateEditTransaction = navigateEditTransaction,
-                    navigateAddItem = navigateAddItem,
+                    navigateEditTransaction = { navigateEditTransaction(screen.transactionId) },
+                    navigateAddItem = { navigateAddItem(screen.transactionId) },
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateEditItem = navigateEditItem,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,

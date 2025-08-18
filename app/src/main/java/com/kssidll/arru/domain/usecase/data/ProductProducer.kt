@@ -14,18 +14,6 @@ class GetProductProducerEntityUseCase(
 }
 
 /** DOMAIN */
-
-// class GetProductProducerUseCase(
-//     private val getProductProducerEntityUseCase: GetProductProducerEntityUseCase,
-// ) {
-//     operator fun invoke(
-//         id: Long,
-//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-//     ) = getProductProducerEntityUseCase(id, dispatcher).map {
-//         it?.let { ProductProducer.fromEntity(it) }
-//     }
-// }
-
 class GetTotalSpentForProductProducerUseCase(
     private val productProducerRepository: ProductProducerRepositorySource
 ) {

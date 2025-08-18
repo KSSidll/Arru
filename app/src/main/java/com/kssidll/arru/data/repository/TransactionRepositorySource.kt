@@ -1,10 +1,11 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
+import com.kssidll.arru.data.data.IntermediateTransaction
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -136,8 +137,14 @@ interface TransactionRepositorySource {
     /** @return float representing total spending */
     fun totalSpent(): Flow<Float?>
 
-    /** @return [PagingData] of all [Item] */
-    fun items(): Flow<PagingData<Item>>
+    /** @return [PagingData] of all [IntermediateTransaction] */
+    fun intermediates(): Flow<PagingData<IntermediateTransaction>>
+
+    /**
+     * @param id id of the [TransactionEntity]
+     * @return [IntermediateTransaction] that is of [TransactionEntity] [id]
+     */
+    fun intermediateFor(id: Long): Flow<IntermediateTransaction?>
 
     /**
      * @return List of [TransactionSpentChartData] representing total spending partitioned by day
@@ -202,7 +209,7 @@ interface TransactionRepositorySource {
      * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for
      *   placeholder values
      */
-    fun transactionBasketsPaged(): Flow<PagingData<TransactionBasketWithItems>>
+    fun transactionBasketsPaged(): Flow<PagingData<Transaction>>
 
     /**
      * @param transactionId id to match [TransactionBasketWithItems] with

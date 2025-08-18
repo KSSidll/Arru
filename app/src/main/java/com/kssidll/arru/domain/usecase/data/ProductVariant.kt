@@ -14,14 +14,3 @@ class GetProductVariantEntityUseCase(
 }
 
 /** DOMAIN */
-
-// class GetProductVariantUseCase(
-//     private val getProductVariantEntityUseCase: GetProductVariantEntityUseCase,
-// ) {
-//     operator fun invoke(
-//         id: Long,
-//         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-//     ) = getProductVariantEntityUseCase(id, dispatcher).map {
-//         it?.let { ProductVariant.fromEntity(it) }
-//     }
-// }

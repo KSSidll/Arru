@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.FullItem
+import com.kssidll.arru.data.data.IntermediateTransaction
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
@@ -143,8 +144,15 @@ interface TransactionEntityDao {
     @Query("SELECT SUM(TransactionEntity.totalCost) FROM TransactionEntity")
     fun totalSpent(): Flow<Long?>
 
-    @Query("SELECT ItemView.* FROM ItemView ORDER BY date DESC")
-    fun items(): PagingSource<Int, Item>
+    @Transaction
+    @Query(
+        "SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.id = :id ORDER BY date DESC"
+    )
+    fun intermediateFor(id: Long): Flow<IntermediateTransaction>
+
+    @Transaction
+    @Query("SELECT TransactionEntity.* FROM TransactionEntity ORDER BY date DESC")
+    fun intermediates(): PagingSource<Int, IntermediateTransaction>
 
     @Query(
         """

@@ -1,11 +1,13 @@
 package com.kssidll.arru.data.data
 
 import androidx.compose.runtime.Immutable
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.generateRandomLongValue
@@ -172,3 +174,10 @@ fun List<TransactionEntity>.asCsvList(includeHeaders: Boolean = false): List<Str
     // Add rows
     this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
 }
+
+@Immutable
+data class IntermediateTransaction(
+    @Embedded val entity: TransactionEntity,
+    @Relation(parentColumn = "id", entityColumn = "transactionId") val items: List<Item>,
+    @Relation(parentColumn = "shopEntityId", entityColumn = "id") val shopEntity: ShopEntity?,
+)

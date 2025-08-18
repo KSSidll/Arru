@@ -12,12 +12,12 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.kssidll.arru.data.data.ItemSpentByCategory
-import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
@@ -125,12 +125,11 @@ sealed class HomeEvent {
 
 @Stable
 data class TransactionBasketDisplayData(
-    val basket: TransactionBasketWithItems,
+    val basket: Transaction,
     var itemsVisible: MutableState<Boolean> = mutableStateOf(false),
 )
 
-fun Flow<PagingData<TransactionBasketWithItems>>.toDisplayData():
-    Flow<PagingData<TransactionBasketDisplayData>> {
+fun Flow<PagingData<Transaction>>.toDisplayData(): Flow<PagingData<TransactionBasketDisplayData>> {
     return map { pagingData -> pagingData.map { TransactionBasketDisplayData(it) } }
 }
 
