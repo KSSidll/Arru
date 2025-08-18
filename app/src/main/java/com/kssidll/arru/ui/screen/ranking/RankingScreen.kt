@@ -45,13 +45,16 @@ import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Generic ranking screen
+ *
  * @param T Type of item, needs to implement [RankSource]
  * @param onBack Called to request a back navigation
  * @param title Text displayed on the top app bar
  * @param data List of items to display, items need to implement [RankSource]
- * @param onItemClick Function to call when an item is clicked, null disables click event if [onItemLongClick] is null as well
+ * @param onItemClick Function to call when an item is clicked, null disables click event if
+ *   [onItemLongClick] is null as well
  * @param onItemClickLabel Semantic / accessibility label for the [onItemClick] action
- * @param onItemLongClick Function to call when an item is long clicked, null disables click event if [onItemClick] is null as well
+ * @param onItemLongClick Function to call when an item is long clicked, null disables click event
+ *   if [onItemClick] is null as well
  * @param onItemLongClickLabel Semantic / accessibility label for the [onItemLongClick] action
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,35 +67,32 @@ fun <T> RankingScreen(
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
     onItemLongClickLabel: String? = null,
-) where T: RankSource {
+) where T : RankSource {
     Scaffold(
-        topBar = {
-            SecondaryAppBar(
-                onBack = onBack,
-                title = {
-                    Text(title)
-                },
-            )
-        },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        topBar = { SecondaryAppBar(onBack = onBack, title = { Text(title) }) },
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier =
+            Modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) {
         Box(
-            modifier = Modifier
-                .padding(it)
-                .consumeWindowInsets(it)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier.padding(it)
+                    .consumeWindowInsets(it)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
         ) {
             AnimatedVisibility(
                 visible = data.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_data_to_display_text),
@@ -102,17 +102,9 @@ fun <T> RankingScreen(
                 }
             }
 
-            AnimatedVisibility(
-                visible = data.isNotEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            AnimatedVisibility(visible = data.isNotEmpty(), enter = fadeIn(), exit = fadeOut()) {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .widthIn(max = 600.dp)
-                    ) {
+                    Box(modifier = Modifier.align(Alignment.Center).widthIn(max = 600.dp)) {
                         RankingList(
                             innerItemPadding = PaddingValues(horizontal = 16.dp),
                             items = data,

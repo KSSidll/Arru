@@ -11,11 +11,12 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
-class Arru: Application() {
+class Arru : Application() {
 
     companion object {
         /**
          * restarts the app
+         *
          * @param context app context
          */
         fun restart(context: Context) {
@@ -36,13 +37,13 @@ const val APPLICATION_NAME = "Arru"
     name = "Dark",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES,
-    device = Devices.PIXEL_FOLD
+    device = Devices.PIXEL_FOLD,
 )
 @Preview(
     group = "Expanded",
     name = "Light",
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO,
-    device = Devices.PIXEL_FOLD
+    device = Devices.PIXEL_FOLD,
 )
 annotation class PreviewExpanded

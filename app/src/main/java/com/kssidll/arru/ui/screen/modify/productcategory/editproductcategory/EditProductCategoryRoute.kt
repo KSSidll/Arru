@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.productcategory.editproductcategory
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,46 +30,33 @@ fun EditProductCategoryRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateCategory(categoryId)
-                        .isNotError()
-                ) {
+                if (viewModel.updateCategory(categoryId).isNotError()) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteCategory(categoryId)
-                        .isNotError()
-                ) {
+                if (viewModel.deleteCategory(categoryId).isNotError()) {
                     navigateBackDelete()
                 }
             }
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it)
-                        .isNotError()
-                ) {
+                if (viewModel.mergeWith(it).isNotError()) {
                     navigateBackDelete()
                 }
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(categoryId),
-        mergeConfirmMessageTemplate = stringResource(id = R.string.merge_action_message_template)
-            .replace(
-                "{value_1}",
-                viewModel.mergeMessageCategoryName
-            ),
-
+        mergeConfirmMessageTemplate =
+            stringResource(id = R.string.merge_action_message_template)
+                .replace("{value_1}", viewModel.mergeMessageCategoryName),
         chosenMergeCandidate = viewModel.chosenMergeCandidate.value,
-        onChosenMergeCandidateChange = {
-            viewModel.chosenMergeCandidate.apply { value = it }
-        },
+        onChosenMergeCandidateChange = { viewModel.chosenMergeCandidate.apply { value = it } },
         showMergeConfirmDialog = viewModel.showMergeConfirmDialog.value,
-        onShowMergeConfirmDialogChange = {
-            viewModel.showMergeConfirmDialog.apply { value = it }
-        },
+        onShowMergeConfirmDialogChange = { viewModel.showMergeConfirmDialog.apply { value = it } },
         submitButtonText = stringResource(id = R.string.item_product_category_edit),
     )
 }

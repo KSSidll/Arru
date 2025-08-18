@@ -10,62 +10,70 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductCategoryRepositorySource {
     companion object {
-        sealed class InsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): InsertResult(id)
-            class Error(error: Errors): InsertResult(error = error)
+        sealed class InsertResult(val id: Long? = null, val error: Errors? = null) {
+            class Success(id: Long) : InsertResult(id)
+
+            class Error(error: Errors) : InsertResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
+
+            data object InvalidName : Errors()
+
+            data object DuplicateName : Errors()
         }
 
-        sealed class UpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: UpdateResult()
-            class Error(error: Errors): UpdateResult(error = error)
+        sealed class UpdateResult(val error: Errors? = null) {
+            data object Success : UpdateResult()
+
+            class Error(error: Errors) : UpdateResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
+
+            data object InvalidId : Errors()
+
+            data object InvalidName : Errors()
+
+            data object DuplicateName : Errors()
         }
 
-        sealed class MergeResult(
-            val error: Errors? = null
-        ) {
-            data object Success: MergeResult()
-            class Error(error: Errors): MergeResult(error = error)
+        sealed class MergeResult(val error: Errors? = null) {
+            data object Success : MergeResult()
+
+            class Error(error: Errors) : MergeResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidCategory: Errors()
-            data object InvalidMergingInto: Errors()
+
+            data object InvalidCategory : Errors()
+
+            data object InvalidMergingInto : Errors()
         }
 
-        sealed class DeleteResult(
-            val error: Errors? = null
-        ) {
-            data object Success: DeleteResult()
-            class Error(error: Errors): DeleteResult(error = error)
+        sealed class DeleteResult(val error: Errors? = null) {
+            data object Success : DeleteResult()
+
+            class Error(error: Errors) : DeleteResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidId: Errors()
-            data object DangerousDelete: Errors()
+
+            data object InvalidId : Errors()
+
+            data object DangerousDelete : Errors()
         }
     }
 
@@ -73,8 +81,10 @@ interface ProductCategoryRepositorySource {
 
     /**
      * Inserts [ProductCategoryEntity]
+     *
      * @param name name of the [ProductCategoryEntity] to insert
-     * @return [InsertResult] with id of the newly inserted [ProductCategoryEntity] or an error if any
+     * @return [InsertResult] with id of the newly inserted [ProductCategoryEntity] or an error if
+     *   any
      */
     suspend fun insert(name: String): InsertResult
 
@@ -82,17 +92,16 @@ interface ProductCategoryRepositorySource {
 
     /**
      * Updates [ProductCategoryEntity] with [id] id to provided [name]
+     *
      * @param id id to match [ProductCategoryEntity]
      * @param name name to update the matching [ProductCategoryEntity] to
      * @return [UpdateResult] with the result
      */
-    suspend fun update(
-        id: Long,
-        name: String
-    ): UpdateResult
+    suspend fun update(id: Long, name: String): UpdateResult
 
     /**
      * Merges [entity] into [mergingInto]
+     *
      * @param entity [ProductCategoryEntity] to merge
      * @param mergingInto [ProductCategoryEntity] to merge the [entity] into
      * @return [MergeResult] with the result
@@ -106,14 +115,12 @@ interface ProductCategoryRepositorySource {
 
     /**
      * Deletes [ProductCategoryEntity] matching [id]
+     *
      * @param id id of the [ProductCategoryEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
-    suspend fun delete(
-        id: Long,
-        force: Boolean
-    ): DeleteResult
+    suspend fun delete(id: Long, force: Boolean): DeleteResult
 
     // Read
 
@@ -125,7 +132,8 @@ interface ProductCategoryRepositorySource {
 
     /**
      * @param id id of the [ProductCategoryEntity]
-     * @return float representing total spending for [ProductCategoryEntity] matching [id] id or null if none match
+     * @return float representing total spending for [ProductCategoryEntity] matching [id] id or
+     *   null if none match
      */
     fun totalSpent(id: Long): Flow<Float?>
 
@@ -159,35 +167,17 @@ interface ProductCategoryRepositorySource {
      */
     fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * @return list of all [ProductCategoryEntity]
-     */
+    /** @return list of all [ProductCategoryEntity] */
     fun all(): Flow<ImmutableList<ProductCategoryEntity>>
 
-    /**
-     * @return list of [ItemSpentByCategory] representing total spending groupped by category
-     */
+    /** @return list of [ItemSpentByCategory] representing total spending groupped by category */
     fun totalSpentByCategory(): Flow<ImmutableList<ItemSpentByCategory>>
 
     /**
      * @param year year to match the data to
      * @param month month to match the data to
-     * @return list of [ItemSpentByCategory] representing total spending groupped by category in [year] and [month]
+     * @return list of [ItemSpentByCategory] representing total spending groupped by category in
+     *   [year] and [month]
      */
-    fun totalSpentByCategoryByMonth(
-        year: Int,
-        month: Int
-    ): Flow<ImmutableList<ItemSpentByCategory>>
+    fun totalSpentByCategoryByMonth(year: Int, month: Int): Flow<ImmutableList<ItemSpentByCategory>>
 }

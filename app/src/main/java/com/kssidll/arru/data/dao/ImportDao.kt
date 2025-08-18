@@ -19,51 +19,37 @@ interface ImportDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShopEntities(entities: List<ShopEntity>)
 
-    @Query("DELETE FROM ShopEntity")
-    suspend fun deleteShopEntities()
-
+    @Query("DELETE FROM ShopEntity") suspend fun deleteShopEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProducerEntities(entities: List<ProductProducerEntity>)
 
-    @Query("DELETE FROM ProductProducerEntity")
-    suspend fun deleteProducerEntities()
-
+    @Query("DELETE FROM ProductProducerEntity") suspend fun deleteProducerEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategoryEntities(entities: List<ProductCategoryEntity>)
 
-    @Query("DELETE FROM ProductCategoryEntity")
-    suspend fun deleteCategoryEntities()
-
+    @Query("DELETE FROM ProductCategoryEntity") suspend fun deleteCategoryEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransactionEntities(entities: List<TransactionEntity>)
 
-    @Query("DELETE FROM TransactionEntity")
-    suspend fun deleteTransactionEntities()
-
+    @Query("DELETE FROM TransactionEntity") suspend fun deleteTransactionEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProductEntities(entities: List<ProductEntity>)
 
-    @Query("DELETE FROM ProductEntity")
-    suspend fun deleteProductEntities()
-
+    @Query("DELETE FROM ProductEntity") suspend fun deleteProductEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVariantEntities(entities: List<ProductVariantEntity>)
 
-    @Query("DELETE FROM ProductVariantEntity")
-    suspend fun deleteVariantEntities()
-
+    @Query("DELETE FROM ProductVariantEntity") suspend fun deleteVariantEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemEntities(entities: List<ItemEntity>)
 
-    @Query("DELETE FROM ItemEntity")
-    suspend fun deleteItemEntities()
-
+    @Query("DELETE FROM ItemEntity") suspend fun deleteItemEntities()
 
     @Transaction
     suspend fun deleteAll() {
@@ -84,7 +70,7 @@ interface ImportDao {
         transactionEntities: List<TransactionEntity>,
         productEntities: List<ProductEntity>,
         variantEntities: List<ProductVariantEntity>,
-        itemEntities: List<ItemEntity>
+        itemEntities: List<ItemEntity>,
     ) {
         deleteAll()
 

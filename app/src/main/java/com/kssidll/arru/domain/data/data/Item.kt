@@ -9,16 +9,16 @@ import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.generateRandomDateString
 import com.kssidll.arru.helper.generateRandomLongValue
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import java.util.Locale
 
 @Immutable
 data class ItemSpentChartData(
     @ColumnInfo("data_order") val dataOrder: Long,
     val date: String,
     val value: Long,
-): ChartSource {
+) : ChartSource {
     override fun value(): Float {
         return value.toFloat().div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
@@ -56,7 +56,6 @@ data class ItemSpentChartData(
         return date
     }
 
-
     companion object {
         fun generate(): ItemSpentChartData {
             return ItemSpentChartData(
@@ -67,9 +66,7 @@ data class ItemSpentChartData(
         }
 
         fun generateList(amount: Int = 10): ImmutableList<ItemSpentChartData> {
-            return List(amount) {
-                generate()
-            }.toImmutableList()
+            return List(amount) { generate() }.toImmutableList()
         }
     }
 }

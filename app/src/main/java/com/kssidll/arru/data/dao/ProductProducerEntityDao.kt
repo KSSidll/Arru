@@ -24,18 +24,15 @@ import kotlinx.coroutines.flow.first
 interface ProductProducerEntityDao {
     // Create
 
-    @Insert
-    suspend fun insert(entity: ProductProducerEntity): Long
+    @Insert suspend fun insert(entity: ProductProducerEntity): Long
 
     // Update
 
-    @Update
-    suspend fun update(entity: ProductProducerEntity)
+    @Update suspend fun update(entity: ProductProducerEntity)
 
     // Delete
 
-    @Delete
-    suspend fun delete(entity: ProductProducerEntity)
+    @Delete suspend fun delete(entity: ProductProducerEntity)
 
     // Helper
 
@@ -45,10 +42,14 @@ interface ProductProducerEntityDao {
     @Query("SELECT * FROM ProductEntity WHERE ProductEntity.id = :productId")
     suspend fun productById(productId: Long): ProductEntity
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
+    @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
+    )
     suspend fun variantById(variantId: Long): ProductVariantEntity
 
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
+    )
     suspend fun categoryById(categoryId: Long): ProductCategoryEntity
 
     @Query(
@@ -73,11 +74,7 @@ interface ProductProducerEntityDao {
         OFFSET :offset
     """
     )
-    suspend fun itemsByProducer(
-        producerId: Long,
-        count: Int,
-        offset: Int
-    ): List<ItemEntity>
+    suspend fun itemsByProducer(producerId: Long, count: Int, offset: Int): List<ItemEntity>
 
     @Query(
         """
@@ -111,17 +108,13 @@ interface ProductProducerEntityDao {
     )
     suspend fun getItems(producerId: Long): List<ItemEntity>
 
-    @Delete
-    suspend fun deleteProducts(entities: List<ProductEntity>)
+    @Delete suspend fun deleteProducts(entities: List<ProductEntity>)
 
-    @Delete
-    suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
+    @Delete suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
 
-    @Delete
-    suspend fun deleteItems(entities: List<ItemEntity>)
+    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
 
-    @Update
-    suspend fun updateProducts(entities: List<ProductEntity>)
+    @Update suspend fun updateProducts(entities: List<ProductEntity>)
 
     @Query(
         """
@@ -131,10 +124,7 @@ interface ProductProducerEntityDao {
         WHERE ItemEntity.id < :itemEntityId AND ProductEntity.productProducerEntityId = :producerId
     """
     )
-    suspend fun countItemsBefore(
-        itemEntityId: Long,
-        producerId: Long
-    ): Int
+    suspend fun countItemsBefore(itemEntityId: Long, producerId: Long): Int
 
     @Query(
         """
@@ -144,14 +134,13 @@ interface ProductProducerEntityDao {
         WHERE ItemEntity.id > :itemEntityId AND ProductEntity.productProducerEntityId = :producerId
     """
     )
-    suspend fun countItemsAfter(
-        itemEntityId: Long,
-        producerId: Long
-    ): Int
+    suspend fun countItemsAfter(itemEntityId: Long, producerId: Long): Int
 
     // Read
 
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :id")
+    @Query(
+        "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :id"
+    )
     fun get(id: Long): Flow<ProductProducerEntity?>
 
     @Query(
@@ -164,7 +153,9 @@ interface ProductProducerEntityDao {
     )
     fun totalSpent(id: Long): Flow<Long?>
 
-    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productProducerId = :id ORDER BY date DESC")
+    @Query(
+        "SELECT ItemView.* FROM ItemView WHERE ItemView.productProducerId = :id ORDER BY date DESC"
+    )
     fun itemsFor(id: Long): PagingSource<Int, Item>
 
     @Query(
@@ -339,34 +330,21 @@ interface ProductProducerEntityDao {
     )
     fun totalSpentByYear(id: Long): Flow<List<ItemSpentChartData>>
 
-
-
-
-
-
-
-
-
-
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY ProductProducerEntity.id DESC")
+    @Query(
+        "SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY ProductProducerEntity.id DESC"
+    )
     fun all(): Flow<List<ProductProducerEntity>>
 
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.name = :name")
+    @Query(
+        "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.name = :name"
+    )
     suspend fun byName(name: String): ProductProducerEntity?
 
     @Transaction
-    suspend fun fullItems(
-        entityId: Long,
-        count: Int,
-        offset: Int
-    ): List<FullItem> {
+    suspend fun fullItems(entityId: Long, count: Int, offset: Int): List<FullItem> {
         val producer = get(entityId).first() ?: return emptyList()
 
-        val itemEntities = itemsByProducer(
-            entityId,
-            count,
-            offset
-        )
+        val itemEntities = itemsByProducer(entityId, count, offset)
 
         if (itemEntities.isEmpty()) return emptyList()
 

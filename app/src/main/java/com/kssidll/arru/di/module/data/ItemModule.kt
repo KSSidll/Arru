@@ -13,8 +13,6 @@ import javax.inject.Singleton
 class ItemModule {
 
     /** ENTITY */
-
-
     @Provides
     @Singleton
     fun provideGetItemEntityUseCase(
@@ -23,9 +21,7 @@ class ItemModule {
         return GetItemEntityUseCase(itemRepositorySource)
     }
 
-
     /** DOMAIN */
-
 
     // @Provides
     // @Singleton

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.display.shop
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,7 +17,7 @@ fun DisplayShopRoute(
     navigateDisplayProductProducer: (producerId: Long) -> Unit,
     navigateEditItem: (itemId: Long) -> Unit,
     navigateEditShop: () -> Unit,
-    viewModel: DisplayShopViewModel = hiltViewModel()
+    viewModel: DisplayShopViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(shopId) {
         if (!viewModel.performDataUpdate(shopId)) {
@@ -30,12 +29,14 @@ fun DisplayShopRoute(
         onBack = navigateBack,
         shop = viewModel.shop,
         transactionItems = viewModel.transactions().collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
+        spentByTimeData =
+            viewModel.spentByTimeData
+                ?.collectAsState(initial = emptyImmutableList())
+                ?.value
+                .orEmpty(),
         totalSpentData = viewModel.shopTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
         spentByTimePeriod = viewModel.spentByTimePeriod,
-        onSpentByTimePeriodSwitch = {
-            viewModel.switchPeriod(it)
-        },
+        onSpentByTimePeriodSwitch = { viewModel.switchPeriod(it) },
         chartEntryModelProducer = viewModel.chartEntryModelProducer,
         onItemClick = navigateDisplayProduct,
         onItemCategoryClick = navigateDisplayProductCategory,

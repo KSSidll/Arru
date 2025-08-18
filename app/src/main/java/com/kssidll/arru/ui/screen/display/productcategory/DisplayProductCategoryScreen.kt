@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.display.productcategory
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
@@ -77,20 +76,15 @@ import kotlinx.coroutines.launch
 fun DisplayProductCategoryScreen(
     uiState: DisplayProductCategoryUiState,
     onEvent: (event: DisplayProductCategoryEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-   val items = uiState.items.collectAsLazyPagingItems()
+    val items = uiState.items.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
             SecondaryAppBar(
                 onBack = { onEvent(DisplayProductCategoryEvent.NavigateBack) },
-                title = {
-                    Text(
-                        text = uiState.categoryName,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
+                title = { Text(text = uiState.categoryName, overflow = TextOverflow.Ellipsis) },
                 actions = {
                     // 'edit' action
                     IconButton(
@@ -108,24 +102,26 @@ fun DisplayProductCategoryScreen(
                 },
             )
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier =
+            modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .fillMaxSize()
+            modifier =
+                Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxSize()
         ) {
             AnimatedVisibility(
                 visible = items.loadedEmpty() && uiState.spentByTime.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_data_to_display_text),
@@ -164,15 +160,13 @@ private fun DisplayProductCategoryScreenContent(
 
     LaunchedEffect(firstVisibleItemIndex) {
         if (
-            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-            firstVisibleItemIndex >= 10
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 && firstVisibleItemIndex >= 10
         ) {
             // scrolling up
             returnActionButtonVisible = true
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         } else if (
-            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-            firstVisibleItemIndex < 10
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 || firstVisibleItemIndex < 10
         ) {
             // scrolling down
             returnActionButtonVisible = false
@@ -184,46 +178,34 @@ private fun DisplayProductCategoryScreenContent(
         floatingActionButton = {
             AnimatedVisibility(
                 visible = returnActionButtonVisible,
-                enter = slideInHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseOut
+                enter =
+                    slideInHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseOut),
+                        initialOffsetX = { it },
                     ),
-                    initialOffsetX = { it }
-                ),
-                exit = slideOutHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseIn
+                exit =
+                    slideOutHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseIn),
+                        targetOffsetX = { it },
                     ),
-                    targetOffsetX = { it }
-                )
             ) {
                 FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
+                    onClick = { scope.launch { listState.animateScrollToItem(0) } },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowUpward,
-                        contentDescription = null,
-                    )
+                    Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null)
                 }
             }
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
     ) { paddingValues ->
         LazyColumn(
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
+            modifier =
+                Modifier.fillMaxWidth().padding(paddingValues).consumeWindowInsets(paddingValues),
         ) {
             stickyHeader {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -240,7 +222,9 @@ private fun DisplayProductCategoryScreenContent(
                         SpendingSummaryComponent(
                             spentByTimeData = uiState.spentByTime,
                             spentByTimePeriod = uiState.spentByTimePeriod,
-                            onSpentByTimePeriodUpdate = { onEvent(DisplayProductCategoryEvent.SetSpentByTimePeriod(it)) },
+                            onSpentByTimePeriodUpdate = {
+                                onEvent(DisplayProductCategoryEvent.SetSpentByTimePeriod(it))
+                            },
                             columnChartEntryModelProducer = uiState.chartEntryModelProducer,
                         )
 
@@ -254,24 +238,22 @@ private fun DisplayProductCategoryScreenContent(
                 onItemClick = {
                     onEvent(DisplayProductCategoryEvent.NavigateDisplayProduct(it.productId))
                 },
-                onItemLongClick = {
-                    onEvent(DisplayProductCategoryEvent.NavigateEditItem(it.id))
-                },
+                onItemLongClick = { onEvent(DisplayProductCategoryEvent.NavigateEditItem(it.id)) },
                 onProducerClick = {
                     it.productProducerId?.let { producerId ->
-                        onEvent(DisplayProductCategoryEvent.NavigateDisplayProductProducer(producerId))
+                        onEvent(
+                            DisplayProductCategoryEvent.NavigateDisplayProductProducer(producerId)
+                        )
                     }
                 },
                 onShopClick = {
                     it.shopId?.let { shopId ->
                         onEvent(DisplayProductCategoryEvent.NavigateDisplayShop(shopId))
                     }
-                }
+                },
             )
 
-            item {
-                Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
-            }
+            item { Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) }
         }
     }
 }
@@ -282,10 +264,12 @@ private fun DisplayProductCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductCategoryScreen(
-                uiState = DisplayProductCategoryUiState(
-                    spentByTime = ItemSpentChartData.generateList(), totalSpent = generateRandomFloatValue()
-                ),
-                onEvent = {}
+                uiState =
+                    DisplayProductCategoryUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -296,10 +280,7 @@ private fun DisplayProductCategoryScreenPreview() {
 private fun EmptyDisplayCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayProductCategoryScreen(
-                uiState = DisplayProductCategoryUiState(),
-                onEvent = {}
-            )
+            DisplayProductCategoryScreen(uiState = DisplayProductCategoryUiState(), onEvent = {})
         }
     }
 }
@@ -310,10 +291,12 @@ private fun ExpandedDisplayProductCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductCategoryScreen(
-                uiState = DisplayProductCategoryUiState(
-                    spentByTime = ItemSpentChartData.generateList(), totalSpent = generateRandomFloatValue()
-                ),
-                onEvent = {}
+                uiState =
+                    DisplayProductCategoryUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -324,10 +307,7 @@ private fun ExpandedDisplayProductCategoryScreenPreview() {
 private fun ExpandedEmptyDisplayProductCategoryScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayProductCategoryScreen(
-                uiState = DisplayProductCategoryUiState(),
-                onEvent = {}
-            )
+            DisplayProductCategoryScreen(uiState = DisplayProductCategoryUiState(), onEvent = {})
         }
     }
 }

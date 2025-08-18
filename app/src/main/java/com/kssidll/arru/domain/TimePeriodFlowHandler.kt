@@ -15,9 +15,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
-/**
- * Defines available time periods and handles flow managment when changing time periods
- */
+/** Defines available time periods and handles flow managment when changing time periods */
 class TimePeriodFlowHandler<T>(
     private val scope: CoroutineScope,
     private val day: () -> Flow<T>,
@@ -27,7 +25,8 @@ class TimePeriodFlowHandler<T>(
     startPeriod: Periods = Periods.Month,
 ) {
     private var mCurrentPeriod: MutableState<Periods> = mutableStateOf(startPeriod)
-    val currentPeriod get() = mCurrentPeriod.value
+    val currentPeriod
+        get() = mCurrentPeriod.value
 
     private var mSpentByTimeQuery: Job? = null
     private var mSpentByTimeData: MutableState<Flow<T>> = mutableStateOf(flowOf())
@@ -45,26 +44,25 @@ class TimePeriodFlowHandler<T>(
     private fun handlePeriodSwitch() {
         mSpentByTimeQuery?.cancel()
 
-        mSpentByTimeQuery = scope.launch {
-            when (currentPeriod) {
-                Periods.Day -> mSpentByTimeData.value = day().distinctUntilChanged()
-                    .cancellable()
+        mSpentByTimeQuery =
+            scope.launch {
+                when (currentPeriod) {
+                    Periods.Day ->
+                        mSpentByTimeData.value = day().distinctUntilChanged().cancellable()
 
-                Periods.Week -> mSpentByTimeData.value = week().distinctUntilChanged()
-                    .cancellable()
+                    Periods.Week ->
+                        mSpentByTimeData.value = week().distinctUntilChanged().cancellable()
 
-                Periods.Month -> mSpentByTimeData.value = month().distinctUntilChanged()
-                    .cancellable()
+                    Periods.Month ->
+                        mSpentByTimeData.value = month().distinctUntilChanged().cancellable()
 
-                Periods.Year -> mSpentByTimeData.value = year().distinctUntilChanged()
-                    .cancellable()
+                    Periods.Year ->
+                        mSpentByTimeData.value = year().distinctUntilChanged().cancellable()
+                }
             }
-        }
     }
 
-    /**
-     * Ordinal signifies which order they appear in on the UI
-     */
+    /** Ordinal signifies which order they appear in on the UI */
     enum class Periods {
         Day,
         Week,

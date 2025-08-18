@@ -15,15 +15,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-abstract class ModifyTransactionViewModel: ViewModel() {
+abstract class ModifyTransactionViewModel : ViewModel() {
     protected abstract val shopRepository: ShopRepositorySource
     internal val screenState: ModifyTransactionScreenState = ModifyTransactionScreenState()
 
     private var mShopListener: Job? = null
 
-    /**
-     * @return List of all shops
-     */
+    /** @return List of all shops */
     fun allShops(): Flow<ImmutableList<ShopEntity>> {
         return shopRepository.all()
     }
@@ -46,12 +44,12 @@ abstract class ModifyTransactionViewModel: ViewModel() {
 
         mShopListener?.cancel()
         if (shop != null) {
-            mShopListener = viewModelScope.launch {
-                shopRepository.get(shop.id)
-                    .collectLatest {
+            mShopListener =
+                viewModelScope.launch {
+                    shopRepository.get(shop.id).collectLatest {
                         screenState.selectedShop.value = Field.Loaded(it)
                     }
-            }
+                }
         }
     }
 }
@@ -61,14 +59,11 @@ data class ModifyTransactionScreenState(
     val totalCost: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
     val selectedShop: MutableState<Field<ShopEntity?>> = mutableStateOf(Field.Loaded()),
     val note: MutableState<Field<String?>> = mutableStateOf(Field.Loaded()),
-
     var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-): ModifyScreenState() {
+) : ModifyScreenState() {
 
-    /**
-     * Sets all fields to Loading status
-     */
+    /** Sets all fields to Loading status */
     fun allToLoading() {
         date.apply { value = value.toLoading() }
         totalCost.apply { value = value.toLoading() }

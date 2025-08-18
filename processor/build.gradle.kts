@@ -1,7 +1,3 @@
-plugins {
-    alias(libs.plugins.jvm)
-}
+plugins { alias(libs.plugins.jvm) }
 
-dependencies {
-    implementation(libs.google.ksp.spa)
-}
+dependencies { implementation(libs.google.ksp.spa) }

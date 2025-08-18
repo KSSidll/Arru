@@ -1,18 +1,16 @@
 package com.kssidll.arru.domain.data.data
 
 import androidx.collection.FloatFloatPair
-import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
-import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.generateRandomDateString
 import com.kssidll.arru.helper.generateRandomLongValue
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import java.util.Locale
 
 // @Immutable
 // data class Transaction(
@@ -31,7 +29,7 @@ data class TransactionSpentChartData(
     @ColumnInfo("data_order") val dataOrder: Long,
     val date: String,
     val value: Long,
-): ChartSource {
+) : ChartSource {
     override fun value(): Float {
         return value.toFloat().div(TransactionEntity.COST_DIVISOR)
     }
@@ -69,7 +67,6 @@ data class TransactionSpentChartData(
         return date
     }
 
-
     companion object {
         fun generate(): ItemSpentChartData {
             return ItemSpentChartData(
@@ -80,9 +77,7 @@ data class TransactionSpentChartData(
         }
 
         fun generateList(amount: Int = 10): ImmutableList<ItemSpentChartData> {
-            return List(amount) {
-                generate()
-            }.toImmutableList()
+            return List(amount) { generate() }.toImmutableList()
         }
     }
 }

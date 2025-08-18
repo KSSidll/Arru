@@ -62,36 +62,32 @@ fun DisplayTransactionScreen(
                 title = {},
                 actions = {
                     // 'edit' action
-                    IconButton(
-                        onClick = {
-                            onEditAction()
-                        }
-                    ) {
+                    IconButton(onClick = { onEditAction() }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(id = R.string.edit),
                             tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(27.dp)
+                            modifier = Modifier.size(27.dp),
                         )
                     }
-                }
+                },
             )
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier =
+            Modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) { paddingValues ->
-        AnimatedVisibility(
-            visible = transaction != null,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
+        AnimatedVisibility(visible = transaction != null, enter = fadeIn(), exit = fadeOut()) {
             if (transaction != null) {
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(paddingValues)
-                        .consumeWindowInsets(paddingValues)
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(paddingValues)
+                            .consumeWindowInsets(paddingValues),
                 ) {
                     transactionBasketCard(
                         transaction = transaction,
@@ -104,7 +100,7 @@ fun DisplayTransactionScreen(
                         onItemShopClick = onItemShopClick,
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,
-                        modifier = Modifier.width(600.dp)
+                        modifier = Modifier.width(600.dp),
                     )
 
                     item {

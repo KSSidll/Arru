@@ -23,6 +23,8 @@ import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -32,107 +34,124 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import javax.inject.Inject
 
 @Immutable
 data class HomeUiState(
     val totalSpent: Float = 0f,
-
     val dashboardSpentByTimeChartData: ImmutableList<ChartSource> = emptyImmutableList(),
     val dashboardSpentByTimeChartCurrentPeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
-    val dashboardCategorySpendingRankingData: ImmutableList<ItemSpentByCategory> = emptyImmutableList(),
-    val dashboardShopSpendingRankingData: ImmutableList<TransactionTotalSpentByShop> = emptyImmutableList(),
-    val dashboardTotalChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
-    val dashboardAverageChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
-    val dashboardMedianChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
-
+    val dashboardCategorySpendingRankingData: ImmutableList<ItemSpentByCategory> =
+        emptyImmutableList(),
+    val dashboardShopSpendingRankingData: ImmutableList<TransactionTotalSpentByShop> =
+        emptyImmutableList(),
+    val dashboardTotalChartEntryModelProducer: CartesianChartModelProducer =
+        CartesianChartModelProducer(),
+    val dashboardAverageChartEntryModelProducer: CartesianChartModelProducer =
+        CartesianChartModelProducer(),
+    val dashboardMedianChartEntryModelProducer: CartesianChartModelProducer =
+        CartesianChartModelProducer(),
     val analysisCurrentDateYear: Int = Calendar.getInstance().get(Calendar.YEAR),
     val analysisCurrentDateMonth: Int = Calendar.getInstance().get(Calendar.MONTH) + 1,
     val analysisCurrentDateCategoryData: ImmutableList<ItemSpentByCategory> = emptyImmutableList(),
-    val analysisCurrentDateShopData: ImmutableList<TransactionTotalSpentByShop> = emptyImmutableList(),
+    val analysisCurrentDateShopData: ImmutableList<TransactionTotalSpentByShop> =
+        emptyImmutableList(),
     val analysisPreviousDateCategoryData: ImmutableList<ItemSpentByCategory> = emptyImmutableList(),
-    val analysisPreviousDateShopData: ImmutableList<TransactionTotalSpentByShop> = emptyImmutableList(),
-
+    val analysisPreviousDateShopData: ImmutableList<TransactionTotalSpentByShop> =
+        emptyImmutableList(),
     val transactions: Flow<PagingData<TransactionBasketDisplayData>> = flowOf(),
-
     val dashboardScrollState: ScrollState = ScrollState(0),
     val transactionsListState: LazyListState = LazyListState(),
-    val currentDestination: HomeDestinations = HomeDestinations.DEFAULT
+    val currentDestination: HomeDestinations = HomeDestinations.DEFAULT,
 ) {
     val dashboardScreenNothingToDisplayVisible: Boolean =
-        dashboardSpentByTimeChartData.isEmpty() && dashboardCategorySpendingRankingData.isEmpty() && dashboardShopSpendingRankingData.isEmpty()
+        dashboardSpentByTimeChartData.isEmpty() &&
+            dashboardCategorySpendingRankingData.isEmpty() &&
+            dashboardShopSpendingRankingData.isEmpty()
     val dashboardChartSectionVisible: Boolean = dashboardSpentByTimeChartData.isNotEmpty()
     val dashboardCategoryCardVisible: Boolean = dashboardCategorySpendingRankingData.isNotEmpty()
     val dashboardShopCardVisible: Boolean = dashboardShopSpendingRankingData.isNotEmpty()
 
     val analysisScreenNothingToDisplayVisible: Boolean =
-        analysisCurrentDateCategoryData.isEmpty() && analysisCurrentDateShopData.isEmpty() && analysisPreviousDateCategoryData.isEmpty() && analysisPreviousDateShopData.isEmpty()
+        analysisCurrentDateCategoryData.isEmpty() &&
+            analysisCurrentDateShopData.isEmpty() &&
+            analysisPreviousDateCategoryData.isEmpty() &&
+            analysisPreviousDateShopData.isEmpty()
     val analysisScreenCategoryCardVisible: Boolean =
-        analysisCurrentDateCategoryData.isNotEmpty() || analysisPreviousDateCategoryData.isNotEmpty()
+        analysisCurrentDateCategoryData.isNotEmpty() ||
+            analysisPreviousDateCategoryData.isNotEmpty()
     val analysisScreenShopCardVisible: Boolean =
         analysisCurrentDateShopData.isNotEmpty() || analysisPreviousDateShopData.isNotEmpty()
 }
 
 @Immutable
 sealed class HomeEvent {
-    data class ChangeScreenDestination(val newDestination: HomeDestinations): HomeEvent()
-    data class ChangeDashboardSpentByTimeChartPeriod(val newPeriod: SpendingSummaryPeriod):
+    data class ChangeScreenDestination(val newDestination: HomeDestinations) : HomeEvent()
+
+    data class ChangeDashboardSpentByTimeChartPeriod(val newPeriod: SpendingSummaryPeriod) :
         HomeEvent()
 
-    data object IncrementCurrentAnalysisDate: HomeEvent()
-    data object DecrementCurrentAnalysisDate: HomeEvent()
+    data object IncrementCurrentAnalysisDate : HomeEvent()
 
-    data object NavigateSettings: HomeEvent()
-    data object NavigateSearch: HomeEvent()
-    data class NavigateDisplayProduct(val productId: Long): HomeEvent()
-    data class NavigateDisplayProductCategory(val categoryId: Long): HomeEvent()
-    data class NavigateDisplayProductProducer(val producerId: Long): HomeEvent()
-    data class NavigateDisplayShop(val shopId: Long): HomeEvent()
-    data object NavigateAddTransaction: HomeEvent()
-    data class NavigateEditTransaction(val transactionId: Long): HomeEvent()
-    data class NavigateAddItem(val transactionId: Long): HomeEvent()
-    data class NavigateEditItem(val itemId: Long): HomeEvent()
-    data object NavigateCategoryRanking: HomeEvent()
-    data object NavigateShopRanking: HomeEvent()
-    data class NavigateCategorySpendingComparison(val year: Int, val month: Int): HomeEvent()
-    data class NavigateShopSpendingComparison(val year: Int, val month: Int): HomeEvent()
+    data object DecrementCurrentAnalysisDate : HomeEvent()
+
+    data object NavigateSettings : HomeEvent()
+
+    data object NavigateSearch : HomeEvent()
+
+    data class NavigateDisplayProduct(val productId: Long) : HomeEvent()
+
+    data class NavigateDisplayProductCategory(val categoryId: Long) : HomeEvent()
+
+    data class NavigateDisplayProductProducer(val producerId: Long) : HomeEvent()
+
+    data class NavigateDisplayShop(val shopId: Long) : HomeEvent()
+
+    data object NavigateAddTransaction : HomeEvent()
+
+    data class NavigateEditTransaction(val transactionId: Long) : HomeEvent()
+
+    data class NavigateAddItem(val transactionId: Long) : HomeEvent()
+
+    data class NavigateEditItem(val itemId: Long) : HomeEvent()
+
+    data object NavigateCategoryRanking : HomeEvent()
+
+    data object NavigateShopRanking : HomeEvent()
+
+    data class NavigateCategorySpendingComparison(val year: Int, val month: Int) : HomeEvent()
+
+    data class NavigateShopSpendingComparison(val year: Int, val month: Int) : HomeEvent()
 }
 
 @Stable
 data class TransactionBasketDisplayData(
     val basket: TransactionBasketWithItems,
-    var itemsVisible: MutableState<Boolean> = mutableStateOf(false)
+    var itemsVisible: MutableState<Boolean> = mutableStateOf(false),
 )
 
-fun Flow<PagingData<TransactionBasketWithItems>>.toDisplayData(): Flow<PagingData<TransactionBasketDisplayData>> {
+fun Flow<PagingData<TransactionBasketWithItems>>.toDisplayData():
+    Flow<PagingData<TransactionBasketDisplayData>> {
     return map { pagingData -> pagingData.map { TransactionBasketDisplayData(it) } }
 }
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel
+@Inject
+constructor(
     private val transactionRepository: TransactionRepositorySource,
     private val categoryRepository: ProductCategoryRepositorySource,
     private val shopRepository: ShopRepositorySource,
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
     private val mTimePeriodFlowHandler: TimePeriodFlowHandler<ImmutableList<ChartSource>> =
         TimePeriodFlowHandler(
             scope = viewModelScope,
-            day = {
-                transactionRepository.totalSpentByDay()
-            },
-            week = {
-                transactionRepository.totalSpentByWeek()
-            },
-            month = {
-                transactionRepository.totalSpentByMonth()
-            },
-            year = {
-                transactionRepository.totalSpentByYear()
-            },
+            day = { transactionRepository.totalSpentByDay() },
+            week = { transactionRepository.totalSpentByWeek() },
+            month = { transactionRepository.totalSpentByMonth() },
+            year = { transactionRepository.totalSpentByYear() },
         )
     private var dashboardSpentByTimeChartDataCollectJob: Job? = null
     private var analysisCurrentDateCategoryDataCollectJob: Job? = null
@@ -143,39 +162,32 @@ class HomeViewModel @Inject constructor(
     init {
         _uiState.update { currentState ->
             currentState.copy(
-                transactions = transactionRepository.transactionBasketsPaged()
-                    .toDisplayData()
-                    .cachedIn(viewModelScope)
+                transactions =
+                    transactionRepository
+                        .transactionBasketsPaged()
+                        .toDisplayData()
+                        .cachedIn(viewModelScope)
             )
         }
 
         viewModelScope.launch {
             transactionRepository.totalSpent().collect {
+                _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+            }
+        }
+
+        viewModelScope.launch {
+            categoryRepository.totalSpentByCategory().collect {
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        totalSpent = it ?: 0f,
-                    )
+                    currentState.copy(dashboardCategorySpendingRankingData = it)
                 }
             }
         }
 
         viewModelScope.launch {
-            categoryRepository.totalSpentByCategory()
-                .collect {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            dashboardCategorySpendingRankingData = it
-                        )
-                    }
-                }
-        }
-
-        viewModelScope.launch {
             shopRepository.totalSpentByShop().collect {
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        dashboardShopSpendingRankingData = it
-                    )
+                    currentState.copy(dashboardShopSpendingRankingData = it)
                 }
             }
         }
@@ -233,11 +245,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun changeScreenDestination(newDestination: HomeDestinations) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                currentDestination = newDestination
-            )
-        }
+        _uiState.update { currentState -> currentState.copy(currentDestination = newDestination) }
     }
 
     private fun changeDashboardSpentByTimeChartPeriod(newPeriod: SpendingSummaryPeriod) {
@@ -245,9 +253,7 @@ class HomeViewModel @Inject constructor(
         mTimePeriodFlowHandler.switchPeriod(nPeriod)
 
         _uiState.update { currentState ->
-            currentState.copy(
-                dashboardSpentByTimeChartCurrentPeriod = newPeriod
-            )
+            currentState.copy(dashboardSpentByTimeChartCurrentPeriod = newPeriod)
         }
 
         updateDashboardSpentByTimeChartDataCollectJob()
@@ -255,15 +261,14 @@ class HomeViewModel @Inject constructor(
 
     private fun updateDashboardSpentByTimeChartDataCollectJob() {
         dashboardSpentByTimeChartDataCollectJob?.cancel()
-        dashboardSpentByTimeChartDataCollectJob = viewModelScope.launch {
-            mTimePeriodFlowHandler.spentByTimeData.collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        dashboardSpentByTimeChartData = it
-                    )
+        dashboardSpentByTimeChartDataCollectJob =
+            viewModelScope.launch {
+                mTimePeriodFlowHandler.spentByTimeData.collect {
+                    _uiState.update { currentState ->
+                        currentState.copy(dashboardSpentByTimeChartData = it)
+                    }
                 }
             }
-        }
     }
 
     private fun incrementCurrentAnalysisDate() {
@@ -282,7 +287,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 analysisCurrentDateYear = newYear,
-                analysisCurrentDateMonth = newMonth
+                analysisCurrentDateMonth = newMonth,
             )
         }
 
@@ -305,7 +310,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 analysisCurrentDateYear = newYear,
-                analysisCurrentDateMonth = newMonth
+                analysisCurrentDateMonth = newMonth,
             )
         }
 
@@ -326,55 +331,57 @@ class HomeViewModel @Inject constructor(
         }
 
         analysisCurrentDateCategoryDataCollectJob?.cancel()
-        analysisCurrentDateCategoryDataCollectJob = viewModelScope.launch {
-            categoryRepository.totalSpentByCategoryByMonth(
-                localUiState.analysisCurrentDateYear,
-                localUiState.analysisCurrentDateMonth
-            ).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        analysisCurrentDateCategoryData = it
+        analysisCurrentDateCategoryDataCollectJob =
+            viewModelScope.launch {
+                categoryRepository
+                    .totalSpentByCategoryByMonth(
+                        localUiState.analysisCurrentDateYear,
+                        localUiState.analysisCurrentDateMonth,
                     )
-                }
+                    .collect {
+                        _uiState.update { currentState ->
+                            currentState.copy(analysisCurrentDateCategoryData = it)
+                        }
+                    }
             }
-        }
 
         analysisCurrentDateShopDataCollectJob?.cancel()
-        analysisCurrentDateShopDataCollectJob = viewModelScope.launch {
-            shopRepository.totalSpentByShopByMonth(
-                localUiState.analysisCurrentDateYear,
-                localUiState.analysisCurrentDateMonth
-            ).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        analysisCurrentDateShopData = it
+        analysisCurrentDateShopDataCollectJob =
+            viewModelScope.launch {
+                shopRepository
+                    .totalSpentByShopByMonth(
+                        localUiState.analysisCurrentDateYear,
+                        localUiState.analysisCurrentDateMonth,
                     )
-                }
+                    .collect {
+                        _uiState.update { currentState ->
+                            currentState.copy(analysisCurrentDateShopData = it)
+                        }
+                    }
             }
-        }
 
         analysisPreviousDateCategoryDataCollectJob?.cancel()
-        analysisPreviousDateCategoryDataCollectJob = viewModelScope.launch {
-            categoryRepository.totalSpentByCategoryByMonth(previousDateYear, previousDateMonth)
-                .collect {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            analysisPreviousDateCategoryData = it
-                        )
+        analysisPreviousDateCategoryDataCollectJob =
+            viewModelScope.launch {
+                categoryRepository
+                    .totalSpentByCategoryByMonth(previousDateYear, previousDateMonth)
+                    .collect {
+                        _uiState.update { currentState ->
+                            currentState.copy(analysisPreviousDateCategoryData = it)
+                        }
                     }
-                }
-        }
+            }
 
         analysisPreviousDateShopDataCollectJob?.cancel()
-        analysisPreviousDateShopDataCollectJob = viewModelScope.launch {
-            shopRepository.totalSpentByShopByMonth(previousDateYear, previousDateMonth)
-                .collect {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            analysisPreviousDateShopData = it
-                        )
+        analysisPreviousDateShopDataCollectJob =
+            viewModelScope.launch {
+                shopRepository
+                    .totalSpentByShopByMonth(previousDateYear, previousDateMonth)
+                    .collect {
+                        _uiState.update { currentState ->
+                            currentState.copy(analysisPreviousDateShopData = it)
+                        }
                     }
-                }
-        }
+            }
     }
 }

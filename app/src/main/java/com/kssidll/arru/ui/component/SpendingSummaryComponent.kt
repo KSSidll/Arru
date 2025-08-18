@@ -64,15 +64,14 @@ fun SpendingSummaryComponent(
     chartModifier: Modifier = Modifier,
     diffAnimationSpec: AnimationSpec<Float> = tween(1200),
     scrollState: VicoScrollState = oneDimensionalColumnChartDefaultScrollState(),
-    columnChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
+    columnChartEntryModelProducer: CartesianChartModelProducer = remember {
+        CartesianChartModelProducer()
+    },
     runInitialAnimation: Boolean = true,
     columnWidth: Dp = 75.dp,
     columnSpacing: Dp = 12.dp,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-    ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         PeriodButtons(
             modifier = buttonsModifier,
             spentByTimePeriod = spentByTimePeriod,
@@ -90,7 +89,6 @@ fun SpendingSummaryComponent(
             columnWidth = columnWidth,
             columnSpacing = columnSpacing,
         )
-
     }
 }
 
@@ -101,46 +99,33 @@ private fun PeriodButtons(
     onSpentByTimePeriodUpdate: (SpendingSummaryPeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SingleChoiceSegmentedButtonRow(
-        modifier = modifier
-            .padding(
-                start = 10.dp,
-                end = 10.dp
-            )
-    ) {
+    SingleChoiceSegmentedButtonRow(modifier = modifier.padding(start = 10.dp, end = 10.dp)) {
         SpendingSummaryPeriod.entries.forEachIndexed { index, it ->
-            val shape = when (index) {
-                0 -> RoundedCornerShape(
-                    topStartPercent = 50,
-                    bottomStartPercent = 50
-                )
+            val shape =
+                when (index) {
+                    0 -> RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50)
 
-                TimePeriodFlowHandler.Periods.entries.size - 1 -> RoundedCornerShape(
-                    topEndPercent = 50,
-                    bottomEndPercent = 50
-                )
+                    TimePeriodFlowHandler.Periods.entries.size - 1 ->
+                        RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50)
 
-                else -> RectangleShape
-            }
+                    else -> RectangleShape
+                }
 
             SegmentedButton(
                 selected = it == spentByTimePeriod,
                 shape = shape,
-                label = {
-                    Text(it.getTranslation())
-                },
+                label = { Text(it.getTranslation()) },
                 icon = {},
-                onClick = {
-                    onSpentByTimePeriodUpdate(it)
-                },
-                colors = SegmentedButtonDefaults.colors(
-                    activeContainerColor = MaterialTheme.colorScheme.primary,
-                    inactiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    activeContentColor = MaterialTheme.colorScheme.onPrimary,
-                    inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    activeBorderColor = Color.Transparent,
-                    inactiveBorderColor = Color.Transparent,
-                )
+                onClick = { onSpentByTimePeriodUpdate(it) },
+                colors =
+                    SegmentedButtonDefaults.colors(
+                        activeContainerColor = MaterialTheme.colorScheme.primary,
+                        inactiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                        inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        activeBorderColor = Color.Transparent,
+                        inactiveBorderColor = Color.Transparent,
+                    ),
             )
         }
     }

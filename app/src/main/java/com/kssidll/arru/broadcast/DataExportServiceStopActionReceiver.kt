@@ -7,28 +7,15 @@ import android.content.Intent
 import android.util.Log
 import com.kssidll.arru.service.DataExportService
 
-/**
- * Receiver that stops the [DataExportService]
- */
-class DataExportServiceStopActionReceiver: BroadcastReceiver() {
+/** Receiver that stops the [DataExportService] */
+class DataExportServiceStopActionReceiver : BroadcastReceiver() {
     @SuppressLint("LongLogTag")
-    override fun onReceive(
-        context: Context?,
-        intent: Intent?
-    ) {
+    override fun onReceive(context: Context?, intent: Intent?) {
         val forced = intent?.extras?.getBoolean(DataExportService.FORCED_STOP_KEY)
 
-        Log.d(
-            TAG,
-            "onReceive: received with forced = $forced"
-        )
+        Log.d(TAG, "onReceive: received with forced = $forced")
 
-        context?.let {
-            DataExportService.stop(
-                it,
-                forced ?: false
-            )
-        }
+        context?.let { DataExportService.stop(it, forced ?: false) }
     }
 
     companion object {

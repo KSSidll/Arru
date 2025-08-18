@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.product.editproduct
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,67 +33,46 @@ fun EditProductRoute(
         }
     }
 
-    LaunchedEffect(providedProducerId) {
-        viewModel.setSelectedProducer(providedProducerId)
-    }
+    LaunchedEffect(providedProducerId) { viewModel.setSelectedProducer(providedProducerId) }
 
-    LaunchedEffect(providedCategoryId) {
-        viewModel.setSelectedCategory(providedCategoryId)
-    }
+    LaunchedEffect(providedCategoryId) { viewModel.setSelectedCategory(providedCategoryId) }
 
     ModifyProductScreenImpl(
         onBack = navigateBack,
         state = viewModel.screenState,
         categories = viewModel.allCategories().collectAsState(initial = emptyImmutableList()).value,
         producers = viewModel.allProducers().collectAsState(initial = emptyImmutableList()).value,
-        onNewProducerSelected = {
-            viewModel.onNewProducerSelected(it)
-        },
-        onNewCategorySelected = {
-            viewModel.onNewCategorySelected(it)
-        },
+        onNewProducerSelected = { viewModel.onNewProducerSelected(it) },
+        onNewCategorySelected = { viewModel.onNewCategorySelected(it) },
         onSubmit = {
             scope.launch {
-                if (viewModel.updateProduct(productId)
-                        .isNotError()
-                ) {
+                if (viewModel.updateProduct(productId).isNotError()) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteProduct(productId)
-                        .isNotError()
-                ) {
+                if (viewModel.deleteProduct(productId).isNotError()) {
                     navigateBackDelete()
                 }
             }
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it)
-                        .isNotError()
-                ) {
+                if (viewModel.mergeWith(it).isNotError()) {
                     navigateBackDelete()
                 }
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(productId),
-        mergeConfirmMessageTemplate = stringResource(id = R.string.merge_action_message_template)
-            .replace(
-                "{value_1}",
-                viewModel.mergeMessageProductName
-            ),
-
+        mergeConfirmMessageTemplate =
+            stringResource(id = R.string.merge_action_message_template)
+                .replace("{value_1}", viewModel.mergeMessageProductName),
         chosenMergeCandidate = viewModel.chosenMergeCandidate.value,
-        onChosenMergeCandidateChange = {
-            viewModel.chosenMergeCandidate.apply { value = it }
-        },
+        onChosenMergeCandidateChange = { viewModel.chosenMergeCandidate.apply { value = it } },
         showMergeConfirmDialog = viewModel.showMergeConfirmDialog.value,
-        onShowMergeConfirmDialogChange = {
-            viewModel.showMergeConfirmDialog.apply { value = it }
-        },
+        onShowMergeConfirmDialogChange = { viewModel.showMergeConfirmDialog.apply { value = it } },
         submitButtonText = stringResource(id = R.string.item_product_edit),
         onCategoryAddButtonClick = navigateAddProductCategory,
         onProducerAddButtonClick = navigateAddProductProducer,

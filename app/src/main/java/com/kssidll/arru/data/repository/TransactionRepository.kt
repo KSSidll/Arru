@@ -20,23 +20,22 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class TransactionRepository(
-    private val dao: TransactionEntityDao
-): TransactionRepositorySource {
+class TransactionRepository(private val dao: TransactionEntityDao) : TransactionRepositorySource {
     // Create
 
     override suspend fun insert(
         date: Long,
         totalCost: Long,
         shopId: Long?,
-        note: String?
+        note: String?,
     ): InsertResult {
-        val transaction = TransactionEntity(
-            date = date,
-            totalCost = totalCost,
-            shopEntityId = shopId,
-            note = note
-        )
+        val transaction =
+            TransactionEntity(
+                date = date,
+                totalCost = totalCost,
+                shopEntityId = shopId,
+                note = note,
+            )
 
         if (!transaction.validDate()) {
             return InsertResult.Error(InsertResult.InvalidDate)
@@ -60,17 +59,12 @@ class TransactionRepository(
         date: Long,
         totalCost: Long,
         shopId: Long?,
-        note: String?
+        note: String?,
     ): UpdateResult {
-        val transaction =
-            dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
+        val transaction = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
-        val newTransaction = transaction.copy(
-            date = date,
-            totalCost = totalCost,
-            shopEntityId = shopId,
-            note = note
-        )
+        val newTransaction =
+            transaction.copy(date = date, totalCost = totalCost, shopEntityId = shopId, note = note)
 
         if (!newTransaction.validDate()) {
             return UpdateResult.Error(UpdateResult.InvalidDate)
@@ -91,12 +85,8 @@ class TransactionRepository(
 
     // Delete
 
-    override suspend fun delete(
-        id: Long,
-        force: Boolean
-    ): DeleteResult {
-        val transaction =
-            dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+    override suspend fun delete(id: Long, force: Boolean): DeleteResult {
+        val transaction = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val items = dao.itemsByTransactionBasketId(id)
 
@@ -114,39 +104,28 @@ class TransactionRepository(
 
     override fun get(id: Long): Flow<TransactionEntity?> = dao.get(id).cancellable()
 
-    override fun totalSpent(): Flow<Float?> = dao.totalSpent().cancellable()
-        .map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
+    override fun totalSpent(): Flow<Float?> =
+        dao.totalSpent().cancellable().map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }
 
     override fun items(): Flow<PagingData<Item>> =
         Pager(
-            config = PagingConfig(
-                pageSize = 8,
-                enablePlaceholders = true
-            ),
-            pagingSourceFactory = { dao.items() }
-        ).flow.cancellable()
+                config = PagingConfig(pageSize = 8, enablePlaceholders = true),
+                pagingSourceFactory = { dao.items() },
+            )
+            .flow
+            .cancellable()
 
-    override fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByDay().cancellable()
-        .map { it.toImmutableList() }
+    override fun totalSpentByDay(): Flow<ImmutableList<TransactionSpentChartData>> =
+        dao.totalSpentByDay().cancellable().map { it.toImmutableList() }
 
-    override fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByWeek().cancellable()
-        .map { it.toImmutableList() }
+    override fun totalSpentByWeek(): Flow<ImmutableList<TransactionSpentChartData>> =
+        dao.totalSpentByWeek().cancellable().map { it.toImmutableList() }
 
-    override fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByMonth().cancellable()
-        .map { it.toImmutableList() }
+    override fun totalSpentByMonth(): Flow<ImmutableList<TransactionSpentChartData>> =
+        dao.totalSpentByMonth().cancellable().map { it.toImmutableList() }
 
-    override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>> = dao.totalSpentByYear().cancellable()
-        .map { it.toImmutableList() }
-
-
-
-
-
-
-
-
-
-
+    override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>> =
+        dao.totalSpentByYear().cancellable().map { it.toImmutableList() }
 
     override suspend fun count(): Int {
         return dao.count()
@@ -170,23 +149,16 @@ class TransactionRepository(
 
     override suspend fun transactionBasketsWithItems(
         startPosition: Int,
-        count: Int
+        count: Int,
     ): ImmutableList<TransactionBasketWithItems> {
-        return dao.transactionBasketsWithItems(
-            startPosition,
-            count
-        ).toImmutableList()
+        return dao.transactionBasketsWithItems(startPosition, count).toImmutableList()
     }
 
     override fun transactionBasketsPaged(): Flow<PagingData<TransactionBasketWithItems>> {
         return Pager(
-            config = PagingConfig(
-                pageSize = 12,
-                enablePlaceholders = true,
-                jumpThreshold = 24
-            ),
-            pagingSourceFactory = { dao.allPaged() }
-        )
+                config = PagingConfig(pageSize = 12, enablePlaceholders = true, jumpThreshold = 24),
+                pagingSourceFactory = { dao.allPaged() },
+            )
             .flow
             .map { pagingData ->
                 pagingData.map { transaction ->
@@ -196,15 +168,15 @@ class TransactionRepository(
                         shop = transaction.shopEntityId?.let { dao.shopById(it) },
                         totalCost = transaction.totalCost,
                         items = dao._itemsByTransactionBasketId(transaction.id),
-                        note = transaction.note
+                        note = transaction.note,
                     )
                 }
             }
     }
 
-    override fun transactionBasketWithItems(transactionId: Long): Flow<TransactionBasketWithItems?> {
-        return dao.transactionBasketWithItems(transactionId)
-            .cancellable()
-            .distinctUntilChanged()
+    override fun transactionBasketWithItems(
+        transactionId: Long
+    ): Flow<TransactionBasketWithItems?> {
+        return dao.transactionBasketWithItems(transactionId).cancellable().distinctUntilChanged()
     }
 }

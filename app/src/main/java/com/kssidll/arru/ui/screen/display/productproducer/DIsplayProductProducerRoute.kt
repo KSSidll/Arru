@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.display.productproducer
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,7 +17,7 @@ fun DisplayProductProducerRoute(
     navigateDisplayShop: (shopId: Long) -> Unit,
     navigateEditItem: (itemId: Long) -> Unit,
     navigateEditProductProducer: () -> Unit,
-    viewModel: DisplayProductProducerViewModel = hiltViewModel()
+    viewModel: DisplayProductProducerViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(producerId) {
         if (!viewModel.performDataUpdate(producerId)) {
@@ -30,12 +29,15 @@ fun DisplayProductProducerRoute(
         onBack = navigateBack,
         producer = viewModel.producer,
         transactionItems = viewModel.transactions().collectAsLazyPagingItems(),
-        spentByTimeData = viewModel.spentByTimeData?.collectAsState(initial = emptyImmutableList())?.value.orEmpty(),
-        totalSpentData = viewModel.producerTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
+        spentByTimeData =
+            viewModel.spentByTimeData
+                ?.collectAsState(initial = emptyImmutableList())
+                ?.value
+                .orEmpty(),
+        totalSpentData =
+            viewModel.producerTotalSpent()?.collectAsState(initial = null)?.value ?: 0f,
         spentByTimePeriod = viewModel.spentByTimePeriod,
-        onSpentByTimePeriodSwitch = {
-            viewModel.switchPeriod(it)
-        },
+        onSpentByTimePeriodSwitch = { viewModel.switchPeriod(it) },
         chartEntryModelProducer = viewModel.chartEntryModelProducer,
         onItemClick = navigateDisplayProduct,
         onItemCategoryClick = navigateDisplayProductCategory,

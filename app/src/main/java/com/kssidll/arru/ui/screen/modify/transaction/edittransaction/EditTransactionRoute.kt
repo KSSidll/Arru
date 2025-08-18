@@ -30,32 +30,24 @@ fun EditTransactionRoute(
         }
     }
 
-    LaunchedEffect(providedShopId) {
-        viewModel.setSelectedShopToProvided(providedShopId)
-    }
+    LaunchedEffect(providedShopId) { viewModel.setSelectedShopToProvided(providedShopId) }
 
     ModifyTransactionScreenImpl(
         isExpandedScreen = isExpandedScreen,
         onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops().collectAsState(initial = emptyImmutableList()).value,
-        onNewShopSelected = {
-            viewModel.onNewShopSelected(it)
-        },
+        onNewShopSelected = { viewModel.onNewShopSelected(it) },
         onSubmit = {
             scope.launch {
-                if (viewModel.updateTransaction(transactionId)
-                        .isNotError()
-                ) {
+                if (viewModel.updateTransaction(transactionId).isNotError()) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteTransaction(transactionId)
-                        .isNotError()
-                ) {
+                if (viewModel.deleteTransaction(transactionId).isNotError()) {
                     navigateBackDelete(transactionId)
                 }
             }

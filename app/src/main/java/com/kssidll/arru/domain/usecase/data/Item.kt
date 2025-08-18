@@ -6,16 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
-
-
-class GetItemEntityUseCase(
-    private val itemRepository: ItemRepositorySource,
-) {
-    operator fun invoke(
-        id: Long,
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) = itemRepository.get(id).flowOn(dispatcher)
+class GetItemEntityUseCase(private val itemRepository: ItemRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        itemRepository.get(id).flowOn(dispatcher)
 }
-
 
 /** DOMAIN */

@@ -25,9 +25,9 @@ import com.kssidll.arru.DAY_IN_MILIS
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
-import kotlinx.coroutines.flow.flowOf
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlinx.coroutines.flow.flowOf
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.fullItemListContent(
@@ -42,41 +42,33 @@ fun LazyListScope.fullItemListContent(
     val itemCount = transactionItems.itemCount
     var lastItem: Item? = null
 
-    // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
+    // FIXME this will iterate through the whole loop every time item fetch happens, check if
+    // paging3 can add sticky headers as separators when you see this
     for (index in 0 until itemCount) {
         val item = transactionItems.peek(index)
 
         if (item != null) {
-            //... yeah
-            if (index == 0 || (lastItem != null && item.date / DAY_IN_MILIS != lastItem.date / DAY_IN_MILIS)) {
-                stickyHeader(
-                    contentType = "date header"
-                ) {
+            // ... yeah
+            if (
+                index == 0 ||
+                    (lastItem != null && item.date / DAY_IN_MILIS != lastItem.date / DAY_IN_MILIS)
+            ) {
+                stickyHeader(contentType = "date header") {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = modifier
-                                .width(600.dp)
-                                .align(Alignment.Center)
+                            modifier = modifier.width(600.dp).align(Alignment.Center),
                         ) {
                             Surface(
-                                shape = RoundedCornerShape(
-                                    bottomStart = 24.dp,
-                                    bottomEnd = 24.dp,
-                                ),
+                                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
                                 color = MaterialTheme.colorScheme.surfaceContainer,
                             ) {
-                                Box(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp)
-                                ) {
+                                Box(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                                     Text(
                                         modifier = Modifier.align(Alignment.Center),
-                                        text = SimpleDateFormat(
-                                            "MMM d, yyyy",
-                                            Locale.getDefault()
-                                        ).format(item.date),
+                                        text =
+                                            SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                                                .format(item.date),
                                         style = Typography.headlineMedium,
                                     )
                                 }
@@ -86,15 +78,11 @@ fun LazyListScope.fullItemListContent(
                 }
             }
 
-            item(
-                contentType = "item"
-            ) {
+            item(contentType = "item") {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = modifier
-                            .width(600.dp)
-                            .align(Alignment.Center)
+                        modifier = modifier.width(600.dp).align(Alignment.Center),
                     ) {
                         FullItemCard(
                             item = transactionItems[index]!!,

@@ -19,21 +19,17 @@ import kotlinx.coroutines.flow.Flow
 interface ProductCategoryEntityDao {
     // Create
 
-    @Insert
-    suspend fun insert(entity: ProductCategoryEntity): Long
+    @Insert suspend fun insert(entity: ProductCategoryEntity): Long
 
     // Update
 
-    @Update
-    suspend fun update(entity: ProductCategoryEntity)
+    @Update suspend fun update(entity: ProductCategoryEntity)
 
-    @Update
-    suspend fun update(entities: List<ProductCategoryEntity>)
+    @Update suspend fun update(entities: List<ProductCategoryEntity>)
 
     // Delete
 
-    @Delete
-    suspend fun delete(entity: ProductCategoryEntity)
+    @Delete suspend fun delete(entity: ProductCategoryEntity)
 
     // Helper
 
@@ -69,21 +65,19 @@ interface ProductCategoryEntityDao {
     )
     suspend fun getItems(categoryId: Long): List<ItemEntity>
 
-    @Delete
-    suspend fun deleteProducts(entities: List<ProductEntity>)
+    @Delete suspend fun deleteProducts(entities: List<ProductEntity>)
 
-    @Delete
-    suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
+    @Delete suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
 
-    @Delete
-    suspend fun deleteItems(entities: List<ItemEntity>)
+    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
 
-    @Update
-    suspend fun updateProducts(entities: List<ProductEntity>)
+    @Update suspend fun updateProducts(entities: List<ProductEntity>)
 
     // Read
 
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id")
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id"
+    )
     fun get(id: Long): Flow<ProductCategoryEntity?>
 
     @Query(
@@ -97,7 +91,9 @@ interface ProductCategoryEntityDao {
     )
     fun totalSpent(id: Long): Flow<Long?>
 
-    @Query("SELECT ItemView.* FROM ItemView WHERE ItemView.productCategoryId = :id ORDER BY date DESC")
+    @Query(
+        "SELECT ItemView.* FROM ItemView WHERE ItemView.productCategoryId = :id ORDER BY date DESC"
+    )
     fun itemsFor(id: Long): PagingSource<Int, Item>
 
     @Query(
@@ -272,17 +268,14 @@ interface ProductCategoryEntityDao {
     )
     fun totalSpentByYear(id: Long): Flow<List<ItemSpentChartData>>
 
-
-
-
-
-
-
-
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity ORDER BY ProductCategoryEntity.id DESC")
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity ORDER BY ProductCategoryEntity.id DESC"
+    )
     fun all(): Flow<List<ProductCategoryEntity>>
 
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name")
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name"
+    )
     fun byName(name: String): Flow<ProductCategoryEntity?>
 
     @Query(

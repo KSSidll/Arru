@@ -8,14 +8,11 @@ class FullItemPagingSource(
     private val query: suspend (start: Int, loadSize: Int) -> List<FullItem>,
     private val itemsBefore: suspend (id: Long) -> Int,
     private val itemsAfter: suspend (id: Long) -> Int,
-): PagingSource<Int, FullItem>() {
+) : PagingSource<Int, FullItem>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FullItem> {
         val pageIndex = params.key ?: 0
 
-        val page = query(
-            pageIndex,
-            params.loadSize
-        )
+        val page = query(pageIndex, params.loadSize)
 
         val itemsBefore =
             if (pageIndex == 0) 0
@@ -32,13 +29,11 @@ class FullItemPagingSource(
             prevKey = prevKey,
             nextKey = nextKey,
             itemsBefore = itemsBefore,
-            itemsAfter = itemsAfter
+            itemsAfter = itemsAfter,
         )
     }
 
     override fun getRefreshKey(state: PagingState<Int, FullItem>): Int? {
-        return state.anchorPosition?.let {
-            state.closestPageToPosition(it)?.prevKey
-        }
+        return state.anchorPosition?.let { state.closestPageToPosition(it)?.prevKey }
     }
 }

@@ -22,37 +22,39 @@ import kotlinx.coroutines.flow.Flow
 interface ProductEntityDao {
     // Create
 
-    @Insert
-    suspend fun insert(entity: ProductEntity): Long
+    @Insert suspend fun insert(entity: ProductEntity): Long
 
     // Update
 
-    @Update
-    suspend fun update(entity: ProductEntity)
+    @Update suspend fun update(entity: ProductEntity)
 
     // Delete
 
-    @Delete
-    suspend fun delete(entity: ProductEntity)
+    @Delete suspend fun delete(entity: ProductEntity)
 
     // Helper
 
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
     suspend fun shopById(shopId: Long): ShopEntity
 
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    @Query(
+        "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId"
+    )
     suspend fun producerById(producerId: Long): ProductProducerEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
+    @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
+    )
     suspend fun variantById(variantId: Long): ProductVariantEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId AND ProductVariantEntity.name = :variantName")
-    suspend fun variantByName(
-        productId: Long,
-        variantName: String
-    ): ProductVariantEntity?
+    @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId AND ProductVariantEntity.name = :variantName"
+    )
+    suspend fun variantByName(productId: Long, variantName: String): ProductVariantEntity?
 
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
+    )
     suspend fun categoryById(categoryId: Long): ProductCategoryEntity?
 
     @Query(
@@ -77,13 +79,11 @@ interface ProductEntityDao {
         OFFSET :offset
     """
     )
-    suspend fun itemsByProduct(
-        productId: Long,
-        count: Int,
-        offset: Int
-    ): List<ItemEntity>
+    suspend fun itemsByProduct(productId: Long, count: Int, offset: Int): List<ItemEntity>
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId")
+    @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId"
+    )
     suspend fun variants(productId: Long): List<ProductVariantEntity>
 
     @Query(
@@ -96,17 +96,13 @@ interface ProductEntityDao {
     )
     suspend fun getItems(productId: Long): List<ItemEntity>
 
-    @Delete
-    suspend fun deleteItems(entities: List<ItemEntity>)
+    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
 
-    @Delete
-    suspend fun deleteVariants(entities: List<ProductVariantEntity>)
+    @Delete suspend fun deleteVariants(entities: List<ProductVariantEntity>)
 
-    @Update
-    suspend fun updateVariants(entities: List<ProductVariantEntity>)
+    @Update suspend fun updateVariants(entities: List<ProductVariantEntity>)
 
-    @Update
-    suspend fun updateItems(entities: List<ItemEntity>)
+    @Update suspend fun updateItems(entities: List<ItemEntity>)
 
     @Query(
         """
@@ -115,10 +111,7 @@ interface ProductEntityDao {
         WHERE ItemEntity.id < :itemEntityId AND ItemEntity.productEntityId = :productId
     """
     )
-    suspend fun countItemsBefore(
-        itemEntityId: Long,
-        productId: Long
-    ): Int
+    suspend fun countItemsBefore(itemEntityId: Long, productId: Long): Int
 
     @Query(
         """
@@ -127,10 +120,7 @@ interface ProductEntityDao {
         WHERE ItemEntity.id > :itemEntityId AND ItemEntity.productEntityId = :productId
     """
     )
-    suspend fun countItemsAfter(
-        itemEntityId: Long,
-        productId: Long
-    ): Int
+    suspend fun countItemsAfter(itemEntityId: Long, productId: Long): Int
 
     // Read
 
@@ -354,16 +344,9 @@ interface ProductEntityDao {
         ORDER BY data_order ASC
     """
     )
-    fun averagePriceByShopByVariantByProducerByDay(id: Long): Flow<List<ProductPriceByShopByVariantByProducerByTime>>
-
-
-
-
-
-
-
-
-
+    fun averagePriceByShopByVariantByProducerByDay(
+        id: Long
+    ): Flow<List<ProductPriceByShopByVariantByProducerByTime>>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity ORDER BY ProductEntity.id DESC")
     fun all(): Flow<List<ProductEntity>>
@@ -371,6 +354,8 @@ interface ProductEntityDao {
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
     fun byName(name: String): Flow<ProductEntity?>
 
-    @Query("SELECT ItemEntity.* FROM ProductEntity JOIN ItemEntity ON ItemEntity.productEntityId = ProductEntity.id WHERE ProductEntity.id = :entityId ORDER BY ItemEntity.id DESC LIMIT 1")
+    @Query(
+        "SELECT ItemEntity.* FROM ProductEntity JOIN ItemEntity ON ItemEntity.productEntityId = ProductEntity.id WHERE ProductEntity.id = :entityId ORDER BY ItemEntity.id DESC LIMIT 1"
+    )
     suspend fun newestItem(entityId: Long): ItemEntity?
 }

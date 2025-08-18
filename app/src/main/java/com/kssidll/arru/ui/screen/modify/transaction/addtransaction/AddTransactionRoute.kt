@@ -21,18 +21,14 @@ fun AddTransactionRoute(
     val scope = rememberCoroutineScope()
     val viewModel: AddTransactionViewModel = hiltViewModel()
 
-    LaunchedEffect(providedShopId) {
-        viewModel.setSelectedShopToProvided(providedShopId)
-    }
+    LaunchedEffect(providedShopId) { viewModel.setSelectedShopToProvided(providedShopId) }
 
     ModifyTransactionScreenImpl(
         isExpandedScreen = isExpandedScreen,
         onBack = navigateBack,
         state = viewModel.screenState,
         shops = viewModel.allShops().collectAsState(initial = emptyImmutableList()).value,
-        onNewShopSelected = {
-            viewModel.onNewShopSelected(it)
-        },
+        onNewShopSelected = { viewModel.onNewShopSelected(it) },
         onSubmit = {
             scope.launch {
                 val result = viewModel.addTransaction()

@@ -64,10 +64,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun BackupsScreen(
     createBackup: () -> Unit,
@@ -92,31 +89,21 @@ fun BackupsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    createBackup()
-                }
-            ) {
+            FloatingActionButton(onClick = { createBackup() }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(id = R.string.backup_create),
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(36.dp),
                 )
             }
         },
         // Without this, the FAB can be placed under the system navigation bar
-        modifier = Modifier.windowInsetsPadding(
-            WindowInsets.navigationBars
-                .only(
-                    WindowInsetsSides.Horizontal
-                )
-        )
+        modifier =
+            Modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-        ) {
+        Box(modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
             AnimatedVisibility(
                 visible = availableBackups.isEmpty(),
                 enter = fadeIn(),
@@ -142,27 +129,26 @@ fun BackupsScreen(
                             stickyHeader {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
                                 ) {
                                     Surface(
-                                        shape = RoundedCornerShape(
-                                            bottomStart = 24.dp,
-                                            bottomEnd = 24.dp,
-                                        ),
+                                        shape =
+                                            RoundedCornerShape(
+                                                bottomStart = 24.dp,
+                                                bottomEnd = 24.dp,
+                                            ),
                                         color = MaterialTheme.colorScheme.surfaceContainer,
-                                        modifier = Modifier.width(600.dp)
+                                        modifier = Modifier.width(600.dp),
                                     ) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 8.dp)
-                                        ) {
+                                        Box(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                                             Text(
                                                 modifier = Modifier.align(Alignment.Center),
-                                                text = SimpleDateFormat(
-                                                    "MMM d, yyyy",
-                                                    Locale.getDefault()
-                                                ).format(currentDate),
+                                                text =
+                                                    SimpleDateFormat(
+                                                            "MMM d, yyyy",
+                                                            Locale.getDefault(),
+                                                        )
+                                                        .format(currentDate),
                                                 style = Typography.headlineMedium,
                                             )
                                         }
@@ -173,17 +159,14 @@ fun BackupsScreen(
 
                         lastDate = currentDate
 
-                        item(
-                            key = it.file.absolutePath,
-                            contentType = DatabaseBackup::class,
-                        ) {
+                        item(key = it.file.absolutePath, contentType = DatabaseBackup::class) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.width(600.dp)
+                                    modifier = Modifier.width(600.dp),
                                 ) {
                                     Spacer(modifier = Modifier.width(10.dp))
 
@@ -196,59 +179,62 @@ fun BackupsScreen(
                                     ) {
                                         Crossfade(
                                             targetState = it.locked,
-                                            label = "delete'ability due to lock change animation"
+                                            label = "delete'ability due to lock change animation",
                                         ) { locked ->
                                             if (locked) {
                                                 Icon(
                                                     imageVector = Icons.Default.DeleteOutline,
                                                     contentDescription = null,
-                                                    tint = MaterialTheme.colorScheme.error.copy(
-                                                        disabledAlpha
-                                                    ),
+                                                    tint =
+                                                        MaterialTheme.colorScheme.error.copy(
+                                                            disabledAlpha
+                                                        ),
                                                 )
                                             } else {
                                                 Icon(
                                                     imageVector = Icons.Default.DeleteOutline,
-                                                    contentDescription = stringResource(id = R.string.backup_delete),
-                                                    tint = MaterialTheme.colorScheme.error.copy(
-                                                        optionalAlpha
-                                                    ),
+                                                    contentDescription =
+                                                        stringResource(id = R.string.backup_delete),
+                                                    tint =
+                                                        MaterialTheme.colorScheme.error.copy(
+                                                            optionalAlpha
+                                                        ),
                                                 )
                                             }
                                         }
                                     }
 
                                     Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clickable(
-                                                role = Role.Button,
-                                                onClickLabel = stringResource(id = R.string.backup_load),
-                                                onClick = {
-                                                    loadBackup(it)
-                                                }
-                                            )
+                                        modifier =
+                                            Modifier.weight(1f)
+                                                .clickable(
+                                                    role = Role.Button,
+                                                    onClickLabel =
+                                                        stringResource(id = R.string.backup_load),
+                                                    onClick = { loadBackup(it) },
+                                                )
                                     ) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 16.dp)
-                                        ) {
+                                        Box(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Spacer(modifier = Modifier.width(10.dp))
 
                                                 Text(
-                                                    text = SimpleDateFormat(
-                                                        "HH:mm:ss",
-                                                        Locale.getDefault()
-                                                    ).format(it.time),
+                                                    text =
+                                                        SimpleDateFormat(
+                                                                "HH:mm:ss",
+                                                                Locale.getDefault(),
+                                                            )
+                                                            .format(it.time),
                                                     style = Typography.headlineMedium,
                                                 )
 
                                                 Spacer(modifier = Modifier.weight(1f))
 
                                                 Column(horizontalAlignment = Alignment.End) {
-                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Row(
+                                                        verticalAlignment =
+                                                            Alignment.CenterVertically
+                                                    ) {
                                                         Text(
                                                             text = it.totalTransactions.toString(),
                                                             style = Typography.titleMedium,
@@ -257,19 +243,26 @@ fun BackupsScreen(
                                                         Spacer(Modifier.width(5.dp))
 
                                                         Icon(
-                                                            imageVector = Icons.Outlined.ShoppingBasket,
+                                                            imageVector =
+                                                                Icons.Outlined.ShoppingBasket,
                                                             contentDescription = null,
                                                             modifier = Modifier.size(20.dp),
-                                                            tint = MaterialTheme.colorScheme.primary
+                                                            tint = MaterialTheme.colorScheme.primary,
                                                         )
                                                     }
 
-                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Row(
+                                                        verticalAlignment =
+                                                            Alignment.CenterVertically
+                                                    ) {
                                                         Text(
-                                                            text = TransactionEntity.actualTotalCost(
-                                                                it.totalSpending
-                                                            )
-                                                                .formatToCurrency(currencyLocale),
+                                                            text =
+                                                                TransactionEntity.actualTotalCost(
+                                                                        it.totalSpending
+                                                                    )
+                                                                    .formatToCurrency(
+                                                                        currencyLocale
+                                                                    ),
                                                             style = Typography.titleMedium,
                                                         )
 
@@ -279,7 +272,7 @@ fun BackupsScreen(
                                                             imageVector = Icons.Outlined.Payment,
                                                             contentDescription = null,
                                                             modifier = Modifier.size(20.dp),
-                                                            tint = MaterialTheme.colorScheme.primary
+                                                            tint = MaterialTheme.colorScheme.primary,
                                                         )
                                                     }
                                                 }
@@ -289,28 +282,27 @@ fun BackupsScreen(
                                         }
                                     }
 
-                                    IconButton(
-                                        onClick = {
-                                            toggleLockBackup(it)
-                                        }
-                                    ) {
+                                    IconButton(onClick = { toggleLockBackup(it) }) {
                                         Crossfade(
                                             targetState = it.locked,
-                                            label = "lock status change animation"
+                                            label = "lock status change animation",
                                         ) { locked ->
                                             if (locked) {
                                                 Icon(
                                                     imageVector = Icons.Default.Lock,
-                                                    contentDescription = stringResource(id = R.string.backup_unlock),
+                                                    contentDescription =
+                                                        stringResource(id = R.string.backup_unlock),
                                                     tint = MaterialTheme.colorScheme.primary,
                                                 )
                                             } else {
                                                 Icon(
                                                     imageVector = Icons.Default.LockOpen,
-                                                    contentDescription = stringResource(id = R.string.backup_lock),
-                                                    tint = MaterialTheme.colorScheme.primary.copy(
-                                                        disabledAlpha
-                                                    ),
+                                                    contentDescription =
+                                                        stringResource(id = R.string.backup_lock),
+                                                    tint =
+                                                        MaterialTheme.colorScheme.primary.copy(
+                                                            disabledAlpha
+                                                        ),
                                                 )
                                             }
                                         }
@@ -336,7 +328,7 @@ fun BackupsScreenNothingToDisplayOverlay() {
             Text(
                 text = stringResource(id = R.string.no_data_to_display_text),
                 style = Typography.titleLarge,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
         }
 
@@ -344,36 +336,24 @@ fun BackupsScreenNothingToDisplayOverlay() {
             Text(
                 text = stringResource(id = R.string.no_data_to_display_add_backup_hint),
                 style = Typography.titleLarge,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
         }
 
         val pathColor = MaterialTheme.colorScheme.primary
-        Canvas(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) {
+        Canvas(modifier = Modifier.weight(1f).fillMaxWidth()) {
             val curveEndX = size.width - 90.dp.toPx()
             val curveEndY = size.height - 45.dp.toPx()
             val lineWidth = 3.dp.toPx()
 
-
             drawPath(
-                path = Path().apply {
-                    moveTo(
-                        size.width / 2,
-                        24.dp.toPx()
-                    )
-                    quadraticTo(
-                        size.width * 1 / 4,
-                        size.height / 2,
-                        curveEndX,
-                        curveEndY
-                    )
-                },
+                path =
+                    Path().apply {
+                        moveTo(size.width / 2, 24.dp.toPx())
+                        quadraticTo(size.width * 1 / 4, size.height / 2, curveEndX, curveEndY)
+                    },
                 style = Stroke(width = lineWidth),
-                color = pathColor
+                color = pathColor,
             )
         }
     }

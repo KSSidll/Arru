@@ -86,12 +86,16 @@ import kotlinx.coroutines.launch
  * @param spentByTimeData Data list representing [shop] spending for current [spentByTimePeriod]
  * @param totalSpentData Value representing total [shop] spending
  * @param spentByTimePeriod Time period to get the [spentByTimeData] by
- * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new period as argument
+ * @param onSpentByTimePeriodSwitch Called to request [spentByTimePeriod] switch, Provides new
+ *   period as argument
  * @param chartEntryModelProducer Model producer for [spentByTimeData] chart
  * @param onItemClick Callback called when the item is clicked. Provides product id as parameter
- * @param onItemCategoryClick Callback called when the item category label is clicked. Provides category id as parameter
- * @param onItemProducerClick Callback called when the item producer label is clicked. Provides producer id as parameter
- * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as parameter
+ * @param onItemCategoryClick Callback called when the item category label is clicked. Provides
+ *   category id as parameter
+ * @param onItemProducerClick Callback called when the item producer label is clicked. Provides
+ *   producer id as parameter
+ * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides item id as
+ *   parameter
  * @param onEditAction Callback called when the 'edit' action is triggered
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,47 +119,40 @@ fun DisplayShopScreen(
         topBar = {
             SecondaryAppBar(
                 onBack = onBack,
-                title = {
-                    Text(
-                        text = shop?.name.orEmpty(),
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
+                title = { Text(text = shop?.name.orEmpty(), overflow = TextOverflow.Ellipsis) },
                 actions = {
                     // 'edit' action
-                    IconButton(
-                        onClick = {
-                            onEditAction()
-                        }
-                    ) {
+                    IconButton(onClick = { onEditAction() }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
                             tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(27.dp)
+                            modifier = Modifier.size(27.dp),
                         )
                     }
                 },
             )
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier =
+            Modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .fillMaxSize()
+            modifier =
+                Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxSize()
         ) {
             AnimatedVisibility(
                 visible = transactionItems.loadedEmpty() && spentByTimeData.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_data_to_display_text),
@@ -211,15 +208,13 @@ private fun DisplayShopScreenContent(
 
     LaunchedEffect(firstVisibleItemIndex) {
         if (
-            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-            firstVisibleItemIndex >= 10
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 && firstVisibleItemIndex >= 10
         ) {
             // scrolling up
             returnActionButtonVisible = true
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         } else if (
-            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-            firstVisibleItemIndex < 10
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 || firstVisibleItemIndex < 10
         ) {
             // scrolling down
             returnActionButtonVisible = false
@@ -231,50 +226,36 @@ private fun DisplayShopScreenContent(
         floatingActionButton = {
             AnimatedVisibility(
                 visible = returnActionButtonVisible,
-                enter = slideInHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseOut
+                enter =
+                    slideInHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseOut),
+                        initialOffsetX = { it },
                     ),
-                    initialOffsetX = { it }
-                ),
-                exit = slideOutHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseIn
+                exit =
+                    slideOutHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseIn),
+                        targetOffsetX = { it },
                     ),
-                    targetOffsetX = { it }
-                )
             ) {
                 FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
+                    onClick = { scope.launch { listState.animateScrollToItem(0) } },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowUpward,
-                        contentDescription = null,
-                    )
+                    Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null)
                 }
             }
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
     ) { paddingValues ->
         LazyColumn(
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
+            modifier =
+                Modifier.fillMaxWidth().padding(paddingValues).consumeWindowInsets(paddingValues),
         ) {
-            item(
-                contentType = "header"
-            ) {
+            item(contentType = "header") {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
@@ -314,16 +295,13 @@ private fun DisplayShopScreenContent(
                 onProducerClick = {
                     // onItemProducerClick(it.id)
                 },
-                modifier = Modifier.width(600.dp)
+                modifier = Modifier.width(600.dp),
             )
 
-            item {
-                Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
-            }
+            item { Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) }
         }
     }
 }
-
 
 @PreviewLightDark
 @Composable
@@ -333,7 +311,8 @@ private fun DisplayShopScreenPreview() {
             DisplayShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
+                transactionItems =
+                    flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = TransactionSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
@@ -357,7 +336,8 @@ private fun EmptyDisplayShopScreenPreview() {
             DisplayShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
+                transactionItems =
+                    flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
@@ -381,7 +361,8 @@ private fun ExpandedDisplayShopScreenPreview() {
             DisplayShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
+                transactionItems =
+                    flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems(),
                 spentByTimeData = TransactionSpentChartData.generateList(),
                 totalSpentData = generateRandomFloatValue(),
                 spentByTimePeriod = SpendingSummaryPeriod.Month,
@@ -405,7 +386,8 @@ private fun ExpandedEmptyDisplayShopScreenPreview() {
             DisplayShopScreen(
                 onBack = {},
                 shop = null,
-                transactionItems = flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
+                transactionItems =
+                    flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems(),
                 spentByTimeData = emptyImmutableList(),
                 totalSpentData = null,
                 spentByTimePeriod = SpendingSummaryPeriod.Month,

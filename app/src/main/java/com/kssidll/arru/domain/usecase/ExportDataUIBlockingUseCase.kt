@@ -24,40 +24,41 @@ class ExportDataUIBlockingUseCase(
         onMaxProgressChange: (newMaxProgress: Int) -> Unit,
         onProgressChange: (newProgress: Int) -> Unit,
         onFinished: () -> Unit,
-    ) = withContext(dispatcher) {
-        when (AppPreferences.getExportType(appContext).first()) {
-            AppPreferences.Export.Type.Values.CompactCSV -> {
-                exportDataAsCompactCsv(
-                    appContext,
-                    uri,
-                    exportRepository,
-                    onMaxProgressChange,
-                    onProgressChange,
-                    onFinished,
-                )
-            }
+    ) =
+        withContext(dispatcher) {
+            when (AppPreferences.getExportType(appContext).first()) {
+                AppPreferences.Export.Type.Values.CompactCSV -> {
+                    exportDataAsCompactCsv(
+                        appContext,
+                        uri,
+                        exportRepository,
+                        onMaxProgressChange,
+                        onProgressChange,
+                        onFinished,
+                    )
+                }
 
-            AppPreferences.Export.Type.Values.RawCSV -> {
-                exportDataAsRawCsv(
-                    appContext,
-                    uri,
-                    exportRepository,
-                    onMaxProgressChange,
-                    onProgressChange,
-                    onFinished,
-                )
-            }
+                AppPreferences.Export.Type.Values.RawCSV -> {
+                    exportDataAsRawCsv(
+                        appContext,
+                        uri,
+                        exportRepository,
+                        onMaxProgressChange,
+                        onProgressChange,
+                        onFinished,
+                    )
+                }
 
-            AppPreferences.Export.Type.Values.JSON -> {
-                exportDataAsJson(
-                    appContext,
-                    uri,
-                    exportRepository,
-                    onMaxProgressChange,
-                    onProgressChange,
-                    onFinished,
-                )
+                AppPreferences.Export.Type.Values.JSON -> {
+                    exportDataAsJson(
+                        appContext,
+                        uri,
+                        exportRepository,
+                        onMaxProgressChange,
+                        onProgressChange,
+                        onFinished,
+                    )
+                }
             }
         }
-    }
 }

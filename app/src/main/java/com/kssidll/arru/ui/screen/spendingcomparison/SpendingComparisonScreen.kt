@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.spendingcomparison
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -53,30 +52,26 @@ fun <T> SpendingComparisonScreen(
     rightSideItems: List<T>,
     rightSideHeader: String,
     modifier: Modifier = Modifier,
-) where T: RankSource {
+) where T : RankSource {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         topBar = {
             SecondaryAppBar(
                 onBack = onBack,
-                title = {
-                    Text(title)
-                },
+                title = { Text(title) },
                 scrollBehavior = scrollBehavior,
             )
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier =
+            Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(it)
-                .consumeWindowInsets(it)
-                .fillMaxSize()
+            modifier = Modifier.padding(it).consumeWindowInsets(it).fillMaxSize(),
         ) {
             AnimatedVisibility(
                 visible = leftSideItems.isEmpty() && rightSideItems.isEmpty(),
@@ -99,16 +94,8 @@ fun <T> SpendingComparisonScreen(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .width(600.dp)
-                            .align(Alignment.TopCenter)
-                    ) {
+                Box(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                    Column(modifier = Modifier.width(600.dp).align(Alignment.TopCenter)) {
                         Spacer(modifier = Modifier.height(24.dp))
 
                         SpendingComparisonList(

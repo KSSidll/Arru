@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.first
 
-class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
+class ItemRepository(private val dao: ItemEntityDao) : ItemRepositorySource {
     // Create
 
     override suspend fun insert(
@@ -17,15 +17,16 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
         productId: Long,
         variantId: Long?,
         quantity: Long,
-        price: Long
+        price: Long,
     ): InsertResult {
-        val entity = ItemEntity(
-            transactionEntityId = transactionId,
-            productEntityId = productId,
-            productVariantEntityId = variantId,
-            quantity = quantity,
-            price = price
-        )
+        val entity =
+            ItemEntity(
+                transactionEntityId = transactionId,
+                productEntityId = productId,
+                productVariantEntityId = variantId,
+                quantity = quantity,
+                price = price,
+            )
 
         if (dao.getTransactionBasket(transactionId) == null) {
             return InsertResult.Error(InsertResult.InvalidTransactionId)
@@ -39,15 +40,11 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
             return InsertResult.Error(InsertResult.InvalidVariantId)
         }
 
-        if (entity.validQuantity()
-                .not()
-        ) {
+        if (entity.validQuantity().not()) {
             return InsertResult.Error(InsertResult.InvalidQuantity)
         }
 
-        if (entity.validPrice()
-                .not()
-        ) {
+        if (entity.validPrice().not()) {
             return InsertResult.Error(InsertResult.InvalidPrice)
         }
 
@@ -63,7 +60,7 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
         productId: Long,
         variantId: Long?,
         quantity: Long,
-        price: Long
+        price: Long,
     ): UpdateResult {
         val item = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
@@ -80,15 +77,11 @@ class ItemRepository(private val dao: ItemEntityDao): ItemRepositorySource {
             return UpdateResult.Error(UpdateResult.InvalidVariantId)
         }
 
-        if (item.validQuantity()
-                .not()
-        ) {
+        if (item.validQuantity().not()) {
             return UpdateResult.Error(UpdateResult.InvalidQuantity)
         }
 
-        if (item.validPrice()
-                .not()
-        ) {
+        if (item.validPrice().not()) {
             return UpdateResult.Error(UpdateResult.InvalidPrice)
         }
 

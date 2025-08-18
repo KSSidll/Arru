@@ -16,7 +16,9 @@ import javax.inject.Singleton
 class ExportDataUseCaseModule {
     @Provides
     @Singleton
-    fun provideExportDataWithServiceUseCase(@ApplicationContext context: Context): ExportDataWithServiceUseCase {
+    fun provideExportDataWithServiceUseCase(
+        @ApplicationContext context: Context
+    ): ExportDataWithServiceUseCase {
         return ExportDataWithServiceUseCase(context)
     }
 
@@ -26,9 +28,6 @@ class ExportDataUseCaseModule {
         @ApplicationContext context: Context,
         exportRepository: ExportRepositorySource,
     ): ExportDataUIBlockingUseCase {
-        return ExportDataUIBlockingUseCase(
-            context,
-            exportRepository,
-        )
+        return ExportDataUIBlockingUseCase(context, exportRepository)
     }
 }

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -53,7 +52,6 @@ import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -65,17 +63,25 @@ abstract class ModifyScreenState(
 
 /**
  * @param T Type of item, doesn't matter if doesn't support merging
- * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
+ * @param onBack Called to request a back navigation, isn't triggered by other events like
+ *   submission or deletion
  * @param title Text displayed on the top app bar
  * @param onSubmit Called to request data submission
- * @param onDelete Called to request a delete operation, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
+ * @param onDelete Called to request a delete operation, in case of very destructive actions, should
+ *   check if delete warning is confirmed, and if not, trigger a delete warning dialog via
+ *   showDeleteWarning parameter as none of those are handled internally by the component, setting
+ *   to null removes the delete option
  * @param onMerge Called to request a merge operation. Provides merge candidate as parameter
  * @param mergeCandidates List of candidates for merge operation as flow
- * @param mergeCandidatesTextTransformation Transformation used to determine what to display on the merge candidate item card
- * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
+ * @param mergeCandidatesTextTransformation Transformation used to determine what to display on the
+ *   merge candidate item card
+ * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation
+ *   dialog, {value_2} will be replaced with name of merge candidate
  * @param submitButtonText Text displayed in the submit button
- * @param showDeleteWarning Mutable flag that exposes whether a delete warning dialog is shown, optional as it is handled internally by the component, but exposed for state dependent actions
- * @param deleteWarningConfirmed Mutable flag that exposes whether user confirmed the action of deletion in the warning dialog, exposed for state dependant actions
+ * @param showDeleteWarning Mutable flag that exposes whether a delete warning dialog is shown,
+ *   optional as it is handled internally by the component, but exposed for state dependent actions
+ * @param deleteWarningConfirmed Mutable flag that exposes whether user confirmed the action of
+ *   deletion in the warning dialog, exposed for state dependant actions
  * @param deleteWarningMessage Text displayed inside of the delete warning dialog
  * @param content Component content, has bottom center alignment
  */
@@ -98,20 +104,16 @@ fun <T> ModifyScreen(
     showDeleteWarning: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningConfirmed: MutableState<Boolean> = remember { mutableStateOf(false) },
     deleteWarningMessage: String = String(),
-    content: @Composable ColumnScope.() -> Unit
-) where T: FuzzySearchSource {
-    var showMergeSearchDialog by remember {
-        mutableStateOf(false)
-    }
+    content: @Composable ColumnScope.() -> Unit,
+) where T : FuzzySearchSource {
+    var showMergeSearchDialog by remember { mutableStateOf(false) }
 
     Box {
         if (showDeleteWarning.value) {
             DeleteWarningConfirmDialog(
                 message = deleteWarningMessage,
                 warningConfirmed = deleteWarningConfirmed.value,
-                onWarningConfirmedChange = {
-                    deleteWarningConfirmed.value = it
-                },
+                onWarningConfirmedChange = { deleteWarningConfirmed.value = it },
                 onCancel = {
                     deleteWarningConfirmed.value = false
                     showDeleteWarning.value = false
@@ -123,14 +125,9 @@ fun <T> ModifyScreen(
             )
         } else if (showMergeSearchDialog) {
             SearchableListDialog(
-                onDismissRequest = {
-                    showMergeSearchDialog = false
-                },
+                onDismissRequest = { showMergeSearchDialog = false },
                 items = mergeCandidates.collectAsState(initial = emptyImmutableList()).value,
-                itemText = {
-                    mergeCandidatesTextTransformation?.invoke(it)
-                        .orEmpty()
-                },
+                itemText = { mergeCandidatesTextTransformation?.invoke(it).orEmpty() },
                 onItemClick = {
                     onChosenMergeCandidateChange?.invoke(it)
                     showMergeSearchDialog = false
@@ -138,46 +135,33 @@ fun <T> ModifyScreen(
                 },
                 onItemClickLabel = stringResource(id = R.string.merge_action_chose_candidate),
                 showAddButton = false,
-                calculateScore = { item, query ->
-                    item.fuzzyScore(query)
-                }
+                calculateScore = { item, query -> item.fuzzyScore(query) },
             )
         } else if (showMergeConfirmDialog) {
             MergeConfirmDialog(
-                message = mergeConfirmMessageTemplate.replace(
-                    "{value_2}",
-                    chosenMergeCandidate?.let { mergeCandidatesTextTransformation?.invoke(it) }
-                        .orEmpty()
-                ),
-                onCancel = {
-                    onShowMergeConfirmDialogChange?.invoke(false)
-                },
+                message =
+                    mergeConfirmMessageTemplate.replace(
+                        "{value_2}",
+                        chosenMergeCandidate
+                            ?.let { mergeCandidatesTextTransformation?.invoke(it) }
+                            .orEmpty(),
+                    ),
+                onCancel = { onShowMergeConfirmDialogChange?.invoke(false) },
                 onConfirm = {
                     chosenMergeCandidate?.let { onMerge?.invoke(it) }
                     onShowMergeConfirmDialogChange?.invoke(false)
-                }
+                },
             )
         }
 
         Scaffold(
             topBar = {
                 SecondaryAppBar(
-                    onBack = {
-                        onBack()
-                    },
-                    title = {
-                        Text(
-                            text = title,
-                            style = Typography.titleLarge,
-                        )
-                    },
+                    onBack = { onBack() },
+                    title = { Text(text = title, style = Typography.titleLarge) },
                     actions = {
                         if (onMerge != null) {
-                            IconButton(
-                                onClick = {
-                                    showMergeSearchDialog = true
-                                }
-                            ) {
+                            IconButton(onClick = { showMergeSearchDialog = true }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Merge,
                                     contentDescription = stringResource(id = R.string.merge_action),
@@ -188,11 +172,7 @@ fun <T> ModifyScreen(
                         }
 
                         if (onDelete != null) {
-                            IconButton(
-                                onClick = {
-                                    onDelete()
-                                }
-                            ) {
+                            IconButton(onClick = { onDelete() }) {
                                 Icon(
                                     imageVector = Icons.Rounded.DeleteForever,
                                     contentDescription = stringResource(R.string.delete),
@@ -201,15 +181,11 @@ fun <T> ModifyScreen(
                                 )
                             }
                         }
-                    }
+                    },
                 )
             }
         ) {
-            Box(
-                Modifier
-                    .padding(it)
-                    .consumeWindowInsets(it)
-            ) {
+            Box(Modifier.padding(it).consumeWindowInsets(it)) {
                 EditScreenContent(
                     onSubmit = onSubmit,
                     submitButtonText = submitButtonText,
@@ -239,59 +215,56 @@ private fun EditScreenContent(
         Column {
             val minHeight = boxMaxHeight.minus(SubmitButtonHeight + SubmitButtonMaxBottomPadding)
             val maxHeight =
-                boxMaxHeight.minus(SubmitButtonHeight + SubmitButtonMinTopPadding + SubmitButtonMinBottomPadding)
+                boxMaxHeight.minus(
+                    SubmitButtonHeight + SubmitButtonMinTopPadding + SubmitButtonMinBottomPadding
+                )
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(
-                        min = minHeight,
-                        max = maxHeight
-                    )
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .heightIn(min = minHeight, max = maxHeight)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 content()
 
-                Spacer(modifier = Modifier.height(SubmitButtonMaxTopPadding - SubmitButtonMinTopPadding))
+                Spacer(
+                    modifier =
+                        Modifier.height(SubmitButtonMaxTopPadding - SubmitButtonMinTopPadding)
+                )
             }
 
             Spacer(modifier = Modifier.height(SubmitButtonMinTopPadding))
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Button(
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    ),
-                    onClick = {
-                        onSubmit()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SubmitButtonHeight)
-                        .padding(
-                            start = SubmitButtonHorizontalPadding,
-                            end = SubmitButtonHorizontalPadding,
-                        )
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                    onClick = { onSubmit() },
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .height(SubmitButtonHeight)
+                            .padding(
+                                start = SubmitButtonHorizontalPadding,
+                                end = SubmitButtonHorizontalPadding,
+                            ),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Check,
                         contentDescription = null,
-                        modifier = Modifier.size(26.dp)
+                        modifier = Modifier.size(26.dp),
                     )
 
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    Text(
-                        text = submitButtonText,
-                        style = Typography.titleLarge,
-                    )
+                    Text(text = submitButtonText, style = Typography.titleLarge)
                 }
             }
         }

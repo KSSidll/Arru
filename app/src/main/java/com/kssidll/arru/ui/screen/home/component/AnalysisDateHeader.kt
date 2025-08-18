@@ -27,8 +27,10 @@ import java.util.Locale
 /**
  * @param year Year for which the main data is fetched
  * @param month Month for which the main data is fetched, in range of 1 - 12
- * @param onMonthIncrement Callback called to request [month] increment, should handle overflow and increase year
- * @param onMonthDecrement Callback called to request [month] decrement, should handle underflow and decrease year
+ * @param onMonthIncrement Callback called to request [month] increment, should handle overflow and
+ *   increase year
+ * @param onMonthDecrement Callback called to request [month] decrement, should handle underflow and
+ *   decrease year
  */
 @Composable
 fun AnalysisDateHeader(
@@ -36,51 +38,44 @@ fun AnalysisDateHeader(
     month: Int,
     onMonthIncrement: () -> Unit,
     onMonthDecrement: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         val cal = Calendar.getInstance()
         cal.clear()
-        cal.set(
-            Calendar.MONTH,
-            month - 1
-        ) // calendar has 0 - 11 months
+        cal.set(Calendar.MONTH, month - 1) // calendar has 0 - 11 months
 
         IconButton(onClick = onMonthDecrement) {
             Icon(
                 imageVector = Icons.Default.KeyboardDoubleArrowLeft,
                 contentDescription = null,
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
             )
         }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.widthIn(min = 188.dp)
+            modifier = Modifier.widthIn(min = 188.dp),
         ) {
             Text(
-                text = SimpleDateFormat(
-                    "LLLL",
-                    Locale.getDefault()
-                ).format(cal.time)
-                    .replaceFirstChar { it.titlecase() },
+                text =
+                    SimpleDateFormat("LLLL", Locale.getDefault())
+                        .format(cal.time)
+                        .replaceFirstChar { it.titlecase() },
                 style = Typography.headlineLarge,
             )
-            Text(
-                text = year.toString(),
-                style = Typography.titleMedium,
-            )
+            Text(text = year.toString(), style = Typography.titleMedium)
         }
 
         IconButton(onClick = onMonthIncrement) {
             Icon(
                 imageVector = Icons.Default.KeyboardDoubleArrowRight,
                 contentDescription = null,
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
             )
         }
     }

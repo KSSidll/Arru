@@ -4,7 +4,7 @@ interface SortSource {
     fun sortValue(): Long
 }
 
-fun <E> List<E>.median(): Float where E: SortSource, E: FloatSource {
+fun <E> List<E>.median(): Float where E : SortSource, E : FloatSource {
     if (isEmpty()) return 0f
 
     val sorted = sortedBy { it.sortValue() }

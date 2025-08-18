@@ -19,8 +19,6 @@ import javax.inject.Singleton
 class ShopModule {
 
     /** ENTITY */
-
-
     @Provides
     @Singleton
     fun provideGetShopEntityUseCase(
@@ -29,9 +27,7 @@ class ShopModule {
         return GetShopEntityUseCase(shopRepositorySource)
     }
 
-
     /** DOMAIN */
-
 
     // @Provides
     // @Singleton
@@ -57,10 +53,7 @@ class ShopModule {
         return GetItemsForShopUseCase(shopRepositorySource)
     }
 
-
     /** DOMAIN CHART */
-
-
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayForShopUseCase(

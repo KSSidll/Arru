@@ -9,21 +9,14 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddShopRoute(
-    defaultName: String?,
-    navigateBack: (shopId: Long?) -> Unit,
-) {
+fun AddShopRoute(defaultName: String?, navigateBack: (shopId: Long?) -> Unit) {
     val scope = rememberCoroutineScope()
     val viewModel: AddShopViewModel = hiltViewModel()
 
-    LaunchedEffect(Unit) {
-        viewModel.screenState.name.value = Field.Loaded(defaultName)
-    }
+    LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 
     ModifyShopScreenImpl(
-        onBack = {
-            navigateBack(null)
-        },
+        onBack = { navigateBack(null) },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {

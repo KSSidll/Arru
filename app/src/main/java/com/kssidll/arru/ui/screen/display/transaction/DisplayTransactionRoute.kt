@@ -15,15 +15,13 @@ fun DisplayTransactionRoute(
     navigateDisplayProductCategory: (categoryId: Long) -> Unit,
     navigateDisplayProductProducer: (producerId: Long) -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
-    viewModel: DisplayTransactionViewModel = hiltViewModel()
+    viewModel: DisplayTransactionViewModel = hiltViewModel(),
 ) {
 
     DisplayTransactionScreen(
         onBack = navigateBack,
         transaction = viewModel.transaction(transactionId).collectAsState(initial = null).value,
-        onEditAction = {
-            navigateEditTransaction(transactionId)
-        },
+        onEditAction = { navigateEditTransaction(transactionId) },
         onItemAddClick = navigateAddItem,
         onItemClick = navigateDisplayProduct,
         onItemLongClick = navigateEditItem,

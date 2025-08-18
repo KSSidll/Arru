@@ -11,65 +11,74 @@ import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepositorySource {
     companion object {
-        sealed class InsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): InsertResult(id)
-            class Error(error: Errors): InsertResult(error = error)
+        sealed class InsertResult(val id: Long? = null, val error: Errors? = null) {
+            class Success(id: Long) : InsertResult(id)
+
+            class Error(error: Errors) : InsertResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidDate: Errors()
-            data object InvalidTotalCost: Errors()
-            data object InvalidShopId: Errors()
+
+            data object InvalidDate : Errors()
+
+            data object InvalidTotalCost : Errors()
+
+            data object InvalidShopId : Errors()
         }
 
-        sealed class ItemInsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): ItemInsertResult(id)
-            class Error(error: Errors): ItemInsertResult(error = error)
+        sealed class ItemInsertResult(val id: Long? = null, val error: Errors? = null) {
+            class Success(id: Long) : ItemInsertResult(id)
+
+            class Error(error: Errors) : ItemInsertResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidTransactionId: Errors()
-            data object InvalidItemId: Errors()
+
+            data object InvalidTransactionId : Errors()
+
+            data object InvalidItemId : Errors()
         }
 
-        sealed class UpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: UpdateResult()
-            class Error(error: Errors): UpdateResult(error = error)
+        sealed class UpdateResult(val error: Errors? = null) {
+            data object Success : UpdateResult()
+
+            class Error(error: Errors) : UpdateResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidDate: Errors()
-            data object InvalidTotalCost: Errors()
-            data object InvalidShopId: Errors()
+
+            data object InvalidId : Errors()
+
+            data object InvalidDate : Errors()
+
+            data object InvalidTotalCost : Errors()
+
+            data object InvalidShopId : Errors()
         }
 
-        sealed class DeleteResult(
-            val error: Errors? = null
-        ) {
-            data object Success: DeleteResult()
-            class Error(error: Errors): DeleteResult(error = error)
+        sealed class DeleteResult(val error: Errors? = null) {
+            data object Success : DeleteResult()
+
+            class Error(error: Errors) : DeleteResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidId: Errors()
-            data object DangerousDelete: Errors()
+
+            data object InvalidId : Errors()
+
+            data object DangerousDelete : Errors()
         }
     }
 
@@ -77,23 +86,20 @@ interface TransactionRepositorySource {
 
     /**
      * Inserts [TransactionEntity]
+     *
      * @param date date of the [TransactionEntity]
      * @param totalCost total cost of the [TransactionEntity]
      * @param shopId id of the [ShopEntity] in the [TransactionEntity]
      * @param note note of the [ShopEntity] in the [TransactionEntity]
      * @return [InsertResult] with id of the newly inserted [TransactionEntity] or an error if any
      */
-    suspend fun insert(
-        date: Long,
-        totalCost: Long,
-        shopId: Long?,
-        note: String?
-    ): InsertResult
+    suspend fun insert(date: Long, totalCost: Long, shopId: Long?, note: String?): InsertResult
 
     // Update
 
     /**
      * Updates [TransactionEntity] with [id] to provided [date], [totalCost] and [shopId]
+     *
      * @param id id to match [TransactionEntity]
      * @param date date to update the matching [TransactionEntity] to
      * @param totalCost total cost to update the matching [TransactionEntity] to
@@ -105,21 +111,19 @@ interface TransactionRepositorySource {
         date: Long,
         totalCost: Long,
         shopId: Long?,
-        note: String?
+        note: String?,
     ): UpdateResult
 
     // Delete
 
     /**
      * Deletes [TransactionEntity]
+     *
      * @param id id of the [TransactionEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
-    suspend fun delete(
-        id: Long,
-        force: Boolean
-    ): DeleteResult
+    suspend fun delete(id: Long, force: Boolean): DeleteResult
 
     // Read
 
@@ -129,14 +133,10 @@ interface TransactionRepositorySource {
      */
     fun get(id: Long): Flow<TransactionEntity?>
 
-    /**
-     * @return float representing total spending
-     */
+    /** @return float representing total spending */
     fun totalSpent(): Flow<Float?>
 
-    /**
-     * @return [PagingData] of all [Item]
-     */
+    /** @return [PagingData] of all [Item] */
     fun items(): Flow<PagingData<Item>>
 
     /**
@@ -159,55 +159,48 @@ interface TransactionRepositorySource {
      */
     fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>>
 
-
-
-
-
-
-
-
-
-
-    /**
-     * @return value representing the count of [TransactionEntity]
-     */
+    /** @return value representing the count of [TransactionEntity] */
     suspend fun count(): Int
 
     /**
-     * @param [id] id of the [TransactionEntity] that acts as the breakpoint before which the transactions are counted
-     * @return value representing the count of [TransactionEntity] added before (chronologically) [id], counts by id, so doesn't check if the transaction actually exists
+     * @param [id] id of the [TransactionEntity] that acts as the breakpoint before which the
+     *   transactions are counted
+     * @return value representing the count of [TransactionEntity] added before (chronologically)
+     *   [id], counts by id, so doesn't check if the transaction actually exists
      */
     suspend fun countBefore(id: Long): Int
 
     /**
-     * @param [id] id of the [TransactionEntity] that acts as the breakpoint after which the transactions are counted
-     * @return value representing the count of [TransactionEntity] added after (chronologically) [id], counts by id, so doesn't check if the transaction actually exists
+     * @param [id] id of the [TransactionEntity] that acts as the breakpoint after which the
+     *   transactions are counted
+     * @return value representing the count of [TransactionEntity] added after (chronologically)
+     *   [id], counts by id, so doesn't check if the transaction actually exists
      */
     suspend fun countAfter(id: Long): Int
 
     /**
-     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none exist
+     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none
+     *   exist
      */
     fun newest(): Flow<TransactionEntity?>
 
-    /**
-     * @return long representing total spending for the [category]
-     */
+    /** @return long representing total spending for the [category] */
     fun totalSpentLong(): Flow<Long?>
 
     /**
      * @param startPosition position, from 0 up, to get next [count] items from
      * @param count how many items to query
-     * @return list of [count] [TransactionBasketWithItems] where the first item is the item at [startPosition]
+     * @return list of [count] [TransactionBasketWithItems] where the first item is the item at
+     *   [startPosition]
      */
     suspend fun transactionBasketsWithItems(
         startPosition: Int,
-        count: Int
+        count: Int,
     ): ImmutableList<TransactionBasketWithItems>
 
-
     /**
-     * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for placeholder values
+     * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for
+     *   placeholder values
      */
     fun transactionBasketsPaged(): Flow<PagingData<TransactionBasketWithItems>>
 

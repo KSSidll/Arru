@@ -19,12 +19,12 @@ fun Loading() {
     Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         CircularProgressIndicator(
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(150.dp),
-            strokeWidth = 12.dp
+            strokeWidth = 12.dp,
         )
     }
 }
@@ -32,9 +32,5 @@ fun Loading() {
 @PreviewLightDark
 @Composable
 private fun LoadingPreview() {
-    ArrugarqTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Loading()
-        }
-    }
+    ArrugarqTheme { Surface(modifier = Modifier.fillMaxSize()) { Loading() } }
 }

@@ -19,15 +19,10 @@ fun ShopRankingRoute(
     RankingScreen(
         onBack = navigateBack,
         title = stringResource(R.string.shops),
-        data = viewModel.shopTotalSpentFlow()
-            .collectAsState(emptyImmutableList()).value,
-        onItemClick = {
-            navigateDisplayShop(it.shop.id)
-        },
+        data = viewModel.shopTotalSpentFlow().collectAsState(emptyImmutableList()).value,
+        onItemClick = { navigateDisplayShop(it.shop.id) },
         onItemClickLabel = stringResource(id = R.string.select),
-        onItemLongClick = {
-            navigateEditShop(it.shop.id)
-        },
+        onItemLongClick = { navigateEditShop(it.shop.id) },
         onItemLongClickLabel = stringResource(id = R.string.edit),
     )
 }

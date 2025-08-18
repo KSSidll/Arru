@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.display.product
 
-
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +19,7 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -31,12 +31,12 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @Immutable
 data class DisplayProductUiState(
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
-    val productPriceByTime: ImmutableList<ProductPriceByShopByVariantByProducerByTime> = emptyImmutableList(),
+    val productPriceByTime: ImmutableList<ProductPriceByShopByVariantByProducerByTime> =
+        emptyImmutableList(),
     val spentByTime: ImmutableList<ChartSource> = emptyImmutableList(),
     val spentByTimePeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
     val productName: String = String(),
@@ -46,18 +46,25 @@ data class DisplayProductUiState(
 
 @Immutable
 sealed class DisplayProductEvent {
-    data object NavigateBack: DisplayProductEvent()
-    data class NavigateDisplayProductCategory(val productCategoryId: Long): DisplayProductEvent()
-    data class NavigateDisplayProductProducer(val productProducerId: Long): DisplayProductEvent()
-    data class NavigateDisplayShop(val shopId: Long): DisplayProductEvent()
-    data class NavigateEditItem(val itemId: Long): DisplayProductEvent()
-    data object NavigateEditProduct: DisplayProductEvent()
+    data object NavigateBack : DisplayProductEvent()
 
-    data class SetSpentByTimePeriod(val newPeriod: SpendingSummaryPeriod): DisplayProductEvent()
+    data class NavigateDisplayProductCategory(val productCategoryId: Long) : DisplayProductEvent()
+
+    data class NavigateDisplayProductProducer(val productProducerId: Long) : DisplayProductEvent()
+
+    data class NavigateDisplayShop(val shopId: Long) : DisplayProductEvent()
+
+    data class NavigateEditItem(val itemId: Long) : DisplayProductEvent()
+
+    data object NavigateEditProduct : DisplayProductEvent()
+
+    data class SetSpentByTimePeriod(val newPeriod: SpendingSummaryPeriod) : DisplayProductEvent()
 }
 
 @HiltViewModel
-class DisplayProductViewModel @Inject constructor(
+class DisplayProductViewModel
+@Inject
+constructor(
     private val getProductEntityUseCase: GetProductEntityUseCase,
     private val getTotalSpentForProductUseCase: GetTotalSpentForProductUseCase,
     private val getItemsForProductUseCase: GetItemsForProductUseCase,
@@ -65,8 +72,9 @@ class DisplayProductViewModel @Inject constructor(
     private val getTotalSpentByWeekForProductUseCase: GetTotalSpentByWeekForProductUseCase,
     private val getTotalSpentByMonthForProductUseCase: GetTotalSpentByMonthForProductUseCase,
     private val getTotalSpentByYearForProductUseCase: GetTotalSpentByYearForProductUseCase,
-    private val getAveragePriceByShopByVariantByProducerByDayForProductUseCase: GetAveragePriceByShopByVariantByProducerByDayForProductUseCase
-): ViewModel() {
+    private val getAveragePriceByShopByVariantByProducerByDayForProductUseCase:
+        GetAveragePriceByShopByVariantByProducerByDayForProductUseCase,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(DisplayProductUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -75,115 +83,92 @@ class DisplayProductViewModel @Inject constructor(
 
     private var _productId: Long? = null
 
-    /**
-     * @return True if provided [productId] was valid, false otherwise
-     */
-    suspend fun performDataUpdate(productId: Long) = viewModelScope.async {
-        val product = getProductEntityUseCase(productId).first() ?: return@async false
-        _productId = productId
+    /** @return True if provided [productId] was valid, false otherwise */
+    suspend fun performDataUpdate(productId: Long) =
+        viewModelScope
+            .async {
+                val product = getProductEntityUseCase(productId).first() ?: return@async false
+                _productId = productId
 
-        job?.cancel()
-        job = viewModelScope.launch {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    productName = product.name,
-                    items = getItemsForProductUseCase(productId)
-                )
-            }
-        }
+                job?.cancel()
+                job =
+                    viewModelScope.launch {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                productName = product.name,
+                                items = getItemsForProductUseCase(productId),
+                            )
+                        }
+                    }
 
-        viewModelScope.launch {
-            getTotalSpentForProductUseCase(productId).collectLatest {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        totalSpent = it ?: 0f
-                    )
+                viewModelScope.launch {
+                    getTotalSpentForProductUseCase(productId).collectLatest {
+                        _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                    }
                 }
-            }
-        }
 
-        viewModelScope.launch {
-            getAveragePriceByShopByVariantByProducerByDayForProductUseCase(productId).collectLatest {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        productPriceByTime = it
-                    )
+                viewModelScope.launch {
+                    getAveragePriceByShopByVariantByProducerByDayForProductUseCase(productId)
+                        .collectLatest {
+                            _uiState.update { currentState ->
+                                currentState.copy(productPriceByTime = it)
+                            }
+                        }
                 }
+
+                updateChartJob(_uiState.value.spentByTimePeriod, productId)
+
+                return@async true
             }
-        }
-
-        updateChartJob(_uiState.value.spentByTimePeriod, productId)
-
-        return@async true
-    }
-        .await()
+            .await()
 
     fun handleEvent(event: DisplayProductEvent) {
         when (event) {
-            is DisplayProductEvent.NavigateBack                   -> {}
+            is DisplayProductEvent.NavigateBack -> {}
             is DisplayProductEvent.NavigateDisplayProductCategory -> {}
             is DisplayProductEvent.NavigateDisplayProductProducer -> {}
-            is DisplayProductEvent.NavigateDisplayShop            -> {}
-            is DisplayProductEvent.NavigateEditItem               -> {}
-            is DisplayProductEvent.NavigateEditProduct            -> {}
-            is DisplayProductEvent.SetSpentByTimePeriod           -> setSpentByTimePeriod(event.newPeriod)
+            is DisplayProductEvent.NavigateDisplayShop -> {}
+            is DisplayProductEvent.NavigateEditItem -> {}
+            is DisplayProductEvent.NavigateEditProduct -> {}
+            is DisplayProductEvent.SetSpentByTimePeriod -> setSpentByTimePeriod(event.newPeriod)
         }
     }
 
     private fun setSpentByTimePeriod(newPeriod: SpendingSummaryPeriod) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                spentByTimePeriod = newPeriod
-            )
-        }
+        _uiState.update { currentState -> currentState.copy(spentByTimePeriod = newPeriod) }
 
         _productId?.let { updateChartJob(newPeriod, it) }
     }
 
     private fun updateChartJob(period: SpendingSummaryPeriod, productId: Long) {
         chartJob?.cancel()
-        chartJob = viewModelScope.launch {
-            when (period) {
-                SpendingSummaryPeriod.Day   -> {
-                    getTotalSpentByDayForProductUseCase(productId).collectLatest {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                spentByTime = it
-                            )
+        chartJob =
+            viewModelScope.launch {
+                when (period) {
+                    SpendingSummaryPeriod.Day -> {
+                        getTotalSpentByDayForProductUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
                         }
                     }
-                }
 
-                SpendingSummaryPeriod.Week  -> {
-                    getTotalSpentByWeekForProductUseCase(productId).collectLatest {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                spentByTime = it
-                            )
+                    SpendingSummaryPeriod.Week -> {
+                        getTotalSpentByWeekForProductUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
                         }
                     }
-                }
 
-                SpendingSummaryPeriod.Month -> {
-                    getTotalSpentByMonthForProductUseCase(productId).collectLatest {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                spentByTime = it
-                            )
+                    SpendingSummaryPeriod.Month -> {
+                        getTotalSpentByMonthForProductUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
                         }
                     }
-                }
 
-                SpendingSummaryPeriod.Year  -> {
-                    getTotalSpentByYearForProductUseCase(productId).collectLatest {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                spentByTime = it
-                            )
+                    SpendingSummaryPeriod.Year -> {
+                        getTotalSpentByYearForProductUseCase(productId).collectLatest {
+                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
                         }
                     }
                 }
             }
-        }
     }
 }

@@ -11,13 +11,14 @@ import java.util.Locale
 
 class CurrencyLocaleDataGenerator(
     private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger
+    private val logger: KSPLogger,
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val fileName = "CurrencyLocaleData"
         val packageName = "com.kssidll.compiled"
-        val fileContent = """
+        val fileContent =
+            """
             package $packageName
 
             import kotlinx.collections.immutable.toImmutableList
@@ -27,17 +28,18 @@ class CurrencyLocaleDataGenerator(
                     ${generateCachedItems()}
                 ).toImmutableList()
             }
-        """.trimIndent()
+        """
+                .trimIndent()
 
         try {
-            codeGenerator.createNewFile(
-                dependencies = Dependencies(false),
-                packageName = packageName,
-                fileName = fileName,
-                extensionName = "kt"
-            ).use {  outputStream ->
-                outputStream.write(fileContent.toByteArray())
-            }
+            codeGenerator
+                .createNewFile(
+                    dependencies = Dependencies(false),
+                    packageName = packageName,
+                    fileName = fileName,
+                    extensionName = "kt",
+                )
+                .use { outputStream -> outputStream.write(fileContent.toByteArray()) }
         } catch (e: FileAlreadyExistsException) {
             logger.info("File $fileName.kt already exists. Skipping generation.")
         }
@@ -46,7 +48,8 @@ class CurrencyLocaleDataGenerator(
     }
 
     private fun generateCachedItems(): String {
-        return NumberFormat.getAvailableLocales().map { it.toLanguageTag() }
+        return NumberFormat.getAvailableLocales()
+            .map { it.toLanguageTag() }
             .groupBy { 1.0f.formatToCurrency(Locale.forLanguageTag(it)) }
             .toSortedMap { a, b -> b.compareTo(a) }
             .map { (currency, tags) ->

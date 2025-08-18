@@ -39,22 +39,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
     @Provides
     @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext context: Context
-    ): AppDatabase {
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         var databaseLocation: AppPreferences.Database.Location.Values
-        runBlocking {
-            databaseLocation = AppPreferences.getDatabaseLocation(context).first()
-        }
+        runBlocking { databaseLocation = AppPreferences.getDatabaseLocation(context).first() }
 
         return when (databaseLocation) {
             AppPreferences.Database.Location.Values.EXTERNAL -> {
@@ -73,7 +69,6 @@ class DatabaseModule {
 
                 AppDatabase.buildExternal(context, context.downloadsDbFile().absolutePath)
             }
-
         }
     }
 
@@ -141,7 +136,6 @@ class DatabaseModule {
     fun provideCategoryDao(appDatabase: AppDatabase): ProductCategoryEntityDao {
         return appDatabase.getProductCategoryEntityDao()
     }
-
 
     @Provides
     fun provideCategoryRepository(dao: ProductCategoryEntityDao): ProductCategoryRepositorySource {

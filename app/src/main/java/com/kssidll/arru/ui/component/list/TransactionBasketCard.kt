@@ -85,9 +85,7 @@ fun LazyListScope.transactionBasketCard(
     ) {
         AnimatedVisibility(
             visible = itemsVisible,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp)
+            modifier = modifier.fillMaxWidth().padding(horizontal = 6.dp),
         ) {
             Surface(
                 color = MaterialTheme.colorScheme.surfaceContainer,
@@ -132,53 +130,35 @@ fun LazyListScope.transactionBasketCardHeader(
     onItemAddClick: (transactionId: Long) -> Unit,
     onItemShopClick: (shopId: Long) -> Unit,
     headerColor: Color,
-    currencyLocale: Locale
+    currencyLocale: Locale,
 ) {
-    stickyHeader(
-        key = transaction.id,
-        contentType = TransactionBasketWithItems
-    ) {
+    stickyHeader(key = transaction.id, contentType = TransactionBasketWithItems) {
         Column(modifier = modifier.fillMaxWidth()) {
             val transactionModifier =
                 if (onTransactionClick != null && onTransactionLongClick != null) {
                     Modifier.combinedClickable(
                         role = Role.Button,
-                        onClick = {
-                            onTransactionClick(transaction.id)
-                        },
-                        onLongClick = {
-                            onTransactionLongClick(transaction.id)
-                        }
+                        onClick = { onTransactionClick(transaction.id) },
+                        onLongClick = { onTransactionLongClick(transaction.id) },
                     )
                 } else if (onTransactionClick != null) {
-                    Modifier.clickable(
-                        role = Role.Button,
-                    ) {
-                        onTransactionClick(transaction.id)
-                    }
+                    Modifier.clickable(role = Role.Button) { onTransactionClick(transaction.id) }
                 } else Modifier
 
             Surface(color = headerColor) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = transactionModifier
-                        .height(HEADER_HEIGHT)
-                        .fillMaxWidth()
-                        .padding(vertical = 9.dp)
+                    modifier =
+                        transactionModifier
+                            .height(HEADER_HEIGHT)
+                            .fillMaxWidth()
+                            .padding(vertical = 9.dp),
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(
-                                start = 20.dp,
-                                end = 8.dp
-                            )
-                    ) {
+                    Column(modifier = Modifier.weight(1f).padding(start = 20.dp, end = 8.dp)) {
                         Text(
-                            text = SimpleDateFormat(
-                                "d MMMM, yyyy",
-                                Locale.getDefault()
-                            ).format(transaction.date),
+                            text =
+                                SimpleDateFormat("d MMMM, yyyy", Locale.getDefault())
+                                    .format(transaction.date),
                             style = Typography.headlineSmall,
                         )
 
@@ -186,27 +166,21 @@ fun LazyListScope.transactionBasketCardHeader(
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(
-                                    start = 8.dp,
-                                    end = 20.dp
-                                )
+                            modifier = Modifier.padding(start = 8.dp, end = 20.dp),
                         ) {
                             if (transaction.shop != null) {
-                                val onItemShopClick = remember(transaction.shop.id) { onItemShopClick }
+                                val onItemShopClick =
+                                    remember(transaction.shop.id) { onItemShopClick }
 
                                 Button(
-                                    onClick = {
-                                        onItemShopClick(transaction.shop.id)
-                                    },
-                                    contentPadding = PaddingValues(
-                                        vertical = 0.dp,
-                                        horizontal = 12.dp
-                                    ),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                                    ),
+                                    onClick = { onItemShopClick(transaction.shop.id) },
+                                    contentPadding =
+                                        PaddingValues(vertical = 0.dp, horizontal = 12.dp),
+                                    colors =
+                                        ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                                        ),
                                 ) {
                                     Text(
                                         text = transaction.shop.name,
@@ -225,13 +199,12 @@ fun LazyListScope.transactionBasketCardHeader(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(
-                            end = 20.dp,
-                        )
+                        modifier = Modifier.padding(end = 20.dp),
                     ) {
                         Text(
-                            text = TransactionEntity.actualTotalCost(transaction.totalCost)
-                                .formatToCurrency(currencyLocale),
+                            text =
+                                TransactionEntity.actualTotalCost(transaction.totalCost)
+                                    .formatToCurrency(currencyLocale),
                             style = Typography.titleLarge,
                         )
 
@@ -249,16 +222,11 @@ fun LazyListScope.transactionBasketCardHeader(
 
             AnimatedVisibility(
                 visible = itemsVisible,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 6.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
             ) {
                 Surface(
                     color = headerColor,
-                    shape = RoundedCornerShape(
-                        bottomStart = 12.dp,
-                        bottomEnd = 12.dp
-                    ),
+                    shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp),
                 ) {
                     Column {
                         if (!transaction.note.isNullOrBlank()) {
@@ -267,27 +235,19 @@ fun LazyListScope.transactionBasketCardHeader(
                                     text = transaction.note,
                                     style = MaterialTheme.typography.labelSmall,
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
                                 )
                             }
                         }
 
                         OutlinedIconButton(
-                            onClick = {
-                                onItemAddClick(transaction.id)
-                            },
+                            onClick = { onItemAddClick(transaction.id) },
                             shape = ShapeDefaults.Medium,
-                            border = BorderStroke(
-                                1.dp,
-                                MaterialTheme.colorScheme.primary
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp)
-                                .padding(
-                                    horizontal = 4.dp,
-                                    vertical = 8.dp
-                                )
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                            modifier =
+                                Modifier.fillMaxWidth()
+                                    .height(80.dp)
+                                    .padding(horizontal = 4.dp, vertical = 8.dp),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -303,16 +263,8 @@ fun LazyListScope.transactionBasketCardHeader(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-fun LazyListScope.transactionBasketCardHeaderPlaceholder(
-    modifier: Modifier = Modifier,
-) {
-    stickyHeader {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(HEADER_HEIGHT)
-        )
-    }
+fun LazyListScope.transactionBasketCardHeaderPlaceholder(modifier: Modifier = Modifier) {
+    stickyHeader { Box(modifier = modifier.fillMaxWidth().height(HEADER_HEIGHT)) }
 }
 
 @PreviewLightDark
@@ -332,7 +284,7 @@ private fun TransactionBasketCardPreview() {
                     onItemProducerClick = {},
                     onItemShopClick = {},
                     headerColor = color,
-                    currencyLocale = Locale.getDefault()
+                    currencyLocale = Locale.getDefault(),
                 )
             }
         }
@@ -353,7 +305,7 @@ private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
                     onItemShopClick = {},
                     headerColor = color,
                     currencyLocale = Locale.getDefault(),
-                    modifier = Modifier.height(HEADER_HEIGHT)
+                    modifier = Modifier.height(HEADER_HEIGHT),
                 )
             }
         }

@@ -20,8 +20,6 @@ import javax.inject.Singleton
 class ProductModule {
 
     /** ENTITY */
-
-
     @Provides
     @Singleton
     fun provideGetProductEntityUseCase(
@@ -30,9 +28,7 @@ class ProductModule {
         return GetProductEntityUseCase(productRepositorySource)
     }
 
-
     /** DOMAIN */
-
 
     // @Provides
     // @Singleton
@@ -66,10 +62,7 @@ class ProductModule {
         return GetTotalSpentByDayForProductUseCase(productRepositorySource)
     }
 
-
     /** DOMAIN CHART */
-
-
     @Provides
     @Singleton
     fun provideGetTotalSpentByWeekForProductUseCase(
@@ -99,6 +92,8 @@ class ProductModule {
     fun provideGetAveragePriceByShopByVariantByProducerByDayForProductUseCase(
         productRepositorySource: ProductRepositorySource
     ): GetAveragePriceByShopByVariantByProducerByDayForProductUseCase {
-        return GetAveragePriceByShopByVariantByProducerByDayForProductUseCase(productRepositorySource)
+        return GetAveragePriceByShopByVariantByProducerByDayForProductUseCase(
+            productRepositorySource
+        )
     }
 }

@@ -26,18 +26,15 @@ import kotlinx.coroutines.flow.map
 interface TransactionEntityDao {
     // Create
 
-    @Insert
-    suspend fun insert(entity: TransactionEntity): Long
+    @Insert suspend fun insert(entity: TransactionEntity): Long
 
     // Update
 
-    @Update
-    suspend fun update(entity: TransactionEntity)
+    @Update suspend fun update(entity: TransactionEntity)
 
     // Delete
 
-    @Delete
-    suspend fun delete(entity: TransactionEntity)
+    @Delete suspend fun delete(entity: TransactionEntity)
 
     // Helper
 
@@ -50,19 +47,29 @@ interface TransactionEntityDao {
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
     suspend fun productById(productId: Long): ProductEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
+    @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
+    )
     suspend fun variantById(variantId: Long): ProductVariantEntity?
 
-    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId")
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
+    )
     suspend fun categoryById(categoryId: Long): ProductCategoryEntity?
 
-    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId")
+    @Query(
+        "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId"
+    )
     suspend fun producerById(producerId: Long): ProductProducerEntity?
 
-    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE transactionEntityId = :transactionBasketId ORDER BY id DESC")
+    @Query(
+        "SELECT ItemEntity.* FROM ItemEntity WHERE transactionEntityId = :transactionBasketId ORDER BY id DESC"
+    )
     suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<ItemEntity>
 
-    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE transactionEntityId = :transactionBasketId ORDER BY id DESC")
+    @Query(
+        "SELECT ItemEntity.* FROM ItemEntity WHERE transactionEntityId = :transactionBasketId ORDER BY id DESC"
+    )
     fun itemsByTransactionBasketIdFlow(transactionBasketId: Long): Flow<List<ItemEntity>>
 
     @Transaction
@@ -77,7 +84,8 @@ interface TransactionEntityDao {
             val productEntity = productById(item.productEntityId)!!
             val productVariantEntity = item.productVariantEntityId?.let { variantById(it) }
             val productCategoryEntity = categoryById(productEntity.productCategoryEntityId)!!
-            val productProducerEntity = productEntity.productProducerEntityId?.let { producerById(it) }
+            val productProducerEntity =
+                productEntity.productProducerEntityId?.let { producerById(it) }
             val shopEntity = transactionBasket.shopEntityId?.let { shopById(it) }
 
             FullItem(
@@ -125,8 +133,7 @@ interface TransactionEntityDao {
         }
     }
 
-    @Delete
-    suspend fun deleteItems(entities: List<ItemEntity>)
+    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
 
     // Read
 
@@ -279,18 +286,7 @@ interface TransactionEntityDao {
     )
     fun totalSpentByYear(): Flow<List<TransactionSpentChartData>>
 
-
-
-
-
-
-
-
-
-
-
-    @Query("SELECT COUNT(*) FROM TransactionEntity")
-    suspend fun count(): Int
+    @Query("SELECT COUNT(*) FROM TransactionEntity") suspend fun count(): Int
 
     @Query("SELECT COUNT(*) FROM TransactionEntity WHERE id < :entityId")
     suspend fun countBefore(entityId: Long): Int
@@ -301,20 +297,16 @@ interface TransactionEntityDao {
     @Query("SELECT * FROM TransactionEntity ORDER BY id DESC LIMIT 1")
     fun newest(): Flow<TransactionEntity?>
 
-    @Query("SELECT TransactionEntity.* FROM TransactionEntity ORDER BY date DESC LIMIT :count OFFSET :startPosition")
-    suspend fun partDateDesc(
-        startPosition: Int,
-        count: Int
-    ): List<TransactionEntity>
+    @Query(
+        "SELECT TransactionEntity.* FROM TransactionEntity ORDER BY date DESC LIMIT :count OFFSET :startPosition"
+    )
+    suspend fun partDateDesc(startPosition: Int, count: Int): List<TransactionEntity>
 
     suspend fun transactionBasketsWithItems(
         startPosition: Int,
-        count: Int
+        count: Int,
     ): List<TransactionBasketWithItems> {
-        return partDateDesc(
-            startPosition,
-            count
-        ).map { basket ->
+        return partDateDesc(startPosition, count).map { basket ->
             val shop = basket.shopEntityId?.let { shopById(it) }
             val items = _itemsByTransactionBasketId(basket.id)
 
@@ -324,7 +316,7 @@ interface TransactionEntityDao {
                 shop = shop,
                 totalCost = basket.totalCost,
                 items = items,
-                note = basket.note
+                note = basket.note,
             )
         }
     }
@@ -344,7 +336,7 @@ interface TransactionEntityDao {
                     shop = shop,
                     totalCost = basket.totalCost,
                     items = items,
-                    note = basket.note
+                    note = basket.note,
                 )
             } else return@map null
         }

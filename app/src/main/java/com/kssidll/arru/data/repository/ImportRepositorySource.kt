@@ -16,6 +16,6 @@ interface ImportRepositorySource {
         transactionEntities: List<TransactionEntity>,
         productEntities: List<ProductEntity>,
         productVariantEntities: List<ProductVariantEntity>,
-        itemEntities: List<ItemEntity>
+        itemEntities: List<ItemEntity>,
     )
 }

@@ -11,42 +11,33 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun ShopSpendingComparisonRoute(
-    navigateBack: () -> Unit,
-    year: Int,
-    month: Int,
-) {
+fun ShopSpendingComparisonRoute(navigateBack: () -> Unit, year: Int, month: Int) {
     val viewModel: ShopSpendingComparisonViewModel = hiltViewModel()
 
     val calendar = Calendar.getInstance()
     calendar.clear()
-    calendar.set(
-        Calendar.MONTH,
-        month - 1
-    ) // calendar has 0 - 11 month indexes
+    calendar.set(Calendar.MONTH, month - 1) // calendar has 0 - 11 month indexes
 
-    val formatter = SimpleDateFormat(
-        "LLLL",
-        Locale.getDefault()
-    )
+    val formatter = SimpleDateFormat("LLLL", Locale.getDefault())
 
     SpendingComparisonScreen(
         onBack = navigateBack,
-        title = "${
+        title =
+            "${
             formatter.format(calendar.time)
                 .replaceFirstChar { it.titlecase() }
         } $year",
-        leftSideItems = viewModel.shopTotalSpentPreviousMonth(
-            year,
-            month
-        )
-            .collectAsState(initial = emptyList()).value,
+        leftSideItems =
+            viewModel
+                .shopTotalSpentPreviousMonth(year, month)
+                .collectAsState(initial = emptyList())
+                .value,
         leftSideHeader = stringResource(id = R.string.previous),
-        rightSideItems = viewModel.shopTotalSpentCurrentMonth(
-            year,
-            month
-        )
-            .collectAsState(initial = emptyList()).value,
+        rightSideItems =
+            viewModel
+                .shopTotalSpentCurrentMonth(year, month)
+                .collectAsState(initial = emptyList())
+                .value,
         rightSideHeader = stringResource(id = R.string.current),
     )
 }

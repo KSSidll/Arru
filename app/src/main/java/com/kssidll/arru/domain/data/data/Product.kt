@@ -42,10 +42,10 @@ data class ProductPriceByShopByVariantByProducerByTime(
             )
         }
 
-        fun generateList(amount: Int = 10): ImmutableList<ProductPriceByShopByVariantByProducerByTime> {
-            return List(amount) {
-                generate(it.toLong())
-            }.toImmutableList()
+        fun generateList(
+            amount: Int = 10
+        ): ImmutableList<ProductPriceByShopByVariantByProducerByTime> {
+            return List(amount) { generate(it.toLong()) }.toImmutableList()
         }
     }
 }

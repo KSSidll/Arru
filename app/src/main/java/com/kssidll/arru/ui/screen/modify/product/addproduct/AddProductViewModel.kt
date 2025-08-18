@@ -9,59 +9,66 @@ import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.Insert
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import javax.inject.Inject
+import kotlinx.coroutines.async
 
 @HiltViewModel
-class AddProductViewModel @Inject constructor(
+class AddProductViewModel
+@Inject
+constructor(
     override val productRepository: ProductRepositorySource,
     override val categoryRepository: ProductCategoryRepositorySource,
     override val producerRepository: ProductProducerRepositorySource,
-): ModifyProductViewModel() {
+) : ModifyProductViewModel() {
 
     /**
      * Tries to add a product to the repository
+     *
      * @return resulting [InsertResult]
      */
-    suspend fun addProduct() = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
+    suspend fun addProduct() =
+        viewModelScope
+            .async {
+                screenState.attemptedToSubmit.value = true
 
-        val result = productRepository.insert(
-            name = screenState.name.value.data.orEmpty(),
-            categoryId = screenState.selectedProductCategory.value.data?.id
-                ?: ProductEntity.INVALID_CATEGORY_ID,
-            producerId = screenState.selectedProductProducer.value.data?.id
-        )
+                val result =
+                    productRepository.insert(
+                        name = screenState.name.value.data.orEmpty(),
+                        categoryId =
+                            screenState.selectedProductCategory.value.data?.id
+                                ?: ProductEntity.INVALID_CATEGORY_ID,
+                        producerId = screenState.selectedProductProducer.value.data?.id,
+                    )
 
-        if (result.isError()) {
-            when (result.error!!) {
-                InsertResult.InvalidName -> {
-                    screenState.name.apply {
-                        value = value.toError(FieldError.InvalidValueError)
+                if (result.isError()) {
+                    when (result.error!!) {
+                        InsertResult.InvalidName -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
+
+                        InsertResult.DuplicateName -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.DuplicateValueError)
+                            }
+                        }
+
+                        InsertResult.InvalidCategoryId -> {
+                            screenState.selectedProductCategory.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
+
+                        InsertResult.InvalidProducerId -> {
+                            screenState.selectedProductProducer.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
                     }
                 }
 
-                InsertResult.DuplicateName -> {
-                    screenState.name.apply {
-                        value = value.toError(FieldError.DuplicateValueError)
-                    }
-                }
-
-                InsertResult.InvalidCategoryId -> {
-                    screenState.selectedProductCategory.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
-
-                InsertResult.InvalidProducerId -> {
-                    screenState.selectedProductProducer.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
+                return@async result
             }
-        }
-
-        return@async result
-    }
-        .await()
+            .await()
 }

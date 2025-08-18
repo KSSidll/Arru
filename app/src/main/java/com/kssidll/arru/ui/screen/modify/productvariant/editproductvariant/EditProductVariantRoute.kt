@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.productvariant.editproductvariant
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,18 +30,14 @@ fun EditProductVariantRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateVariant(variantId)
-                        .isNotError()
-                ) {
+                if (viewModel.updateVariant(variantId).isNotError()) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteVariant(variantId)
-                        .isNotError()
-                ) {
+                if (viewModel.deleteVariant(variantId).isNotError()) {
                     navigateBackDelete()
                 }
             }

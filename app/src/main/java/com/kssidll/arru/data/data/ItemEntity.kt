@@ -15,35 +15,40 @@ import java.util.Locale
 import kotlin.math.log10
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = TransactionEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["transactionEntityId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        ),
-        ForeignKey(
-            entity = ProductEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["productEntityId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        ),
-        ForeignKey(
-            entity = ProductVariantEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["productVariantEntityId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        )
-    ],
-    indices = [
-        Index(value = ["transactionEntityId"], name = "index_ItemEntity_transactionEntityId"),
-        Index(value = ["productEntityId"], name = "index_ItemEntity_productEntityId"),
-        Index(value = ["productVariantEntityId"], name = "index_ItemEntity_productVariantEntityId"),
-    ],
-    tableName = "ItemEntity"
+    foreignKeys =
+        [
+            ForeignKey(
+                entity = TransactionEntity::class,
+                parentColumns = ["id"],
+                childColumns = ["transactionEntityId"],
+                onDelete = ForeignKey.RESTRICT,
+                onUpdate = ForeignKey.RESTRICT,
+            ),
+            ForeignKey(
+                entity = ProductEntity::class,
+                parentColumns = ["id"],
+                childColumns = ["productEntityId"],
+                onDelete = ForeignKey.RESTRICT,
+                onUpdate = ForeignKey.RESTRICT,
+            ),
+            ForeignKey(
+                entity = ProductVariantEntity::class,
+                parentColumns = ["id"],
+                childColumns = ["productVariantEntityId"],
+                onDelete = ForeignKey.RESTRICT,
+                onUpdate = ForeignKey.RESTRICT,
+            ),
+        ],
+    indices =
+        [
+            Index(value = ["transactionEntityId"], name = "index_ItemEntity_transactionEntityId"),
+            Index(value = ["productEntityId"], name = "index_ItemEntity_productEntityId"),
+            Index(
+                value = ["productVariantEntityId"],
+                name = "index_ItemEntity_productVariantEntityId",
+            ),
+        ],
+    tableName = "ItemEntity",
 )
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
@@ -60,31 +65,23 @@ data class ItemEntity(
         productVariantEntityId: Long?,
         quantity: Long,
         price: Long,
-    ): this(
-        0,
-        transactionEntityId,
-        productEntityId,
-        productVariantEntityId,
-        quantity,
-        price,
-    )
+    ) : this(0, transactionEntityId, productEntityId, productVariantEntityId, quantity, price)
 
     @Ignore
     fun actualQuantity(): Double {
-        return quantity.toDouble()
-            .div(QUANTITY_DIVISOR)
+        return quantity.toDouble().div(QUANTITY_DIVISOR)
     }
 
     @Ignore
     fun actualPrice(): Double {
-        return price.toDouble()
-            .div(PRICE_DIVISOR)
+        return price.toDouble().div(PRICE_DIVISOR)
     }
 
     /**
      * Converts the [ItemEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
+     *
      * @return [ItemEntity] data as [String] with csv format
      */
     @Ignore
@@ -93,35 +90,29 @@ data class ItemEntity(
     }
 
     companion object {
-        @Ignore
-        const val PRICE_DIVISOR: Long = 100
+        @Ignore const val PRICE_DIVISOR: Long = 100
 
-        @Ignore
-        const val QUANTITY_DIVISOR: Long = 1000
+        @Ignore const val QUANTITY_DIVISOR: Long = 1000
 
-        @Ignore
-        const val INVALID_PRICE: Long = Long.MIN_VALUE
+        @Ignore const val INVALID_PRICE: Long = Long.MIN_VALUE
 
-        @Ignore
-        const val INVALID_QUANTITY: Long = Long.MIN_VALUE
+        @Ignore const val INVALID_QUANTITY: Long = Long.MIN_VALUE
 
-        @Ignore
-        const val INVALID_PRODUCT_ID: Long = Long.MIN_VALUE
+        @Ignore const val INVALID_PRODUCT_ID: Long = Long.MIN_VALUE
 
         @Ignore
         fun actualQuantity(quantity: Long): Float {
-            return quantity.toFloat()
-                .div(QUANTITY_DIVISOR)
+            return quantity.toFloat().div(QUANTITY_DIVISOR)
         }
 
         @Ignore
         fun actualPrice(price: Long): Float {
-            return price.toFloat()
-                .div(PRICE_DIVISOR)
+            return price.toFloat().div(PRICE_DIVISOR)
         }
 
         /**
          * Returns the [String] representing the [ItemEntity] csv format headers
+         *
          * @return [String] representing the [ItemEntity] csv format headers
          */
         @Ignore
@@ -145,69 +136,43 @@ data class ItemEntity(
         fun quantityFromString(string: String): Long? {
             val rFactor = log10(QUANTITY_DIVISOR.toFloat()).toInt()
 
-            if (!RegexHelper.isFloat(
-                    string,
-                    rFactor
-                )
-            ) {
+            if (!RegexHelper.isFloat(string, rFactor)) {
                 return null
             }
 
-            val factor = rFactor - string.dropWhile { it.isDigit() }
-                .drop(1).length
+            val factor = rFactor - string.dropWhile { it.isDigit() }.drop(1).length
 
-            val remainder = "".padEnd(
-                factor,
-                '0'
-            )
-            return string.filter { it.isDigit() }
-                .plus(remainder)
-                .toLongOrNull()
+            val remainder = "".padEnd(factor, '0')
+            return string.filter { it.isDigit() }.plus(remainder).toLongOrNull()
         }
 
         @Ignore
         fun priceFromString(string: String): Long? {
             val rFactor = log10(PRICE_DIVISOR.toFloat()).toInt()
 
-            if (!RegexHelper.isFloat(
-                    string,
-                    rFactor
-                )
-            ) {
+            if (!RegexHelper.isFloat(string, rFactor)) {
                 return null
             }
 
-            val factor = rFactor - string.dropWhile { it.isDigit() }
-                .drop(1).length
+            val factor = rFactor - string.dropWhile { it.isDigit() }.drop(1).length
 
-            val remainder = "".padEnd(
-                factor,
-                '0'
-            )
-            return string.filter { it.isDigit() }
-                .plus(remainder)
-                .toLongOrNull()
+            val remainder = "".padEnd(factor, '0')
+            return string.filter { it.isDigit() }.plus(remainder).toLongOrNull()
         }
 
         @Ignore
         fun generateList(amount: Int = 10): List<ItemEntity> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 
-    /**
-     * @return true if quantity is valid, false otherwise
-     */
+    /** @return true if quantity is valid, false otherwise */
     @Ignore
     fun validQuantity(): Boolean {
         return quantity != INVALID_QUANTITY && quantity > 0
     }
 
-    /**
-     * @return true if price is valid, false otherwise
-     */
+    /** @return true if price is valid, false otherwise */
     @Ignore
     fun validPrice(): Boolean {
         return price != INVALID_PRICE
@@ -216,6 +181,7 @@ data class ItemEntity(
 
 /**
  * Converts a list of [ItemEntity] data to a list of strings with csv format
+ *
  * @param includeHeaders whether to include the csv headers
  * @return [ItemEntity] data as list of string with csv format
  */
@@ -226,9 +192,7 @@ fun List<ItemEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = 
     }
 
     // Add rows
-    this@asCsvList.forEach {
-        add(it.formatAsCsvString() + "\n")
-    }
+    this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
 }
 
 data class FullItem(
@@ -266,17 +230,13 @@ data class FullItem(
         }
 
         fun generateList(amount: Int = 10): List<FullItem> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 }
 
-data class TransactionTotalSpentByShop(
-    @Embedded val shop: ShopEntity,
-    val total: Long,
-): RankSource {
+data class TransactionTotalSpentByShop(@Embedded val shop: ShopEntity, val total: Long) :
+    RankSource {
     companion object {
         fun generate(shopId: Long = 0): TransactionTotalSpentByShop {
             return TransactionTotalSpentByShop(
@@ -286,15 +246,12 @@ data class TransactionTotalSpentByShop(
         }
 
         fun generateList(amount: Int = 10): List<TransactionTotalSpentByShop> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 
     override fun value(): Float {
-        return total.toFloat()
-            .div(TransactionEntity.COST_DIVISOR)
+        return total.toFloat().div(TransactionEntity.COST_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -314,10 +271,8 @@ data class TransactionTotalSpentByShop(
     }
 }
 
-data class ItemSpentByCategory(
-    @Embedded val category: ProductCategoryEntity,
-    val total: Long,
-): RankSource {
+data class ItemSpentByCategory(@Embedded val category: ProductCategoryEntity, val total: Long) :
+    RankSource {
     companion object {
         fun generate(categoryId: Long = 0): ItemSpentByCategory {
             return ItemSpentByCategory(
@@ -327,15 +282,12 @@ data class ItemSpentByCategory(
         }
 
         fun generateList(amount: Int = 10): List<ItemSpentByCategory> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 
     override fun value(): Float {
-        return total.toFloat()
-            .div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
+        return total.toFloat().div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
     }
 
     override fun sortValue(): Long {
@@ -347,8 +299,7 @@ data class ItemSpentByCategory(
     }
 
     override fun displayValue(locale: Locale): String {
-        return value()
-            .formatToCurrency(locale, dropDecimal = true)
+        return value().formatToCurrency(locale, dropDecimal = true)
     }
 
     override fun identificator(): Long {

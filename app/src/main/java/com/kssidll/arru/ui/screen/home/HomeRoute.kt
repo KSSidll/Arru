@@ -20,31 +20,30 @@ enum class HomeDestinations(
     @param:StringRes val label: Int,
     val disabledIcon: ImageVector,
     val enabledIcon: ImageVector,
-    @param:StringRes val contentDescription: Int
+    @param:StringRes val contentDescription: Int,
 ) {
     DASHBOARD(
         R.string.dashboard_nav_label,
         Icons.Outlined.Home,
         Icons.Filled.Home,
-        R.string.navigate_to_dashboard_description
+        R.string.navigate_to_dashboard_description,
     ),
     ANALYSIS(
         R.string.analysis_nav_label,
         Icons.Outlined.Analytics,
         Icons.Filled.Analytics,
-        R.string.navigate_to_analysis_description
+        R.string.navigate_to_analysis_description,
     ),
     TRANSACTIONS(
         R.string.transactions_nav_label,
         Icons.AutoMirrored.Outlined.Notes,
         Icons.AutoMirrored.Filled.Notes,
-        R.string.navigate_to_transactions_description
-    )
-
-    ;
+        R.string.navigate_to_transactions_description,
+    );
 
     companion object {
         val DEFAULT = DASHBOARD
+
         fun get(index: Int?) = index?.let { entries.getOrElse(it) { DEFAULT } } ?: DEFAULT
     }
 }
@@ -66,10 +65,13 @@ fun HomeRoute(
     navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit,
     navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     HomeScreen(
-        uiState = viewModel.uiState.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED).value,
+        uiState =
+            viewModel.uiState
+                .collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
+                .value,
         onEvent = { event ->
             when (event) {
                 is HomeEvent.ChangeScreenDestination -> {
@@ -145,6 +147,6 @@ fun HomeRoute(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }

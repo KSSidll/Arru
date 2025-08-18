@@ -19,9 +19,6 @@ class ImportDataUseCaseModule {
         @ApplicationContext context: Context,
         importRepository: ImportRepositorySource,
     ): ImportDataUIBlockingUseCase {
-        return ImportDataUIBlockingUseCase(
-            context,
-            importRepository
-        )
+        return ImportDataUIBlockingUseCase(context, importRepository)
     }
 }

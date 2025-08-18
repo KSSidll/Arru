@@ -23,14 +23,8 @@ fun AddItemRoute(
     val scope = rememberCoroutineScope()
     val viewModel: AddItemViewModel = hiltViewModel()
 
-    LaunchedEffect(
-        providedProductId,
-        providedVariantId
-    ) {
-        viewModel.setSelectedProductToProvided(
-            providedProductId,
-            providedVariantId
-        )
+    LaunchedEffect(providedProductId, providedVariantId) {
+        viewModel.setSelectedProductToProvided(providedProductId, providedVariantId)
     }
 
     ModifyItemScreenImpl(
@@ -38,19 +32,11 @@ fun AddItemRoute(
         state = viewModel.screenState,
         products = viewModel.allProducts().collectAsState(initial = emptyImmutableList()).value,
         variants = viewModel.productVariants.collectAsState(initial = emptyImmutableList()).value,
-        onNewProductSelected = {
-            scope.launch {
-                viewModel.onNewProductSelected(it)
-            }
-        },
-        onNewVariantSelected = {
-            viewModel.onNewVariantSelected(it)
-        },
+        onNewProductSelected = { scope.launch { viewModel.onNewProductSelected(it) } },
+        onNewVariantSelected = { viewModel.onNewVariantSelected(it) },
         onSubmit = {
             scope.launch {
-                if (viewModel.addItem(transactionId)
-                        .isNotError()
-                ) {
+                if (viewModel.addItem(transactionId).isNotError()) {
                     navigateBack()
                 }
             }

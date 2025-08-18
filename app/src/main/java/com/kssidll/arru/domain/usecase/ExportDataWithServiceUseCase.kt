@@ -15,28 +15,20 @@ class ExportDataWithServiceUseCase(
     @param:ApplicationContext val appContext: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
-    suspend operator fun invoke(uri: Uri) = withContext(dispatcher) {
-        when (AppPreferences.getExportType(appContext).first()) {
-            AppPreferences.Export.Type.Values.CompactCSV -> {
-                DataExportService.startExportCsvCompact(
-                    appContext,
-                    uri
-                )
-            }
+    suspend operator fun invoke(uri: Uri) =
+        withContext(dispatcher) {
+            when (AppPreferences.getExportType(appContext).first()) {
+                AppPreferences.Export.Type.Values.CompactCSV -> {
+                    DataExportService.startExportCsvCompact(appContext, uri)
+                }
 
-            AppPreferences.Export.Type.Values.RawCSV -> {
-                DataExportService.startExportCsvRaw(
-                    appContext,
-                    uri
-                )
-            }
+                AppPreferences.Export.Type.Values.RawCSV -> {
+                    DataExportService.startExportCsvRaw(appContext, uri)
+                }
 
-            AppPreferences.Export.Type.Values.JSON -> {
-                DataExportService.startExportJson(
-                    appContext,
-                    uri
-                )
+                AppPreferences.Export.Type.Values.JSON -> {
+                    DataExportService.startExportJson(appContext, uri)
+                }
             }
         }
-    }
 }

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.settings
 
-
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -78,78 +77,69 @@ fun SettingsRoute(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var uiBlockingProgressPopupVisible by remember {
-        mutableStateOf(false)
-    }
+    var uiBlockingProgressPopupVisible by remember { mutableStateOf(false) }
 
-    var uiBlockingJob: Job? by remember {
-        mutableStateOf(null)
-    }
+    var uiBlockingJob: Job? by remember { mutableStateOf(null) }
 
-    var uiBlockingMaxProgress by remember {
-        mutableIntStateOf(0)
-    }
+    var uiBlockingMaxProgress by remember { mutableIntStateOf(0) }
 
-    var uiBlockingProgress by remember {
-        mutableIntStateOf(0)
-    }
+    var uiBlockingProgress by remember { mutableIntStateOf(0) }
 
-    val exportServicePermissionsState = rememberMultiplePermissionsState(
-        permissions = DataExportService.Permissions.ALL.asList(),
-        onPermissionsResult = {
-            scope.launch {
-                val uri = AppPreferences.getExportLocation(context).first() ?: run {
-                    Log.d(
-                        "SETTINGS_ROUTE",
-                        "exportServiceLaunch: uri is empty"
-                    )
-                    return@launch
-                }
-
-                val parentUri = DocumentsContractCompat.buildDocumentUriUsingTree(
-                    uri,
-                    DocumentsContractCompat.getTreeDocumentId(uri)!!
-                )!!
-
-                if (it.all { it.value }) {
-                    viewModel.exportWithService(parentUri)
-                } else {
-                    uiBlockingJob?.cancel()
-
-                    uiBlockingProgressPopupVisible = true
-
-                    uiBlockingJob = viewModel.exportUIBlocking(
-                        parentUri,
-                        onMaxProgressChange = {
-                            uiBlockingMaxProgress = it
-                        },
-                        onProgressChange = {
-                            uiBlockingProgress = it
-                        },
-                        onFinished = {
-                            val job = Job(uiBlockingJob)
-                            val finishScope = CoroutineScope(Dispatchers.Default + job)
-
-                            finishScope.launch {
-                                delay(500)
-
-                                uiBlockingProgressPopupVisible = false
-                                uiBlockingMaxProgress = 0
-                                uiBlockingProgress = 0
+    val exportServicePermissionsState =
+        rememberMultiplePermissionsState(
+            permissions = DataExportService.Permissions.ALL.asList(),
+            onPermissionsResult = {
+                scope.launch {
+                    val uri =
+                        AppPreferences.getExportLocation(context).first()
+                            ?: run {
+                                Log.d("SETTINGS_ROUTE", "exportServiceLaunch: uri is empty")
+                                return@launch
                             }
-                        }
-                    )
-                }
-            }
-        }
-    )
 
-    val persistentNotificationServicePermissionsState = rememberMultiplePermissionsState(
-        permissions = PersistentNotificationService.Permissions.ALL.asList(),
-        onPermissionsResult = {
-            viewModel.handleEvent(SettingsEvent.TogglePersistentNotification)
-        }
-    )
+                    val parentUri =
+                        DocumentsContractCompat.buildDocumentUriUsingTree(
+                            uri,
+                            DocumentsContractCompat.getTreeDocumentId(uri)!!,
+                        )!!
+
+                    if (it.all { it.value }) {
+                        viewModel.exportWithService(parentUri)
+                    } else {
+                        uiBlockingJob?.cancel()
+
+                        uiBlockingProgressPopupVisible = true
+
+                        uiBlockingJob =
+                            viewModel.exportUIBlocking(
+                                parentUri,
+                                onMaxProgressChange = { uiBlockingMaxProgress = it },
+                                onProgressChange = { uiBlockingProgress = it },
+                                onFinished = {
+                                    val job = Job(uiBlockingJob)
+                                    val finishScope = CoroutineScope(Dispatchers.Default + job)
+
+                                    finishScope.launch {
+                                        delay(500)
+
+                                        uiBlockingProgressPopupVisible = false
+                                        uiBlockingMaxProgress = 0
+                                        uiBlockingProgress = 0
+                                    }
+                                },
+                            )
+                    }
+                }
+            },
+        )
+
+    val persistentNotificationServicePermissionsState =
+        rememberMultiplePermissionsState(
+            permissions = PersistentNotificationService.Permissions.ALL.asList(),
+            onPermissionsResult = {
+                viewModel.handleEvent(SettingsEvent.TogglePersistentNotification)
+            },
+        )
 
     val setExportLocation: suspend (Uri) -> Unit = { uri ->
         val oldUri = AppPreferences.getExportLocation(context).first()
@@ -162,16 +152,12 @@ fun SettingsRoute(
                 try {
                     context.contentResolver.releasePersistableUriPermission(
                         oldUri,
-                        persistableFlags
+                        persistableFlags,
                     )
-                } catch (_: Exception) {
-                } // it doesn't really matter if we can't release
+                } catch (_: Exception) {} // it doesn't really matter if we can't release
             }
 
-            context.contentResolver.takePersistableUriPermission(
-                uri,
-                persistableFlags
-            )
+            context.contentResolver.takePersistableUriPermission(uri, persistableFlags)
 
             AppPreferences.setExportLocation(context, uri)
         }
@@ -179,11 +165,7 @@ fun SettingsRoute(
 
     val exportFolderPickerLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
-            scope.launch {
-                it?.let { uri ->
-                    setExportLocation(uri)
-                }
-            }
+            scope.launch { it?.let { uri -> setExportLocation(uri) } }
         }
 
     val exportFolderPickerWithExportLauncher =
@@ -205,69 +187,84 @@ fun SettingsRoute(
 
                 uiBlockingProgressPopupVisible = true
 
-                uiBlockingJob = viewModel.importFromUri(
-                    uri = it,
-                    onMaxProgressChange = {
-                        uiBlockingMaxProgress = it
-                    },
-                    onProgressChange = {
-                        uiBlockingProgress = it
-                    },
-                    onFinished = {
-                        val job = Job(uiBlockingJob)
-                        val finishScope = CoroutineScope(Dispatchers.Default + job)
+                uiBlockingJob =
+                    viewModel.importFromUri(
+                        uri = it,
+                        onMaxProgressChange = { uiBlockingMaxProgress = it },
+                        onProgressChange = { uiBlockingProgress = it },
+                        onFinished = {
+                            val job = Job(uiBlockingJob)
+                            val finishScope = CoroutineScope(Dispatchers.Default + job)
 
-                        finishScope.launch {
-                            delay(500)
+                            finishScope.launch {
+                                delay(500)
 
+                                uiBlockingProgressPopupVisible = false
+                                uiBlockingMaxProgress = 0
+                                uiBlockingProgress = 0
+                            }
+                        },
+                        onError = {
                             uiBlockingProgressPopupVisible = false
                             uiBlockingMaxProgress = 0
                             uiBlockingProgress = 0
-                        }
-                    },
-                    onError = {
-                        uiBlockingProgressPopupVisible = false
-                        uiBlockingMaxProgress = 0
-                        uiBlockingProgress = 0
 
-                        importErrorVisible = true
+                            importErrorVisible = true
 
-                        importErrorText = when (it) {
-                            is ImportError.FailedToDetermineVersion -> {
-                                buildString {
-                                    append(context.getLocalizedString(R.string.import_error_failed_to_determine_version))
-                                    append(" ${it.name}")
-                                }
-                            }
+                            importErrorText =
+                                when (it) {
+                                    is ImportError.FailedToDetermineVersion -> {
+                                        buildString {
+                                            append(
+                                                context.getLocalizedString(
+                                                    R.string
+                                                        .import_error_failed_to_determine_version
+                                                )
+                                            )
+                                            append(" ${it.name}")
+                                        }
+                                    }
 
-                            is ImportError.FailedToOpenFile -> {
-                                buildString {
-                                    append(context.getLocalizedString(R.string.import_error_failed_to_open_file))
-                                    append(" ${it.fileName}")
-                                }
-                            }
+                                    is ImportError.FailedToOpenFile -> {
+                                        buildString {
+                                            append(
+                                                context.getLocalizedString(
+                                                    R.string.import_error_failed_to_open_file
+                                                )
+                                            )
+                                            append(" ${it.fileName}")
+                                        }
+                                    }
 
-                            is ImportError.MissingFiles -> {
-                                buildString {
-                                    append(context.getLocalizedString(R.string.import_error_missing_files))
-                                    it.expectedFileGroups.forEach {
-                                        append("\n[ ${it.joinToString(", ")} ]")
+                                    is ImportError.MissingFiles -> {
+                                        buildString {
+                                            append(
+                                                context.getLocalizedString(
+                                                    R.string.import_error_missing_files
+                                                )
+                                            )
+                                            it.expectedFileGroups.forEach {
+                                                append("\n[ ${it.joinToString(", ")} ]")
+                                            }
+                                        }
+                                    }
+
+                                    is ImportError.ParseError -> {
+                                        context.getLocalizedString(
+                                            R.string.import_error_parse_error
+                                        )
                                     }
                                 }
-                            }
-
-                            is ImportError.ParseError -> {
-                                context.getLocalizedString(R.string.import_error_parse_error)
-                            }
-                        }
-                    }
-                )
+                        },
+                    )
             }
         }
 
     Box(modifier = modifier.fillMaxSize()) {
-
-        val uiState = viewModel.uiState.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED).value
+        val uiState =
+            viewModel.uiState
+                .collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
+                .value
 
         SettingsScreen(
             uiState = uiState,
@@ -288,9 +285,7 @@ fun SettingsRoute(
                     }
 
                     is SettingsEvent.ImportData -> {
-                        scope.launch {
-                            importFolderPickerLauncher.launch(uiState.exportUri)
-                        }
+                        scope.launch { importFolderPickerLauncher.launch(uiState.exportUri) }
                     }
 
                     is SettingsEvent.SetExportType -> viewModel.handleEvent(event)
@@ -300,7 +295,8 @@ fun SettingsRoute(
                     }
 
                     is SettingsEvent.TogglePersistentNotification -> {
-                        persistentNotificationServicePermissionsState.launchMultiplePermissionRequest()
+                        persistentNotificationServicePermissionsState
+                            .launchMultiplePermissionRequest()
                     }
 
                     is SettingsEvent.SetTheme -> viewModel.handleEvent(event)
@@ -308,34 +304,38 @@ fun SettingsRoute(
                     is SettingsEvent.SetCurrencyFormatLocale -> viewModel.handleEvent(event)
                     is SettingsEvent.SetLocale -> viewModel.handleEvent(event)
                     is SettingsEvent.SetDatabaseLocation -> viewModel.handleEvent(event)
-                    is SettingsEvent.DismissDatabaseLocationChangeError -> viewModel.handleEvent(event)
-                    is SettingsEvent.ToggleAdvancedSettingsVisibility -> viewModel.handleEvent(event)
-                    is SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog -> viewModel.handleEvent(event)
-                    is SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction -> viewModel.handleEvent(event)
+                    is SettingsEvent.DismissDatabaseLocationChangeError ->
+                        viewModel.handleEvent(event)
+                    is SettingsEvent.ToggleAdvancedSettingsVisibility ->
+                        viewModel.handleEvent(event)
+                    is SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog ->
+                        viewModel.handleEvent(event)
+                    is SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction ->
+                        viewModel.handleEvent(event)
                 }
-            }
+            },
         )
 
         AnimatedVisibility(
             visible = uiBlockingProgressPopupVisible,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = {}
-                    )
-                    .background(Color.Black.copy(alpha = 0.5f))
+                modifier =
+                    Modifier.fillMaxSize()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {},
+                        )
+                        .background(Color.Black.copy(alpha = 0.5f))
             ) {
                 Surface(
                     shape = ShapeDefaults.Large,
                     color = MaterialTheme.colorScheme.surfaceContainer,
                     contentColor = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 ) {
                     Box(modifier = Modifier.padding(24.dp)) {
                         Column {
@@ -345,15 +345,15 @@ fun SettingsRoute(
                                         if (uiBlockingMaxProgress == 0) {
                                             0f
                                         } else {
-                                            uiBlockingProgress.toFloat() / uiBlockingMaxProgress.toFloat()
+                                            uiBlockingProgress.toFloat() /
+                                                uiBlockingMaxProgress.toFloat()
                                         }
                                     },
                                     color = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.height(
-                                        Typography.titleLarge.fontSize.value.dp.minus(
-                                            6.dp
-                                        )
-                                    )
+                                    modifier =
+                                        Modifier.height(
+                                            Typography.titleLarge.fontSize.value.dp.minus(6.dp)
+                                        ),
                                 )
 
                                 Spacer(modifier = Modifier.height(3.dp))
@@ -361,7 +361,7 @@ fun SettingsRoute(
                                 Text(
                                     text = "$uiBlockingProgress / $uiBlockingMaxProgress",
                                     style = Typography.bodySmall,
-                                    color = LocalContentColor.current.copy(alpha = 0.6f)
+                                    color = LocalContentColor.current.copy(alpha = 0.6f),
                                 )
                             }
 
@@ -372,10 +372,11 @@ fun SettingsRoute(
                                     uiBlockingJob?.cancel()
                                     uiBlockingProgressPopupVisible = false
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                                    ),
                             ) {
                                 Text(
                                     text = stringResource(R.string.data_export_cancel),
@@ -389,28 +390,23 @@ fun SettingsRoute(
         }
 
         AnimatedVisibility(visible = importErrorVisible) {
-            BasicAlertDialog(
-                onDismissRequest = {
-                    importErrorVisible = false
-                }
-            ) {
+            BasicAlertDialog(onDismissRequest = { importErrorVisible = false }) {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        )
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                          .width(300.dp)
-                          .height(300.dp)
+                        modifier = Modifier.width(300.dp).height(300.dp),
                     ) {
                         Text(
                             text = importErrorText,
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(2.dp)
+                            modifier = Modifier.padding(2.dp),
                         )
                     }
                 }

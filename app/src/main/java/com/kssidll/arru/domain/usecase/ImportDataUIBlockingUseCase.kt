@@ -21,15 +21,16 @@ class ImportDataUIBlockingUseCase(
         onProgressChange: (newProgress: Int) -> Unit,
         onFinished: () -> Unit,
         onError: (error: ImportError) -> Unit,
-    ) = withContext(dispatcher) {
-        importDataFromUris(
-            context = appContext,
-            uri = uri,
-            importRepository = importRepository,
-            onMaxProgressChange = onMaxProgressChange,
-            onProgressChange = onProgressChange,
-            onFinished = onFinished,
-            onError = onError
-        )
-    }
+    ) =
+        withContext(dispatcher) {
+            importDataFromUris(
+                context = appContext,
+                uri = uri,
+                importRepository = importRepository,
+                onMaxProgressChange = onMaxProgressChange,
+                onProgressChange = onProgressChange,
+                onFinished = onFinished,
+                onError = onError,
+            )
+        }
 }

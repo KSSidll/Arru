@@ -35,25 +35,25 @@ fun SecondaryAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = {
-            IconButton(
-                onClick = onBack
-            ) {
+            IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(com.kssidll.arru.R.string.navigate_to_previous_screen),
+                    contentDescription =
+                        stringResource(com.kssidll.arru.R.string.navigate_to_previous_screen),
                     modifier = Modifier.size(30.dp),
                 )
             }
         },
         actions = actions,
         windowInsets = windowInsets,
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
-        ),
+        colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
         scrollBehavior = scrollBehavior,
     )
 }
@@ -62,14 +62,5 @@ fun SecondaryAppBar(
 @PreviewLightDark
 @Composable
 private fun SecondaryAppBarPreview() {
-    ArrugarqTheme {
-        Surface {
-            SecondaryAppBar(
-                onBack = {},
-                title = {
-                    Text(text = "test")
-                },
-            )
-        }
-    }
+    ArrugarqTheme { Surface { SecondaryAppBar(onBack = {}, title = { Text(text = "test") }) } }
 }

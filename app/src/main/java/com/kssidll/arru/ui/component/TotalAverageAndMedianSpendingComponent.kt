@@ -71,15 +71,18 @@ fun TotalAverageAndMedianSpendingComponent(
     spentByTimeData: ImmutableList<ChartSource>,
     totalSpentData: Float,
     modifier: Modifier = Modifier,
-    totalChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
-    averageChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
-    medianChartEntryModelProducer: CartesianChartModelProducer = remember { CartesianChartModelProducer() },
-    animationSpec: AnimationSpec<Float> = tween(
-        800,
-        easing = EaseIn
-    ),
+    totalChartEntryModelProducer: CartesianChartModelProducer = remember {
+        CartesianChartModelProducer()
+    },
+    averageChartEntryModelProducer: CartesianChartModelProducer = remember {
+        CartesianChartModelProducer()
+    },
+    medianChartEntryModelProducer: CartesianChartModelProducer = remember {
+        CartesianChartModelProducer()
+    },
+    animationSpec: AnimationSpec<Float> = tween(800, easing = EaseIn),
     skipAnimation: Boolean = false,
-    onAnimationEnd: () -> Unit = {}
+    onAnimationEnd: () -> Unit = {},
 ) {
     val totalStartValue = if (skipAnimation) totalSpentData else 0f
     val averageStartValue = if (skipAnimation) spentByTimeData.avg() else 0f
@@ -88,51 +91,51 @@ fun TotalAverageAndMedianSpendingComponent(
 
     Column(modifier) {
         Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            modifier = Modifier.height(CARD_HEIGHT)
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+            modifier = Modifier.height(CARD_HEIGHT),
         ) {
             var targetValue by remember { mutableFloatStateOf(totalStartValue) }
 
-            LaunchedEffect(totalSpentData) {
-                targetValue = totalSpentData
-            }
+            LaunchedEffect(totalSpentData) { targetValue = totalSpentData }
 
             LaunchedEffect(spentByTimeData) {
                 val newData = spentByTimeData.movingTotalChartData().toMutableList()
 
                 if (newData.size == 1) {
-                    newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
+                    newData.add(
+                        FloatFloatPair(newData.first().first + 1.0f, newData.first().second)
+                    )
                 }
 
                 if (newData.isNotEmpty()) {
                     totalChartEntryModelProducer.runTransaction {
                         lineSeries {
-                            series(
-                                x = newData.map { it.first },
-                                y = newData.map { it.second }
-                            )
+                            series(x = newData.map { it.first }, y = newData.map { it.second })
                         }
                     }
                 }
             }
 
-            val animatedValue = animateFloatAsState(
-                targetValue = targetValue,
-                animationSpec = animationSpec,
-                label = "total spent value animation",
-                finishedListener = {
-                    // only called here since all animations use same spec and the total is the highest value
-                    // so will take the longest no matter the spec
-                    onAnimationEnd()
-                }
-            )
+            val animatedValue =
+                animateFloatAsState(
+                    targetValue = targetValue,
+                    animationSpec = animationSpec,
+                    label = "total spent value animation",
+                    finishedListener = {
+                        // only called here since all animations use same spec and the total is the
+                        // highest value
+                        // so will take the longest no matter the spec
+                        onAnimationEnd()
+                    },
+                )
 
             Box(modifier = Modifier.padding(top = CARD_TEXT_TOP_PADDING)) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = animatedValue.value.formatToCurrency(currencyLocale),
@@ -140,33 +143,40 @@ fun TotalAverageAndMedianSpendingComponent(
                     )
                 }
                 CartesianChartHost(
-                    chart = rememberCartesianChart(
-                        rememberLineCartesianLayer(
-                            lineProvider = LineCartesianLayer.LineProvider.series(
-                                vicoTheme.lineCartesianLayerColors.map { color ->
-                                    LineCartesianLayer.rememberLine(
-                                        areaFill = LineCartesianLayer.AreaFill.single(
-                                            fill(
-                                                ShaderProvider.verticalGradient(
-                                                    arrayOf(color.copy(0.4f), Color.Transparent)
-                                                )
+                    chart =
+                        rememberCartesianChart(
+                            rememberLineCartesianLayer(
+                                lineProvider =
+                                    LineCartesianLayer.LineProvider.series(
+                                        vicoTheme.lineCartesianLayerColors.map { color ->
+                                            LineCartesianLayer.rememberLine(
+                                                areaFill =
+                                                    LineCartesianLayer.AreaFill.single(
+                                                        fill(
+                                                            ShaderProvider.verticalGradient(
+                                                                arrayOf(
+                                                                    color.copy(0.4f),
+                                                                    Color.Transparent,
+                                                                )
+                                                            )
+                                                        )
+                                                    )
                                             )
-                                        )
+                                        }
                                     )
-                                }
-                            )
+                            ),
+                            marker = rememberMarker(),
                         ),
-                        marker = rememberMarker()
-                    ),
                     modelProducer = totalChartEntryModelProducer,
-                    scrollState = rememberVicoScrollState(
-                        scrollEnabled = false,
-                        initialScroll = Scroll.Absolute.End
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = FULL_CHART_TOP_PADDING)
-                        .align(Alignment.BottomCenter)
+                    scrollState =
+                        rememberVicoScrollState(
+                            scrollEnabled = false,
+                            initialScroll = Scroll.Absolute.End,
+                        ),
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(top = FULL_CHART_TOP_PADDING)
+                            .align(Alignment.BottomCenter),
                 )
             }
         }
@@ -175,12 +185,11 @@ fun TotalAverageAndMedianSpendingComponent(
 
         Row {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(CARD_HEIGHT)
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                modifier = Modifier.weight(1f).height(CARD_HEIGHT),
             ) {
                 var averageTargetValue by remember { mutableFloatStateOf(averageStartValue) }
 
@@ -189,31 +198,31 @@ fun TotalAverageAndMedianSpendingComponent(
                     val newData = spentByTimeData.movingAverageChartData().toMutableList()
 
                     if (newData.size == 1) {
-                        newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
+                        newData.add(
+                            FloatFloatPair(newData.first().first + 1.0f, newData.first().second)
+                        )
                     }
 
                     if (newData.isNotEmpty()) {
                         averageChartEntryModelProducer.runTransaction {
                             lineSeries {
-                                series(
-                                    x = newData.map { it.first },
-                                    y = newData.map { it.second }
-                                )
+                                series(x = newData.map { it.first }, y = newData.map { it.second })
                             }
                         }
                     }
                 }
 
-                val animatedAverageValue = animateFloatAsState(
-                    targetValue = averageTargetValue,
-                    animationSpec = animationSpec,
-                    label = "average spent value animation"
-                )
+                val animatedAverageValue =
+                    animateFloatAsState(
+                        targetValue = averageTargetValue,
+                        animationSpec = animationSpec,
+                        label = "average spent value animation",
+                    )
 
                 Box(modifier = Modifier.padding(top = CARD_TEXT_TOP_PADDING)) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
                             text = stringResource(id = R.string.average),
@@ -226,35 +235,41 @@ fun TotalAverageAndMedianSpendingComponent(
                         )
                     }
 
-
                     CartesianChartHost(
-                        chart = rememberCartesianChart(
-                            rememberLineCartesianLayer(
-                                lineProvider = LineCartesianLayer.LineProvider.series(
-                                    vicoTheme.lineCartesianLayerColors.map { color ->
-                                        LineCartesianLayer.rememberLine(
-                                            areaFill = LineCartesianLayer.AreaFill.single(
-                                                fill(
-                                                    ShaderProvider.verticalGradient(
-                                                        arrayOf(color.copy(0.4f), Color.Transparent)
-                                                    )
+                        chart =
+                            rememberCartesianChart(
+                                rememberLineCartesianLayer(
+                                    lineProvider =
+                                        LineCartesianLayer.LineProvider.series(
+                                            vicoTheme.lineCartesianLayerColors.map { color ->
+                                                LineCartesianLayer.rememberLine(
+                                                    areaFill =
+                                                        LineCartesianLayer.AreaFill.single(
+                                                            fill(
+                                                                ShaderProvider.verticalGradient(
+                                                                    arrayOf(
+                                                                        color.copy(0.4f),
+                                                                        Color.Transparent,
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
                                                 )
-                                            )
+                                            }
                                         )
-                                    }
-                                )
+                                ),
+                                marker = rememberMarker(),
                             ),
-                            marker = rememberMarker()
-                        ),
                         modelProducer = averageChartEntryModelProducer,
-                        scrollState = rememberVicoScrollState(
-                            scrollEnabled = false,
-                            initialScroll = Scroll.Absolute.End
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = HALF_CHART_TOP_PADDING)
-                            .align(Alignment.BottomCenter)
+                        scrollState =
+                            rememberVicoScrollState(
+                                scrollEnabled = false,
+                                initialScroll = Scroll.Absolute.End,
+                            ),
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(top = HALF_CHART_TOP_PADDING)
+                                .align(Alignment.BottomCenter),
                     )
                 }
             }
@@ -262,12 +277,11 @@ fun TotalAverageAndMedianSpendingComponent(
             Spacer(Modifier.width(CARD_SPACING))
 
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(CARD_HEIGHT)
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                modifier = Modifier.weight(1f).height(CARD_HEIGHT),
             ) {
                 var medianTargetValue by remember { mutableFloatStateOf(medianStartValue) }
 
@@ -276,31 +290,31 @@ fun TotalAverageAndMedianSpendingComponent(
                     val newData = spentByTimeData.movingMedianChartData().toMutableList()
 
                     if (newData.size == 1) {
-                        newData.add(FloatFloatPair(newData.first().first + 1.0f, newData.first().second))
+                        newData.add(
+                            FloatFloatPair(newData.first().first + 1.0f, newData.first().second)
+                        )
                     }
 
                     if (newData.isNotEmpty()) {
                         medianChartEntryModelProducer.runTransaction {
                             lineSeries {
-                                series(
-                                    x = newData.map { it.first },
-                                    y = newData.map { it.second }
-                                )
+                                series(x = newData.map { it.first }, y = newData.map { it.second })
                             }
                         }
                     }
                 }
 
-                val animatedMedianValue = animateFloatAsState(
-                    targetValue = medianTargetValue,
-                    animationSpec = animationSpec,
-                    label = "median spent value animation"
-                )
+                val animatedMedianValue =
+                    animateFloatAsState(
+                        targetValue = medianTargetValue,
+                        animationSpec = animationSpec,
+                        label = "median spent value animation",
+                    )
 
                 Box(modifier = Modifier.padding(top = CARD_TEXT_TOP_PADDING)) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
                             text = stringResource(id = R.string.median),
@@ -314,33 +328,40 @@ fun TotalAverageAndMedianSpendingComponent(
                     }
 
                     CartesianChartHost(
-                        chart = rememberCartesianChart(
-                            rememberLineCartesianLayer(
-                                lineProvider = LineCartesianLayer.LineProvider.series(
-                                    vicoTheme.lineCartesianLayerColors.map { color ->
-                                        LineCartesianLayer.rememberLine(
-                                            areaFill = LineCartesianLayer.AreaFill.single(
-                                                fill(
-                                                    ShaderProvider.verticalGradient(
-                                                        arrayOf(color.copy(0.4f), Color.Transparent)
-                                                    )
+                        chart =
+                            rememberCartesianChart(
+                                rememberLineCartesianLayer(
+                                    lineProvider =
+                                        LineCartesianLayer.LineProvider.series(
+                                            vicoTheme.lineCartesianLayerColors.map { color ->
+                                                LineCartesianLayer.rememberLine(
+                                                    areaFill =
+                                                        LineCartesianLayer.AreaFill.single(
+                                                            fill(
+                                                                ShaderProvider.verticalGradient(
+                                                                    arrayOf(
+                                                                        color.copy(0.4f),
+                                                                        Color.Transparent,
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
                                                 )
-                                            )
+                                            }
                                         )
-                                    }
-                                )
+                                ),
+                                marker = rememberMarker(),
                             ),
-                            marker = rememberMarker()
-                        ),
                         modelProducer = medianChartEntryModelProducer,
-                        scrollState = rememberVicoScrollState(
-                            scrollEnabled = false,
-                            initialScroll = Scroll.Absolute.End
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = HALF_CHART_TOP_PADDING)
-                            .align(Alignment.BottomCenter)
+                        scrollState =
+                            rememberVicoScrollState(
+                                scrollEnabled = false,
+                                initialScroll = Scroll.Absolute.End,
+                            ),
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(top = HALF_CHART_TOP_PADDING)
+                                .align(Alignment.BottomCenter),
                     )
                 }
             }

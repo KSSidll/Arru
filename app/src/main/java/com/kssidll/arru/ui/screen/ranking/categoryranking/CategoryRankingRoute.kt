@@ -19,15 +19,10 @@ fun CategoryRankingRoute(
     RankingScreen(
         onBack = navigateBack,
         title = stringResource(R.string.categories),
-        data = viewModel.categoryTotalSpentFlow()
-            .collectAsState(emptyImmutableList()).value,
-        onItemClick = {
-            navigateDisplayProductCategory(it.category.id)
-        },
+        data = viewModel.categoryTotalSpentFlow().collectAsState(emptyImmutableList()).value,
+        onItemClick = { navigateDisplayProductCategory(it.category.id) },
         onItemClickLabel = stringResource(id = R.string.select),
-        onItemLongClick = {
-            navigateEditProductCategory(it.category.id)
-        },
+        onItemLongClick = { navigateEditProductCategory(it.category.id) },
         onItemLongClickLabel = stringResource(id = R.string.edit),
     )
 }

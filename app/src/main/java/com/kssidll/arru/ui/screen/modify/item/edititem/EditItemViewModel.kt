@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.item.edititem
 
-
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ItemEntity
@@ -12,113 +11,130 @@ import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
 @HiltViewModel
-class EditItemViewModel @Inject constructor(
+class EditItemViewModel
+@Inject
+constructor(
     override val itemRepository: ItemRepositorySource,
     override val productRepository: ProductRepositorySource,
     override val variantsRepository: ProductVariantRepositorySource,
-): ModifyItemViewModel() {
+) : ModifyItemViewModel() {
     private var mItem: ItemEntity? = null
 
     /**
      * Updates data in the screen state
+     *
      * @return true if provided [itemId] was valid, false otherwise
      */
-    suspend fun updateState(itemId: Long) = viewModelScope.async {
-        // skip state update for repeating itemId
-        if (itemId == mItem?.id) return@async true
+    suspend fun updateState(itemId: Long) =
+        viewModelScope
+            .async {
+                // skip state update for repeating itemId
+                if (itemId == mItem?.id) return@async true
 
-        screenState.allToLoading()
+                screenState.allToLoading()
 
-        mItem = itemRepository.get(itemId).first()
+                mItem = itemRepository.get(itemId).first()
 
-        updateStateForItem(mItem)
+                updateStateForItem(mItem)
 
-        return@async mItem != null
-    }
-        .await()
+                return@async mItem != null
+            }
+            .await()
 
     /**
      * Tries to update item with provided [itemId] with current screen state data
+     *
      * @return resulting [UpdateResult]
      */
-    suspend fun updateItem(itemId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
+    suspend fun updateItem(itemId: Long) =
+        viewModelScope
+            .async {
+                screenState.attemptedToSubmit.value = true
 
-        val result = itemRepository.update(
-            id = itemId,
-            productId = screenState.selectedProduct.value.data?.id ?: ItemEntity.INVALID_PRODUCT_ID,
-            variantId = screenState.selectedVariant.value.data?.id,
-            quantity = screenState.quantity.value.data?.let { ItemEntity.quantityFromString(it) }
-                ?: ItemEntity.INVALID_QUANTITY,
-            price = screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
-                ?: ItemEntity.INVALID_PRICE,
-        )
-
-        if (result.isError()) {
-            when (result.error!!) {
-                UpdateResult.InvalidId -> {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to update item with invalid item id in EditItemViewModel"
+                val result =
+                    itemRepository.update(
+                        id = itemId,
+                        productId =
+                            screenState.selectedProduct.value.data?.id
+                                ?: ItemEntity.INVALID_PRODUCT_ID,
+                        variantId = screenState.selectedVariant.value.data?.id,
+                        quantity =
+                            screenState.quantity.value.data?.let {
+                                ItemEntity.quantityFromString(it)
+                            } ?: ItemEntity.INVALID_QUANTITY,
+                        price =
+                            screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
+                                ?: ItemEntity.INVALID_PRICE,
                     )
-                    return@async UpdateResult.Success
-                }
 
-                UpdateResult.InvalidPrice -> {
-                    screenState.price.apply {
-                        value = value.toError(FieldError.InvalidValueError)
+                if (result.isError()) {
+                    when (result.error!!) {
+                        UpdateResult.InvalidId -> {
+                            Log.e(
+                                "InvalidId",
+                                "Tried to update item with invalid item id in EditItemViewModel",
+                            )
+                            return@async UpdateResult.Success
+                        }
+
+                        UpdateResult.InvalidPrice -> {
+                            screenState.price.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
+
+                        UpdateResult.InvalidProductId -> {
+                            screenState.selectedProduct.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
+
+                        UpdateResult.InvalidQuantity -> {
+                            screenState.quantity.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
+
+                        UpdateResult.InvalidVariantId -> {
+                            screenState.selectedVariant.apply {
+                                value = value.toError(FieldError.InvalidValueError)
+                            }
+                        }
                     }
                 }
 
-                UpdateResult.InvalidProductId -> {
-                    screenState.selectedProduct.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
-
-                UpdateResult.InvalidQuantity -> {
-                    screenState.quantity.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
-
-                UpdateResult.InvalidVariantId -> {
-                    screenState.selectedVariant.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
+                return@async result
             }
-        }
-
-        return@async result
-    }
-        .await()
+            .await()
 
     /**
      * Tries to delete item with provided [itemId]
+     *
      * @return resulting [DeleteResult]
      */
-    suspend fun deleteItem(itemId: Long) = viewModelScope.async {
-        val result = itemRepository.delete(itemId)
+    suspend fun deleteItem(itemId: Long) =
+        viewModelScope
+            .async {
+                val result = itemRepository.delete(itemId)
 
-        if (result.isError()) {
-            when (result.error!!) {
-                DeleteResult.InvalidId -> {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to delete item with invalid item id in EditItemViewModel"
-                    )
-                    return@async DeleteResult.Success
+                if (result.isError()) {
+                    when (result.error!!) {
+                        DeleteResult.InvalidId -> {
+                            Log.e(
+                                "InvalidId",
+                                "Tried to delete item with invalid item id in EditItemViewModel",
+                            )
+                            return@async DeleteResult.Success
+                        }
+                    }
                 }
-            }
-        }
 
-        return@async result
-    }
-        .await()
+                return@async result
+            }
+            .await()
 }

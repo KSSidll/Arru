@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.home
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
@@ -75,11 +74,10 @@ private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
 fun TransactionsScreen(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val navSuiteType = BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
-        currentWindowAdaptiveInfo()
-    )
+    val navSuiteType =
+        BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
     val transactions = uiState.transactions.collectAsLazyPagingItems()
 
@@ -91,10 +89,8 @@ fun TransactionsScreen(
             exit = fadeOut(),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .consumeWindowInsets(paddingValues)
+                modifier =
+                    Modifier.fillMaxSize().padding(paddingValues).consumeWindowInsets(paddingValues)
             ) {
                 if (navSuiteType != NavigationSuiteType.NavigationBar) {
                     ExpandedHomeScreenNothingToDisplayOverlay()
@@ -112,17 +108,19 @@ fun TransactionsScreen(
             val layoutDirection = LocalLayoutDirection.current
 
             if (navSuiteType == NavigationSuiteType.NavigationRail) {
-                val horizontalPaddingValues = PaddingValues(
-                    start = paddingValues.calculateStartPadding(layoutDirection),
-                    end = paddingValues.calculateEndPadding(layoutDirection)
-                )
+                val horizontalPaddingValues =
+                    PaddingValues(
+                        start = paddingValues.calculateStartPadding(layoutDirection),
+                        end = paddingValues.calculateEndPadding(layoutDirection),
+                    )
 
                 Box {
-                    // apply padding only for horizontal insets because we want vertical edge to edge
+                    // apply padding only for horizontal insets because we want vertical edge to
+                    // edge
                     Box(
-                        modifier = Modifier
-                            .padding(horizontalPaddingValues)
-                            .consumeWindowInsets(paddingValues)
+                        modifier =
+                            Modifier.padding(horizontalPaddingValues)
+                                .consumeWindowInsets(paddingValues)
                     ) {
                         TransactionScreenContent(
                             onEvent = onEvent,
@@ -132,19 +130,16 @@ fun TransactionsScreen(
                     }
 
                     Box(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(paddingValues)
-                            .consumeWindowInsets(paddingValues)
+                        modifier =
+                            Modifier.align(Alignment.TopEnd)
+                                .padding(paddingValues)
+                                .consumeWindowInsets(paddingValues)
                     ) {
-                        IconButton(
-                            onClick = {
-                                onEvent(HomeEvent.NavigateSearch)
-                            }
-                        ) {
+                        IconButton(onClick = { onEvent(HomeEvent.NavigateSearch) }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = stringResource(R.string.navigate_to_search_description),
+                                contentDescription =
+                                    stringResource(R.string.navigate_to_search_description),
                             )
                         }
                     }
@@ -166,26 +161,24 @@ fun TransactionsScreen(
                     sheetContent = {
                         Row(
                             horizontalArrangement = Arrangement.End,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 6.dp)
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
                         ) {
                             IconButton(
-                                onClick = {
-                                    onEvent(HomeEvent.NavigateSearch)
-                                },
-                                modifier = Modifier.minimumInteractiveComponentSize()
+                                onClick = { onEvent(HomeEvent.NavigateSearch) },
+                                modifier = Modifier.minimumInteractiveComponentSize(),
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
-                                    contentDescription = stringResource(R.string.navigate_to_search_description),
+                                    contentDescription =
+                                        stringResource(R.string.navigate_to_search_description),
                                 )
                             }
                         }
                     },
                     sheetPeekHeight = BOTTOM_SHEET_PEEK_HEIGHT,
                 ) { innerPaddingValues ->
-                    // don't add padding for inner insets to allow edge to edge over the bottom sheet
+                    // don't add padding for inner insets to allow edge to edge over the bottom
+                    // sheet
                     Box(modifier = Modifier.consumeWindowInsets(innerPaddingValues)) {
                         TransactionScreenContent(
                             onEvent = onEvent,
@@ -222,15 +215,13 @@ fun TransactionScreenContent(
 
     LaunchedEffect(firstVisibleItemIndex) {
         if (
-            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-            firstVisibleItemIndex >= 10
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 && firstVisibleItemIndex >= 10
         ) {
             // scrolling up
             returnActionButtonVisible = true
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         } else if (
-            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-            firstVisibleItemIndex < 10
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 || firstVisibleItemIndex < 10
         ) {
             // scrolling down
             returnActionButtonVisible = false
@@ -242,71 +233,62 @@ fun TransactionScreenContent(
         floatingActionButton = {
             AnimatedVisibility(
                 visible = returnActionButtonVisible,
-                enter = slideInHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseOut
+                enter =
+                    slideInHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseOut),
+                        initialOffsetX = { it },
                     ),
-                    initialOffsetX = { it }
-                ),
-                exit = slideOutHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseIn
+                exit =
+                    slideOutHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseIn),
+                        targetOffsetX = { it },
                     ),
-                    targetOffsetX = { it }
-                )
             ) {
                 Box(modifier = Modifier.padding(fabPadding)) {
                     FloatingActionButton(
-                        onClick = {
-                            scope.launch {
-                                listState.animateScrollToItem(0)
-                            }
-                        },
+                        onClick = { scope.launch { listState.animateScrollToItem(0) } },
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowUpward,
-                            contentDescription = null,
-                        )
+                        Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null)
                     }
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         LazyColumn(
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .fillMaxWidth()
+            modifier =
+                Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxWidth(),
         ) {
-            // Offset the fab top padding for the list so edge to edge doesn't hide any transaction cards
+            // Offset the fab top padding for the list so edge to edge doesn't hide any transaction
+            // cards
             if (fabPadding.calculateTopPadding() != 0.dp) {
-                item(
-                    contentType = "top fab padding offset"
-                ) {
+                item(contentType = "top fab padding offset") {
                     Box(modifier = Modifier.height(fabPadding.calculateTopPadding()))
                 }
             }
 
             val transactionCount = transactions.itemCount
 
-            // for some reason, when the paging source is invalidated through item edition or insertion
-            // it starts loading the data from seemingly random index, thus we notify the source of an access
+            // for some reason, when the paging source is invalidated through item edition or
+            // insertion
+            // it starts loading the data from seemingly random index, thus we notify the source of
+            // an access
             // to the first visible item before loading the data, so that it loads it first
             transactions[firstVisibleItemIndex.coerceIn(0, transactionCount - 1)]
 
-            // FIXME this will iterate through the whole loop every time item fetch happens, check if paging3 can add sticky headers as separators when you see this
+            // FIXME this will iterate through the whole loop every time item fetch happens, check
+            // if paging3 can add sticky headers as separators when you see this
             for (index in 0 until transactionCount) {
                 val etherealTransaction = transactions.peek(index)
 
                 if (etherealTransaction == null) {
-                    transactionBasketCardHeaderPlaceholder(modifier = Modifier.widthIn(max = 600.dp))
+                    transactionBasketCardHeaderPlaceholder(
+                        modifier = Modifier.widthIn(max = 600.dp)
+                    )
                 }
 
                 if (etherealTransaction != null) {
@@ -318,45 +300,35 @@ fun TransactionScreenContent(
                         onTransactionClick = {
                             transaction.itemsVisible.value = !transaction.itemsVisible.value
                             scope.launch {
-                                // the transaction basket card has 2 separate lazy list scope DSL calls
+                                // the transaction basket card has 2 separate lazy list scope DSL
+                                // calls
                                 if (listState.firstVisibleItemIndex > index.times(2)) {
                                     listState.animateScrollToItem(index.times(2))
                                 }
                             }
                         },
-                        onTransactionLongClick = {
-                            onEvent(HomeEvent.NavigateEditTransaction(it))
-                        },
-                        onItemAddClick = {
-                            onEvent(HomeEvent.NavigateAddItem(it))
-                        },
-                        onItemClick = {
-                            onEvent(HomeEvent.NavigateDisplayProduct(it))
-                        },
-                        onItemLongClick = {
-                            onEvent(HomeEvent.NavigateEditItem(it))
-                        },
+                        onTransactionLongClick = { onEvent(HomeEvent.NavigateEditTransaction(it)) },
+                        onItemAddClick = { onEvent(HomeEvent.NavigateAddItem(it)) },
+                        onItemClick = { onEvent(HomeEvent.NavigateDisplayProduct(it)) },
+                        onItemLongClick = { onEvent(HomeEvent.NavigateEditItem(it)) },
                         onItemCategoryClick = {
                             onEvent(HomeEvent.NavigateDisplayProductCategory(it))
                         },
                         onItemProducerClick = {
                             onEvent(HomeEvent.NavigateDisplayProductProducer(it))
                         },
-                        onItemShopClick = {
-                            onEvent(HomeEvent.NavigateDisplayShop(it))
-                        },
+                        onItemShopClick = { onEvent(HomeEvent.NavigateDisplayShop(it)) },
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,
-                        modifier = Modifier.widthIn(max = 600.dp)
+                        modifier = Modifier.widthIn(max = 600.dp),
                     )
                 }
             }
 
-            // Offset the fab bottom padding for the list so edge to edge doesn't hide any transaction cards
+            // Offset the fab bottom padding for the list so edge to edge doesn't hide any
+            // transaction cards
             if (fabPadding.calculateBottomPadding() != 0.dp) {
-                item(
-                    contentType = "bottom fab padding offset"
-                ) {
+                item(contentType = "bottom fab padding offset") {
                     Box(modifier = Modifier.height(fabPadding.calculateBottomPadding()))
                 }
             }
@@ -369,10 +341,7 @@ fun TransactionScreenContent(
 private fun TransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            TransactionsScreen(
-                uiState = HomeUiState(),
-                onEvent = {}
-            )
+            TransactionsScreen(uiState = HomeUiState(), onEvent = {})
         }
     }
 }
@@ -382,10 +351,7 @@ private fun TransactionsScreenPreview() {
 private fun ExpandedTransactionsScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            TransactionsScreen(
-                uiState = HomeUiState(),
-                onEvent = {}
-            )
+            TransactionsScreen(uiState = HomeUiState(), onEvent = {})
         }
     }
 }

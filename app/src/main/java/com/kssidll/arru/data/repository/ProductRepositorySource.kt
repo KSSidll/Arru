@@ -13,66 +13,78 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductRepositorySource {
     companion object {
-        sealed class InsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): InsertResult(id)
-            class Error(error: Errors): InsertResult(error = error)
+        sealed class InsertResult(val id: Long? = null, val error: Errors? = null) {
+            class Success(id: Long) : InsertResult(id)
+
+            class Error(error: Errors) : InsertResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-            data object InvalidCategoryId: Errors()
-            data object InvalidProducerId: Errors()
+
+            data object InvalidName : Errors()
+
+            data object DuplicateName : Errors()
+
+            data object InvalidCategoryId : Errors()
+
+            data object InvalidProducerId : Errors()
         }
 
-        sealed class UpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: UpdateResult()
-            class Error(error: Errors): UpdateResult(error = error)
+        sealed class UpdateResult(val error: Errors? = null) {
+            data object Success : UpdateResult()
+
+            class Error(error: Errors) : UpdateResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-            data object InvalidCategoryId: Errors()
-            data object InvalidProducerId: Errors()
+
+            data object InvalidId : Errors()
+
+            data object InvalidName : Errors()
+
+            data object DuplicateName : Errors()
+
+            data object InvalidCategoryId : Errors()
+
+            data object InvalidProducerId : Errors()
         }
 
-        sealed class MergeResult(
-            val error: Errors? = null
-        ) {
-            data object Success: MergeResult()
-            class Error(error: Errors): MergeResult(error = error)
+        sealed class MergeResult(val error: Errors? = null) {
+            data object Success : MergeResult()
+
+            class Error(error: Errors) : MergeResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidProduct: Errors()
-            data object InvalidMergingInto: Errors()
+
+            data object InvalidProduct : Errors()
+
+            data object InvalidMergingInto : Errors()
         }
 
-        sealed class DeleteResult(
-            val error: Errors? = null
-        ) {
-            data object Success: DeleteResult()
-            class Error(error: Errors): DeleteResult(error = error)
+        sealed class DeleteResult(val error: Errors? = null) {
+            data object Success : DeleteResult()
+
+            class Error(error: Errors) : DeleteResult(error = error)
 
             fun isError(): Boolean = this is Error
+
             fun isNotError(): Boolean = isError().not()
 
             sealed class Errors
-            data object InvalidId: Errors()
-            data object DangerousDelete: Errors()
+
+            data object InvalidId : Errors()
+
+            data object DangerousDelete : Errors()
         }
     }
 
@@ -80,57 +92,46 @@ interface ProductRepositorySource {
 
     /**
      * Inserts [ProductEntity]
+     *
      * @param name name of the [ProductEntity] to insert
      * @param categoryId id of the [ProductCategoryEntity] of the [ProductEntity] to insert
      * @param producerId id of the [ProductProducerEntity] of the [ProductEntity] to insert
      * @return [InsertResult] with id of the newly inserted [ProductEntity] or an error if any
      */
-    suspend fun insert(
-        name: String,
-        categoryId: Long,
-        producerId: Long?
-    ): InsertResult
+    suspend fun insert(name: String, categoryId: Long, producerId: Long?): InsertResult
 
     // Update
 
     /**
      * Updates [ProductEntity] with [id] id to provided [name], [categoryId] and [producerId]
+     *
      * @param id id to match [ProductEntity]
      * @param name name to update the matching [ProductEntity] to
      * @param categoryId id of the [ProductCategoryEntity] to update the matching [ProductEntity] to
      * @param producerId id of the [ProductProducerEntity] to update the matching [ProductEntity] to
      * @return [UpdateResult] with the result
      */
-    suspend fun update(
-        id: Long,
-        name: String,
-        categoryId: Long,
-        producerId: Long?
-    ): UpdateResult
+    suspend fun update(id: Long, name: String, categoryId: Long, producerId: Long?): UpdateResult
 
     /**
      * Merges [entity] into [mergingInto]
+     *
      * @param entity [ProductEntity] to merge
      * @param mergingInto [ProductEntity] to merge the [entity] into
      * @return [MergeResult] with the result
      */
-    suspend fun merge(
-        entity: ProductEntity,
-        mergingInto: ProductEntity,
-    ): MergeResult
+    suspend fun merge(entity: ProductEntity, mergingInto: ProductEntity): MergeResult
 
     // Delete
 
     /**
      * Deletes [ProductEntity] matching [id]
+     *
      * @param id id of the [ProductEntity] to delete
      * @param force whether to force delete on dangerous delete
      * @return [DeleteResult] with the result
      */
-    suspend fun delete(
-        id: Long,
-        force: Boolean
-    ): DeleteResult
+    suspend fun delete(id: Long, force: Boolean): DeleteResult
 
     // Read
 
@@ -142,7 +143,8 @@ interface ProductRepositorySource {
 
     /**
      * @param id id of the [ProductEntity]
-     * @return float representing total spending for [ProductEntity] matching [id] id or null if none match
+     * @return float representing total spending for [ProductEntity] matching [id] id or null if
+     *   none match
      */
     fun totalSpent(id: Long): Flow<Float?>
 
@@ -178,24 +180,14 @@ interface ProductRepositorySource {
 
     /**
      * @param id id of the [ProductEntity]
-     * @return List of [ProductPriceByShopByVariantByProducerByTime] representing average spending partitioned by shop, variant, producer and day
+     * @return List of [ProductPriceByShopByVariantByProducerByTime] representing average spending
+     *   partitioned by shop, variant, producer and day
      */
-    fun averagePriceByShopByVariantByProducerByDay(id: Long): Flow<ImmutableList<ProductPriceByShopByVariantByProducerByTime>>
+    fun averagePriceByShopByVariantByProducerByDay(
+        id: Long
+    ): Flow<ImmutableList<ProductPriceByShopByVariantByProducerByTime>>
 
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * @return list of all [ProductEntity]
-     */
+    /** @return list of all [ProductEntity] */
     fun all(): Flow<ImmutableList<ProductEntity>>
 
     /**

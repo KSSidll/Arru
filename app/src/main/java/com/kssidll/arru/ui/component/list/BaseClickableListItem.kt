@@ -28,31 +28,22 @@ fun BaseClickableListItem(
     onLongClickLabel: String? = null,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .minimumInteractiveComponentSize()
-            .combinedClickable(
-                role = Role.Button,
-                onClick = {
-                    onClick?.invoke()
-                },
-                onClickLabel = onClickLabel,
-                onLongClick = {
-                    onLongClick?.invoke()
-                },
-                onLongClickLabel = onLongClickLabel,
-            )
+        modifier =
+            Modifier.fillMaxWidth()
+                .minimumInteractiveComponentSize()
+                .combinedClickable(
+                    role = Role.Button,
+                    onClick = { onClick?.invoke() },
+                    onClickLabel = onClickLabel,
+                    onLongClick = { onLongClick?.invoke() },
+                    onLongClickLabel = onLongClickLabel,
+                )
     ) {
         Text(
             text = text,
             style = Typography.titleLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(
-                    vertical = 16.dp,
-                    horizontal = 4.dp
-                )
-                .align(Alignment.Center)
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 4.dp).align(Alignment.Center),
         )
     }
 }
@@ -60,11 +51,5 @@ fun BaseClickableListItem(
 @PreviewLightDark
 @Composable
 private fun BaseClickableListItemPreview() {
-    ArrugarqTheme {
-        Surface {
-            BaseClickableListItem(
-                text = "test"
-            )
-        }
-    }
+    ArrugarqTheme { Surface { BaseClickableListItem(text = "test") } }
 }

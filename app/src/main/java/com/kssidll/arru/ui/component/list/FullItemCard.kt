@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component.list
 
-import android.R.attr.category
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,19 +42,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 
-@OptIn(
-    ExperimentalLayoutApi::class,
-    ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun FullItemCard(
     item: Item,
@@ -71,38 +63,19 @@ fun FullItemCard(
         if (onItemClick != null || onItemLongClick != null)
             Modifier.combinedClickable(
                 role = Role.Button,
-                onClick = {
-                    onItemClick?.invoke(item)
-                },
+                onClick = { onItemClick?.invoke(item) },
                 onClickLabel = stringResource(id = R.string.select),
-                onLongClick = {
-                    onItemLongClick?.invoke(item)
-                },
-                onLongClickLabel = stringResource(id = R.string.edit)
+                onLongClick = { onItemLongClick?.invoke(item) },
+                onLongClickLabel = stringResource(id = R.string.edit),
             )
         else Modifier
 
     Column(
-        modifier = itemModifier
-            .heightIn(min = 60.dp)
-            .padding(
-                vertical = 6.dp,
-                horizontal = 16.dp
-            ),
+        modifier = itemModifier.heightIn(min = 60.dp).padding(vertical = 6.dp, horizontal = 16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .height(IntrinsicSize.Min),
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1F)
-                    .fillMaxHeight(),
-            ) {
-                Box(
-                    modifier = Modifier.weight(1F),
-                ) {
+        Row(modifier = Modifier.padding(horizontal = 8.dp).height(IntrinsicSize.Min)) {
+            Column(modifier = Modifier.weight(1F).fillMaxHeight()) {
+                Box(modifier = Modifier.weight(1F)) {
                     Text(
                         modifier = Modifier.align(Alignment.CenterStart),
                         text = item.productName,
@@ -117,26 +90,23 @@ fun FullItemCard(
                         modifier = Modifier.size(17.dp),
                     )
                     Text(
-                        text = item.productVariantName
-                            ?: stringResource(R.string.item_product_variant_default_value),
+                        text =
+                            item.productVariantName
+                                ?: stringResource(R.string.item_product_variant_default_value),
                         textAlign = TextAlign.Center,
                         style = Typography.labelMedium,
                     )
                 }
             }
 
-            Column(
-                modifier = Modifier.width(IntrinsicSize.Min),
-            ) {
+            Column(modifier = Modifier.width(IntrinsicSize.Min)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = item.actualQuantity()
-                            .toString()
-                            .removeSuffix(".0"),
+                        text = item.actualQuantity().toString().removeSuffix(".0"),
                         style = Typography.bodyLarge,
                     )
 
@@ -158,8 +128,7 @@ fun FullItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = item.actualPrice()
-                            .formatToCurrency(currencyLocale),
+                        text = item.actualPrice().formatToCurrency(currencyLocale),
                         style = Typography.bodyLarge,
                     )
 
@@ -183,9 +152,10 @@ fun FullItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = (item.actualQuantity() * item.actualPrice()).formatToCurrency(
-                            currencyLocale
-                        ),
+                        text =
+                            (item.actualQuantity() * item.actualPrice()).formatToCurrency(
+                                currencyLocale
+                            ),
                         style = Typography.bodyLarge,
                     )
 
@@ -204,24 +174,17 @@ fun FullItemCard(
         Spacer(Modifier.height(3.dp))
 
         Row {
-            FlowRow(
-                modifier = Modifier.weight(1F),
-                verticalArrangement = Arrangement.Center,
-            ) {
+            FlowRow(modifier = Modifier.weight(1F), verticalArrangement = Arrangement.Center) {
                 if (onCategoryClick != null) {
                     Button(
                         modifier = Modifier.padding(end = 3.dp),
-                        onClick = {
-                            onCategoryClick.invoke(item)
-                        },
-                        contentPadding = PaddingValues(
-                            vertical = 0.dp,
-                            horizontal = 12.dp
-                        ),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        ),
+                        onClick = { onCategoryClick.invoke(item) },
+                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ),
                     ) {
                         Text(
                             text = item.productCategoryName,
@@ -229,24 +192,19 @@ fun FullItemCard(
                             style = Typography.labelMedium,
                         )
                     }
-
                 }
 
                 if (onProducerClick != null) {
                     if (item.productProducerName != null) {
                         Button(
                             modifier = Modifier.padding(end = 3.dp),
-                            onClick = {
-                                onProducerClick.invoke(item)
-                            },
-                            contentPadding = PaddingValues(
-                                vertical = 0.dp,
-                                horizontal = 12.dp
-                            ),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            ),
+                            onClick = { onProducerClick.invoke(item) },
+                            contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp),
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                ),
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.PrecisionManufacturing,
@@ -266,17 +224,13 @@ fun FullItemCard(
             if (onShopClick != null) {
                 if (item.shopName != null) {
                     Button(
-                        onClick = {
-                            onShopClick.invoke(item)
-                        },
-                        contentPadding = PaddingValues(
-                            vertical = 0.dp,
-                            horizontal = 12.dp
-                        ),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        ),
+                        onClick = { onShopClick.invoke(item) },
+                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ),
                     ) {
                         Text(
                             text = item.shopName,

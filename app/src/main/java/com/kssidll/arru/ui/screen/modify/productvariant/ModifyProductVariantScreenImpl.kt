@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.productvariant
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -38,11 +37,17 @@ private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
  * [ModifyScreen] implementation for [ProductVariantEntity]
- * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
+ *
+ * @param onBack Called to request a back navigation, isn't triggered by other events like
+ *   submission or deletion
  * @param state [ModifyProductVariantScreenState] instance representing the screen state
  * @param onSubmit Callback called when the submit action is triggered
- * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
- * @param submitButtonText Text displayed in the submit button, defaults to variant add string resource
+ * @param onDelete Callback called when the delete action is triggered, in case of very destructive
+ *   actions, should check if delete warning is confirmed, and if not, trigger a delete warning
+ *   dialog via showDeleteWarning parameter as none of those are handled internally by the
+ *   component, setting to null removes the delete option
+ * @param submitButtonText Text displayed in the submit button, defaults to variant add string
+ *   resource
  */
 @Composable
 fun ModifyProductVariantScreenImpl(
@@ -62,75 +67,66 @@ fun ModifyProductVariantScreenImpl(
         submitButtonText = submitButtonText,
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
-        deleteWarningMessage = stringResource(id = R.string.item_product_variant_delete_warning_text),
+        deleteWarningMessage =
+            stringResource(id = R.string.item_product_variant_delete_warning_text),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.widthIn(max = 500.dp)
+            modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
                 enabled = state.name.value.isEnabled(),
                 singleLine = true,
                 value = state.name.value.data ?: String(),
-                onValueChange = {
-                    state.name.value = Field.Loaded(it)
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        onSubmit()
-                    }
-                ),
-                label = {
-                    Text(
-                        text = stringResource(R.string.item_product_variant),
-                    )
-                },
+                onValueChange = { state.name.value = Field.Loaded(it) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+                label = { Text(text = stringResource(R.string.item_product_variant)) },
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
                         state.name.value.error?.ErrorText()
                     }
                 },
                 isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = ItemHorizontalPadding)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clickable(
-                        enabled = state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null,
+                modifier =
+                    Modifier.fillMaxWidth().padding(16.dp).clickable(
+                        enabled =
+                            state.isVariantGlobal.value.isEnabled() &&
+                                state.isVariantGlobal.value.data != null,
                         indication = null,
-                        interactionSource = isGlobalVariantInteractionSource
+                        interactionSource = isGlobalVariantInteractionSource,
                     ) {
                         state.isVariantGlobal.value.data?.let {
                             state.isVariantGlobal.value = Field.Loaded(!it)
                         }
-                    }
+                    },
             ) {
                 Checkbox(
-                    enabled = state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null,
+                    enabled =
+                        state.isVariantGlobal.value.isEnabled() &&
+                            state.isVariantGlobal.value.data != null,
                     checked = state.isVariantGlobal.value.data ?: false,
-                    onCheckedChange = {
-                        state.isVariantGlobal.value = Field.Loaded(it)
-                    },
-                    interactionSource = isGlobalVariantInteractionSource
+                    onCheckedChange = { state.isVariantGlobal.value = Field.Loaded(it) },
+                    interactionSource = isGlobalVariantInteractionSource,
                 )
 
                 Text(
                     text = stringResource(R.string.variant_use_as_global),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (state.isVariantGlobal.value.isEnabled() && state.isVariantGlobal.value.data != null) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = optionalAlpha)
-                    }
+                    color =
+                        if (
+                            state.isVariantGlobal.value.isEnabled() &&
+                                state.isVariantGlobal.value.data != null
+                        ) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = optionalAlpha)
+                        },
                 )
             }
         }

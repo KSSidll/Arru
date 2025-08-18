@@ -15,28 +15,29 @@ import kotlinx.coroutines.flow.Flow
 interface ItemEntityDao {
     // Create
 
-    @Insert
-    suspend fun insert(entity: ItemEntity): Long
+    @Insert suspend fun insert(entity: ItemEntity): Long
 
     // Update
 
-    @Update
-    suspend fun update(entity: ItemEntity)
+    @Update suspend fun update(entity: ItemEntity)
 
     // Delete
 
-    @Delete
-    suspend fun delete(entity: ItemEntity)
+    @Delete suspend fun delete(entity: ItemEntity)
 
     // Helper
 
-    @Query("SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.id = :transactionId")
+    @Query(
+        "SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.id = :transactionId"
+    )
     suspend fun getTransactionBasket(transactionId: Long): TransactionEntity?
 
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
     suspend fun getProduct(productId: Long): ProductEntity?
 
-    @Query("SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId")
+    @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
+    )
     suspend fun getVariant(variantId: Long): ProductVariantEntity?
 
     // Read

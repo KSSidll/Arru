@@ -37,11 +37,10 @@ import com.kssidll.arru.ui.theme.Typography
 fun HomeScreen(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val navSuiteType = BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
-        currentWindowAdaptiveInfo()
-    )
+    val navSuiteType =
+        BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
     NavigationSuiteScaffoldLayout(
         layoutType = navSuiteType,
@@ -54,36 +53,34 @@ fun HomeScreen(
                                 icon = {
                                     Crossfade(
                                         targetState = it == uiState.currentDestination,
-                                        label = "home nav destination change (icon)"
+                                        label = "home nav destination change (icon)",
                                     ) { selected ->
                                         Icon(
-                                            imageVector = if (selected) it.enabledIcon else it.disabledIcon,
-                                            contentDescription = stringResource(it.contentDescription)
+                                            imageVector =
+                                                if (selected) it.enabledIcon else it.disabledIcon,
+                                            contentDescription =
+                                                stringResource(it.contentDescription),
                                         )
                                     }
                                 },
                                 label = {
                                     Text(
                                         text = stringResource(it.label),
-                                        style = Typography.labelMedium
+                                        style = Typography.labelMedium,
                                     )
                                 },
                                 selected = it == uiState.currentDestination,
-                                onClick = {
-                                    onEvent(HomeEvent.ChangeScreenDestination(it))
-                                }
+                                onClick = { onEvent(HomeEvent.ChangeScreenDestination(it)) },
                             )
                         }
 
                         FloatingActionButton(
-                            onClick = {
-                                onEvent(HomeEvent.NavigateAddTransaction)
-                            }
+                            onClick = { onEvent(HomeEvent.NavigateAddTransaction) }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = stringResource(R.string.transaction_add),
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(36.dp),
                             )
                         }
 
@@ -99,21 +96,20 @@ fun HomeScreen(
                                     Spacer(Modifier.height(8.dp))
 
                                     ExtendedFloatingActionButton(
-                                        onClick = {
-                                            onEvent(HomeEvent.NavigateAddTransaction)
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
+                                        onClick = { onEvent(HomeEvent.NavigateAddTransaction) },
+                                        modifier = Modifier.fillMaxWidth(),
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(R.string.transaction_add_label),
+                                            contentDescription =
+                                                stringResource(R.string.transaction_add_label),
                                         )
 
                                         Spacer(Modifier.width(8.dp))
 
                                         Text(
                                             text = stringResource(R.string.transaction_add_label),
-                                            style = Typography.labelLarge
+                                            style = Typography.labelLarge,
                                         )
                                     }
 
@@ -124,36 +120,35 @@ fun HomeScreen(
                                             icon = {
                                                 Crossfade(
                                                     targetState = it == uiState.currentDestination,
-                                                    label = "home nav destination change (icon)"
+                                                    label = "home nav destination change (icon)",
                                                 ) { selected ->
                                                     Icon(
-                                                        imageVector = if (selected) it.enabledIcon else it.disabledIcon,
-                                                        contentDescription = stringResource(it.contentDescription)
+                                                        imageVector =
+                                                            if (selected) it.enabledIcon
+                                                            else it.disabledIcon,
+                                                        contentDescription =
+                                                            stringResource(it.contentDescription),
                                                     )
                                                 }
                                             },
                                             label = {
                                                 Text(
                                                     text = stringResource(it.label),
-                                                    style = Typography.labelLarge
+                                                    style = Typography.labelLarge,
                                                 )
                                             },
                                             selected = it == uiState.currentDestination,
                                             onClick = {
                                                 onEvent(HomeEvent.ChangeScreenDestination(it))
                                             },
-                                            modifier = Modifier
+                                            modifier = Modifier,
                                         )
                                     }
                                 }
                             }
                         }
                     ) {
-                        HomeScreenContent(
-                            uiState = uiState,
-                            onEvent = onEvent,
-                            modifier = modifier
-                        )
+                        HomeScreenContent(uiState = uiState, onEvent = onEvent, modifier = modifier)
                     }
                 }
 
@@ -161,14 +156,12 @@ fun HomeScreen(
                     NavigationRail(
                         header = {
                             FloatingActionButton(
-                                onClick = {
-                                    onEvent(HomeEvent.NavigateAddTransaction)
-                                }
+                                onClick = { onEvent(HomeEvent.NavigateAddTransaction) }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = stringResource(R.string.transaction_add),
-                                    modifier = Modifier.size(36.dp)
+                                    modifier = Modifier.size(36.dp),
                                 )
                             }
                         }
@@ -178,36 +171,32 @@ fun HomeScreen(
                                 icon = {
                                     Crossfade(
                                         targetState = it == uiState.currentDestination,
-                                        label = "home nav destination change (icon)"
+                                        label = "home nav destination change (icon)",
                                     ) { selected ->
                                         Icon(
-                                            imageVector = if (selected) it.enabledIcon else it.disabledIcon,
-                                            contentDescription = stringResource(it.contentDescription)
+                                            imageVector =
+                                                if (selected) it.enabledIcon else it.disabledIcon,
+                                            contentDescription =
+                                                stringResource(it.contentDescription),
                                         )
                                     }
                                 },
                                 label = {
                                     Text(
                                         text = stringResource(it.label),
-                                        style = Typography.labelMedium
+                                        style = Typography.labelMedium,
                                     )
                                 },
                                 selected = it == uiState.currentDestination,
-                                onClick = {
-                                    onEvent(HomeEvent.ChangeScreenDestination(it))
-                                },
+                                onClick = { onEvent(HomeEvent.ChangeScreenDestination(it)) },
                             )
                         }
                     }
                 }
             }
-        }
+        },
     ) {
-        HomeScreenContent(
-            uiState = uiState,
-            onEvent = onEvent,
-            modifier = modifier
-        )
+        HomeScreenContent(uiState = uiState, onEvent = onEvent, modifier = modifier)
     }
 }
 
@@ -215,33 +204,24 @@ fun HomeScreen(
 internal fun HomeScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Crossfade(
         targetState = uiState.currentDestination,
         label = "home nav destination change (screen)",
-        modifier = modifier
+        modifier = modifier,
     ) {
         when (it) {
             HomeDestinations.DASHBOARD -> {
-                DashboardScreen(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                DashboardScreen(uiState = uiState, onEvent = onEvent)
             }
 
             HomeDestinations.ANALYSIS -> {
-                AnalysisScreen(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                AnalysisScreen(uiState = uiState, onEvent = onEvent)
             }
 
             HomeDestinations.TRANSACTIONS -> {
-                TransactionsScreen(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                TransactionsScreen(uiState = uiState, onEvent = onEvent)
             }
         }
     }

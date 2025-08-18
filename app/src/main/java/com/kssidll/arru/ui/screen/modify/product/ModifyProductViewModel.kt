@@ -20,9 +20,10 @@ import kotlinx.coroutines.launch
 
 /**
  * Base [ViewModel] class for Product modification view models
+ *
  * @property screenState A [ModifyProductScreenState] instance to use as screen state representation
  */
-abstract class ModifyProductViewModel: ViewModel() {
+abstract class ModifyProductViewModel : ViewModel() {
     protected abstract val productRepository: ProductRepositorySource
     protected abstract val producerRepository: ProductProducerRepositorySource
     protected abstract val categoryRepository: ProductCategoryRepositorySource
@@ -56,12 +57,12 @@ abstract class ModifyProductViewModel: ViewModel() {
 
         mProducerListener?.cancel()
         if (producer != null) {
-            mProducerListener = viewModelScope.launch {
-                producerRepository.get(producer.id)
-                    .collectLatest {
+            mProducerListener =
+                viewModelScope.launch {
+                    producerRepository.get(producer.id).collectLatest {
                         screenState.selectedProductProducer.value = Field.Loaded(it)
                     }
-            }
+                }
         }
     }
 
@@ -76,38 +77,33 @@ abstract class ModifyProductViewModel: ViewModel() {
 
         mCategoryListener?.cancel()
         if (category != null) {
-            mCategoryListener = viewModelScope.launch {
-                categoryRepository.get(category.id)
-                    .collectLatest {
+            mCategoryListener =
+                viewModelScope.launch {
+                    categoryRepository.get(category.id).collectLatest {
                         screenState.selectedProductCategory.value = Field.Loaded(it)
                     }
-            }
+                }
         }
     }
 
-    /**
-     * @return List of all categories
-     */
+    /** @return List of all categories */
     fun allCategories(): Flow<ImmutableList<ProductCategoryEntity>> {
         return categoryRepository.all()
     }
 
-    /**
-     * @return List of all producers
-     */
+    /** @return List of all producers */
     fun allProducers(): Flow<ImmutableList<ProductProducerEntity>> {
         return producerRepository.all()
     }
 }
 
-/**
- * Data representing [ModifyProductScreenImpl] screen state
- */
+/** Data representing [ModifyProductScreenImpl] screen state */
 data class ModifyProductScreenState(
-    val selectedProductCategory: MutableState<Field<ProductCategoryEntity>> = mutableStateOf(Field.Loaded()),
-    val selectedProductProducer: MutableState<Field<ProductProducerEntity?>> = mutableStateOf(Field.Loaded()),
+    val selectedProductCategory: MutableState<Field<ProductCategoryEntity>> =
+        mutableStateOf(Field.Loaded()),
+    val selectedProductProducer: MutableState<Field<ProductProducerEntity?>> =
+        mutableStateOf(Field.Loaded()),
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-
     val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-): ModifyScreenState()
+) : ModifyScreenState()

@@ -23,63 +23,52 @@ import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.Typography
 
 @Composable
-fun MergeConfirmDialog(
-    message: String,
-    onCancel: () -> Unit,
-    onConfirm: () -> Unit,
-) {
+fun MergeConfirmDialog(message: String, onCancel: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onCancel,
         confirmButton = {
             Row {
                 Button(
                     onClick = onCancel,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                    ),
-                    modifier = Modifier.weight(1F)
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                        ),
+                    modifier = Modifier.weight(1F),
                 ) {
                     Text(
                         text = stringResource(id = R.string.merge_action_cancel),
-                        style = Typography.bodyLarge
+                        style = Typography.bodyLarge,
                     )
                 }
 
                 Button(
                     onClick = onConfirm,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                    ),
-                    modifier = Modifier.weight(1F)
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                        ),
+                    modifier = Modifier.weight(1F),
                 ) {
                     Text(
                         text = stringResource(id = R.string.merge_action_confirm),
-                        style = Typography.bodyLarge
+                        style = Typography.bodyLarge,
                     )
                 }
-
             }
         },
         title = {
             Text(
                 text = stringResource(id = R.string.merge_action),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         },
-        text = {
-            Text(
-                text = message,
-            )
-        },
-        properties = DialogProperties(
-            dismissOnClickOutside = false,
-        ),
-        modifier = Modifier
-            .width(360.dp)
-            .heightIn(min = 200.dp)
+        text = { Text(text = message) },
+        properties = DialogProperties(dismissOnClickOutside = false),
+        modifier = Modifier.width(360.dp).heightIn(min = 200.dp),
     )
 }
 
@@ -87,12 +76,6 @@ fun MergeConfirmDialog(
 @Composable
 private fun MergeConfirmDialogPreview() {
     ArrugarqTheme {
-        Surface {
-            MergeConfirmDialog(
-                message = "test",
-                onCancel = {},
-                onConfirm = {},
-            )
-        }
+        Surface { MergeConfirmDialog(message = "test", onCancel = {}, onConfirm = {}) }
     }
 }

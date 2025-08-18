@@ -9,16 +9,16 @@ import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 
 /**
  * Base [ViewModel] class for Category modification view models
- * @property screenState A [ModifyProductCategoryScreenState] instance to use as screen state representation
+ *
+ * @property screenState A [ModifyProductCategoryScreenState] instance to use as screen state
+ *   representation
  */
-abstract class ModifyProductCategoryViewModel: ViewModel() {
+abstract class ModifyProductCategoryViewModel : ViewModel() {
     protected abstract val categoryRepository: ProductCategoryRepositorySource
     internal val screenState: ModifyProductCategoryScreenState = ModifyProductCategoryScreenState()
 }
 
-/**
- * Data representing [ModifyProductCategoryScreenImpl] screen state
- */
+/** Data representing [ModifyProductCategoryScreenImpl] screen state */
 data class ModifyProductCategoryScreenState(
-    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String())),
-): ModifyScreenState()
+    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String()))
+) : ModifyScreenState()

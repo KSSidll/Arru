@@ -52,30 +52,24 @@ import dev.olshevski.navigation.reimagined.pop
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
-/**
- * Interface for navigation destinations that can accept shop id
- */
+/** Interface for navigation destinations that can accept shop id */
 private interface AcceptsShopId {
     val providedShopId: MutableState<Long?>
 
     /**
      * Provides the [id] to the navigation destination
+     *
      * @param id id to provide
      * @param forceToNull whether to set the value to null if [id] is null, false by default
      */
-    fun provideShop(
-        id: Long? = null,
-        forceToNull: Boolean = false
-    ) {
+    fun provideShop(id: Long? = null, forceToNull: Boolean = false) {
         if (!forceToNull && id != null) {
             providedShopId.value = id
         }
     }
 }
 
-/**
- * Interface for navigation destinations that can accept product id with product variant id
- */
+/** Interface for navigation destinations that can accept product id with product variant id */
 private interface AcceptsProductId {
     val providedProductId: MutableState<Long?>
     val providedVariantId: MutableState<Long?>
@@ -84,10 +78,13 @@ private interface AcceptsProductId {
      * Provides the [productId] and [variantId] to the navigation destination
      *
      * Will forcefully set variant to null if only [productId] is provided
+     *
      * @param productId product id to provide
      * @param variantId variant id to provide
-     * @param forceProductToNull whether to set the product value to null if [productId] is null, false by default
-     * @param forceVariantToNull whether to set the variant value to null if [variantId] is null, false by default
+     * @param forceProductToNull whether to set the product value to null if [productId] is null,
+     *   false by default
+     * @param forceVariantToNull whether to set the variant value to null if [variantId] is null,
+     *   false by default
      */
     fun provideProduct(
         productId: Long? = null,
@@ -105,42 +102,34 @@ private interface AcceptsProductId {
     }
 }
 
-/**
- * Interface for navigation destinations that can accept producer id
- */
+/** Interface for navigation destinations that can accept producer id */
 private interface AcceptsProducerId {
     val providedProducerId: MutableState<Long?>
 
     /**
      * Provides the [id] to the navigation destination
+     *
      * @param id id to provide
      * @param forceToNull whether to set the value to null if [id] is null, false by default
      */
-    fun provideProducer(
-        id: Long? = null,
-        forceToNull: Boolean = false
-    ) {
+    fun provideProducer(id: Long? = null, forceToNull: Boolean = false) {
         if (!forceToNull && id != null) {
             providedProducerId.value = id
         }
     }
 }
 
-/**
- * Interface for navigation destinations that can accept a category id
- */
+/** Interface for navigation destinations that can accept a category id */
 private interface AcceptsCategoryId {
     val providedCategoryId: MutableState<Long?>
 
     /**
      * Provides the [id] to the navigation destination
+     *
      * @param id id to provide
      * @param forceToNull whether to set the value to null if [id] is null, false by default
      */
-    fun provideCategory(
-        id: Long? = null,
-        forceToNull: Boolean = false
-    ) {
+    fun provideCategory(id: Long? = null, forceToNull: Boolean = false) {
         if (!forceToNull && id != null) {
             providedCategoryId.value = id
         }
@@ -148,237 +137,146 @@ private interface AcceptsCategoryId {
 }
 
 @Parcelize
-sealed class Screen: Parcelable {
-    @Immutable
-    data object Home: Screen()
+sealed class Screen : Parcelable {
+    @Immutable data object Home : Screen()
 
-    @Immutable
-    data object Settings: Screen()
+    @Immutable data object Settings : Screen()
 
-    @Immutable
-    data object Search: Screen()
+    @Immutable data object Search : Screen()
 
-    @Stable
-    data class DisplayTransaction(val transactionId: Long): Screen()
+    @Stable data class DisplayTransaction(val transactionId: Long) : Screen()
 
-    @Stable
-    data class DisplayProduct(val productId: Long): Screen()
+    @Stable data class DisplayProduct(val productId: Long) : Screen()
 
-    @Stable
-    data class DisplayProductCategory(val categoryId: Long): Screen()
+    @Stable data class DisplayProductCategory(val categoryId: Long) : Screen()
 
-    @Stable
-    data class DisplayProductProducer(val producerId: Long): Screen()
+    @Stable data class DisplayProductProducer(val producerId: Long) : Screen()
 
-    @Stable
-    data class DisplayShop(val shopId: Long): Screen()
+    @Stable data class DisplayShop(val shopId: Long) : Screen()
 
     @Stable
     data class AddTransaction(
-        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ): Screen(), AcceptsShopId
+        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null)
+    ) : Screen(), AcceptsShopId
 
     @Stable
     data class AddItem(
         val transactionId: Long,
         override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ): Screen(), AcceptsProductId
+    ) : Screen(), AcceptsProductId
 
     @Stable
     data class AddProduct(
         val defaultName: String? = null,
         override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ): Screen(), AcceptsProducerId, AcceptsCategoryId
+    ) : Screen(), AcceptsProducerId, AcceptsCategoryId
 
     @Stable
-    data class AddProductVariant(
-        val productId: Long,
-        val defaultName: String? = null,
-    ): Screen()
+    data class AddProductVariant(val productId: Long, val defaultName: String? = null) : Screen()
 
-    @Stable
-    data class AddProductCategory(val defaultName: String? = null): Screen()
+    @Stable data class AddProductCategory(val defaultName: String? = null) : Screen()
 
-    @Stable
-    data class AddProductProducer(val defaultName: String? = null): Screen()
+    @Stable data class AddProductProducer(val defaultName: String? = null) : Screen()
 
-    @Stable
-    data class AddShop(val defaultName: String? = null): Screen()
+    @Stable data class AddShop(val defaultName: String? = null) : Screen()
 
     @Stable
     data class EditTransaction(
         val transactionId: Long,
         override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ): Screen(), AcceptsShopId
+    ) : Screen(), AcceptsShopId
 
     @Stable
     data class EditItem(
         val itemId: Long,
         override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ): Screen(), AcceptsProductId
+    ) : Screen(), AcceptsProductId
 
     @Stable
     data class EditProduct(
         val productId: Long,
         override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null),
         override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ): Screen(), AcceptsProducerId, AcceptsCategoryId
+    ) : Screen(), AcceptsProducerId, AcceptsCategoryId
 
-    @Stable
-    data class EditProductVariant(val variantId: Long): Screen()
+    @Stable data class EditProductVariant(val variantId: Long) : Screen()
 
-    @Stable
-    data class EditProductCategory(val categoryId: Long): Screen()
+    @Stable data class EditProductCategory(val categoryId: Long) : Screen()
 
-    @Stable
-    data class EditProductProducer(val producerId: Long): Screen()
+    @Stable data class EditProductProducer(val producerId: Long) : Screen()
 
-    @Stable
-    data class EditShop(val shopId: Long): Screen()
+    @Stable data class EditShop(val shopId: Long) : Screen()
 
-    @Immutable
-    data object CategoryRanking: Screen()
+    @Immutable data object CategoryRanking : Screen()
 
-    @Immutable
-    data object ShopRanking: Screen()
+    @Immutable data object ShopRanking : Screen()
 
-    @Stable
-    data class CategorySpendingComparison(
-        val year: Int,
-        val month: Int
-    ): Screen()
+    @Stable data class CategorySpendingComparison(val year: Int, val month: Int) : Screen()
 
-    @Stable
-    data class ShopSpendingComparison(
-        val year: Int,
-        val month: Int
-    ): Screen()
+    @Stable data class ShopSpendingComparison(val year: Int, val month: Int) : Screen()
 
-    @Immutable
-    data object Backups: Screen()
+    @Immutable data object Backups : Screen()
 }
 
-/**
- * @return previous destination from the backstack, null if none exists
- */
+/** @return previous destination from the backstack, null if none exists */
 fun <T> NavController<T>.previousDestination(): T? {
     if (backstack.entries.size == 1) return null
 
-    return backstack.entries.let {
-        it[it.lastIndex - 1].destination
-    }
+    return backstack.entries.let { it[it.lastIndex - 1].destination }
 }
 
-/**
- * @return current destination from the backstack, null if none exists
- */
+/** @return current destination from the backstack, null if none exists */
 fun <T> NavController<T>.currentDestination(): T? {
     return backstack.entries.last().destination
 }
 
 /**
- * Replaces the backstack with itself after filtering it to contain only destinations matching the given [predicate].
+ * Replaces the backstack with itself after filtering it to contain only destinations matching the
+ * given [predicate].
  */
-fun <T> NavController<T>.replaceAllFilter(
-    action: NavAction,
-    predicate: (Screen) -> Boolean
-) where T: Screen {
+fun <T> NavController<T>.replaceAllFilter(action: NavAction, predicate: (Screen) -> Boolean) where
+T : Screen {
     setNewBackstack(
-        entries = backstack.entries.map {
-            it.destination
-        }
-            .filter {
-                predicate(it)
-            }
-            .map {
-                navEntry(it)
-            },
+        entries =
+            backstack.entries.map { it.destination }.filter { predicate(it) }.map { navEntry(it) },
         action = action,
     )
 }
 
-fun defaultNavigateContentTransformation(
-    screenWidth: Int,
-): ContentTransform {
-    val easing = CubicBezierEasing(
-        0.48f,
-        0.19f,
-        0.05f,
-        1.03f
-    )
+fun defaultNavigateContentTransformation(screenWidth: Int): ContentTransform {
+    val easing = CubicBezierEasing(0.48f, 0.19f, 0.05f, 1.03f)
 
     return slideInHorizontally(
-        animationSpec = tween(
-            500,
-            easing = easing
-        ),
-        initialOffsetX = { screenWidth }) + fadeIn(
-        tween(
-            250,
-            50
-        )
-    ) togetherWith slideOutHorizontally(
-        animationSpec = tween(
-            500,
-            easing = easing
-        ),
-        targetOffsetX = { -screenWidth }) + fadeOut(
-        tween(
-            250,
-            50
-        )
-    )
+        animationSpec = tween(500, easing = easing),
+        initialOffsetX = { screenWidth },
+    ) + fadeIn(tween(250, 50)) togetherWith
+        slideOutHorizontally(
+            animationSpec = tween(500, easing = easing),
+            targetOffsetX = { -screenWidth },
+        ) + fadeOut(tween(250, 50))
 }
 
-fun defaultPopContentTransformation(
-    screenWidth: Int,
-): ContentTransform {
-    val easing = CubicBezierEasing(
-        0.48f,
-        0.19f,
-        0.05f,
-        1.03f
-    )
+fun defaultPopContentTransformation(screenWidth: Int): ContentTransform {
+    val easing = CubicBezierEasing(0.48f, 0.19f, 0.05f, 1.03f)
 
     return slideInHorizontally(
-        animationSpec = tween(
-            500,
-            easing = easing
-        ),
-        initialOffsetX = { -screenWidth }) + fadeIn(
-        tween(
-            250,
-            50
-        )
-    ) togetherWith slideOutHorizontally(
-        animationSpec = tween(
-            500,
-            easing = easing
-        ),
-        targetOffsetX = { screenWidth }) + fadeOut(
-        tween(
-            250,
-            50
-        )
-    )
+        animationSpec = tween(500, easing = easing),
+        initialOffsetX = { -screenWidth },
+    ) + fadeIn(tween(250, 50)) togetherWith
+        slideOutHorizontally(
+            animationSpec = tween(500, easing = easing),
+            targetOffsetX = { screenWidth },
+        ) + fadeOut(tween(250, 50))
 }
-
 
 @Composable
-fun Navigation(
-    isExpandedScreen: Boolean,
-    navController: NavController<Screen>
-) {
+fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) {
     NavBackHandler(controller = navController)
 
-    val navigateBack: () -> Unit = {
-        navController.apply {
-            if (backstack.entries.size > 1) pop()
-        }
-    }
+    val navigateBack: () -> Unit = { navController.apply { if (backstack.entries.size > 1) pop() } }
 
     val navigateBackDeleteShop: (shopId: Long) -> Unit = { shopId ->
         navController.replaceAllFilter(NavAction.Pop) {
@@ -387,9 +285,7 @@ fun Navigation(
     }
 
     val navigateBackDeleteProductVariant: (variantId: Long) -> Unit = { variantId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditProductVariant(variantId)
-        }
+        navController.replaceAllFilter(NavAction.Pop) { it != Screen.EditProductVariant(variantId) }
     }
 
     val navigateBackDeleteProduct: (productId: Long) -> Unit = { productId ->
@@ -400,25 +296,26 @@ fun Navigation(
 
     val navigateBackDeleteProductCategory: (categoryId: Long) -> Unit = { categoryId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditProductCategory(categoryId) && it != Screen.DisplayProductCategory(categoryId)
+            it != Screen.EditProductCategory(categoryId) &&
+                it != Screen.DisplayProductCategory(categoryId)
         }
     }
 
     val navigateBackDeleteProductProducer: (producerId: Long) -> Unit = { producerId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditProductProducer(producerId) && it != Screen.DisplayProductProducer(producerId)
+            it != Screen.EditProductProducer(producerId) &&
+                it != Screen.DisplayProductProducer(producerId)
         }
     }
 
     val navigateBackDeleteItem: (itemId: Long) -> Unit = { itemId ->
-        navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditItem(itemId)
-        }
+        navController.replaceAllFilter(NavAction.Pop) { it != Screen.EditItem(itemId) }
     }
 
     val navigateBackDeleteTransaction: (transactionId: Long) -> Unit = { transactionId ->
         navController.replaceAllFilter(NavAction.Pop) {
-            it != Screen.EditTransaction(transactionId) && it != Screen.DisplayTransaction(transactionId)
+            it != Screen.EditTransaction(transactionId) &&
+                it != Screen.DisplayTransaction(transactionId)
         }
     }
 
@@ -433,7 +330,6 @@ fun Navigation(
             navController.navigate(Screen.Search)
         }
     }
-
 
     val navigateDisplayTransaction: (transactionId: Long) -> Unit = {
         if (navController.currentDestination() !is Screen.DisplayTransaction) {
@@ -465,7 +361,6 @@ fun Navigation(
         }
     }
 
-
     val navigateAddTransaction: () -> Unit = {
         if (navController.currentDestination() !is Screen.AddTransaction) {
             navController.navigate(Screen.AddTransaction())
@@ -486,12 +381,7 @@ fun Navigation(
 
     val navigateAddProductVariant: (productId: Long, query: String?) -> Unit = { productId, query ->
         if (navController.currentDestination() !is Screen.AddProductVariant) {
-            navController.navigate(
-                Screen.AddProductVariant(
-                    productId,
-                    query
-                )
-            )
+            navController.navigate(Screen.AddProductVariant(productId, query))
         }
     }
 
@@ -512,7 +402,6 @@ fun Navigation(
             navController.navigate(Screen.AddShop(it))
         }
     }
-
 
     val navigateEditTransaction: (transactionId: Long) -> Unit = {
         if (navController.currentDestination() !is Screen.EditTransaction) {
@@ -556,7 +445,6 @@ fun Navigation(
         }
     }
 
-
     val navigateCategoryRanking: () -> Unit = {
         if (navController.currentDestination() !is Screen.CategoryRanking) {
             navController.navigate(Screen.CategoryRanking)
@@ -571,23 +459,13 @@ fun Navigation(
 
     val navigateCategorySpendingComparison: (year: Int, month: Int) -> Unit = { year, month ->
         if (navController.currentDestination() !is Screen.CategorySpendingComparison) {
-            navController.navigate(
-                Screen.CategorySpendingComparison(
-                    year,
-                    month
-                )
-            )
+            navController.navigate(Screen.CategorySpendingComparison(year, month))
         }
     }
 
     val navigateShopSpendingComparison: (year: Int, month: Int) -> Unit = { year, month ->
         if (navController.currentDestination() !is Screen.ShopSpendingComparison) {
-            navController.navigate(
-                Screen.ShopSpendingComparison(
-                    year,
-                    month
-                )
-            )
+            navController.navigate(Screen.ShopSpendingComparison(year, month))
         }
     }
 
@@ -607,10 +485,10 @@ fun Navigation(
             } else {
                 defaultPopContentTransformation(screenWidth)
             }
-        }
+        },
     ) { screen ->
         when (screen) {
-            is Screen.Home               -> {
+            is Screen.Home -> {
                 HomeRoute(
                     navigateSettings = navigateSettings,
                     navigateSearch = navigateSearch,
@@ -632,7 +510,7 @@ fun Navigation(
                 )
             }
 
-            is Screen.AddItem            -> {
+            is Screen.AddItem -> {
                 AddItemRoute(
                     transactionId = screen.transactionId,
                     navigateBack = navigateBack,
@@ -645,12 +523,14 @@ fun Navigation(
                 )
             }
 
-            is Screen.AddProduct             -> {
+            is Screen.AddProduct -> {
                 AddProductRoute(
                     defaultName = screen.defaultName,
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
-                        if (previousDestination != null && previousDestination is AcceptsProductId) {
+                        if (
+                            previousDestination != null && previousDestination is AcceptsProductId
+                        ) {
                             previousDestination.provideProduct(it)
                         }
                         navigateBack()
@@ -670,11 +550,10 @@ fun Navigation(
                     defaultName = screen.defaultName,
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
-                        if (previousDestination != null && previousDestination is AcceptsProductId) {
-                            previousDestination.provideProduct(
-                                screen.productId,
-                                it
-                            )
+                        if (
+                            previousDestination != null && previousDestination is AcceptsProductId
+                        ) {
+                            previousDestination.provideProduct(screen.productId, it)
                         }
                         navigateBack()
                     },
@@ -686,7 +565,9 @@ fun Navigation(
                     defaultName = screen.defaultName,
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
-                        if (previousDestination != null && previousDestination is AcceptsCategoryId) {
+                        if (
+                            previousDestination != null && previousDestination is AcceptsCategoryId
+                        ) {
                             previousDestination.provideCategory(it)
                         }
                         navigateBack()
@@ -699,7 +580,9 @@ fun Navigation(
                     defaultName = screen.defaultName,
                     navigateBack = {
                         val previousDestination = navController.previousDestination()
-                        if (previousDestination != null && previousDestination is AcceptsProducerId) {
+                        if (
+                            previousDestination != null && previousDestination is AcceptsProducerId
+                        ) {
                             previousDestination.provideProducer(it)
                         }
                         navigateBack()
@@ -707,7 +590,7 @@ fun Navigation(
                 )
             }
 
-            is Screen.AddShop         -> {
+            is Screen.AddShop -> {
                 AddShopRoute(
                     defaultName = screen.defaultName,
                     navigateBack = {
@@ -720,7 +603,7 @@ fun Navigation(
                 )
             }
 
-            is Screen.CategoryRanking        -> {
+            is Screen.CategoryRanking -> {
                 CategoryRankingRoute(
                     navigateBack = navigateBack,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
@@ -728,7 +611,7 @@ fun Navigation(
                 )
             }
 
-            is Screen.ShopRanking     -> {
+            is Screen.ShopRanking -> {
                 ShopRankingRoute(
                     navigateBack = navigateBack,
                     navigateDisplayShop = navigateDisplayShop,
@@ -744,9 +627,7 @@ fun Navigation(
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProductCategory = {
-                        navigateEditProductCategory(screen.categoryId)
-                    },
+                    navigateEditProductCategory = { navigateEditProductCategory(screen.categoryId) },
                 )
             }
 
@@ -758,13 +639,11 @@ fun Navigation(
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProductProducer = {
-                        navigateEditProductProducer(screen.producerId)
-                    },
+                    navigateEditProductProducer = { navigateEditProductProducer(screen.producerId) },
                 )
             }
 
-            is Screen.DisplayProduct         -> {
+            is Screen.DisplayProduct -> {
                 DisplayProductRoute(
                     productId = screen.productId,
                     navigateBack = navigateBack,
@@ -772,13 +651,11 @@ fun Navigation(
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProduct = {
-                        navigateEditProduct(screen.productId)
-                    },
+                    navigateEditProduct = { navigateEditProduct(screen.productId) },
                 )
             }
 
-            is Screen.DisplayShop            -> {
+            is Screen.DisplayShop -> {
                 DisplayShopRoute(
                     shopId = screen.shopId,
                     navigateBack = navigateBack,
@@ -786,43 +663,31 @@ fun Navigation(
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateEditItem = navigateEditItem,
-                    navigateEditShop = {
-                        navigateEditShop(screen.shopId)
-                    },
+                    navigateEditShop = { navigateEditShop(screen.shopId) },
                 )
             }
 
-            is Screen.EditShop        -> {
+            is Screen.EditShop -> {
                 EditShopRoute(
                     shopId = screen.shopId,
-                    navigateBack = {
-                        navigateBack()
-                    },
-                    navigateBackDelete = {
-                        navigateBackDeleteShop(screen.shopId)
-                    }
+                    navigateBack = { navigateBack() },
+                    navigateBackDelete = { navigateBackDeleteShop(screen.shopId) },
                 )
             }
 
             is Screen.EditProductVariant -> {
                 EditProductVariantRoute(
                     variantId = screen.variantId,
-                    navigateBack = {
-                        navigateBack()
-                    },
-                    navigateBackDelete = {
-                        navigateBackDeleteProductVariant(screen.variantId)
-                    }
+                    navigateBack = { navigateBack() },
+                    navigateBackDelete = { navigateBackDeleteProductVariant(screen.variantId) },
                 )
             }
 
-            is Screen.EditProduct            -> {
+            is Screen.EditProduct -> {
                 EditProductRoute(
                     productId = screen.productId,
                     navigateBack = navigateBack,
-                    navigateBackDelete = {
-                        navigateBackDeleteProduct(screen.productId)
-                    },
+                    navigateBackDelete = { navigateBackDeleteProduct(screen.productId) },
                     navigateAddProductCategory = navigateAddProductCategory,
                     navigateAddProductProducer = navigateAddProductProducer,
                     navigateEditProductCategory = navigateEditProductCategory,
@@ -832,33 +697,27 @@ fun Navigation(
                 )
             }
 
-            is Screen.EditProductCategory    -> {
+            is Screen.EditProductCategory -> {
                 EditProductCategoryRoute(
                     categoryId = screen.categoryId,
                     navigateBack = navigateBack,
-                    navigateBackDelete = {
-                        navigateBackDeleteProductCategory(screen.categoryId)
-                    },
+                    navigateBackDelete = { navigateBackDeleteProductCategory(screen.categoryId) },
                 )
             }
 
-            is Screen.EditProductProducer    -> {
+            is Screen.EditProductProducer -> {
                 EditProductProducerRoute(
                     producerId = screen.producerId,
                     navigateBack = navigateBack,
-                    navigateBackDelete = {
-                        navigateBackDeleteProductProducer(screen.producerId)
-                    }
+                    navigateBackDelete = { navigateBackDeleteProductProducer(screen.producerId) },
                 )
             }
 
-            is Screen.EditItem           -> {
+            is Screen.EditItem -> {
                 EditItemRoute(
                     itemId = screen.itemId,
                     navigateBack = navigateBack,
-                    navigateBackDelete = {
-                        navigateBackDeleteItem(screen.itemId)
-                    },
+                    navigateBackDelete = { navigateBackDeleteItem(screen.itemId) },
                     navigateAddProduct = navigateAddProduct,
                     navigateAddProductVariant = navigateAddProductVariant,
                     navigateEditProduct = navigateEditProduct,
@@ -869,13 +728,10 @@ fun Navigation(
             }
 
             is Screen.Settings -> {
-                SettingsRoute(
-                    navigateBack = navigateBack,
-                    navigateBackups = navigateBackups,
-                )
+                SettingsRoute(navigateBack = navigateBack, navigateBackups = navigateBackups)
             }
 
-            is Screen.Search                 -> {
+            is Screen.Search -> {
                 SearchRoute(
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
@@ -905,7 +761,7 @@ fun Navigation(
                 )
             }
 
-            is Screen.AddTransaction     -> {
+            is Screen.AddTransaction -> {
                 AddTransactionRoute(
                     isExpandedScreen = isExpandedScreen,
                     navigateBack = navigateBack,
@@ -943,11 +799,8 @@ fun Navigation(
             }
 
             is Screen.Backups -> {
-                BackupsRoute(
-                    navigateBack = navigateBack,
-                )
+                BackupsRoute(navigateBack = navigateBack)
             }
         }
     }
 }
-

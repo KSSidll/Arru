@@ -14,17 +14,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class ProductVariantRepository(private val dao: ProductVariantEntityDao): ProductVariantRepositorySource {
+class ProductVariantRepository(private val dao: ProductVariantEntityDao) :
+    ProductVariantRepositorySource {
     // Create
 
-    override suspend fun insert(
-        productId: Long?,
-        name: String
-    ): InsertResult {
-        val variant = ProductVariantEntity(
-            productId,
-            name
-        )
+    override suspend fun insert(productId: Long?, name: String): InsertResult {
+        val variant = ProductVariantEntity(productId, name)
 
         if (productId != null && dao.getProduct(productId) == null) {
             return InsertResult.Error(InsertResult.InvalidProductId)
@@ -34,11 +29,7 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
             return InsertResult.Error(InsertResult.InvalidName)
         }
 
-        val other = dao.byProductAndName(
-            productId,
-            name,
-            true
-        ).first()
+        val other = dao.byProductAndName(productId, name, true).first()
 
         if (other != null) {
             return InsertResult.Error(InsertResult.DuplicateName)
@@ -61,30 +52,20 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
         }
 
         return InsertResult.Success(newVariantId)
-
     }
 
     // Update
 
-    override suspend fun update(
-        id: Long,
-        name: String
-    ): UpdateResult {
+    override suspend fun update(id: Long, name: String): UpdateResult {
         val variant = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         variant.name = name.trim()
 
-        if (variant.validName()
-                .not()
-        ) {
+        if (variant.validName().not()) {
             return UpdateResult.Error(UpdateResult.InvalidName)
         }
 
-        val other = dao.byProductAndName(
-            variant.productEntityId,
-            name,
-            true
-        ).first()
+        val other = dao.byProductAndName(variant.productEntityId, name, true).first()
 
         if (other != null && other.id != variant.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
@@ -95,11 +76,7 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
         return UpdateResult.Success
     }
 
-    override suspend fun update(
-        id: Long,
-        productId: Long?,
-        name: String
-    ): UpdateResult {
+    override suspend fun update(id: Long, productId: Long?, name: String): UpdateResult {
         if (dao.get(id).first() == null) {
             return UpdateResult.Error(UpdateResult.InvalidId)
         }
@@ -108,23 +85,13 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
             return UpdateResult.Error(UpdateResult.InvalidProductId)
         }
 
-        val variant = ProductVariantEntity(
-            id = id,
-            productEntityId = productId,
-            name = name.trim(),
-        )
+        val variant = ProductVariantEntity(id = id, productEntityId = productId, name = name.trim())
 
-        if (variant.validName()
-                .not()
-        ) {
+        if (variant.validName().not()) {
             return UpdateResult.Error(UpdateResult.InvalidName)
         }
 
-        val other = dao.byProductAndName(
-            productId,
-            name,
-            true
-        ).first()
+        val other = dao.byProductAndName(productId, name, true).first()
 
         if (other != null && other.id != variant.id) {
             return UpdateResult.Error(UpdateResult.DuplicateName)
@@ -137,10 +104,7 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
 
     // Delete
 
-    override suspend fun delete(
-        id: Long,
-        force: Boolean
-    ): DeleteResult {
+    override suspend fun delete(id: Long, force: Boolean): DeleteResult {
         val variant = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
 
         val items = dao.getItems(id)
@@ -159,15 +123,10 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao): Produc
 
     override fun get(id: Long): Flow<ProductVariantEntity?> = dao.get(id).cancellable()
 
-
-
-
-
-
-
-
-
-    override fun byProduct(productEntity: ProductEntity, showGlobal: Boolean): Flow<ImmutableList<ProductVariantEntity>> {
+    override fun byProduct(
+        productEntity: ProductEntity,
+        showGlobal: Boolean,
+    ): Flow<ImmutableList<ProductVariantEntity>> {
         return dao.byProduct(productEntity.id, showGlobal)
             .cancellable()
             .distinctUntilChanged()

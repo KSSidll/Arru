@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.search
 
-
 import androidx.compose.runtime.Composable
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 

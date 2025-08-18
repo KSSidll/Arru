@@ -55,23 +55,32 @@ import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.screen.modify.productproducer.ModifyProductProducerScreenState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
-import kotlinx.collections.immutable.ImmutableList
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlinx.collections.immutable.ImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
 /**
  * [ModifyScreen] implementation for [ProductProducerEntity]
- * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
+ *
+ * @param onBack Called to request a back navigation, isn't triggered by other events like
+ *   submission or deletion
  * @param state [ModifyProductProducerScreenState] instance representing the screen state
  * @param shops Shops that can be set for the transaction
- * @param onNewShopSelected Callback called when a new shop is selected. Provides newly selected shop as parameter
+ * @param onNewShopSelected Callback called when a new shop is selected. Provides newly selected
+ *   shop as parameter
  * @param onSubmit Callback called when the submit action is triggered
- * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
- * @param submitButtonText Text displayed in the submit button, defaults to transaction add string resource
- * @param onShopAddButtonClick Callback called when the shop add button is clicked. Provides a search value, if any, as parameter
- * @param onTransactionShopLongClick Callback called when the transaction shop is long clicked/pressed. Provides shop id as parameter
+ * @param onDelete Callback called when the delete action is triggered, in case of very destructive
+ *   actions, should check if delete warning is confirmed, and if not, trigger a delete warning
+ *   dialog via showDeleteWarning parameter as none of those are handled internally by the
+ *   component, setting to null removes the delete option
+ * @param submitButtonText Text displayed in the submit button, defaults to transaction add string
+ *   resource
+ * @param onShopAddButtonClick Callback called when the shop add button is clicked. Provides a
+ *   search value, if any, as parameter
+ * @param onTransactionShopLongClick Callback called when the transaction shop is long
+ *   clicked/pressed. Provides shop id as parameter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +94,7 @@ fun ModifyTransactionScreenImpl(
     onShopAddButtonClick: (query: String?) -> Unit,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.transaction_add),
-    onTransactionShopLongClick: (shopId: Long) -> Unit
+    onTransactionShopLongClick: (shopId: Long) -> Unit,
 ) {
     val datePickerState = rememberDatePickerState()
 
@@ -101,35 +110,32 @@ fun ModifyTransactionScreenImpl(
     ) {
         if (state.isDatePickerDialogExpanded.value) {
             DatePickerDialog(
-                onDismissRequest = {
-                    state.isDatePickerDialogExpanded.value = false
-                },
+                onDismissRequest = { state.isDatePickerDialogExpanded.value = false },
                 confirmButton = {
                     Button(
                         onClick = {
                             state.isDatePickerDialogExpanded.value = false
                             state.date.value = Field.Loaded(datePickerState.selectedDateMillis)
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        )
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier.size(30.dp),
                         )
                     }
-                }
+                },
             ) {
                 DatePicker(state = datePickerState)
             }
         } else if (state.isShopSearchDialogExpanded.value) {
             SearchableListDialog(
-                onDismissRequest = {
-                    state.isShopSearchDialogExpanded.value = false
-                },
+                onDismissRequest = { state.isShopSearchDialogExpanded.value = false },
                 items = shops,
                 itemText = { it.name },
                 onItemClick = {
@@ -146,9 +152,7 @@ fun ModifyTransactionScreenImpl(
                 addButtonDescription = stringResource(R.string.item_shop_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
-                calculateScore = { item, query ->
-                    item.fuzzyScore(query)
-                }
+                calculateScore = { item, query -> item.fuzzyScore(query) },
             )
         }
 
@@ -180,75 +184,56 @@ private fun ModifyTransactionScreenContent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.widthIn(max = 650.dp)
+        modifier = Modifier.widthIn(max = 650.dp),
     ) {
         val date = state.date.value.data
         SearchField(
             enabled = state.date.value.isEnabled(),
-            value = if (date != null) SimpleDateFormat(
-                "MMM d, yyyy",
-                Locale.getDefault()
-            ).format(date) else String(),
+            value =
+                if (date != null) SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                else String(),
             showAddButton = false,
             label = stringResource(R.string.item_date),
-            onClick = {
-                state.isDatePickerDialogExpanded.value = true
-            },
+            onClick = { state.isDatePickerDialogExpanded.value = true },
             supportingText = {
                 if (state.attemptedToSubmit.value) {
                     state.date.value.error?.ErrorText()
                 }
             },
             error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding.times(2))
+            modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding.times(2)),
         )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding.times(2))
+            modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding.times(2)),
         ) {
             StyledOutlinedTextField(
                 singleLine = true,
                 enabled = state.totalCost.value.isEnabled(),
                 value = state.totalCost.value.data ?: String(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                ),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = { newValue ->
                     state.totalCost.apply {
                         if (newValue.isBlank()) {
                             value = Field.Loaded(String())
-                        } else if (RegexHelper.isFloat(
-                                newValue,
-                                2
-                            )
-                        ) {
+                        } else if (RegexHelper.isFloat(newValue, 2)) {
                             value = Field.Loaded(newValue)
                         }
                     }
                 },
-                label = {
-                    Text(
-                        text = stringResource(R.string.item_price),
-                        fontSize = 16.sp,
-                    )
-                },
+                label = { Text(text = stringResource(R.string.item_price), fontSize = 16.sp) },
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
                         state.totalCost.value.error?.ErrorText()
                     }
                 },
-                isError = if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,
-                modifier = Modifier.weight(1f)
+                isError =
+                    if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,
+                modifier = Modifier.weight(1f),
             )
 
-            Column(
-                modifier = Modifier.fillMaxHeight()
-            ) {
+            Column(modifier = Modifier.fillMaxHeight()) {
                 IconButton(
                     enabled = state.totalCost.value.isEnabled(),
                     onClick = {
@@ -264,16 +249,18 @@ private fun ModifyTransactionScreenContent(
                             }
                         }
                     },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
-                    ),
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor =
+                                MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                        ),
+                    modifier = Modifier.minimumInteractiveComponentSize(),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowUp,
-                        contentDescription = stringResource(id = R.string.item_price_increment_by_half),
+                        contentDescription =
+                            stringResource(id = R.string.item_price_increment_by_half),
                     )
                 }
 
@@ -287,26 +274,31 @@ private fun ModifyTransactionScreenContent(
                                 state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
 
                             if (value != null) {
-                                state.totalCost.value = Field.Loaded(
-                                    "%.2f".format(
-                                        if (value > 0.5f) value.minus(0.5f) else {
-                                            0f
-                                        }
+                                state.totalCost.value =
+                                    Field.Loaded(
+                                        "%.2f"
+                                            .format(
+                                                if (value > 0.5f) value.minus(0.5f)
+                                                else {
+                                                    0f
+                                                }
+                                            )
                                     )
-                                )
                             }
                         }
                     },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        disabledContentColor = MaterialTheme.colorScheme.primary.copy(disabledAlpha),
-                    ),
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor =
+                                MaterialTheme.colorScheme.primary.copy(disabledAlpha),
+                        ),
+                    modifier = Modifier.minimumInteractiveComponentSize(),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowDown,
-                        contentDescription = stringResource(id = R.string.item_price_decrement_by_half),
+                        contentDescription =
+                            stringResource(id = R.string.item_price_decrement_by_half),
                     )
                 }
             }
@@ -321,19 +313,10 @@ private fun ModifyTransactionScreenContent(
             enabled = state.note.value.isEnabled(),
             value = state.note.value.data.orEmpty(),
             onValueChange = { newValue ->
-                state.note.apply {
-                    value = Field.Loaded(newValue.trimStart())
-                }
+                state.note.apply { value = Field.Loaded(newValue.trimStart()) }
             },
-            label = {
-                Text(
-                    text = stringResource(R.string.transaction_note),
-                    fontSize = 16.sp,
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding.times(2))
+            label = { Text(text = stringResource(R.string.transaction_note), fontSize = 16.sp) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding.times(2)),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -350,18 +333,12 @@ private fun ModifyTransactionScreenContent(
                 }
             },
             onLongClick = {
-                state.selectedShop.value.data?.let {
-                    onTransactionShopLongClick(it.id)
-                }
+                state.selectedShop.value.data?.let { onTransactionShopLongClick(it.id) }
             },
             label = stringResource(R.string.item_shop),
-            onAddButtonClick = {
-                onShopAddButtonClick(null)
-            },
+            onAddButtonClick = { onShopAddButtonClick(null) },
             addButtonDescription = stringResource(R.string.item_shop_add_description),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
         )
     }
 }
@@ -375,79 +352,65 @@ private fun ExpandedModifyTransactionScreenContent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.widthIn(max = 650.dp)
+        modifier = Modifier.widthIn(max = 650.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             val date = state.date.value.data
             SearchField(
                 enabled = state.date.value.isEnabled(),
-                value = if (date != null) SimpleDateFormat(
-                    "MMM d, yyyy",
-                    Locale.getDefault()
-                ).format(date) else String(),
+                value =
+                    if (date != null)
+                        SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                    else String(),
                 showAddButton = false,
                 label = stringResource(R.string.item_date),
-                onClick = {
-                    state.isDatePickerDialogExpanded.value = true
-                },
+                onClick = { state.isDatePickerDialogExpanded.value = true },
                 supportingText = {
                     if (state.attemptedToSubmit.value) {
                         state.date.value.error?.ErrorText()
                     }
                 },
                 error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(
-                        start = ItemHorizontalPadding.times(2),
-                        end = ItemHorizontalPadding.div(2)
-                    )
+                modifier =
+                    Modifier.weight(1f)
+                        .padding(
+                            start = ItemHorizontalPadding.times(2),
+                            end = ItemHorizontalPadding.div(2),
+                        ),
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = ItemHorizontalPadding.div(2))
+                modifier = Modifier.weight(1f).padding(start = ItemHorizontalPadding.div(2)),
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
                     enabled = state.totalCost.value.isEnabled(),
                     value = state.totalCost.value.data ?: String(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    ),
+                    keyboardOptions =
+                        KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     onValueChange = { newValue ->
                         state.totalCost.apply {
                             if (newValue.isBlank()) {
                                 value = Field.Loaded(String())
-                            } else if (RegexHelper.isFloat(
-                                    newValue,
-                                    2
-                                )
-                            ) {
+                            } else if (RegexHelper.isFloat(newValue, 2)) {
                                 value = Field.Loaded(newValue)
                             }
                         }
                     },
-                    label = {
-                        Text(
-                            text = stringResource(R.string.item_price),
-                            fontSize = 16.sp,
-                        )
-                    },
+                    label = { Text(text = stringResource(R.string.item_price), fontSize = 16.sp) },
                     supportingText = {
                         if (state.attemptedToSubmit.value) {
                             state.totalCost.value.error?.ErrorText()
                         }
                     },
-                    isError = if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,
-                    modifier = Modifier.weight(1f)
+                    isError =
+                        if (state.attemptedToSubmit.value) state.totalCost.value.isError()
+                        else false,
+                    modifier = Modifier.weight(1f),
                 )
 
-                Column(
-                    modifier = Modifier.fillMaxHeight()
-                ) {
+                Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
                         enabled = state.totalCost.value.isEnabled(),
                         onClick = {
@@ -456,9 +419,7 @@ private fun ExpandedModifyTransactionScreenContent(
                             } else {
                                 val value =
                                     state.totalCost.value.data!!.let {
-                                        StringHelper.toDoubleOrNull(
-                                            it
-                                        )
+                                        StringHelper.toDoubleOrNull(it)
                                     }
 
                                 if (value != null) {
@@ -467,18 +428,18 @@ private fun ExpandedModifyTransactionScreenContent(
                                 }
                             }
                         },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
-                                disabledAlpha
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary,
+                                disabledContentColor =
+                                    MaterialTheme.colorScheme.primary.copy(disabledAlpha),
                             ),
-                        ),
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
+                        modifier = Modifier.minimumInteractiveComponentSize(),
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.KeyboardArrowUp,
-                            contentDescription = stringResource(id = R.string.item_price_increment_by_half),
+                            contentDescription =
+                                stringResource(id = R.string.item_price_increment_by_half),
                         )
                     }
 
@@ -490,34 +451,35 @@ private fun ExpandedModifyTransactionScreenContent(
                             } else {
                                 val value =
                                     state.totalCost.value.data!!.let {
-                                        StringHelper.toDoubleOrNull(
-                                            it
-                                        )
+                                        StringHelper.toDoubleOrNull(it)
                                     }
 
                                 if (value != null) {
-                                    state.totalCost.value = Field.Loaded(
-                                        "%.2f".format(
-                                            if (value > 0.5f) value.minus(0.5f) else {
-                                                0f
-                                            }
+                                    state.totalCost.value =
+                                        Field.Loaded(
+                                            "%.2f"
+                                                .format(
+                                                    if (value > 0.5f) value.minus(0.5f)
+                                                    else {
+                                                        0f
+                                                    }
+                                                )
                                         )
-                                    )
                                 }
                             }
                         },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.primary.copy(
-                                disabledAlpha
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary,
+                                disabledContentColor =
+                                    MaterialTheme.colorScheme.primary.copy(disabledAlpha),
                             ),
-                        ),
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
+                        modifier = Modifier.minimumInteractiveComponentSize(),
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.KeyboardArrowDown,
-                            contentDescription = stringResource(id = R.string.item_price_decrement_by_half),
+                            contentDescription =
+                                stringResource(id = R.string.item_price_decrement_by_half),
                         )
                     }
                 }
@@ -539,18 +501,12 @@ private fun ExpandedModifyTransactionScreenContent(
                 }
             },
             onLongClick = {
-                state.selectedShop.value.data?.let {
-                    onTransactionShopLongClick(it.id)
-                }
+                state.selectedShop.value.data?.let { onTransactionShopLongClick(it.id) }
             },
             label = stringResource(R.string.item_shop),
-            onAddButtonClick = {
-                onShopAddButtonClick(null)
-            },
+            onAddButtonClick = { onShopAddButtonClick(null) },
             addButtonDescription = stringResource(R.string.item_shop_add_description),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = ItemHorizontalPadding)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
         )
     }
 }

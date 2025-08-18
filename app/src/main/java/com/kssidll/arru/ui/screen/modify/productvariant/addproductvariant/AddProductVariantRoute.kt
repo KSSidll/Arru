@@ -13,18 +13,14 @@ fun AddProductVariantRoute(
     productId: Long,
     defaultName: String?,
     navigateBack: (variantId: Long?) -> Unit,
-    viewModel: AddProductVariantViewModel = hiltViewModel()
+    viewModel: AddProductVariantViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.screenState.name.value = Field.Loaded(defaultName)
-    }
+    LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 
     ModifyProductVariantScreenImpl(
-        onBack = {
-            navigateBack(null)
-        },
+        onBack = { navigateBack(null) },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
@@ -33,6 +29,6 @@ fun AddProductVariantRoute(
                     navigateBack(result.id)
                 }
             }
-        }
+        },
     )
 }

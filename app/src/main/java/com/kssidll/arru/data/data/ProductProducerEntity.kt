@@ -10,19 +10,16 @@ import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
-    indices = [
-        Index(value = ["name"], name = "index_ProductProducerEntity_name")
-    ],
-    tableName = "ProductProducerEntity"
+    indices = [Index(value = ["name"], name = "index_ProductProducerEntity_name")],
+    tableName = "ProductProducerEntity",
 )
-data class ProductProducerEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    var name: String,
-): FuzzySearchSource, NameSource {
+data class ProductProducerEntity(@PrimaryKey(autoGenerate = true) val id: Long, var name: String) :
+    FuzzySearchSource, NameSource {
     /**
      * Converts the [ProductProducerEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
+     *
      * @return [ProductProducerEntity] data as [String] with csv format
      */
     @Ignore
@@ -33,6 +30,7 @@ data class ProductProducerEntity(
     companion object {
         /**
          * Returns the [String] representing the [ProductProducerEntity] csv format headers
+         *
          * @return [String] representing the [ProductProducerEntity] csv format headers
          */
         @Ignore
@@ -42,34 +40,20 @@ data class ProductProducerEntity(
 
         @Ignore
         fun generate(producerId: Long = 0): ProductProducerEntity {
-            return ProductProducerEntity(
-                id = producerId,
-                name = generateRandomStringValue(),
-            )
+            return ProductProducerEntity(id = producerId, name = generateRandomStringValue())
         }
 
         @Ignore
         fun generateList(amount: Int = 10): List<ProductProducerEntity> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 
-    @Ignore
-    constructor(
-        name: String,
-    ): this(
-        0,
-        name.trim()
-    )
+    @Ignore constructor(name: String) : this(0, name.trim())
 
     @Ignore
     override fun fuzzyScore(query: String): Int {
-        return FuzzySearch.extractOne(
-            query,
-            listOf(name)
-        ).score
+        return FuzzySearch.extractOne(query, listOf(name)).score
     }
 
     @Ignore
@@ -77,29 +61,26 @@ data class ProductProducerEntity(
         return name
     }
 
-    /**
-     * @return true if name is valid, false otherwise
-     */
+    /** @return true if name is valid, false otherwise */
     @Ignore
     fun validName(): Boolean {
         return name.isNotBlank()
     }
-
 }
 
 /**
  * Converts a list of [ProductProducerEntity] data to a list of strings with csv format
+ *
  * @param includeHeaders whether to include the csv headers
  * @return [ProductProducerEntity] data as list of string with csv format
  */
-fun List<ProductProducerEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
-    // Add headers
-    if (includeHeaders) {
-        add(ProductProducerEntity.csvHeaders() + "\n")
-    }
+fun List<ProductProducerEntity>.asCsvList(includeHeaders: Boolean = false): List<String> =
+    buildList {
+        // Add headers
+        if (includeHeaders) {
+            add(ProductProducerEntity.csvHeaders() + "\n")
+        }
 
-    // Add rows
-    this@asCsvList.forEach {
-        add(it.formatAsCsvString() + "\n")
+        // Add rows
+        this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
     }
-}

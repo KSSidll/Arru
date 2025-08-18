@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.item.edititem
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,14 +33,8 @@ fun EditItemRoute(
         }
     }
 
-    LaunchedEffect(
-        providedProductId,
-        providedVariantId
-    ) {
-        viewModel.setSelectedProductToProvided(
-            providedProductId,
-            providedVariantId
-        )
+    LaunchedEffect(providedProductId, providedVariantId) {
+        viewModel.setSelectedProductToProvided(providedProductId, providedVariantId)
     }
 
     ModifyItemScreenImpl(
@@ -49,28 +42,18 @@ fun EditItemRoute(
         state = viewModel.screenState,
         products = viewModel.allProducts().collectAsState(initial = emptyImmutableList()).value,
         variants = viewModel.productVariants.collectAsState(initial = emptyImmutableList()).value,
-        onNewProductSelected = {
-            scope.launch {
-                viewModel.onNewProductSelected(it)
-            }
-        },
-        onNewVariantSelected = {
-            viewModel.onNewVariantSelected(it)
-        },
+        onNewProductSelected = { scope.launch { viewModel.onNewProductSelected(it) } },
+        onNewVariantSelected = { viewModel.onNewVariantSelected(it) },
         onSubmit = {
             scope.launch {
-                if (viewModel.updateItem(itemId)
-                        .isNotError()
-                ) {
+                if (viewModel.updateItem(itemId).isNotError()) {
                     navigateBack()
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteItem(itemId)
-                        .isNotError()
-                ) {
+                if (viewModel.deleteItem(itemId).isNotError()) {
                     navigateBackDelete()
                 }
             }

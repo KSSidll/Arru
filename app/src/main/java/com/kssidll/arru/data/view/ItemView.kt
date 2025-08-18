@@ -8,7 +8,8 @@ import com.kssidll.arru.helper.generateRandomDate
 import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 
-@DatabaseView("""
+@DatabaseView(
+    """
 SELECT
     ItemEntity.id               AS id,
     ProductEntity.id            AS productId,
@@ -32,7 +33,9 @@ LEFT JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.prod
 LEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId
 LEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId 
 LEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId
-""", viewName = "ItemView")
+""",
+    viewName = "ItemView",
+)
 @Immutable
 data class Item(
     val id: Long,
@@ -85,9 +88,7 @@ data class Item(
 
         @Ignore
         fun generateList(amount: Int = 10): List<Item> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 }

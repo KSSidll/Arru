@@ -13,9 +13,7 @@ plugins {
 android {
     signingConfigs {
         create("devel") {
-            val properties = Properties().apply {
-                load(File("signing.properties").reader())
-            }
+            val properties = Properties().apply { load(File("signing.properties").reader()) }
 
             storeFile = File(properties.getProperty("storeFilePath"))
             storePassword = properties.getProperty("storePassword")
@@ -37,14 +35,10 @@ android {
         versionName = "2.5.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables { useSupportLibrary = true }
     }
 
-    androidResources {
-        generateLocaleConfig = true
-    }
+    androidResources { generateLocaleConfig = true }
 
     buildTypes {
         release {
@@ -53,7 +47,7 @@ android {
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("devel")
         }
@@ -69,24 +63,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        jvmToolchain(17)
-    }
+    kotlin { jvmToolchain(17) }
 
     buildFeatures {
         compose = true
         buildConfig = true
     }
 
-    composeCompiler {
-        includeSourceInformation = true
-    }
+    composeCompiler { includeSourceInformation = true }
 
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+    packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
     dependenciesInfo {
         includeInApk = false
@@ -94,11 +80,7 @@ android {
     }
 }
 
-kotlin.sourceSets.main {
-    kotlin.srcDirs(
-        file("${projectDir}/generated/ksp/main/kotlin")
-    )
-}
+kotlin.sourceSets.main { kotlin.srcDirs(file("${projectDir}/generated/ksp/main/kotlin")) }
 
 dependencies {
     ksp(project(":processor"))
@@ -160,22 +142,11 @@ dependencies {
     androidTestImplementation(libs.test.android.coroutines)
 }
 
-ksp {
-    arg(
-        RoomSchemaArgProvider(
-            File(
-                projectDir,
-                "schemas"
-            )
-        )
-    )
-}
+ksp { arg(RoomSchemaArgProvider(File(projectDir, "schemas"))) }
 
 class RoomSchemaArgProvider(
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    val schemaDir: File
-): CommandLineArgumentProvider {
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE) val schemaDir: File
+) : CommandLineArgumentProvider {
     override fun asArguments(): Iterable<String> {
         return listOf("room.schemaLocation=${schemaDir.path}")
     }

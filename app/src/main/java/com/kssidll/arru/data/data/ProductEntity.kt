@@ -12,51 +12,55 @@ import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = ProductCategoryEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["productCategoryEntityId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        ),
-        ForeignKey(
-            entity = ProductProducerEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["productProducerEntityId"],
-            onDelete = ForeignKey.RESTRICT,
-            onUpdate = ForeignKey.RESTRICT,
-        )
-    ],
-    indices = [
-        Index(value = ["productCategoryEntityId"], name = "index_ProductEntity_productCategoryEntityId"),
-        Index(value = ["productProducerEntityId"], name = "index_ProductEntity_productProducerEntityId"),
-        Index(value = ["name"], name = "index_ProductEntity_name"),
-    ],
-    tableName = "ProductEntity"
+    foreignKeys =
+        [
+            ForeignKey(
+                entity = ProductCategoryEntity::class,
+                parentColumns = ["id"],
+                childColumns = ["productCategoryEntityId"],
+                onDelete = ForeignKey.RESTRICT,
+                onUpdate = ForeignKey.RESTRICT,
+            ),
+            ForeignKey(
+                entity = ProductProducerEntity::class,
+                parentColumns = ["id"],
+                childColumns = ["productProducerEntityId"],
+                onDelete = ForeignKey.RESTRICT,
+                onUpdate = ForeignKey.RESTRICT,
+            ),
+        ],
+    indices =
+        [
+            Index(
+                value = ["productCategoryEntityId"],
+                name = "index_ProductEntity_productCategoryEntityId",
+            ),
+            Index(
+                value = ["productProducerEntityId"],
+                name = "index_ProductEntity_productProducerEntityId",
+            ),
+            Index(value = ["name"], name = "index_ProductEntity_name"),
+        ],
+    tableName = "ProductEntity",
 )
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     var productCategoryEntityId: Long,
     var productProducerEntityId: Long?,
     val name: String,
-): FuzzySearchSource, NameSource {
+) : FuzzySearchSource, NameSource {
     @Ignore
     constructor(
         categoryEntityId: Long,
         producerEntityId: Long?,
         name: String,
-    ): this(
-        0,
-        categoryEntityId,
-        producerEntityId,
-        name.trim()
-    )
+    ) : this(0, categoryEntityId, producerEntityId, name.trim())
 
     /**
      * Converts the [ProductEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
+     *
      * @return [ProductEntity] data as [String] with csv format
      */
     @Ignore
@@ -65,11 +69,11 @@ data class ProductEntity(
     }
 
     companion object {
-        @Ignore
-        const val INVALID_CATEGORY_ID: Long = Long.MIN_VALUE
+        @Ignore const val INVALID_CATEGORY_ID: Long = Long.MIN_VALUE
 
         /**
          * Returns the [String] representing the [ProductEntity] csv format headers
+         *
          * @return [String] representing the [ProductEntity] csv format headers
          */
         @Ignore
@@ -89,18 +93,13 @@ data class ProductEntity(
 
         @Ignore
         fun generateList(amount: Int = 10): List<ProductEntity> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 
     @Ignore
     override fun fuzzyScore(query: String): Int {
-        return FuzzySearch.extractOne(
-            query,
-            listOf(name)
-        ).score
+        return FuzzySearch.extractOne(query, listOf(name)).score
     }
 
     @Ignore
@@ -108,9 +107,7 @@ data class ProductEntity(
         return name
     }
 
-    /**
-     * @return true if name is valid, false otherwise
-     */
+    /** @return true if name is valid, false otherwise */
     @Ignore
     fun validName(): Boolean {
         return name.isNotBlank()
@@ -119,6 +116,7 @@ data class ProductEntity(
 
 /**
  * Converts a list of [ProductEntity] data to a list of strings with csv format
+ *
  * @param includeHeaders whether to include the csv headers
  * @return [ProductEntity] data as list of string with csv format
  */
@@ -129,7 +127,5 @@ fun List<ProductEntity>.asCsvList(includeHeaders: Boolean = false): List<String>
     }
 
     // Add rows
-    this@asCsvList.forEach {
-        add(it.formatAsCsvString() + "\n")
-    }
+    this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
 }

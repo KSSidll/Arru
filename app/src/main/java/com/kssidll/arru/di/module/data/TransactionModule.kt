@@ -19,8 +19,6 @@ import javax.inject.Singleton
 class TransactionModule {
 
     /** ENTITY */
-
-
     @Provides
     @Singleton
     fun provideGetTransactionEntityUseCase(
@@ -29,9 +27,7 @@ class TransactionModule {
         return GetTransactionEntityUseCase(transactionRepositorySource)
     }
 
-
     /** DOMAIN */
-
 
     // @Provides
     // @Singleton
@@ -57,10 +53,7 @@ class TransactionModule {
         return GetItemsUseCase(transactionRepositorySource)
     }
 
-
     /** DOMAIN CHART */
-
-
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayUseCase(

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.home
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -53,24 +52,15 @@ private val TileInnerPadding: Dp = 12.dp
 fun AnalysisScreen(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val navSuiteType = BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
-        currentWindowAdaptiveInfo()
-    )
+    val navSuiteType =
+        BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
     if (navSuiteType != NavigationSuiteType.NavigationBar) {
-        ExpandedAnalysisScreenContent(
-            uiState = uiState,
-            onEvent = onEvent,
-            modifier = modifier
-        )
+        ExpandedAnalysisScreenContent(uiState = uiState, onEvent = onEvent, modifier = modifier)
     } else {
-        AnalysisScreenContent(
-            uiState = uiState,
-            onEvent = onEvent,
-            modifier = modifier
-        )
+        AnalysisScreenContent(uiState = uiState, onEvent = onEvent, modifier = modifier)
     }
 }
 
@@ -78,7 +68,7 @@ fun AnalysisScreen(
 private fun AnalysisScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         bottomBar = {
@@ -86,11 +76,11 @@ private fun AnalysisScreenContent(
                 AnimatedVisibility(
                     visible = uiState.analysisScreenNothingToDisplayVisible,
                     enter = fadeIn(),
-                    exit = fadeOut()
+                    exit = fadeOut(),
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
                             text = stringResource(id = R.string.no_data_to_display_text),
@@ -102,43 +92,38 @@ private fun AnalysisScreenContent(
                 AnalysisDateHeader(
                     year = uiState.analysisCurrentDateYear,
                     month = uiState.analysisCurrentDateMonth,
-                    onMonthIncrement = {
-                        onEvent(HomeEvent.IncrementCurrentAnalysisDate)
-                    },
-                    onMonthDecrement = {
-                        onEvent(HomeEvent.DecrementCurrentAnalysisDate)
-                    },
+                    onMonthIncrement = { onEvent(HomeEvent.IncrementCurrentAnalysisDate) },
+                    onMonthDecrement = { onEvent(HomeEvent.DecrementCurrentAnalysisDate) },
                 )
             }
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = modifier
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier = modifier,
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier.padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
+                    .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
             AnimatedVisibility(
                 visible = uiState.analysisScreenCategoryCardVisible,
                 enter = fadeIn(),
-                exit = fadeOut()
+                exit = fadeOut(),
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    modifier = Modifier
-                        .padding(TileOuterPadding)
-                        .fillMaxWidth()
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                    modifier = Modifier.padding(TileOuterPadding).fillMaxWidth(),
                 ) {
                     Box(
-                        modifier = Modifier
-                            .heightIn(min = 144.dp)
-                            .clickable {
+                        modifier =
+                            Modifier.heightIn(min = 144.dp).clickable {
                                 onEvent(
                                     HomeEvent.NavigateCategorySpendingComparison(
                                         year = uiState.analysisCurrentDateYear,
@@ -154,7 +139,7 @@ private fun AnalysisScreenContent(
                             rightSideItems = uiState.analysisCurrentDateCategoryData,
                             rightSideHeader = stringResource(id = R.string.current),
                             itemDisplayLimit = 6,
-                            modifier = Modifier.padding(TileInnerPadding)
+                            modifier = Modifier.padding(TileInnerPadding),
                         )
                     }
                 }
@@ -165,20 +150,18 @@ private fun AnalysisScreenContent(
             AnimatedVisibility(
                 visible = uiState.analysisScreenShopCardVisible,
                 enter = fadeIn(),
-                exit = fadeOut()
+                exit = fadeOut(),
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    modifier = Modifier
-                        .padding(TileOuterPadding)
-                        .fillMaxWidth()
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                    modifier = Modifier.padding(TileOuterPadding).fillMaxWidth(),
                 ) {
                     Box(
-                        modifier = Modifier
-                            .heightIn(min = 144.dp)
-                            .clickable {
+                        modifier =
+                            Modifier.heightIn(min = 144.dp).clickable {
                                 onEvent(
                                     HomeEvent.NavigateShopSpendingComparison(
                                         year = uiState.analysisCurrentDateYear,
@@ -194,7 +177,7 @@ private fun AnalysisScreenContent(
                             rightSideItems = uiState.analysisCurrentDateShopData,
                             rightSideHeader = stringResource(id = R.string.current),
                             itemDisplayLimit = 6,
-                            modifier = Modifier.padding(TileInnerPadding)
+                            modifier = Modifier.padding(TileInnerPadding),
                         )
                     }
                 }
@@ -207,7 +190,7 @@ private fun AnalysisScreenContent(
 private fun ExpandedAnalysisScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
@@ -215,31 +198,27 @@ private fun ExpandedAnalysisScreenContent(
                 AnalysisDateHeader(
                     year = uiState.analysisCurrentDateYear,
                     month = uiState.analysisCurrentDateMonth,
-                    onMonthIncrement = {
-                        onEvent(HomeEvent.IncrementCurrentAnalysisDate)
-                    },
-                    onMonthDecrement = {
-                        onEvent(HomeEvent.DecrementCurrentAnalysisDate)
-                    },
+                    onMonthIncrement = { onEvent(HomeEvent.IncrementCurrentAnalysisDate) },
+                    onMonthDecrement = { onEvent(HomeEvent.DecrementCurrentAnalysisDate) },
                 )
             }
         },
-        modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)
+        modifier = modifier.windowInsetsPadding(WindowInsets.statusBars),
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier.padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
+                    .verticalScroll(rememberScrollState())
         ) {
             AnimatedVisibility(
                 visible = uiState.analysisScreenNothingToDisplayVisible,
                 enter = fadeIn(),
-                exit = fadeOut()
+                exit = fadeOut(),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_data_to_display_text),
@@ -253,20 +232,18 @@ private fun ExpandedAnalysisScreenContent(
                     visible = uiState.analysisScreenCategoryCardVisible,
                     enter = fadeIn(),
                     exit = fadeOut(),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier
-                            .padding(TileOuterPadding)
-                            .fillMaxWidth()
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                        modifier = Modifier.padding(TileOuterPadding).fillMaxWidth(),
                     ) {
                         Box(
-                            modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
+                            modifier =
+                                Modifier.heightIn(min = 144.dp).clickable {
                                     onEvent(
                                         HomeEvent.NavigateCategorySpendingComparison(
                                             year = uiState.analysisCurrentDateYear,
@@ -282,7 +259,7 @@ private fun ExpandedAnalysisScreenContent(
                                 rightSideItems = uiState.analysisCurrentDateCategoryData,
                                 rightSideHeader = stringResource(id = R.string.current),
                                 itemDisplayLimit = 6,
-                                modifier = Modifier.padding(TileInnerPadding)
+                                modifier = Modifier.padding(TileInnerPadding),
                             )
                         }
                     }
@@ -294,20 +271,18 @@ private fun ExpandedAnalysisScreenContent(
                     visible = uiState.analysisScreenShopCardVisible,
                     enter = fadeIn(),
                     exit = fadeOut(),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        modifier = Modifier
-                            .padding(TileOuterPadding)
-                            .fillMaxWidth()
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                        modifier = Modifier.padding(TileOuterPadding).fillMaxWidth(),
                     ) {
                         Box(
-                            modifier = Modifier
-                                .heightIn(min = 144.dp)
-                                .clickable {
+                            modifier =
+                                Modifier.heightIn(min = 144.dp).clickable {
                                     onEvent(
                                         HomeEvent.NavigateShopSpendingComparison(
                                             year = uiState.analysisCurrentDateYear,
@@ -323,7 +298,7 @@ private fun ExpandedAnalysisScreenContent(
                                 rightSideItems = uiState.analysisCurrentDateShopData,
                                 rightSideHeader = stringResource(id = R.string.current),
                                 itemDisplayLimit = 6,
-                                modifier = Modifier.padding(TileInnerPadding)
+                                modifier = Modifier.padding(TileInnerPadding),
                             )
                         }
                     }
@@ -338,10 +313,7 @@ private fun ExpandedAnalysisScreenContent(
 private fun AnalysisScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            AnalysisScreen(
-                uiState = HomeUiState(),
-                onEvent = {}
-            )
+            AnalysisScreen(uiState = HomeUiState(), onEvent = {})
         }
     }
 }
@@ -351,10 +323,7 @@ private fun AnalysisScreenPreview() {
 private fun ExpandedAnalysisScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            AnalysisScreen(
-                uiState = HomeUiState(),
-                onEvent = {}
-            )
+            AnalysisScreen(uiState = HomeUiState(), onEvent = {})
         }
     }
 }

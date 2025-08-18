@@ -10,19 +10,16 @@ import com.kssidll.arru.helper.generateRandomStringValue
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
-    indices = [
-        Index(value = ["name"], name = "index_ShopEntity_name")
-    ],
-    tableName = "ShopEntity"
+    indices = [Index(value = ["name"], name = "index_ShopEntity_name")],
+    tableName = "ShopEntity",
 )
-data class ShopEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    val name: String,
-): FuzzySearchSource, NameSource {
+data class ShopEntity(@PrimaryKey(autoGenerate = true) val id: Long, val name: String) :
+    FuzzySearchSource, NameSource {
     /**
      * Converts the [ShopEntity] data to a string with csv format
      *
      * Doesn't include the csv headers
+     *
      * @return [ShopEntity] data as [String] with csv format
      */
     @Ignore
@@ -33,6 +30,7 @@ data class ShopEntity(
     companion object {
         /**
          * Returns the [String] representing the [ShopEntity] csv format headers
+         *
          * @return [String] representing the [ShopEntity] csv format headers
          */
         @Ignore
@@ -42,39 +40,23 @@ data class ShopEntity(
 
         @Ignore
         fun generate(shopId: Long = 0): ShopEntity {
-            return ShopEntity(
-                id = shopId,
-                name = generateRandomStringValue(),
-            )
+            return ShopEntity(id = shopId, name = generateRandomStringValue())
         }
 
         @Ignore
         fun generateList(amount: Int = 10): List<ShopEntity> {
-            return List(amount) {
-                generate(it.toLong())
-            }
+            return List(amount) { generate(it.toLong()) }
         }
     }
 
-    @Ignore
-    constructor(
-        name: String
-    ): this(
-        0,
-        name.trim()
-    )
+    @Ignore constructor(name: String) : this(0, name.trim())
 
     @Ignore
     override fun fuzzyScore(query: String): Int {
-        return FuzzySearch.extractOne(
-            query,
-            listOf(name)
-        ).score
+        return FuzzySearch.extractOne(query, listOf(name)).score
     }
 
-    /**
-     * @return true if name is valid, false otherwise
-     */
+    /** @return true if name is valid, false otherwise */
     @Ignore
     fun validName(): Boolean {
         return name.isNotBlank()
@@ -88,6 +70,7 @@ data class ShopEntity(
 
 /**
  * Converts a list of [ShopEntity] data to a list of strings with csv format
+ *
  * @param includeHeaders whether to include the csv headers
  * @return [ShopEntity] data as list of string with csv format
  */
@@ -98,7 +81,5 @@ fun List<ShopEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = 
     }
 
     // Add rows
-    this@asCsvList.forEach {
-        add(it.formatAsCsvString() + "\n")
-    }
+    this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
 }

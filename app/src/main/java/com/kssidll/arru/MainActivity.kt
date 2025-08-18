@@ -34,9 +34,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.olshevski.navigation.reimagined.NavController
 import dev.olshevski.navigation.reimagined.navController
 import dev.olshevski.navigation.reimagined.navigate
+import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.util.Locale
 
 val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
 
@@ -47,7 +47,7 @@ const val INTENT_NAVIGATE_TO_ADD_TRANSACTION = "intent_navigate_to_add_transacti
 inline fun <reified T> getClassJava(): Class<T> = T::class.java
 
 @AndroidEntryPoint
-class MainActivity: AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     var mNavController: NavController<Screen>? = null
 
@@ -65,12 +65,12 @@ class MainActivity: AppCompatActivity() {
 
             applicationContext.setServiceState(
                 DataExportService.SERVICE_NAME,
-                applicationContext.getServiceStateCold(DataExportService::class.java)
+                applicationContext.getServiceStateCold(DataExportService::class.java),
             )
 
             applicationContext.setServiceState(
                 PersistentNotificationService.SERVICE_NAME,
-                applicationContext.getServiceStateCold(PersistentNotificationService::class.java)
+                applicationContext.getServiceStateCold(PersistentNotificationService::class.java),
             )
             if (AppPreferences.getPersistentNotificationsEnabled(applicationContext).first()) {
                 PersistentNotificationService.start(applicationContext)
@@ -81,14 +81,19 @@ class MainActivity: AppCompatActivity() {
         }
 
         val destination = intent.getStringExtra(INTENT_NAVIGATE_TO_KEY)
-        val initialBackstack = if (destination == INTENT_NAVIGATE_TO_ADD_TRANSACTION) {
-            listOf(Screen.Home, Screen.AddTransaction())
-        } else listOf(Screen.Home)
+        val initialBackstack =
+            if (destination == INTENT_NAVIGATE_TO_ADD_TRANSACTION) {
+                listOf(Screen.Home, Screen.AddTransaction())
+            } else listOf(Screen.Home)
 
-        val navController = if (savedInstanceState != null) {
-            BundleCompat.getParcelable(savedInstanceState, BUNDLE_NAV_CONTROLLER, getClassJava<NavController<Screen>>())
-                ?: navController(initialBackstack)
-        } else navController(initialBackstack)
+        val navController =
+            if (savedInstanceState != null) {
+                BundleCompat.getParcelable(
+                    savedInstanceState,
+                    BUNDLE_NAV_CONTROLLER,
+                    getClassJava<NavController<Screen>>(),
+                ) ?: navController(initialBackstack)
+            } else navController(initialBackstack)
         mNavController = navController
 
         setContent {
@@ -97,34 +102,40 @@ class MainActivity: AppCompatActivity() {
 
             ArrugarqTheme(
                 appColorScheme = appColorScheme,
-                isInDynamicColor = AppPreferences.getDynamicColor(applicationContext)
-                    .collectAsState(isInDynamicColor).value
+                isInDynamicColor =
+                    AppPreferences.getDynamicColor(applicationContext)
+                        .collectAsState(isInDynamicColor)
+                        .value,
             ) {
                 enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.auto(
-                        Color.TRANSPARENT,
-                        Color.TRANSPARENT,
-                        appColorScheme.detectDarkMode()
-                    ),
-                    navigationBarStyle = SystemBarStyle.auto(
-                        Color.argb(0xe6, 0xFF, 0xFF, 0xFF),
-                        Color.argb(0x80, 0x1b, 0x1b, 0x1b),
-                        appColorScheme.detectDarkMode()
-                    )
+                    statusBarStyle =
+                        SystemBarStyle.auto(
+                            Color.TRANSPARENT,
+                            Color.TRANSPARENT,
+                            appColorScheme.detectDarkMode(),
+                        ),
+                    navigationBarStyle =
+                        SystemBarStyle.auto(
+                            Color.argb(0xe6, 0xFF, 0xFF, 0xFF),
+                            Color.argb(0x80, 0x1b, 0x1b, 0x1b),
+                            appColorScheme.detectDarkMode(),
+                        ),
                 )
 
                 val isExpandedScreen =
-                    calculateWindowSizeClass(activity = this).widthSizeClass == WindowWidthSizeClass.Expanded
+                    calculateWindowSizeClass(activity = this).widthSizeClass ==
+                        WindowWidthSizeClass.Expanded
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     CompositionLocalProvider(
-                        LocalCurrencyFormatLocale provides AppPreferences.getCurrencyFormatLocale(
-                            applicationContext
-                        ).collectAsState(Locale.getDefault()).value
+                        LocalCurrencyFormatLocale provides
+                            AppPreferences.getCurrencyFormatLocale(applicationContext)
+                                .collectAsState(Locale.getDefault())
+                                .value
                     ) {
                         Navigation(
                             isExpandedScreen = isExpandedScreen,
-                            navController = navController
+                            navController = navController,
                         )
                     }
                 }

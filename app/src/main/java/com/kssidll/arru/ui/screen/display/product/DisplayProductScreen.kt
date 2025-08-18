@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.display.product
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
@@ -77,7 +76,7 @@ import kotlinx.coroutines.launch
 fun DisplayProductScreen(
     uiState: DisplayProductUiState,
     onEvent: (event: DisplayProductEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val items = uiState.items.collectAsLazyPagingItems()
 
@@ -85,18 +84,9 @@ fun DisplayProductScreen(
         topBar = {
             SecondaryAppBar(
                 onBack = { onEvent(DisplayProductEvent.NavigateBack) },
-                title = {
-                    Text(
-                        text = uiState.productName,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
+                title = { Text(text = uiState.productName, overflow = TextOverflow.Ellipsis) },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            onEvent(DisplayProductEvent.NavigateEditProduct)
-                        }
-                    ) {
+                    IconButton(onClick = { onEvent(DisplayProductEvent.NavigateEditProduct) }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit),
@@ -107,24 +97,26 @@ fun DisplayProductScreen(
                 },
             )
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
-        modifier = modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        modifier =
+            modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .fillMaxSize()
+            modifier =
+                Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxSize()
         ) {
             AnimatedVisibility(
                 visible = items.loadedEmpty() && uiState.spentByTime.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_data_to_display_text),
@@ -162,15 +154,13 @@ private fun DisplayProductScreenContent(
 
     LaunchedEffect(firstVisibleItemIndex) {
         if (
-            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 &&
-            firstVisibleItemIndex >= 10
+            previousFirstVisibleItemIndex > firstVisibleItemIndex + 1 && firstVisibleItemIndex >= 10
         ) {
             // scrolling up
             returnActionButtonVisible = true
             previousFirstVisibleItemIndex = firstVisibleItemIndex
         } else if (
-            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 ||
-            firstVisibleItemIndex < 10
+            previousFirstVisibleItemIndex < firstVisibleItemIndex - 1 || firstVisibleItemIndex < 10
         ) {
             // scrolling down
             returnActionButtonVisible = false
@@ -182,50 +172,36 @@ private fun DisplayProductScreenContent(
         floatingActionButton = {
             AnimatedVisibility(
                 visible = returnActionButtonVisible,
-                enter = slideInHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseOut
+                enter =
+                    slideInHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseOut),
+                        initialOffsetX = { it },
                     ),
-                    initialOffsetX = { it }
-                ),
-                exit = slideOutHorizontally(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = EaseIn
+                exit =
+                    slideOutHorizontally(
+                        animationSpec = tween(durationMillis = 300, easing = EaseIn),
+                        targetOffsetX = { it },
                     ),
-                    targetOffsetX = { it }
-                )
             ) {
                 FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
+                    onClick = { scope.launch { listState.animateScrollToItem(0) } },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowUpward,
-                        contentDescription = null,
-                    )
+                    Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null)
                 }
             }
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
     ) { paddingValues ->
         LazyColumn(
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
+            modifier =
+                Modifier.fillMaxWidth().padding(paddingValues).consumeWindowInsets(paddingValues),
         ) {
-            item(
-                contentType = "header"
-            ) {
+            item(contentType = "header") {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.height(40.dp))
 
@@ -245,7 +221,9 @@ private fun DisplayProductScreenContent(
                             SpendingSummaryComponent(
                                 spentByTimeData = uiState.spentByTime,
                                 spentByTimePeriod = uiState.spentByTimePeriod,
-                                onSpentByTimePeriodUpdate = { onEvent(DisplayProductEvent.SetSpentByTimePeriod(it)) },
+                                onSpentByTimePeriodUpdate = {
+                                    onEvent(DisplayProductEvent.SetSpentByTimePeriod(it))
+                                },
                                 columnChartEntryModelProducer = uiState.chartEntryModelProducer,
                             )
 
@@ -259,9 +237,7 @@ private fun DisplayProductScreenContent(
                         exit = fadeOut(),
                     ) {
                         Column {
-                            ProductPriceCompareChart(
-                                items = uiState.productPriceByTime,
-                            )
+                            ProductPriceCompareChart(items = uiState.productPriceByTime)
 
                             Spacer(Modifier.height(12.dp))
                         }
@@ -271,15 +247,17 @@ private fun DisplayProductScreenContent(
 
             fullItemListContent(
                 transactionItems = items,
-                onItemLongClick = {
-                    onEvent(DisplayProductEvent.NavigateEditItem(it.id))
-                },
+                onItemLongClick = { onEvent(DisplayProductEvent.NavigateEditItem(it.id)) },
                 onCategoryClick = {
-                    onEvent(DisplayProductEvent.NavigateDisplayProductCategory(it.productCategoryId))
+                    onEvent(
+                        DisplayProductEvent.NavigateDisplayProductCategory(it.productCategoryId)
+                    )
                 },
                 onProducerClick = {
                     it.productProducerId?.let { productProducerId ->
-                        onEvent(DisplayProductEvent.NavigateDisplayProductProducer(productProducerId))
+                        onEvent(
+                            DisplayProductEvent.NavigateDisplayProductProducer(productProducerId)
+                        )
                     }
                 },
                 onShopClick = {
@@ -289,9 +267,7 @@ private fun DisplayProductScreenContent(
                 },
             )
 
-            item {
-                Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
-            }
+            item { Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) }
         }
     }
 }
@@ -302,10 +278,12 @@ private fun DisplayProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductScreen(
-                uiState = DisplayProductUiState(
-                    spentByTime = ItemSpentChartData.generateList(), totalSpent = generateRandomFloatValue()
-                ),
-                onEvent = {}
+                uiState =
+                    DisplayProductUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -316,10 +294,7 @@ private fun DisplayProductScreenPreview() {
 private fun EmptyDisplayProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayProductScreen(
-                uiState = DisplayProductUiState(),
-                onEvent = {}
-            )
+            DisplayProductScreen(uiState = DisplayProductUiState(), onEvent = {})
         }
     }
 }
@@ -330,10 +305,12 @@ private fun ExpandedDisplayProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductScreen(
-                uiState = DisplayProductUiState(
-                    spentByTime = ItemSpentChartData.generateList(), totalSpent = generateRandomFloatValue()
-                ),
-                onEvent = {}
+                uiState =
+                    DisplayProductUiState(
+                        spentByTime = ItemSpentChartData.generateList(),
+                        totalSpent = generateRandomFloatValue(),
+                    ),
+                onEvent = {},
             )
         }
     }
@@ -344,10 +321,7 @@ private fun ExpandedDisplayProductScreenPreview() {
 private fun ExpandedEmptyDisplayProductScreenPreview() {
     ArrugarqTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DisplayProductScreen(
-                uiState = DisplayProductUiState(),
-                onEvent = {}
-            )
+            DisplayProductScreen(uiState = DisplayProductUiState(), onEvent = {})
         }
     }
 }
