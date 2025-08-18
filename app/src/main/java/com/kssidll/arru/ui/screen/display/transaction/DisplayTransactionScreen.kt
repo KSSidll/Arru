@@ -104,7 +104,12 @@ fun DisplayTransactionScreen(
                     )
 
                     item {
-                        Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars))
+                        Box(
+                            modifier =
+                                Modifier.windowInsetsPadding(
+                                    WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
+                                )
+                        )
                     }
                 }
             }

@@ -193,6 +193,10 @@ private fun DisplayProductProducerScreenContent(
                     onClick = { scope.launch { listState.animateScrollToItem(0) } },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier =
+                        Modifier.windowInsetsPadding(
+                            WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
+                        ),
                 ) {
                     Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null)
                 }
@@ -253,7 +257,14 @@ private fun DisplayProductProducerScreenContent(
                 },
             )
 
-            item { Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) }
+            item {
+                Box(
+                    modifier =
+                        Modifier.windowInsetsPadding(
+                            WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
+                        )
+                )
+            }
         }
     }
 }
