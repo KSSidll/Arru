@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -175,10 +176,13 @@ fun FullItemCard(
 
         Row {
             FlowRow(modifier = Modifier.weight(1F), verticalArrangement = Arrangement.Center) {
+                // micro optimisation to reduce recomposition, not exactly sure as to why this is needed
+                // might be because of how we layout the paging data (iterating the entire list)
+                val onCategoryClick = remember(item.productCategoryId) { onCategoryClick }
                 if (onCategoryClick != null) {
                     Button(
                         modifier = Modifier.padding(end = 3.dp),
-                        onClick = { onCategoryClick.invoke(item) },
+                        onClick = { onCategoryClick(item) },
                         contentPadding = PaddingValues(vertical = 0.dp, horizontal = 12.dp),
                         colors =
                             ButtonDefaults.buttonColors(

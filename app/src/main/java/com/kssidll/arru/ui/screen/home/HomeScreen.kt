@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.home
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -48,7 +49,7 @@ fun HomeScreen(
             when (navSuiteType) {
                 NavigationSuiteType.NavigationBar -> {
                     NavigationBar {
-                        HomeDestinations.entries.forEach {
+                        HomeDestinations.entries.forEach { it ->
                             NavigationBarItem(
                                 icon = {
                                     Crossfade(
@@ -64,10 +65,16 @@ fun HomeScreen(
                                     }
                                 },
                                 label = {
-                                    Text(
-                                        text = stringResource(it.label),
-                                        style = Typography.labelMedium,
-                                    )
+                                    @SuppressLint("UnusedCrossfadeTargetStateParameter")
+                                    Crossfade(
+                                        targetState = it == uiState.currentDestination,
+                                        label = "home nav destination change (label)",
+                                    ) { selected ->
+                                        Text(
+                                            text = stringResource(it.label),
+                                            style = Typography.labelMedium,
+                                        )
+                                    }
                                 },
                                 selected = it == uiState.currentDestination,
                                 onClick = { onEvent(HomeEvent.ChangeScreenDestination(it)) },
