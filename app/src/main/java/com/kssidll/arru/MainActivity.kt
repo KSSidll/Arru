@@ -28,9 +28,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.olshevski.navigation.reimagined.NavController
 import dev.olshevski.navigation.reimagined.navController
 import dev.olshevski.navigation.reimagined.navigate
+import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.util.Locale
 
 val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
 

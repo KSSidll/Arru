@@ -33,7 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.domain.data.interfaces.RankSource
@@ -146,7 +146,7 @@ private fun EmptySpendingComparisonScreenPreview() {
     }
 }
 
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ExpandedSpendingComparisonScreenPreview() {
     ArrugarqTheme {
@@ -163,7 +163,7 @@ private fun ExpandedSpendingComparisonScreenPreview() {
     }
 }
 
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ExpandedEmptySpendingComparisonScreenPreview() {
     ArrugarqTheme {

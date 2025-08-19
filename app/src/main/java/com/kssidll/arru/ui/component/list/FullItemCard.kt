@@ -176,7 +176,8 @@ fun FullItemCard(
 
         Row {
             FlowRow(modifier = Modifier.weight(1F), verticalArrangement = Arrangement.Center) {
-                // micro optimisation to reduce recomposition, not exactly sure as to why this is needed
+                // micro optimisation to reduce recomposition, not exactly sure as to why this is
+                // needed
                 // might be because of how we layout the paging data (iterating the entire list)
                 val onCategoryClick = remember(item.productCategoryId) { onCategoryClick }
                 if (onCategoryClick != null) {

@@ -48,8 +48,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.LocalCurrencyFormatLocale
-import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.TransactionEntity
@@ -360,7 +360,7 @@ fun BackupsScreenNothingToDisplayOverlay() {
 }
 
 @PreviewLightDark
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun BackupsScreenPreview() {
     ArrugarqTheme {

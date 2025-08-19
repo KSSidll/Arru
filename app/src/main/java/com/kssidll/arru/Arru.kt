@@ -15,11 +15,11 @@ import com.kssidll.arru.service.PersistentNotificationService
 import com.kssidll.arru.service.getServiceStateCold
 import com.kssidll.arru.service.setServiceState
 import dagger.hilt.android.HiltAndroidApp
+import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlin.system.exitProcess
 
 @HiltAndroidApp
 class Arru : Application() {
@@ -78,4 +78,4 @@ const val APPLICATION_NAME = "Arru"
     uiMode = UI_MODE_NIGHT_NO,
     device = Devices.PIXEL_FOLD,
 )
-annotation class PreviewExpanded
+annotation class ExpandedPreviews

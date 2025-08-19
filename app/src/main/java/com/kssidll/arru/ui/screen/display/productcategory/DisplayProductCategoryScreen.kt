@@ -57,7 +57,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
@@ -296,7 +296,7 @@ private fun EmptyDisplayCategoryScreenPreview() {
     }
 }
 
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ExpandedDisplayProductCategoryScreenPreview() {
     ArrugarqTheme {
@@ -313,7 +313,7 @@ private fun ExpandedDisplayProductCategoryScreenPreview() {
     }
 }
 
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ExpandedEmptyDisplayProductCategoryScreenPreview() {
     ArrugarqTheme {

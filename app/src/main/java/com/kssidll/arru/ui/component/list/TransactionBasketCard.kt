@@ -96,12 +96,16 @@ fun LazyListScope.transactionBasketCard(
             ) {
                 Column {
                     transaction.items.forEach { item ->
-                        // micro optimisation to reduce recomposition, not exactly sure as to why this is needed
-                        // might be because of how we layout the paging data (iterating the entire list)
+                        // micro optimisation to reduce recomposition, not exactly sure as to why
+                        // this is needed
+                        // might be because of how we layout the paging data (iterating the entire
+                        // list)
                         val onItemClick = remember(item.productId) { onItemClick }
                         val onItemLongClick = remember(item.id) { onItemLongClick }
-                        val onItemCategoryClick = remember(item.productCategoryId) { onItemCategoryClick }
-                        val onItemProducerClick = remember(item.productProducerId) { onItemProducerClick }
+                        val onItemCategoryClick =
+                            remember(item.productCategoryId) { onItemCategoryClick }
+                        val onItemProducerClick =
+                            remember(item.productProducerId) { onItemProducerClick }
 
                         FullItemCard(
                             item = item,
@@ -168,8 +172,10 @@ fun LazyListScope.transactionBasketCardHeader(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(start = 8.dp, end = 20.dp),
                         ) {
-                            // micro optimisation to reduce recomposition, not exactly sure as to why this is needed
-                            // might be because of how we layout the paging data (iterating the entire list)
+                            // micro optimisation to reduce recomposition, not exactly sure as to
+                            // why this is needed
+                            // might be because of how we layout the paging data (iterating the
+                            // entire list)
                             val onItemShopClick = remember(transaction.shopId) { onItemShopClick }
                             if (transaction.shopId != null) {
                                 Button(
@@ -240,8 +246,10 @@ fun LazyListScope.transactionBasketCardHeader(
                             }
                         }
 
-                        // micro optimisation to reduce recomposition, not exactly sure as to why this is needed
-                        // might be because of how we layout the paging data (iterating the entire list)
+                        // micro optimisation to reduce recomposition, not exactly sure as to why
+                        // this is needed
+                        // might be because of how we layout the paging data (iterating the entire
+                        // list)
                         val onItemAddClick = remember(transaction.id) { onItemAddClick }
                         OutlinedIconButton(
                             onClick = onItemAddClick,

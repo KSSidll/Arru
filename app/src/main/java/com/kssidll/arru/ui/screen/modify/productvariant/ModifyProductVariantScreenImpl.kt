@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
@@ -134,7 +134,7 @@ fun ModifyProductVariantScreenImpl(
 }
 
 @PreviewLightDark
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ModifyProductVariantScreenImplPreview() {
     ArrugarqTheme {

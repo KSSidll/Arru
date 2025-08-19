@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.defaultNavigateContentTransformation
 import com.kssidll.arru.defaultPopContentTransformation
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
@@ -172,7 +172,7 @@ internal data class SearchScreenState(
 )
 
 @PreviewLightDark
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun SearchScreenPreview() {
     ArrugarqTheme {

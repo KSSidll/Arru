@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ShopEntity
@@ -534,7 +534,7 @@ private fun ModifyTransactionScreenImplPreview() {
     }
 }
 
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ExpandedModifyTransactionScreenImplPreview() {
     ArrugarqTheme {

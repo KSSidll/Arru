@@ -55,8 +55,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.LocalCurrencyFormatLocale
-import com.kssidll.arru.PreviewExpanded
 import com.kssidll.arru.R
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
@@ -356,7 +356,7 @@ private fun TransactionsScreenPreview() {
     }
 }
 
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ExpandedTransactionsScreenPreview() {
     ArrugarqTheme {
