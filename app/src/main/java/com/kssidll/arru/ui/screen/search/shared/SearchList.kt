@@ -43,7 +43,7 @@ import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.screen.search.component.SearchItem
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.optionalAlpha
 import kotlinx.collections.immutable.ImmutableList
@@ -166,7 +166,7 @@ fun <T> SearchList(
 @PreviewLightDark
 @Composable
 private fun ListScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SearchList(
                 filter = String(),
@@ -182,7 +182,7 @@ private fun ListScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyListScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SearchList(
                 filter = String(),

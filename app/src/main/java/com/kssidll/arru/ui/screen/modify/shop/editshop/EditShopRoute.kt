@@ -10,10 +10,13 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun EditShopRoute(shopId: Long, navigateBack: () -> Unit, navigateBackDelete: () -> Unit) {
+fun EditShopRoute(
+    shopId: Long,
+    navigateBack: () -> Unit,
+    navigateBackDelete: () -> Unit,
+    viewModel: EditShopViewModel = hiltViewModel(),
+) {
     val scope = rememberCoroutineScope()
-
-    val viewModel: EditShopViewModel = hiltViewModel()
 
     LaunchedEffect(shopId) {
         if (!viewModel.updateState(shopId)) {

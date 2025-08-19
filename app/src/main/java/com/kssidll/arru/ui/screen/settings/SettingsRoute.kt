@@ -88,7 +88,7 @@ fun SettingsRoute(
     val exportServicePermissionsState =
         rememberMultiplePermissionsState(
             permissions = DataExportService.Permissions.ALL.asList(),
-            onPermissionsResult = {
+            onPermissionsResult = { permissionResultMap ->
                 scope.launch {
                     val uri =
                         AppPreferences.getExportLocation(context).first()
@@ -103,7 +103,7 @@ fun SettingsRoute(
                             DocumentsContractCompat.getTreeDocumentId(uri)!!,
                         )!!
 
-                    if (it.all { it.value }) {
+                    if (permissionResultMap.all { it.value }) {
                         viewModel.exportWithService(parentUri)
                     } else {
                         uiBlockingJob?.cancel()
@@ -182,14 +182,15 @@ fun SettingsRoute(
     var importErrorText by remember { mutableStateOf("") }
     val importFolderPickerLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
-            it?.let {
+            result ->
+            result?.let { importUri ->
                 uiBlockingJob?.cancel()
 
                 uiBlockingProgressPopupVisible = true
 
                 uiBlockingJob =
                     viewModel.importFromUri(
-                        uri = it,
+                        uri = importUri,
                         onMaxProgressChange = { uiBlockingMaxProgress = it },
                         onProgressChange = { uiBlockingProgress = it },
                         onFinished = {
@@ -204,7 +205,7 @@ fun SettingsRoute(
                                 uiBlockingProgress = 0
                             }
                         },
-                        onError = {
+                        onError = { importError ->
                             uiBlockingProgressPopupVisible = false
                             uiBlockingMaxProgress = 0
                             uiBlockingProgress = 0
@@ -212,7 +213,7 @@ fun SettingsRoute(
                             importErrorVisible = true
 
                             importErrorText =
-                                when (it) {
+                                when (importError) {
                                     is ImportError.FailedToDetermineVersion -> {
                                         buildString {
                                             append(
@@ -221,7 +222,7 @@ fun SettingsRoute(
                                                         .import_error_failed_to_determine_version
                                                 )
                                             )
-                                            append(" ${it.name}")
+                                            append(" ${importError.name}")
                                         }
                                     }
 
@@ -232,7 +233,7 @@ fun SettingsRoute(
                                                     R.string.import_error_failed_to_open_file
                                                 )
                                             )
-                                            append(" ${it.fileName}")
+                                            append(" ${importError.fileName}")
                                         }
                                     }
 
@@ -243,7 +244,7 @@ fun SettingsRoute(
                                                     R.string.import_error_missing_files
                                                 )
                                             )
-                                            it.expectedFileGroups.forEach {
+                                            importError.expectedFileGroups.forEach {
                                                 append("\n[ ${it.joinToString(", ")} ]")
                                             }
                                         }

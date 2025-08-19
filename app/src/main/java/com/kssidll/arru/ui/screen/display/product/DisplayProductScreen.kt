@@ -65,9 +65,9 @@ import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
 import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
 import com.kssidll.arru.ui.component.chart.ProductPriceCompareChart
-import com.kssidll.arru.ui.component.list.fullItemListContent
+import com.kssidll.arru.ui.component.list.itemList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -249,7 +249,7 @@ private fun DisplayProductScreenContent(
                 }
             }
 
-            fullItemListContent(
+            itemList(
                 transactionItems = items,
                 onItemLongClick = { onEvent(DisplayProductEvent.NavigateEditItem(it.id)) },
                 onCategoryClick = {
@@ -286,7 +286,7 @@ private fun DisplayProductScreenContent(
 @PreviewLightDark
 @Composable
 private fun DisplayProductScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductScreen(
                 uiState =
@@ -303,7 +303,7 @@ private fun DisplayProductScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyDisplayProductScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductScreen(uiState = DisplayProductUiState(), onEvent = {})
         }
@@ -313,7 +313,7 @@ private fun EmptyDisplayProductScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedDisplayProductScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductScreen(
                 uiState =
@@ -330,7 +330,7 @@ private fun ExpandedDisplayProductScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedEmptyDisplayProductScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductScreen(uiState = DisplayProductUiState(), onEvent = {})
         }

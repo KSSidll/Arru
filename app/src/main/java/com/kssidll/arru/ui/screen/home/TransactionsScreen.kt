@@ -64,7 +64,7 @@ import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.list.transactionBasketCardHeaderPlaceholder
 import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import kotlinx.coroutines.launch
 
 private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
@@ -349,7 +349,7 @@ fun TransactionScreenContent(
 @PreviewLightDark
 @Composable
 private fun TransactionsScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(uiState = HomeUiState(), onEvent = {})
         }
@@ -359,7 +359,7 @@ private fun TransactionsScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedTransactionsScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             TransactionsScreen(uiState = HomeUiState(), onEvent = {})
         }

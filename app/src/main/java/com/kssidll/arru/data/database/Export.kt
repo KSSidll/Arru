@@ -133,7 +133,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(categoryCsvFileUri, "w")?.use { parcelFileDescriptor
         ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(ProductCategoryEntity.csvHeaders().toByteArray())
+            outputStream.write(ProductCategoryEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {
@@ -153,7 +153,7 @@ suspend fun exportDataAsRawCsv(
 
     context.contentResolver.openFileDescriptor(itemCsvFileUri, "w")?.use { parcelFileDescriptor ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(ItemEntity.csvHeaders().toByteArray())
+            outputStream.write(ItemEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {
@@ -172,7 +172,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(producerCsvFileUri, "w")?.use { parcelFileDescriptor
         ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(ProductProducerEntity.csvHeaders().toByteArray())
+            outputStream.write(ProductProducerEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {
@@ -193,7 +193,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(productCsvFileUri, "w")?.use { parcelFileDescriptor
         ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(ProductEntity.csvHeaders().toByteArray())
+            outputStream.write(ProductEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {
@@ -213,7 +213,7 @@ suspend fun exportDataAsRawCsv(
 
     context.contentResolver.openFileDescriptor(shopCsvFileUri, "w")?.use { parcelFileDescriptor ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(ShopEntity.csvHeaders().toByteArray())
+            outputStream.write(ShopEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {
@@ -232,7 +232,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(transactionCsvFileUri, "w")?.use {
         parcelFileDescriptor ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(TransactionEntity.csvHeaders().toByteArray())
+            outputStream.write(TransactionEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {
@@ -253,7 +253,7 @@ suspend fun exportDataAsRawCsv(
     context.contentResolver.openFileDescriptor(variantCsvFileUri, "w")?.use { parcelFileDescriptor
         ->
         FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-            outputStream.write(ProductVariantEntity.csvHeaders().toByteArray())
+            outputStream.write(ProductVariantEntity.csvHeaders.toByteArray())
 
             var offset = 0
             do {

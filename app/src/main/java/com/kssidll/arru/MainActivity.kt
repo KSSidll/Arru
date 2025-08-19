@@ -23,7 +23,7 @@ import com.kssidll.arru.data.preference.detectDarkMode
 import com.kssidll.arru.data.preference.getColorScheme
 import com.kssidll.arru.data.preference.getCurrencyFormatLocale
 import com.kssidll.arru.data.preference.getDynamicColor
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dev.olshevski.navigation.reimagined.NavController
 import dev.olshevski.navigation.reimagined.navController
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
             val appColorScheme =
                 AppPreferences.getColorScheme(applicationContext).collectAsState(colorScheme).value
 
-            ArrugarqTheme(
+            ArruTheme(
                 appColorScheme = appColorScheme,
                 isInDynamicColor =
                     AppPreferences.getDynamicColor(applicationContext)

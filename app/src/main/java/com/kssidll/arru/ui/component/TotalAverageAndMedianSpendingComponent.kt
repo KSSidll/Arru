@@ -43,7 +43,7 @@ import com.kssidll.arru.domain.data.interfaces.movingTotalChartData
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.chart.rememberMarker
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
@@ -372,7 +372,7 @@ fun TotalAverageAndMedianSpendingComponent(
 @PreviewLightDark
 @Composable
 private fun TotalAverageAndMedianSpendingComponentPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(
                 spentByTimeData = ItemSpentChartData.generateList(),

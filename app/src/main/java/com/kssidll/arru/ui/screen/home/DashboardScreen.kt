@@ -51,7 +51,7 @@ import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
 import com.kssidll.arru.ui.component.list.RankingList
 import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 private val TileOuterPadding: Dp = 8.dp
 private val TileInnerPadding: Dp = 12.dp
@@ -74,7 +74,7 @@ fun DashboardScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DashboardScreenContent(
+fun DashboardScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -214,7 +214,7 @@ private fun DashboardScreenContent(
 }
 
 @Composable
-private fun ExpandedDashboardScreenContent(
+fun ExpandedDashboardScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -328,7 +328,7 @@ private fun ExpandedDashboardScreenContent(
 @PreviewLightDark
 @Composable
 private fun DashboardScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(uiState = HomeUiState(), onEvent = {})
         }
@@ -338,7 +338,7 @@ private fun DashboardScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedDashboardScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DashboardScreen(uiState = HomeUiState(), onEvent = {})
         }

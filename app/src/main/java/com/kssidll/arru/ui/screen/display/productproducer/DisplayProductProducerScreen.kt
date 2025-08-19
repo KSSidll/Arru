@@ -64,9 +64,9 @@ import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
 import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
-import com.kssidll.arru.ui.component.list.fullItemListContent
+import com.kssidll.arru.ui.component.list.itemList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -237,7 +237,7 @@ private fun DisplayProductProducerScreenContent(
                 }
             }
 
-            fullItemListContent(
+            itemList(
                 transactionItems = items,
                 onItemClick = {
                     onEvent(DisplayProductProducerEvent.NavigateDisplayProduct(it.productId))
@@ -272,7 +272,7 @@ private fun DisplayProductProducerScreenContent(
 @PreviewLightDark
 @Composable
 private fun DisplayProductProducerScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductProducerScreen(
                 uiState =
@@ -289,7 +289,7 @@ private fun DisplayProductProducerScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyDisplayProductProducerScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductProducerScreen(uiState = DisplayProductProducerUiState(), onEvent = {})
         }
@@ -299,7 +299,7 @@ private fun EmptyDisplayProductProducerScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedDisplayProductProducerScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductProducerScreen(
                 uiState =
@@ -316,7 +316,7 @@ private fun ExpandedDisplayProductProducerScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedEmptyDisplayProductProducerScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductProducerScreen(uiState = DisplayProductProducerUiState(), onEvent = {})
         }

@@ -43,7 +43,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
 import com.kssidll.arru.ui.component.list.SpendingComparisonList
 import com.kssidll.arru.ui.screen.home.component.AnalysisDateHeader
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 private val TileOuterPadding: Dp = 8.dp
 private val TileInnerPadding: Dp = 12.dp
@@ -65,7 +65,7 @@ fun AnalysisScreen(
 }
 
 @Composable
-private fun AnalysisScreenContent(
+fun AnalysisScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -187,7 +187,7 @@ private fun AnalysisScreenContent(
 }
 
 @Composable
-private fun ExpandedAnalysisScreenContent(
+fun ExpandedAnalysisScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -311,7 +311,7 @@ private fun ExpandedAnalysisScreenContent(
 @PreviewLightDark
 @Composable
 private fun AnalysisScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             AnalysisScreen(uiState = HomeUiState(), onEvent = {})
         }
@@ -321,7 +321,7 @@ private fun AnalysisScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedAnalysisScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             AnalysisScreen(uiState = HomeUiState(), onEvent = {})
         }

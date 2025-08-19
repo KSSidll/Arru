@@ -26,7 +26,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
@@ -61,7 +61,6 @@ fun ProductPriceCompareChart(
     chartEntryModelProducer: CartesianChartModelProducer = remember {
         CartesianChartModelProducer()
     },
-    chartMinimumLineElements: Int = 2,
 ) {
     var linesOnChart by remember { mutableIntStateOf(0) }
 
@@ -222,7 +221,7 @@ fun ProductPriceCompareChart(
 @PreviewLightDark
 @Composable
 private fun ProductPriceCompareChartPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             ProductPriceCompareChart(
                 items = ProductPriceByShopByVariantByProducerByTime.generateList()

@@ -8,6 +8,8 @@ import com.kssidll.arru.data.repository.ShopRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
 class ShopListViewModel @Inject constructor(private val shopRepository: ShopRepositorySource) :
     ViewModel() {

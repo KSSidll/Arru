@@ -14,10 +14,9 @@ fun EditProductCategoryRoute(
     categoryId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: () -> Unit,
+    viewModel: EditProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-
-    val viewModel: EditProductCategoryViewModel = hiltViewModel()
 
     LaunchedEffect(categoryId) {
         if (!viewModel.updateState(categoryId)) {

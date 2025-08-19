@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+// TODO refactor uiState Event UseCase
+
 abstract class ModifyTransactionViewModel : ViewModel() {
     protected abstract val shopRepository: ShopRepositorySource
     internal val screenState: ModifyTransactionScreenState = ModifyTransactionScreenState()

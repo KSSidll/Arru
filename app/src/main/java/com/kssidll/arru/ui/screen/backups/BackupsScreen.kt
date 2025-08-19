@@ -11,17 +11,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -53,15 +48,17 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.TransactionEntity
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.disabledAlpha
 import com.kssidll.arru.ui.theme.optionalAlpha
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
+import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -70,8 +67,9 @@ fun BackupsScreen(
     loadBackup: (dbFile: DatabaseBackup) -> Unit,
     deleteBackup: (dbFile: DatabaseBackup) -> Unit,
     toggleLockBackup: (dbFile: DatabaseBackup) -> Unit,
-    availableBackups: List<DatabaseBackup>,
+    availableBackups: ImmutableList<DatabaseBackup>,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val currencyLocale = LocalCurrencyFormatLocale.current
 
@@ -96,11 +94,7 @@ fun BackupsScreen(
                 )
             }
         },
-        // Without this, the FAB can be placed under the system navigation bar
-        modifier =
-            Modifier.windowInsetsPadding(
-                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
-            ),
+        modifier = modifier,
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
             AnimatedVisibility(
@@ -320,8 +314,8 @@ fun BackupsScreen(
 }
 
 @Composable
-fun BackupsScreenNothingToDisplayOverlay() {
-    Column(modifier = Modifier.fillMaxSize()) {
+fun BackupsScreenNothingToDisplayOverlay(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f))
 
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -363,14 +357,14 @@ fun BackupsScreenNothingToDisplayOverlay() {
 @ExpandedPreviews
 @Composable
 private fun BackupsScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             BackupsScreen(
                 createBackup = {},
                 loadBackup = {},
                 deleteBackup = {},
                 toggleLockBackup = {},
-                availableBackups = emptyList(),
+                availableBackups = emptyImmutableList(),
                 onBack = {},
             )
         }

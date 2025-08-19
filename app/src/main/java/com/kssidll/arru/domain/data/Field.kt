@@ -2,6 +2,8 @@ package com.kssidll.arru.domain.data
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.theme.Typography
@@ -79,10 +81,11 @@ sealed class Field<T>(val data: T? = null, val error: FieldError? = null) {
 }
 
 /** Possible [Field] errors */
+@Immutable
 sealed class FieldError {
     @Composable
-    fun ErrorText() {
-        Text(text = errorString(), style = Typography.bodySmall)
+    fun ErrorText(modifier: Modifier = Modifier) {
+        Text(text = errorString(), style = Typography.bodySmall, modifier = modifier)
     }
 
     @Composable abstract fun errorString(): String

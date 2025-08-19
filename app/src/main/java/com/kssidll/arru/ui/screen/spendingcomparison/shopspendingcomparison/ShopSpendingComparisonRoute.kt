@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.spendingcomparison.SpendingComparisonScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import java.text.SimpleDateFormat
@@ -11,9 +12,12 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun ShopSpendingComparisonRoute(navigateBack: () -> Unit, year: Int, month: Int) {
-    val viewModel: ShopSpendingComparisonViewModel = hiltViewModel()
-
+fun ShopSpendingComparisonRoute(
+    navigateBack: () -> Unit,
+    year: Int,
+    month: Int,
+    viewModel: ShopSpendingComparisonViewModel = hiltViewModel(),
+) {
     val calendar = Calendar.getInstance()
     calendar.clear()
     calendar.set(Calendar.MONTH, month - 1) // calendar has 0 - 11 month indexes
@@ -30,13 +34,13 @@ fun ShopSpendingComparisonRoute(navigateBack: () -> Unit, year: Int, month: Int)
         leftSideItems =
             viewModel
                 .shopTotalSpentPreviousMonth(year, month)
-                .collectAsState(initial = emptyList())
+                .collectAsState(initial = emptyImmutableList())
                 .value,
         leftSideHeader = stringResource(id = R.string.previous),
         rightSideItems =
             viewModel
                 .shopTotalSpentCurrentMonth(year, month)
-                .collectAsState(initial = emptyList())
+                .collectAsState(initial = emptyImmutableList())
                 .value,
         rightSideHeader = stringResource(id = R.string.current),
     )

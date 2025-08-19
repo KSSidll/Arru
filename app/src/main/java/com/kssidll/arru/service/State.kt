@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 
 /**
  * Helper function to remove the need to define the [Context.getSharedPreferences] mode as the only
@@ -31,9 +32,8 @@ private fun serviceNameToStateKey(serviceName: String): String = "${serviceName}
  * @param state state to set the service to
  */
 fun Context.setServiceState(serviceName: String, state: ServiceState) {
-    getSharedPreferences(serviceName).edit().let {
-        it.putString(serviceNameToStateKey(serviceName), state.name)
-        it.commit()
+    getSharedPreferences(serviceName).edit() {
+        putString(serviceNameToStateKey(serviceName), state.name)
     }
 }
 

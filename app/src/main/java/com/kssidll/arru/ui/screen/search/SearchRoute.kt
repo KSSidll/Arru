@@ -14,8 +14,8 @@ fun SearchRoute(
     navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateEditProductProducer: (producerId: Long) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
+    viewModel: SearchViewModel = hiltViewModel(),
 ) {
-    val viewModel: SearchViewModel = hiltViewModel()
 
     SearchScreen(
         onBack = navigateBack,

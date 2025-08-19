@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
 class EditShopViewModel @Inject constructor(override val shopRepository: ShopRepositorySource) :
     ModifyShopViewModel() {

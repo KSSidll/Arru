@@ -78,10 +78,7 @@ data class TransactionEntity(
          *
          * @return [String] representing the [TransactionEntity] csv format headers
          */
-        @Ignore
-        fun csvHeaders(): String {
-            return "id;date;shopId;totalCost;note"
-        }
+        @Ignore const val csvHeaders: String = "id;date;shopId;totalCost;note"
 
         @Ignore
         fun actualTotalCost(cost: Long): Float {
@@ -168,7 +165,7 @@ data class TransactionBasketWithItems(
 fun List<TransactionEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(TransactionEntity.csvHeaders() + "\n")
+        add(TransactionEntity.csvHeaders + "\n")
     }
 
     // Add rows

@@ -1,7 +1,5 @@
 package com.kssidll.arru.ui.component
 
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -31,7 +29,7 @@ import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.chart.OneDimensionalColumnChart
 import com.kssidll.arru.ui.component.chart.oneDimensionalColumnChartDefaultScrollState
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.patrykandpatrick.vico.compose.cartesian.VicoScrollState
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import kotlinx.collections.immutable.ImmutableList
@@ -62,7 +60,6 @@ fun SpendingSummaryComponent(
     modifier: Modifier = Modifier,
     buttonsModifier: Modifier = Modifier,
     chartModifier: Modifier = Modifier,
-    diffAnimationSpec: AnimationSpec<Float> = tween(1200),
     scrollState: VicoScrollState = oneDimensionalColumnChartDefaultScrollState(),
     columnChartEntryModelProducer: CartesianChartModelProducer = remember {
         CartesianChartModelProducer()
@@ -134,7 +131,7 @@ private fun PeriodButtons(
 @PreviewLightDark
 @Composable
 private fun SpendingSummaryComponentPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SpendingSummaryComponent(
                 spentByTimeData = ItemSpentChartData.generateList(),

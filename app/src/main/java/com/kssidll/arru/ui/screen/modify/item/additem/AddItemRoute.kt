@@ -19,9 +19,9 @@ fun AddItemRoute(
     navigateEditProductVariant: (variantId: Long) -> Unit,
     providedProductId: Long?,
     providedVariantId: Long?,
+    viewModel: AddItemViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddItemViewModel = hiltViewModel()
 
     LaunchedEffect(providedProductId, providedVariantId) {
         viewModel.setSelectedProductToProvided(providedProductId, providedVariantId)

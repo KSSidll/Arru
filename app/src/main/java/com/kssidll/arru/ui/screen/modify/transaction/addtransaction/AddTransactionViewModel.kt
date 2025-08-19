@@ -20,6 +20,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
 class AddTransactionViewModel
 @Inject

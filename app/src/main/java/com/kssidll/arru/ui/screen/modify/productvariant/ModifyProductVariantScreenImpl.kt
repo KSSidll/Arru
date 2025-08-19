@@ -30,7 +30,7 @@ import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.optionalAlpha
 
 private val ItemHorizontalPadding: Dp = 20.dp
@@ -54,6 +54,7 @@ fun ModifyProductVariantScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductVariantScreenState,
     onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
@@ -69,6 +70,7 @@ fun ModifyProductVariantScreenImpl(
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage =
             stringResource(id = R.string.item_product_variant_delete_warning_text),
+        modifier = modifier,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,7 +139,7 @@ fun ModifyProductVariantScreenImpl(
 @ExpandedPreviews
 @Composable
 private fun ModifyProductVariantScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyProductVariantScreenImpl(
                 onBack = {},

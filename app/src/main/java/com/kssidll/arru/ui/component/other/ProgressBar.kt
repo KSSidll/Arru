@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 /**
  * A progress bar component
@@ -63,5 +63,5 @@ fun ProgressBar(
 @PreviewLightDark
 @Composable
 private fun ProgressBarPreview() {
-    ArrugarqTheme { Surface { ProgressBar(progressValue = 0.7f) } }
+    ArruTheme { Surface { ProgressBar(progressValue = 0.7f) } }
 }

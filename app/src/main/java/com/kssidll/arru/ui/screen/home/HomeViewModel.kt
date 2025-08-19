@@ -133,6 +133,8 @@ fun Flow<PagingData<Transaction>>.toDisplayData(): Flow<PagingData<TransactionBa
     return map { pagingData -> pagingData.map { TransactionBasketDisplayData(it) } }
 }
 
+// TODO refactor UseCase
+
 @HiltViewModel
 class HomeViewModel
 @Inject

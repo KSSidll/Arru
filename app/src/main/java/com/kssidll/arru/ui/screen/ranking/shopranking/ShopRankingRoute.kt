@@ -13,9 +13,8 @@ fun ShopRankingRoute(
     navigateBack: () -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
+    viewModel: ShopRankingViewModel = hiltViewModel(),
 ) {
-    val viewModel: ShopRankingViewModel = hiltViewModel()
-
     RankingScreen(
         onBack = navigateBack,
         title = stringResource(R.string.shops),

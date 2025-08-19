@@ -5,7 +5,10 @@ import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
+
+// TODO refactor uiState Event UseCase
 
 @HiltViewModel
 class ShopSpendingComparisonViewModel
@@ -13,7 +16,10 @@ class ShopSpendingComparisonViewModel
 constructor(private val shopRepository: ShopRepositorySource) : ViewModel() {
 
     /** @return List of data points representing category spending in [year] and [month] */
-    fun shopTotalSpentCurrentMonth(year: Int, month: Int): Flow<List<TransactionTotalSpentByShop>> {
+    fun shopTotalSpentCurrentMonth(
+        year: Int,
+        month: Int,
+    ): Flow<ImmutableList<TransactionTotalSpentByShop>> {
         return shopRepository.totalSpentByShopByMonth(year, month)
     }
 
@@ -24,7 +30,7 @@ constructor(private val shopRepository: ShopRepositorySource) : ViewModel() {
     fun shopTotalSpentPreviousMonth(
         year: Int,
         month: Int,
-    ): Flow<List<TransactionTotalSpentByShop>> {
+    ): Flow<ImmutableList<TransactionTotalSpentByShop>> {
         var localYear: Int = year
         var localMonth: Int = month
 

@@ -38,7 +38,7 @@ import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.list.RankingList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -63,6 +63,7 @@ fun <T> RankingScreen(
     onBack: () -> Unit,
     title: String,
     data: ImmutableList<T>,
+    modifier: Modifier = Modifier,
     onItemClick: ((T) -> Unit)? = null,
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
@@ -73,7 +74,7 @@ fun <T> RankingScreen(
         contentWindowInsets =
             ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
         modifier =
-            Modifier.windowInsetsPadding(
+            modifier.windowInsetsPadding(
                 WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
             ),
     ) {
@@ -125,7 +126,7 @@ fun <T> RankingScreen(
 @PreviewLightDark
 @Composable
 private fun RankingScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             RankingScreen(
                 onBack = {},
@@ -143,7 +144,7 @@ private fun RankingScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyRankingScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             RankingScreen(
                 onBack = {},
@@ -161,7 +162,7 @@ private fun EmptyRankingScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedRankingScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             RankingScreen(
                 onBack = {},
@@ -179,7 +180,7 @@ private fun ExpandedRankingScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedEmptyRankingScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             RankingScreen(
                 onBack = {},

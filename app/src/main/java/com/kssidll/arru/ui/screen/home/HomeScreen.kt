@@ -208,7 +208,7 @@ fun HomeScreen(
 }
 
 @Composable
-internal fun HomeScreenContent(
+fun HomeScreenContent(
     uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
     modifier: Modifier = Modifier,

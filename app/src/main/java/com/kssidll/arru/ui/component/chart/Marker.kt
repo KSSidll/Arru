@@ -36,7 +36,7 @@ import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 
 @Composable
-internal fun rememberMarker(
+fun rememberMarker(
     valueFormatter: DefaultCartesianMarker.ValueFormatter =
         DefaultCartesianMarker.ValueFormatter.default(),
     showIndicator: Boolean = true,

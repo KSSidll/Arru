@@ -9,9 +9,12 @@ import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddProductCategoryRoute(defaultName: String?, navigateBack: (categoryId: Long?) -> Unit) {
+fun AddProductCategoryRoute(
+    defaultName: String?,
+    navigateBack: (categoryId: Long?) -> Unit,
+    viewModel: AddProductCategoryViewModel = hiltViewModel(),
+) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddProductCategoryViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 

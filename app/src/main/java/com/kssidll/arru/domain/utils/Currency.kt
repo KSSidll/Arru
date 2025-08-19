@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package com.kssidll.arru.domain.utils
 
 import java.text.NumberFormat

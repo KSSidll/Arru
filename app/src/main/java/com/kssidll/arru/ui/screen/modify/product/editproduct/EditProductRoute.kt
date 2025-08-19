@@ -22,10 +22,9 @@ fun EditProductRoute(
     navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
+    viewModel: EditProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-
-    val viewModel: EditProductViewModel = hiltViewModel()
 
     LaunchedEffect(productId) {
         if (!viewModel.updateState(productId)) {

@@ -96,7 +96,7 @@ fun arruChartTheme(): VicoTheme {
  * @param content Content to provide the theme to
  */
 @Composable
-fun ArrugarqTheme(
+fun ArruTheme(
     appColorScheme: AppPreferences.Theme.ColorScheme.Values =
         AppPreferences.Theme.ColorScheme.DEFAULT,
     isInDynamicColor: Boolean = AppPreferences.Theme.DynamicColor.DEFAULT,

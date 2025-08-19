@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.domain.data.FieldError
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -70,20 +70,6 @@ fun SearchField(
             if (error) colors.errorIndicatorColor
             else if (!enabled) colors.disabledIndicatorColor
             else if (optional) optionalUnfocusedIndicator else colors.unfocusedIndicatorColor
-    }
-
-    // a hack to force the text field to lose focus every time it's focused
-    // setting canFocus to focusDisabled doesn't work so we make mutable modifier instead
-    // i have no idea if there's a better way to do this
-    // and i have no idea why we aren't just able to do that with compose api
-    // but this is the only solution i could come up with that actually works
-    var focusDisabled: Boolean by remember { mutableStateOf(false) }
-    var focusControllerModifier: Modifier by remember { mutableStateOf(Modifier) }
-    LaunchedEffect(focusDisabled) {
-        if (focusDisabled) {
-            focusControllerModifier = Modifier
-            focusDisabled = false
-        }
     }
 
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -168,7 +154,7 @@ fun SearchField(
 @PreviewLightDark
 @Composable
 private fun SearchFieldPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxWidth().height(60.dp)) { SearchField(value = "Test") }
     }
 }
@@ -176,7 +162,7 @@ private fun SearchFieldPreview() {
 @PreviewLightDark
 @Composable
 private fun OptionalSearchFieldPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxWidth().height(60.dp)) {
             SearchField(value = "Test", optional = true)
         }
@@ -186,7 +172,7 @@ private fun OptionalSearchFieldPreview() {
 @PreviewLightDark
 @Composable
 private fun DisabledSearchFieldPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxWidth().height(60.dp)) {
             SearchField(value = "Test", enabled = false)
         }
@@ -196,7 +182,7 @@ private fun DisabledSearchFieldPreview() {
 @PreviewLightDark
 @Composable
 private fun ErrorSearchFieldPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxWidth()) {
             SearchField(
                 value = "Test",

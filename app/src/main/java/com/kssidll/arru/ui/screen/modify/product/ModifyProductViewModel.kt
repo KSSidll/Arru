@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+// TODO refactor uiState Event UseCase
+
 /**
  * Base [ViewModel] class for Product modification view models
  *

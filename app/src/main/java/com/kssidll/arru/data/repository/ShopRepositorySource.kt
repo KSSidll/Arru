@@ -167,7 +167,7 @@ interface ShopRepositorySource {
     /** @return list of all [ShopEntity] */
     fun all(): Flow<ImmutableList<ShopEntity>>
 
-    /** @param shopEntity [ShopEntity] to match the items to */
+    /** @param entity [ShopEntity] to match the items to */
     fun fullItemsPaged(entity: ShopEntity): Flow<PagingData<FullItem>>
 
     /**

@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 /**
@@ -92,7 +92,7 @@ fun ThemeExposedDropdown(
 @PreviewLightDark
 @Composable
 private fun ThemeExposedDropdownPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             ThemeExposedDropdown(
                 currentTheme = AppPreferences.Theme.ColorScheme.DEFAULT,

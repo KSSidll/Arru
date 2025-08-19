@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.search.component.SearchItem
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 /**
  * @param onProductClick Callback called when product item is clicked
@@ -89,7 +89,7 @@ private fun StartScreenContent(
 @Preview(group = "StartScreen", name = "Light", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 private fun StartScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             StartScreenContent(
                 onProductClick = {},

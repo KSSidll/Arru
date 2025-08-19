@@ -35,10 +35,7 @@ data class ShopEntity(@PrimaryKey(autoGenerate = true) val id: Long, val name: S
          *
          * @return [String] representing the [ShopEntity] csv format headers
          */
-        @Ignore
-        fun csvHeaders(): String {
-            return "id;name"
-        }
+        @Ignore const val csvHeaders: String = "id;name"
 
         @Ignore
         fun generate(shopId: Long = 0): ShopEntity {
@@ -79,7 +76,7 @@ data class ShopEntity(@PrimaryKey(autoGenerate = true) val id: Long, val name: S
 fun List<ShopEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(ShopEntity.csvHeaders() + "\n")
+        add(ShopEntity.csvHeaders + "\n")
     }
 
     // Add rows

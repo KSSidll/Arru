@@ -8,6 +8,8 @@ import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
 class CategoryRankingViewModel
 @Inject

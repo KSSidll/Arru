@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -298,7 +299,7 @@ suspend fun AppPreferences.setExportLocation(context: Context, newExportLocation
  */
 fun AppPreferences.getExportLocation(context: Context): Flow<Uri?> {
     return getPreferencesDataStore(context).data.map { preferences ->
-        preferences[AppPreferences.Export.Location.key]?.let { Uri.parse(it) }
+        preferences[AppPreferences.Export.Location.key]?.toUri()
     }
 }
 

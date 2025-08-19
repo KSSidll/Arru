@@ -44,7 +44,7 @@ import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import kotlinx.collections.immutable.ImmutableList
 
@@ -87,6 +87,7 @@ fun ModifyItemScreenImpl(
     onProductAddButtonClick: (query: String?) -> Unit,
     onVariantAddButtonClick: (productId: Long, query: String?) -> Unit,
     onItemLongClick: (productId: Long) -> Unit,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_add),
     onItemVariantLongClick: (variantId: Long) -> Unit,
@@ -97,6 +98,7 @@ fun ModifyItemScreenImpl(
         onSubmit = onSubmit,
         onDelete = onDelete,
         submitButtonText = submitButtonText,
+        modifier = modifier,
     ) {
         if (state.isProductSearchDialogExpanded.value) {
             SearchableListDialog(
@@ -429,7 +431,7 @@ fun ModifyItemScreenImpl(
 @ExpandedPreviews
 @Composable
 private fun ModifyItemScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyItemScreenImpl(
                 onBack = {},

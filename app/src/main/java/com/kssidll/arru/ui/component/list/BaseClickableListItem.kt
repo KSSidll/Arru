@@ -15,13 +15,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BaseClickableListItem(
     text: String,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
@@ -29,7 +30,8 @@ fun BaseClickableListItem(
 ) {
     Box(
         modifier =
-            Modifier.fillMaxWidth()
+            modifier
+                .fillMaxWidth()
                 .minimumInteractiveComponentSize()
                 .combinedClickable(
                     role = Role.Button,
@@ -51,5 +53,5 @@ fun BaseClickableListItem(
 @PreviewLightDark
 @Composable
 private fun BaseClickableListItemPreview() {
-    ArrugarqTheme { Surface { BaseClickableListItem(text = "test") } }
+    ArruTheme { Surface { BaseClickableListItem(text = "test") } }
 }

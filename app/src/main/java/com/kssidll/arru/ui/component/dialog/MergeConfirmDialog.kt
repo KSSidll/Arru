@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 @Composable
@@ -75,7 +75,5 @@ fun MergeConfirmDialog(message: String, onCancel: () -> Unit, onConfirm: () -> U
 @PreviewLightDark
 @Composable
 private fun MergeConfirmDialogPreview() {
-    ArrugarqTheme {
-        Surface { MergeConfirmDialog(message = "test", onCancel = {}, onConfirm = {}) }
-    }
+    ArruTheme { Surface { MergeConfirmDialog(message = "test", onCancel = {}, onConfirm = {}) } }
 }

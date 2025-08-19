@@ -11,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.async
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
 class AddProductVariantViewModel
 @Inject

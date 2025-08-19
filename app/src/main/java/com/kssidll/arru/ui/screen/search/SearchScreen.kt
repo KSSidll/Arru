@@ -24,7 +24,7 @@ import com.kssidll.arru.ui.screen.search.producerlist.ProducerListRoute
 import com.kssidll.arru.ui.screen.search.productlist.ProductListRoute
 import com.kssidll.arru.ui.screen.search.shoplist.ShopListRoute
 import com.kssidll.arru.ui.screen.search.start.StartRoute
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import dev.olshevski.navigation.reimagined.AnimatedNavHost
 import dev.olshevski.navigation.reimagined.NavAction
 import dev.olshevski.navigation.reimagined.NavBackHandler
@@ -54,7 +54,7 @@ import kotlinx.parcelize.Parcelize
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SearchScreen(
+fun SearchScreen(
     onBack: () -> Unit,
     state: SearchScreenState,
     onProductClick: (productId: Long) -> Unit,
@@ -65,6 +65,7 @@ internal fun SearchScreen(
     onCategoryLongClick: (categoryId: Long) -> Unit,
     onProducerLongClick: (producerId: Long) -> Unit,
     onShopLongClick: (shopId: Long) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     with(state) {
         NavBackHandler(controller = state.navController)
@@ -82,7 +83,7 @@ internal fun SearchScreen(
                     title = {},
                 )
             },
-            modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
+            modifier = modifier.windowInsetsPadding(WindowInsets.navigationBars),
         ) {
             AnimatedNavHost(
                 controller = navController,
@@ -113,8 +114,8 @@ internal fun SearchScreen(
                     is SearchDestinations.ProductList -> {
                         Box(modifier = Modifier.padding(it).consumeWindowInsets(it)) {
                             ProductListRoute(
-                                onProductClick = { onProductClick(it) },
-                                onProductLongClick = { onProductLongClick(it) },
+                                onProductClick = { productId -> onProductClick(productId) },
+                                onProductLongClick = { productId -> onProductLongClick(productId) },
                             )
                         }
                     }
@@ -122,8 +123,12 @@ internal fun SearchScreen(
                     is SearchDestinations.CategoryList -> {
                         Box(modifier = Modifier.padding(it).consumeWindowInsets(it)) {
                             CategoryListRoute(
-                                onCategoryClick = { onCategoryClick(it) },
-                                onCategoryLongClick = { onCategoryLongClick(it) },
+                                onCategoryClick = { productCategoryId ->
+                                    onCategoryClick(productCategoryId)
+                                },
+                                onCategoryLongClick = { productCategoryId ->
+                                    onCategoryLongClick(productCategoryId)
+                                },
                             )
                         }
                     }
@@ -131,8 +136,12 @@ internal fun SearchScreen(
                     is SearchDestinations.ProducerList -> {
                         Box(modifier = Modifier.padding(it).consumeWindowInsets(it)) {
                             ProducerListRoute(
-                                onProducerClick = { onProducerClick(it) },
-                                onProducerLongClick = { onProducerLongClick(it) },
+                                onProducerClick = { productProducerId ->
+                                    onProducerClick(productProducerId)
+                                },
+                                onProducerLongClick = { productProducerId ->
+                                    onProducerLongClick(productProducerId)
+                                },
                             )
                         }
                     }
@@ -140,8 +149,8 @@ internal fun SearchScreen(
                     is SearchDestinations.ShopList -> {
                         Box(modifier = Modifier.padding(it).consumeWindowInsets(it)) {
                             ShopListRoute(
-                                onShopClick = { onShopClick(it) },
-                                onShopLongClick = { onShopLongClick(it) },
+                                onShopClick = { shopId -> onShopClick(shopId) },
+                                onShopLongClick = { shopId -> onShopLongClick(shopId) },
                             )
                         }
                     }
@@ -153,7 +162,7 @@ internal fun SearchScreen(
 
 /** Possible internal navigation destinations for [SearchScreen] */
 @Parcelize
-internal sealed class SearchDestinations : Parcelable {
+sealed class SearchDestinations : Parcelable {
     data object Start : SearchDestinations()
 
     data object ProductList : SearchDestinations()
@@ -166,7 +175,7 @@ internal sealed class SearchDestinations : Parcelable {
 }
 
 /** Data representing [SearchScreen] state */
-internal data class SearchScreenState(
+data class SearchScreenState(
     val navController: NavController<SearchDestinations> =
         navController(startDestination = SearchDestinations.Start)
 )
@@ -175,7 +184,7 @@ internal data class SearchScreenState(
 @ExpandedPreviews
 @Composable
 private fun SearchScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchScreen(
                 onBack = {},

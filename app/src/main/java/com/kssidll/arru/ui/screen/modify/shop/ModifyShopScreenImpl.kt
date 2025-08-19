@@ -23,7 +23,7 @@ import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -59,6 +59,7 @@ fun ModifyShopScreenImpl(
     onBack: () -> Unit,
     state: ModifyShopScreenState,
     onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ShopEntity) -> Unit)? = null,
     mergeCandidates: Flow<ImmutableList<ShopEntity>> = flowOf(),
@@ -86,6 +87,7 @@ fun ModifyShopScreenImpl(
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.item_shop_delete_warning_text),
+        modifier = modifier,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,7 +117,7 @@ fun ModifyShopScreenImpl(
 @ExpandedPreviews
 @Composable
 private fun ModifyShopScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyShopScreenImpl(onBack = {}, state = ModifyShopScreenState(), onSubmit = {})
         }

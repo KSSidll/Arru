@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,5 +62,5 @@ fun SecondaryAppBar(
 @PreviewLightDark
 @Composable
 private fun SecondaryAppBarPreview() {
-    ArrugarqTheme { Surface { SecondaryAppBar(onBack = {}, title = { Text(text = "test") }) } }
+    ArruTheme { Surface { SecondaryAppBar(onBack = {}, title = { Text(text = "test") }) } }
 }

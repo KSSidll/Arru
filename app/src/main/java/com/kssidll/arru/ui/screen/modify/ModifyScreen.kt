@@ -49,7 +49,7 @@ import com.kssidll.arru.ui.component.dialog.DeleteWarningConfirmDialog
 import com.kssidll.arru.ui.component.dialog.MergeConfirmDialog
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -92,6 +92,7 @@ fun <T> ModifyScreen(
     title: String,
     onSubmit: () -> Unit,
     submitButtonText: String,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: T) -> Unit)? = null,
     mergeCandidates: Flow<ImmutableList<T>> = flowOf(),
@@ -108,7 +109,7 @@ fun <T> ModifyScreen(
 ) where T : FuzzySearchSource {
     var showMergeSearchDialog by remember { mutableStateOf(false) }
 
-    Box {
+    Box(modifier = modifier) {
         if (showDeleteWarning.value) {
             DeleteWarningConfirmDialog(
                 message = deleteWarningMessage,
@@ -274,7 +275,7 @@ private fun EditScreenContent(
 @PreviewLightDark
 @Composable
 private fun EditScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyScreen<FuzzySearchSource>(
                 onBack = {},
@@ -293,7 +294,7 @@ private fun EditScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun ModifyScreenNoDeletePreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyScreen<FuzzySearchSource>(
                 onBack = {},

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 
 /** ENTITY */
 class GetShopEntityUseCase(private val shopRepository: ShopRepositorySource) {
-    suspend operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         shopRepository.get(id).flowOn(dispatcher)
 }
 

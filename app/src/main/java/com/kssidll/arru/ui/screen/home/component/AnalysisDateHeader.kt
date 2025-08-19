@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -84,7 +84,7 @@ fun AnalysisDateHeader(
 @PreviewLightDark
 @Composable
 private fun AnalysisDateHeaderPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             AnalysisDateHeader(
                 year = 2021,

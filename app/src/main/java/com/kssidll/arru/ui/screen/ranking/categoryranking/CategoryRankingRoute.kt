@@ -13,9 +13,8 @@ fun CategoryRankingRoute(
     navigateBack: () -> Unit,
     navigateDisplayProductCategory: (categoryId: Long) -> Unit,
     navigateEditProductCategory: (categoryId: Long) -> Unit,
+    viewModel: CategoryRankingViewModel = hiltViewModel(),
 ) {
-    val viewModel: CategoryRankingViewModel = hiltViewModel()
-
     RankingScreen(
         onBack = navigateBack,
         title = stringResource(R.string.categories),

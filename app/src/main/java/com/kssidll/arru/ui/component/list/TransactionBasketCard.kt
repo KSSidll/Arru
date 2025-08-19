@@ -45,7 +45,7 @@ import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -107,7 +107,7 @@ fun LazyListScope.transactionBasketCard(
                         val onItemProducerClick =
                             remember(item.productProducerId) { onItemProducerClick }
 
-                        FullItemCard(
+                        ItemCard(
                             item = item,
                             onItemClick = onItemClick,
                             onItemLongClick = onItemLongClick,
@@ -281,7 +281,7 @@ fun LazyListScope.transactionBasketCardHeaderPlaceholder(modifier: Modifier = Mo
 @PreviewLightDark
 @Composable
 private fun TransactionBasketCardPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(Modifier.fillMaxWidth()) {
             val color = MaterialTheme.colorScheme.background
             LazyColumn {
@@ -305,7 +305,7 @@ private fun TransactionBasketCardPreview() {
 @PreviewLightDark
 @Composable
 private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(Modifier.fillMaxWidth()) {
             val color = MaterialTheme.colorScheme.background
             LazyColumn {

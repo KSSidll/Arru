@@ -28,7 +28,7 @@ import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -86,6 +86,7 @@ fun ModifyProductScreenImpl(
     onProducerAddButtonClick: (query: String?) -> Unit,
     onCategoryAddButtonClick: (query: String?) -> Unit,
     onItemProducerLongClick: (producerId: Long) -> Unit,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ProductEntity) -> Unit)? = null,
     mergeCandidates: Flow<ImmutableList<ProductEntity>> = flowOf(),
@@ -114,6 +115,7 @@ fun ModifyProductScreenImpl(
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.item_product_delete_warning_text),
+        modifier = modifier,
     ) {
         if (state.isProducerSearchDialogExpanded.value) {
             SearchableListDialog(
@@ -247,7 +249,7 @@ fun ModifyProductScreenImpl(
 @ExpandedPreviews
 @Composable
 private fun ModifyProductScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface1(modifier = Modifier.fillMaxSize()) {
             ModifyProductScreenImpl(
                 onBack = {},

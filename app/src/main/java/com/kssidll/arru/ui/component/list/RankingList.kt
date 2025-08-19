@@ -41,7 +41,7 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.other.ProgressBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -249,7 +249,7 @@ fun <T> RankingList(
 @PreviewLightDark
 @Composable
 private fun RankingListPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             RankingList(items = TransactionTotalSpentByShop.generateList().toImmutableList())
         }

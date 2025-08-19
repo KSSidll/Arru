@@ -10,6 +10,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.kssidll.arru.ui.theme.disabledAlpha
 import com.kssidll.arru.ui.theme.optionalAlpha
 
+@Immutable
 data class StyledTextFieldColors(
     val colors: TextFieldColors,
     val optionalFocusedText: Color,
@@ -158,8 +160,8 @@ fun styledTextFieldColorDefaults(
 
 @Composable
 fun StyledOutlinedTextField(
-    modifier: Modifier = Modifier,
     value: String,
+    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit = {},
     enabled: Boolean = true,
     optional: Boolean = false,
@@ -185,8 +187,8 @@ fun StyledOutlinedTextField(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
         modifier = modifier,
+        onValueChange = onValueChange,
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle,

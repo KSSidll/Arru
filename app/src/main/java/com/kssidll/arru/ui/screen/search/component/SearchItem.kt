@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 private val DefaultItemHeight: Dp = 80.dp
@@ -61,5 +61,5 @@ internal fun SearchItem(
 @PreviewLightDark
 @Composable
 private fun SearchItemPreview() {
-    ArrugarqTheme { Surface { SearchItem(text = "test", onItemClick = {}, onItemLongClick = {}) } }
+    ArruTheme { Surface { SearchItem(text = "test", onItemClick = {}, onItemLongClick = {}) } }
 }

@@ -20,9 +20,9 @@ fun EditTransactionRoute(
     navigateAddShop: (query: String?) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
     providedShopId: Long?,
+    viewModel: EditTransactionViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: EditTransactionViewModel = hiltViewModel()
 
     LaunchedEffect(transactionId) {
         if (!viewModel.updateState(transactionId)) {

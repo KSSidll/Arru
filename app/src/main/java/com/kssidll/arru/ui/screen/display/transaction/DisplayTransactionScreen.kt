@@ -37,7 +37,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,7 +139,7 @@ fun DisplayTransactionScreen(
 @ExpandedPreviews
 @Composable
 private fun DisplayTransactionScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayTransactionScreen(
                 uiState = DisplayTransactionUiState(transaction = Transaction.generate()),

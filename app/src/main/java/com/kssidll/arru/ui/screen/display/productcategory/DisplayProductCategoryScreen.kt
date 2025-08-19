@@ -65,9 +65,9 @@ import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
 import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
-import com.kssidll.arru.ui.component.list.fullItemListContent
+import com.kssidll.arru.ui.component.list.itemList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -237,7 +237,7 @@ private fun DisplayProductCategoryScreenContent(
                 }
             }
 
-            fullItemListContent(
+            itemList(
                 transactionItems = items,
                 onItemClick = {
                     onEvent(DisplayProductCategoryEvent.NavigateDisplayProduct(it.productId))
@@ -272,7 +272,7 @@ private fun DisplayProductCategoryScreenContent(
 @PreviewLightDark
 @Composable
 private fun DisplayProductCategoryScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductCategoryScreen(
                 uiState =
@@ -289,7 +289,7 @@ private fun DisplayProductCategoryScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyDisplayCategoryScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductCategoryScreen(uiState = DisplayProductCategoryUiState(), onEvent = {})
         }
@@ -299,7 +299,7 @@ private fun EmptyDisplayCategoryScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedDisplayProductCategoryScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductCategoryScreen(
                 uiState =
@@ -316,7 +316,7 @@ private fun ExpandedDisplayProductCategoryScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedEmptyDisplayProductCategoryScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DisplayProductCategoryScreen(uiState = DisplayProductCategoryUiState(), onEvent = {})
         }

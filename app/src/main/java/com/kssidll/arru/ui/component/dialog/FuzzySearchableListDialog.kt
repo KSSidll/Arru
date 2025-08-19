@@ -49,7 +49,7 @@ import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.component.list.BaseClickableListItem
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -60,7 +60,10 @@ import kotlinx.collections.immutable.toImmutableList
  *   outside. This is also called when the Add/'+' button is clicked
  * @param items: Items to be displayed in the list
  * @param itemText: Transformation used to determine what to display on the item card
+ * @param calculateScore function to use to calculate the score of an item which determines the
+ *   order of the items
  * @param onItemClick: Function called when an item is clicked
+ * @param onItemLongClick: Function called when an item is long clicked
  * @param showAddButton: Whether to show an Add/'+' button in the search field
  * @param onAddButtonClick: Function called when the Add/'+' button is clicked. Provides searched
  *   for value at the time of the event as parameter
@@ -68,8 +71,6 @@ import kotlinx.collections.immutable.toImmutableList
  * @param showDefaultValueItem: Whether to show a default, null value item under the search field
  * @param defaultItemText: String to display on the default, null value item
  * @param shape: Shape of the Dialog
- * @param calculateScore function to use to calculate the score of an item which determines the
- *   order of the items
  */
 @Composable
 fun <T> SearchableListDialog(
@@ -77,6 +78,7 @@ fun <T> SearchableListDialog(
     items: ImmutableList<T>,
     itemText: (T) -> String,
     calculateScore: (item: T, query: String) -> Int,
+    modifier: Modifier = Modifier,
     onItemClick: ((T?) -> Unit)? = null,
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
@@ -87,7 +89,6 @@ fun <T> SearchableListDialog(
     showDefaultValueItem: Boolean = false,
     defaultItemText: String = String(),
     shape: Shape = ShapeDefaults.ExtraLarge,
-    modifier: Modifier = Modifier,
 ) {
     var query: String by remember { mutableStateOf(String()) }
 
@@ -190,7 +191,7 @@ fun <T> SearchableListDialog(
 @PreviewLightDark
 @Composable
 private fun FuzzySearchableListDialogPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
@@ -205,7 +206,7 @@ private fun FuzzySearchableListDialogPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyFuzzySearchableListDialogPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},

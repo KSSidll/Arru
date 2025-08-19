@@ -23,7 +23,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.DAY_IN_MILIS
 import com.kssidll.arru.data.view.Item
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -31,7 +31,7 @@ import java.util.TimeZone
 import kotlinx.coroutines.flow.flowOf
 
 @OptIn(ExperimentalFoundationApi::class)
-fun LazyListScope.fullItemListContent(
+fun LazyListScope.itemList(
     transactionItems: LazyPagingItems<Item>,
     onItemClick: ((item: Item) -> Unit)? = null,
     onItemLongClick: ((item: Item) -> Unit)? = null,
@@ -88,7 +88,7 @@ fun LazyListScope.fullItemListContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = modifier.width(600.dp).align(Alignment.Center),
                     ) {
-                        FullItemCard(
+                        ItemCard(
                             item = transactionItems[index]!!,
                             onItemClick = onItemClick,
                             onItemLongClick = onItemLongClick,
@@ -107,13 +107,13 @@ fun LazyListScope.fullItemListContent(
 
 @PreviewLightDark
 @Composable
-private fun FullItemListContentPreview() {
-    ArrugarqTheme {
+private fun ItemListPreview() {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             val transactionItems =
-                flowOf(PagingData.from(emptyList<Item>())).collectAsLazyPagingItems()
+                flowOf(PagingData.from(Item.generateList())).collectAsLazyPagingItems()
             LazyColumn {
-                fullItemListContent(
+                itemList(
                     transactionItems = transactionItems,
                     onItemClick = {},
                     onItemLongClick = {},

@@ -45,13 +45,14 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.utils.formatToCurrency
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun FullItemCard(
+fun ItemCard(
     item: Item,
+    modifier: Modifier = Modifier,
     onItemClick: ((item: Item) -> Unit)? = null,
     onItemLongClick: ((item: Item) -> Unit)? = null,
     onCategoryClick: ((item: Item) -> Unit)? = null,
@@ -62,14 +63,14 @@ fun FullItemCard(
 
     val itemModifier =
         if (onItemClick != null || onItemLongClick != null)
-            Modifier.combinedClickable(
+            modifier.combinedClickable(
                 role = Role.Button,
                 onClick = { onItemClick?.invoke(item) },
                 onClickLabel = stringResource(id = R.string.select),
                 onLongClick = { onItemLongClick?.invoke(item) },
                 onLongClickLabel = stringResource(id = R.string.edit),
             )
-        else Modifier
+        else modifier
 
     Column(
         modifier = itemModifier.heightIn(min = 60.dp).padding(vertical = 6.dp, horizontal = 16.dp)
@@ -256,10 +257,10 @@ fun FullItemCard(
 
 @PreviewLightDark
 @Composable
-private fun FullItemCardPreview() {
-    ArrugarqTheme {
+private fun ItemCardPreview() {
+    ArruTheme {
         Surface(Modifier.fillMaxWidth()) {
-            FullItemCard(
+            ItemCard(
                 item = Item.generate(),
                 onItemClick = {},
                 onItemLongClick = {},

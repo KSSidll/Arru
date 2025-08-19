@@ -53,7 +53,7 @@ import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.screen.modify.productproducer.ModifyProductProducerScreenState
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -93,6 +93,7 @@ fun ModifyTransactionScreenImpl(
     onNewShopSelected: (shop: ShopEntity?) -> Unit,
     onSubmit: () -> Unit,
     onShopAddButtonClick: (query: String?) -> Unit,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.transaction_add),
     onTransactionShopLongClick: (shopId: Long) -> Unit,
@@ -108,6 +109,7 @@ fun ModifyTransactionScreenImpl(
         showDeleteWarning = state.showDeleteWarning,
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage = stringResource(id = R.string.transaction_delete_warning_text),
+        modifier = modifier,
     ) {
         if (state.isDatePickerDialogExpanded.value) {
             DatePickerDialog(
@@ -518,7 +520,7 @@ private fun ExpandedModifyTransactionScreenContent(
 @PreviewLightDark
 @Composable
 private fun ModifyTransactionScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(
                 isExpandedScreen = false,
@@ -537,7 +539,7 @@ private fun ModifyTransactionScreenImplPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedModifyTransactionScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(
                 isExpandedScreen = true,

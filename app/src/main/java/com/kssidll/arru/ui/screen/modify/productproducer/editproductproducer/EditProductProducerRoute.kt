@@ -14,10 +14,9 @@ fun EditProductProducerRoute(
     producerId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: () -> Unit,
+    viewModel: EditProducerViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-
-    val viewModel: EditProducerViewModel = hiltViewModel()
 
     LaunchedEffect(producerId) {
         if (!viewModel.updateState(producerId)) {

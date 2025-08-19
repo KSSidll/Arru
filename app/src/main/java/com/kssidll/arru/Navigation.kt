@@ -52,6 +52,8 @@ import dev.olshevski.navigation.reimagined.pop
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
+// TODO migrate to compose navigation3
+
 /** Interface for navigation destinations that can accept shop id */
 private interface AcceptsShopId {
     val providedShopId: MutableState<Long?>

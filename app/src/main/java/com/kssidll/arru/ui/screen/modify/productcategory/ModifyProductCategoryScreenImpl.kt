@@ -23,7 +23,7 @@ import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -60,6 +60,7 @@ fun ModifyProductCategoryScreenImpl(
     onBack: () -> Unit,
     state: ModifyProductCategoryScreenState,
     onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
     onDelete: (() -> Unit)? = null,
     onMerge: ((candidate: ProductCategoryEntity) -> Unit)? = null,
     mergeCandidates: Flow<ImmutableList<ProductCategoryEntity>> = flowOf(),
@@ -88,6 +89,7 @@ fun ModifyProductCategoryScreenImpl(
         deleteWarningConfirmed = state.deleteWarningConfirmed,
         deleteWarningMessage =
             stringResource(id = R.string.item_product_category_delete_warning_text),
+        modifier = modifier,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -117,7 +119,7 @@ fun ModifyProductCategoryScreenImpl(
 @ExpandedPreviews
 @Composable
 private fun ModifyProductCategoryScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyProductCategoryScreenImpl(
                 onBack = {},

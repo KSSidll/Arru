@@ -17,9 +17,9 @@ fun AddTransactionRoute(
     navigateAddShop: (query: String?) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
     providedShopId: Long?,
+    viewModel: AddTransactionViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddTransactionViewModel = hiltViewModel()
 
     LaunchedEffect(providedShopId) { viewModel.setSelectedShopToProvided(providedShopId) }
 

@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
@@ -70,10 +69,7 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     HomeScreen(
-        uiState =
-            viewModel.uiState
-                .collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
-                .value,
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
         onEvent = { event ->
             when (event) {
                 is HomeEvent.ChangeScreenDestination -> {

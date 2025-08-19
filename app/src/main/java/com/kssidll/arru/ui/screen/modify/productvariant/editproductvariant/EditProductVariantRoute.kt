@@ -14,10 +14,9 @@ fun EditProductVariantRoute(
     variantId: Long,
     navigateBack: () -> Unit,
     navigateBackDelete: () -> Unit,
+    viewModel: EditProductVariantViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-
-    val viewModel: EditProductVariantViewModel = hiltViewModel()
 
     LaunchedEffect(variantId) {
         if (!viewModel.updateState(variantId)) {

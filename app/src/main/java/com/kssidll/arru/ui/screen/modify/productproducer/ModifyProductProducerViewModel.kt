@@ -7,6 +7,8 @@ import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 
+// TODO refactor uiState Event UseCase
+
 /**
  * Base [ViewModel] class for Producer modification view models
  *

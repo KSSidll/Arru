@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
 class EditProductViewModel
 @Inject

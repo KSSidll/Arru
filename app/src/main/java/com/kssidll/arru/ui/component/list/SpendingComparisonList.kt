@@ -22,10 +22,12 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.domain.data.interfaces.RankSource
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.optionalAlpha
 import kotlin.math.roundToLong
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 private val ITEM_HEIGHT: Dp = 90.dp
 private val HEADER_HEIGHT: Dp = 24.dp
@@ -45,9 +47,9 @@ private val DIFF_PERCENT_STRING_BOTTOM_PADDING: Dp = 16.dp
 @Composable
 fun <T> SpendingComparisonList(
     listHeader: String,
-    leftSideItems: List<T>,
+    leftSideItems: ImmutableList<T>,
     leftSideHeader: String,
-    rightSideItems: List<T>,
+    rightSideItems: ImmutableList<T>,
     rightSideHeader: String,
     modifier: Modifier = Modifier,
     itemDisplayLimit: Int? = null,
@@ -190,13 +192,13 @@ fun <T> SpendingComparisonList(
 @PreviewLightDark
 @Composable
 private fun SpendingComparisonListPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SpendingComparisonList(
                 listHeader = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4),
+                leftSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4),
+                rightSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
                 rightSideHeader = "right",
             )
         }

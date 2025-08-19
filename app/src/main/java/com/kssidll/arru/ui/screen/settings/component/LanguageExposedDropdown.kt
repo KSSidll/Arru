@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.domain.AppLocale
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.util.Locale
 
@@ -118,5 +118,5 @@ fun LanguageExposedDropdown(
 @PreviewLightDark
 @Composable
 private fun LanguageExposedDropdownPreview() {
-    ArrugarqTheme { Surface { LanguageExposedDropdown(setLocale = {}) } }
+    ArruTheme { Surface { LanguageExposedDropdown(setLocale = {}) } }
 }

@@ -35,10 +35,7 @@ data class ProductProducerEntity(@PrimaryKey(autoGenerate = true) val id: Long, 
          *
          * @return [String] representing the [ProductProducerEntity] csv format headers
          */
-        @Ignore
-        fun csvHeaders(): String {
-            return "id;name"
-        }
+        @Ignore const val csvHeaders: String = "id;name"
 
         @Ignore
         fun generate(producerId: Long = 0): ProductProducerEntity {
@@ -80,7 +77,7 @@ fun List<ProductProducerEntity>.asCsvList(includeHeaders: Boolean = false): List
     buildList {
         // Add headers
         if (includeHeaders) {
-            add(ProductProducerEntity.csvHeaders() + "\n")
+            add(ProductProducerEntity.csvHeaders + "\n")
         }
 
         // Add rows

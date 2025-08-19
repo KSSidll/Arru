@@ -20,9 +20,9 @@ fun AddProductRoute(
     navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
+    viewModel: AddProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddProductViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 

@@ -36,20 +36,23 @@ import androidx.compose.ui.unit.dp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.list.SpendingComparisonList
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> SpendingComparisonScreen(
     onBack: () -> Unit,
     title: String,
-    leftSideItems: List<T>,
+    leftSideItems: ImmutableList<T>,
     leftSideHeader: String,
-    rightSideItems: List<T>,
+    rightSideItems: ImmutableList<T>,
     rightSideHeader: String,
     modifier: Modifier = Modifier,
 ) where T : RankSource {
@@ -115,14 +118,14 @@ fun <T> SpendingComparisonScreen(
 @PreviewLightDark
 @Composable
 private fun SpendingComparisonScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4),
+                leftSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4),
+                rightSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
                 rightSideHeader = "right",
             )
         }
@@ -132,14 +135,14 @@ private fun SpendingComparisonScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptySpendingComparisonScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = emptyList(),
+                leftSideItems = emptyImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = emptyList(),
+                rightSideItems = emptyImmutableList(),
                 rightSideHeader = "right",
             )
         }
@@ -149,14 +152,14 @@ private fun EmptySpendingComparisonScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedSpendingComparisonScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4),
+                leftSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4),
+                rightSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
                 rightSideHeader = "right",
             )
         }
@@ -166,14 +169,14 @@ private fun ExpandedSpendingComparisonScreenPreview() {
 @ExpandedPreviews
 @Composable
 private fun ExpandedEmptySpendingComparisonScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = emptyList(),
+                leftSideItems = emptyImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = emptyList(),
+                rightSideItems = emptyImmutableList(),
                 rightSideHeader = "right",
             )
         }

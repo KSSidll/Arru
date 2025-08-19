@@ -73,7 +73,7 @@ import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.screen.settings.component.LanguageExposedDropdown
 import com.kssidll.arru.ui.screen.settings.component.ThemeExposedDropdown
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.compiled.CurrencyLocaleData
 import java.text.NumberFormat
@@ -709,7 +709,7 @@ fun SettingsScreen(
 @ExpandedPreviews
 @Composable
 private fun SettingsScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SettingsScreen(uiState = SettingsUiState(), onEvent = {})
         }

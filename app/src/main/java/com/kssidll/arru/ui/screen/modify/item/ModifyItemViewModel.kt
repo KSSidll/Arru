@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+// TODO refactor uiState Event UseCase
+
 /**
  * Base [ViewModel] class for Item modification view models
  *
