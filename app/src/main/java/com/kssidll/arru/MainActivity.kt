@@ -23,20 +23,14 @@ import com.kssidll.arru.data.preference.detectDarkMode
 import com.kssidll.arru.data.preference.getColorScheme
 import com.kssidll.arru.data.preference.getCurrencyFormatLocale
 import com.kssidll.arru.data.preference.getDynamicColor
-import com.kssidll.arru.data.preference.getPersistentNotificationsEnabled
-import com.kssidll.arru.data.preference.setResettableToDefault
-import com.kssidll.arru.service.DataExportService
-import com.kssidll.arru.service.PersistentNotificationService
-import com.kssidll.arru.service.getServiceStateCold
-import com.kssidll.arru.service.setServiceState
 import com.kssidll.arru.ui.theme.ArrugarqTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dev.olshevski.navigation.reimagined.NavController
 import dev.olshevski.navigation.reimagined.navController
 import dev.olshevski.navigation.reimagined.navigate
-import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.util.Locale
 
 val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
 
@@ -61,21 +55,6 @@ class MainActivity : AppCompatActivity() {
         var isInDynamicColor: Boolean
 
         runBlocking {
-            AppPreferences.setResettableToDefault(applicationContext)
-
-            applicationContext.setServiceState(
-                DataExportService.SERVICE_NAME,
-                applicationContext.getServiceStateCold(DataExportService::class.java),
-            )
-
-            applicationContext.setServiceState(
-                PersistentNotificationService.SERVICE_NAME,
-                applicationContext.getServiceStateCold(PersistentNotificationService::class.java),
-            )
-            if (AppPreferences.getPersistentNotificationsEnabled(applicationContext).first()) {
-                PersistentNotificationService.start(applicationContext)
-            }
-
             colorScheme = AppPreferences.getColorScheme(applicationContext).first()
             isInDynamicColor = AppPreferences.getDynamicColor(applicationContext).first()
         }
