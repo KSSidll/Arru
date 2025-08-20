@@ -54,7 +54,6 @@ import com.kssidll.arru.data.database.ImportError
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getExportLocation
 import com.kssidll.arru.data.preference.setExportLocation
-import com.kssidll.arru.helper.getLocalizedString
 import com.kssidll.arru.service.DataExportService
 import com.kssidll.arru.service.PersistentNotificationService
 import com.kssidll.arru.ui.theme.Typography
@@ -217,7 +216,7 @@ fun SettingsRoute(
                                     is ImportError.FailedToDetermineVersion -> {
                                         buildString {
                                             append(
-                                                context.getLocalizedString(
+                                                context.getString(
                                                     R.string
                                                         .import_error_failed_to_determine_version
                                                 )
@@ -229,7 +228,7 @@ fun SettingsRoute(
                                     is ImportError.FailedToOpenFile -> {
                                         buildString {
                                             append(
-                                                context.getLocalizedString(
+                                                context.getString(
                                                     R.string.import_error_failed_to_open_file
                                                 )
                                             )
@@ -240,7 +239,7 @@ fun SettingsRoute(
                                     is ImportError.MissingFiles -> {
                                         buildString {
                                             append(
-                                                context.getLocalizedString(
+                                                context.getString(
                                                     R.string.import_error_missing_files
                                                 )
                                             )
@@ -251,9 +250,7 @@ fun SettingsRoute(
                                     }
 
                                     is ImportError.ParseError -> {
-                                        context.getLocalizedString(
-                                            R.string.import_error_parse_error
-                                        )
+                                        context.getString(R.string.import_error_parse_error)
                                     }
                                 }
                         },

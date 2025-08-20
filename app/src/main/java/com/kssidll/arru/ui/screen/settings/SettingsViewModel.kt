@@ -47,7 +47,8 @@ data class SettingsUiState(
     val exportUri: Uri? = null,
     val theme: AppPreferences.Theme.ColorScheme.Values? = null,
     val isInDynamicColor: Boolean = false,
-    val currencyFormatLocale: Locale? = null,
+    val currencyFormatLocale: Locale = Locale.getDefault(),
+    val currencyFormatLocaleSetToDefault: Boolean = true,
     val databaseLocation: AppPreferences.Database.Location.Values? = null,
     val persistentNotificationEnabled: Boolean = false,
     val databaseLocationChangeFailedError: Boolean = false,
@@ -138,7 +139,12 @@ constructor(
 
         viewModelScope.launch {
             AppPreferences.getCurrencyFormatLocale(appContext).collect {
-                _uiState.update { currentState -> currentState.copy(currencyFormatLocale = it) }
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        currencyFormatLocale = it ?: Locale.getDefault(),
+                        currencyFormatLocaleSetToDefault = it == null,
+                    )
+                }
             }
         }
 
@@ -278,6 +284,14 @@ constructor(
             if (locale != null) {
                 LocaleListCompat.forLanguageTags(locale.tag)
             } else LocaleListCompat.getEmptyLocaleList()
+
+        localeList.get(0)?.let {
+            _uiState.update { currentState ->
+                if (currentState.currencyFormatLocaleSetToDefault) {
+                    currentState.copy(currencyFormatLocale = it)
+                } else currentState
+            }
+        }
 
         setApplicationLocales(localeList)
     }

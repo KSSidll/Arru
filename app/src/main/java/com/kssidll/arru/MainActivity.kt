@@ -1,5 +1,6 @@
 package com.kssidll.arru
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -32,6 +33,7 @@ import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
+@SuppressLint("ComposeCompositionLocalUsage")
 val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
 
 const val BUNDLE_NAV_CONTROLLER = "NAV_CONTROLLER"

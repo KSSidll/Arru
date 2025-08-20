@@ -381,15 +381,15 @@ suspend fun AppPreferences.setCurrencyFormatLocale(context: Context, newCurrency
     }
 }
 
-fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale> {
+fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale?> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Locale.Currency.key]?.let {
             if (it == AppPreferences.Locale.Currency.DEFAULT) {
-                Locale.getDefault()
+                null
             } else {
                 Locale.forLanguageTag(it)
             }
-        } ?: Locale.getDefault()
+        }
     }
 }
 

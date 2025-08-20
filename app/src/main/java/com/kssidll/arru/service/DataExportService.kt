@@ -19,6 +19,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.MainActivity
@@ -29,7 +30,6 @@ import com.kssidll.arru.data.database.exportDataAsJson
 import com.kssidll.arru.data.database.exportDataAsRawCsv
 import com.kssidll.arru.data.repository.ExportRepositorySource
 import com.kssidll.arru.helper.checkPermission
-import com.kssidll.arru.helper.getLocalizedString
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +47,11 @@ enum class DataExportServiceActions {
 
 @AndroidEntryPoint
 class DataExportService : Service() {
+
+    override fun attachBaseContext(base: Context?) {
+        val context = base?.let { ContextCompat.getContextForLanguage(it) }
+        super.attachBaseContext(context)
+    }
 
     private lateinit var serviceJob: Job
     private lateinit var serviceScope: CoroutineScope
@@ -69,6 +74,7 @@ class DataExportService : Service() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == Intent.ACTION_LOCALE_CHANGED) {
                     updateNotificationChannel()
+                    updateNotification(exportedDataSize == totalDataSize)
                 }
             }
         }
@@ -149,8 +155,6 @@ class DataExportService : Service() {
 
         Log.d(TAG, "startExportCsvRawAction: Started")
 
-        // TODO show snackbar with information that the export started
-
         init()
 
         val uri = IntentCompat.getParcelableExtra(intent, URI_ID_KEY, Uri::class.java)
@@ -193,8 +197,6 @@ class DataExportService : Service() {
 
         Log.d(TAG, "startExportCsvCompactAction: Started")
 
-        // TODO show snackbar with information that the export started
-
         init()
 
         val uri = IntentCompat.getParcelableExtra(intent, URI_ID_KEY, Uri::class.java)
@@ -236,8 +238,6 @@ class DataExportService : Service() {
         setServiceState(SERVICE_NAME, ServiceState.STARTED)
 
         Log.d(TAG, "startExportJsonAction: Started")
-
-        // TODO show snackbar with information that the export started
 
         init()
 
@@ -324,8 +324,8 @@ class DataExportService : Service() {
                 NOTIFICATION_CHANNEL_ID,
                 NotificationManagerCompat.IMPORTANCE_LOW,
             )
-            .setName(getLocalizedString(R.string.service_data_export_name))
-            .setDescription(getLocalizedString(R.string.service_data_export_description))
+            .setName(getString(R.string.service_data_export_name))
+            .setDescription(getString(R.string.service_data_export_description))
             .setLightsEnabled(false)
             .setVibrationEnabled(false)
             .build()
@@ -364,7 +364,7 @@ class DataExportService : Service() {
         val stopServiceAction =
             NotificationCompat.Action.Builder(
                     R.drawable.close,
-                    getLocalizedString(R.string.data_export_cancel),
+                    getString(R.string.data_export_cancel),
                     stopServicePendingIntent,
                 )
                 .build()
@@ -372,7 +372,7 @@ class DataExportService : Service() {
         return builder
             .setContentTitle(APPLICATION_NAME)
             .setContentText(
-                "${getLocalizedString(R.string.service_data_export_notification_progress)}: $exportedDataSize/$totalDataSize"
+                "${getString(R.string.service_data_export_notification_progress)}: $exportedDataSize/$totalDataSize"
             )
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_notification)
@@ -399,7 +399,7 @@ class DataExportService : Service() {
 
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(APPLICATION_NAME)
-            .setContentText(getLocalizedString(R.string.service_data_export_notification_finished))
+            .setContentText(getString(R.string.service_data_export_notification_finished))
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setSilent(true)
             .setAutoCancel(true)

@@ -17,6 +17,6 @@ class DataExportServiceStopActionReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val TAG = "EXP_S_STOP_A"
+        const val TAG = "DATA_E_S_STOP_R"
     }
 }

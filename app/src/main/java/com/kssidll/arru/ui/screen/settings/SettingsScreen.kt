@@ -454,10 +454,7 @@ fun SettingsScreen(
                     SearchField(
                         showAddButton = false,
                         label = stringResource(R.string.settings_currency_format),
-                        value =
-                            1.0f.formatToCurrency(
-                                uiState.currencyFormatLocale ?: Locale.getDefault()
-                            ),
+                        value = 1.0f.formatToCurrency(uiState.currencyFormatLocale),
                         onClick = { isCurrencyFormatSearchExpanded = true },
                     )
 

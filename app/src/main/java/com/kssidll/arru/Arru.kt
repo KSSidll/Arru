@@ -7,6 +7,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getPersistentNotificationsEnabled
 import com.kssidll.arru.data.preference.setResettableToDefault
@@ -43,6 +44,11 @@ class Arru : Application() {
                 PersistentNotificationService.start(applicationContext)
             }
         }
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        val context = base?.let { ContextCompat.getContextForLanguage(it) }
+        super.attachBaseContext(context)
     }
 
     companion object {
