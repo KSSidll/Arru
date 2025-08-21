@@ -72,77 +72,47 @@ fun HomeRoute(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
         onEvent = { event ->
             when (event) {
-                is HomeEvent.ChangeScreenDestination -> {
-                    viewModel.handleEvent(event)
-                }
+                is HomeEvent.ChangeScreenDestination -> viewModel.handleEvent(event)
 
-                is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> {
-                    viewModel.handleEvent(event)
-                }
+                is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> viewModel.handleEvent(event)
 
-                is HomeEvent.IncrementCurrentAnalysisDate -> {
-                    viewModel.handleEvent(event)
-                }
+                is HomeEvent.IncrementCurrentAnalysisDate -> viewModel.handleEvent(event)
 
-                is HomeEvent.DecrementCurrentAnalysisDate -> {
-                    viewModel.handleEvent(event)
-                }
+                is HomeEvent.DecrementCurrentAnalysisDate -> viewModel.handleEvent(event)
 
-                is HomeEvent.NavigateSettings -> {
-                    navigateSettings()
-                }
+                is HomeEvent.NavigateSettings -> navigateSettings()
 
-                is HomeEvent.NavigateSearch -> {
-                    navigateSearch()
-                }
+                is HomeEvent.NavigateSearch -> navigateSearch()
 
-                is HomeEvent.NavigateDisplayProduct -> {
-                    navigateDisplayProduct(event.productId)
-                }
+                is HomeEvent.NavigateDisplayProduct -> navigateDisplayProduct(event.productId)
 
-                is HomeEvent.NavigateDisplayProductCategory -> {
+                is HomeEvent.NavigateDisplayProductCategory ->
                     navigateDisplayProductCategory(event.categoryId)
-                }
 
-                is HomeEvent.NavigateDisplayProductProducer -> {
+                is HomeEvent.NavigateDisplayProductProducer ->
                     navigateDisplayProductProducer(event.producerId)
-                }
 
-                is HomeEvent.NavigateDisplayShop -> {
-                    navigateDisplayShop(event.shopId)
-                }
+                is HomeEvent.NavigateDisplayShop -> navigateDisplayShop(event.shopId)
 
-                is HomeEvent.NavigateAddItem -> {
-                    navigateAddItem(event.transactionId)
-                }
+                is HomeEvent.NavigateAddItem -> navigateAddItem(event.transactionId)
 
-                is HomeEvent.NavigateEditItem -> {
-                    navigateEditItem(event.itemId)
-                }
+                is HomeEvent.NavigateEditItem -> navigateEditItem(event.itemId)
 
-                is HomeEvent.NavigateAddTransaction -> {
-                    navigateAddTransaction()
-                }
+                is HomeEvent.NavigateAddTransaction -> navigateAddTransaction()
 
-                is HomeEvent.NavigateEditTransaction -> {
-                    navigateEditTransaction(event.transactionId)
-                }
+                is HomeEvent.NavigateEditTransaction -> navigateEditTransaction(event.transactionId)
 
-                is HomeEvent.NavigateCategoryRanking -> {
-                    navigateCategoryRanking()
-                }
+                is HomeEvent.NavigateCategoryRanking -> navigateCategoryRanking()
 
-                is HomeEvent.NavigateShopRanking -> {
-                    navigateShopRanking()
-                }
+                is HomeEvent.NavigateShopRanking -> navigateShopRanking()
 
-                is HomeEvent.NavigateCategorySpendingComparison -> {
+                is HomeEvent.NavigateCategorySpendingComparison ->
                     navigateCategorySpendingComparison(event.year, event.month)
-                }
 
-                is HomeEvent.NavigateShopSpendingComparison -> {
+                is HomeEvent.NavigateShopSpendingComparison ->
                     navigateShopSpendingComparison(event.year, event.month)
-                }
+
+                is HomeEvent.ToggleTransactionItemVisibility -> viewModel.handleEvent(event)
             }
         },
         modifier = modifier,

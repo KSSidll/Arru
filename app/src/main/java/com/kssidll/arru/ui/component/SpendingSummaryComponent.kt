@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.chart.OneDimensionalColumnChart
@@ -102,7 +101,7 @@ private fun PeriodButtons(
                 when (index) {
                     0 -> RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50)
 
-                    TimePeriodFlowHandler.Periods.entries.size - 1 ->
+                    SpendingSummaryPeriod.entries.size - 1 ->
                         RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50)
 
                     else -> RectangleShape

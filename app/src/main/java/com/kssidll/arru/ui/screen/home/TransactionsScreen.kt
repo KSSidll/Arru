@@ -58,6 +58,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
 import com.kssidll.arru.ui.component.list.transactionBasketCard
@@ -124,6 +125,7 @@ fun TransactionsScreen(
                                 .consumeWindowInsets(paddingValues)
                     ) {
                         TransactionScreenContent(
+                            uiState = uiState,
                             onEvent = onEvent,
                             listState = uiState.transactionsListState,
                             transactions = transactions,
@@ -182,6 +184,7 @@ fun TransactionsScreen(
                     // sheet
                     Box(modifier = Modifier.consumeWindowInsets(innerPaddingValues)) {
                         TransactionScreenContent(
+                            uiState = uiState,
                             onEvent = onEvent,
                             listState = uiState.transactionsListState,
                             transactions = transactions,
@@ -196,9 +199,10 @@ fun TransactionsScreen(
 
 @Composable
 fun TransactionScreenContent(
+    uiState: HomeUiState,
     onEvent: (event: HomeEvent) -> Unit,
     listState: LazyListState,
-    transactions: LazyPagingItems<TransactionBasketDisplayData>,
+    transactions: LazyPagingItems<Transaction>,
     modifier: Modifier = Modifier,
     fabPadding: PaddingValues = PaddingValues(),
 ) {
@@ -296,10 +300,14 @@ fun TransactionScreenContent(
                     val transaction = transactions[index]!!
 
                     transactionBasketCard(
-                        transaction = transaction.basket,
-                        itemsVisible = transaction.itemsVisible.value,
+                        transaction = transaction,
+                        itemsVisible =
+                            uiState.transactionWithVisibleItems.contains(transaction.id),
                         onTransactionClick = {
-                            transaction.itemsVisible.value = !transaction.itemsVisible.value
+                            onEvent(
+                                HomeEvent.ToggleTransactionItemVisibility(transaction.id)
+                            )
+
                             scope.launch {
                                 // the transaction basket card has 2 separate lazy list scope DSL
                                 // calls
@@ -309,10 +317,10 @@ fun TransactionScreenContent(
                             }
                         },
                         onTransactionLongClick = {
-                            onEvent(HomeEvent.NavigateEditTransaction(transaction.basket.id))
+                            onEvent(HomeEvent.NavigateEditTransaction(transaction.id))
                         },
                         onItemAddClick = {
-                            onEvent(HomeEvent.NavigateAddItem(transaction.basket.id))
+                            onEvent(HomeEvent.NavigateAddItem(transaction.id))
                         },
                         onItemClick = { onEvent(HomeEvent.NavigateDisplayProduct(it.productId)) },
                         onItemLongClick = { onEvent(HomeEvent.NavigateEditItem(it.id)) },
@@ -325,7 +333,7 @@ fun TransactionScreenContent(
                             }
                         },
                         onItemShopClick = {
-                            transaction.basket.shopId?.let { shopId ->
+                            transaction.shopId?.let { shopId ->
                                 onEvent(HomeEvent.NavigateDisplayShop(shopId))
                             }
                         },

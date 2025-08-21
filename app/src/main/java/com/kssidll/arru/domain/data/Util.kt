@@ -3,7 +3,9 @@ package com.kssidll.arru.domain.data
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 
 /**
  * Checks whether the [LazyPagingItems] reported loaded state but is empty
@@ -20,4 +22,12 @@ fun <T> emptyImmutableList(): ImmutableList<T> {
 
 fun <T> ImmutableList<T>?.orEmpty(): ImmutableList<T> {
     return this ?: emptyImmutableList()
+}
+
+fun <T> emptyImmutableSet(): ImmutableSet<T> {
+    return emptySet<T>().toImmutableSet()
+}
+
+fun <T> ImmutableSet<T>?.orEmpty(): ImmutableSet<T> {
+    return this ?: emptyImmutableSet()
 }

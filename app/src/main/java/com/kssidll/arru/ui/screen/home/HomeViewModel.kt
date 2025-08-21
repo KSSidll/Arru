@@ -3,14 +3,10 @@ package com.kssidll.arru.ui.screen.home
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
@@ -19,21 +15,23 @@ import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.TimePeriodFlowHandler
 import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.emptyImmutableSet
 import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.Calendar
-import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import javax.inject.Inject
 
 @Immutable
 data class HomeUiState(
@@ -58,7 +56,8 @@ data class HomeUiState(
     val analysisPreviousDateCategoryData: ImmutableList<ItemSpentByCategory> = emptyImmutableList(),
     val analysisPreviousDateShopData: ImmutableList<TransactionTotalSpentByShop> =
         emptyImmutableList(),
-    val transactions: Flow<PagingData<TransactionBasketDisplayData>> = flowOf(),
+    val transactions: Flow<PagingData<Transaction>> = flowOf(),
+    val transactionWithVisibleItems: ImmutableSet<Long> = emptyImmutableSet(),
     val dashboardScrollState: ScrollState = ScrollState(0),
     val transactionsListState: LazyListState = LazyListState(),
     val currentDestination: HomeDestinations = HomeDestinations.DEFAULT,
@@ -121,16 +120,8 @@ sealed class HomeEvent {
     data class NavigateCategorySpendingComparison(val year: Int, val month: Int) : HomeEvent()
 
     data class NavigateShopSpendingComparison(val year: Int, val month: Int) : HomeEvent()
-}
 
-@Stable
-data class TransactionBasketDisplayData(
-    val basket: Transaction,
-    var itemsVisible: MutableState<Boolean> = mutableStateOf(false),
-)
-
-fun Flow<PagingData<Transaction>>.toDisplayData(): Flow<PagingData<TransactionBasketDisplayData>> {
-    return map { pagingData -> pagingData.map { TransactionBasketDisplayData(it) } }
+    data class ToggleTransactionItemVisibility(val transactionId: Long) : HomeEvent()
 }
 
 // TODO refactor UseCase
@@ -166,7 +157,6 @@ constructor(
                 transactions =
                     transactionRepository
                         .transactionBasketsPaged()
-                        .toDisplayData()
                         .cachedIn(viewModelScope)
             )
         }
@@ -199,21 +189,13 @@ constructor(
 
     fun handleEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.ChangeScreenDestination -> {
-                changeScreenDestination(event.newDestination)
-            }
+            is HomeEvent.ChangeScreenDestination -> changeScreenDestination(event.newDestination)
 
-            is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> {
-                changeDashboardSpentByTimeChartPeriod(event.newPeriod)
-            }
+            is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> changeDashboardSpentByTimeChartPeriod(event.newPeriod)
 
-            is HomeEvent.IncrementCurrentAnalysisDate -> {
-                incrementCurrentAnalysisDate()
-            }
+            is HomeEvent.IncrementCurrentAnalysisDate -> incrementCurrentAnalysisDate()
 
-            is HomeEvent.DecrementCurrentAnalysisDate -> {
-                decrementCurrentAnalysisDate()
-            }
+            is HomeEvent.DecrementCurrentAnalysisDate -> decrementCurrentAnalysisDate()
 
             is HomeEvent.NavigateSettings -> {}
 
@@ -242,6 +224,25 @@ constructor(
             is HomeEvent.NavigateCategorySpendingComparison -> {}
 
             is HomeEvent.NavigateShopSpendingComparison -> {}
+
+            is HomeEvent.ToggleTransactionItemVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        transactionWithVisibleItems =
+                            if (
+                                currentState.transactionWithVisibleItems.contains(
+                                    event.transactionId
+                                )
+                            ) {
+                                (currentState.transactionWithVisibleItems - event.transactionId)
+                                    .toImmutableSet()
+                            } else {
+                                (currentState.transactionWithVisibleItems + event.transactionId)
+                                    .toImmutableSet()
+                            }
+                    )
+                }
+            }
         }
     }
 
