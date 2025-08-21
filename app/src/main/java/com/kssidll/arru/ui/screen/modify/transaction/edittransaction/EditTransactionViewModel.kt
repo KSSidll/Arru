@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -27,26 +28,24 @@ constructor(
 ) : ModifyTransactionViewModel() {
     private var mTransaction: TransactionEntity? = null
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [transactionId] was valid, false otherwise
-     */
-    suspend fun updateState(transactionId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating transactionId
-                if (transactionId == mTransaction?.id) return@async true
-
-                screenState.allToLoading()
-
-                mTransaction = transactionRepository.get(transactionId).first()
-
-                updateStateForTransaction(mTransaction)
-
-                return@async mTransaction != null
+                return@async transactionRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(transactionId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating transactionId
+            if (transactionId == mTransaction?.id) return@launch
+
+            screenState.allToLoading()
+
+            mTransaction = transactionRepository.get(transactionId).first()
+
+            updateStateForTransaction(mTransaction)
+        }
 
     private suspend fun updateStateForTransaction(transaction: TransactionEntity?) {
         val shop: ShopEntity? = transaction?.shopEntityId?.let { shopRepository.get(it).first() }

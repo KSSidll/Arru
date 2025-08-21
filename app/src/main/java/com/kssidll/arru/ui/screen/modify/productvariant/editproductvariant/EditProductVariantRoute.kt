@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.productvariant.editproductvariant
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
@@ -13,16 +14,19 @@ import kotlinx.coroutines.launch
 fun EditProductVariantRoute(
     variantId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
     viewModel: EditProductVariantViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(variantId) {
-        if (!viewModel.updateState(variantId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(variantId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(variantId) { viewModel.updateState(variantId) }
 
     ModifyProductVariantScreenImpl(
         onBack = navigateBack,
@@ -37,7 +41,7 @@ fun EditProductVariantRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteVariant(variantId).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },

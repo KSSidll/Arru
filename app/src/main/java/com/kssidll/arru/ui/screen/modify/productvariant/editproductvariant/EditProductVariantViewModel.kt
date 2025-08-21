@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -23,32 +24,30 @@ constructor(override val variantRepository: ProductVariantRepositorySource) :
     ModifyProductVariantViewModel() {
     private var mVariant: ProductVariantEntity? = null
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [variantId] was valid, false otherwise
-     */
-    suspend fun updateState(variantId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating variantId
-                if (variantId == mVariant?.id) return@async true
-
-                screenState.name.apply { value = value.toLoading() }
-
-                val variant = variantRepository.get(variantId).first()
-
-                screenState.name.apply {
-                    value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-                }
-
-                screenState.isVariantGlobal.apply {
-                    value = Field.Loading(variant?.productEntityId == null)
-                }
-
-                return@async variant != null
+                return@async variantRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(variantId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating variantId
+            if (variantId == mVariant?.id) return@launch
+
+            screenState.name.apply { value = value.toLoading() }
+
+            val variant = variantRepository.get(variantId).first()
+
+            screenState.name.apply {
+                value = variant?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            }
+
+            screenState.isVariantGlobal.apply {
+                value = Field.Loading(variant?.productEntityId == null)
+            }
+        }
 
     /**
      * Tries to update variant with provided [variantId] with current screen state data

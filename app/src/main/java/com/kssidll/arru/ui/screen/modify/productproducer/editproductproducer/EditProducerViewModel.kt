@@ -20,6 +20,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -37,29 +38,27 @@ constructor(override val producerRepository: ProductProducerRepositorySource) :
     val chosenMergeCandidate: MutableState<ProductProducerEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [producerId] was valid, false otherwise
-     */
-    suspend fun updateState(producerId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating producerId
-                if (producerId == mProducer?.id) return@async true
-
-                screenState.name.apply { value = value.toLoading() }
-
-                mProducer = producerRepository.get(producerId).first()
-                mMergeMessageProducerName.value = mProducer?.name.orEmpty()
-
-                screenState.name.apply {
-                    value = mProducer?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-                }
-
-                return@async mProducer != null
+                return@async producerRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(producerId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating producerId
+            if (producerId == mProducer?.id) return@launch
+
+            screenState.name.apply { value = value.toLoading() }
+
+            mProducer = producerRepository.get(producerId).first()
+            mMergeMessageProducerName.value = mProducer?.name.orEmpty()
+
+            screenState.name.apply {
+                value = mProducer?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            }
+        }
 
     /** @return list of merge candidates as flow */
     fun allMergeCandidates(producerId: Long): Flow<ImmutableList<ProductProducerEntity>> {

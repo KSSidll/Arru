@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -43,44 +44,42 @@ constructor(
     val chosenMergeCandidate: MutableState<ProductEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [productId] was valid, false otherwise
-     */
-    suspend fun updateState(productId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating productId
-                if (productId == mProduct?.id) return@async true
-
-                screenState.name.apply { value = value.toLoading() }
-                screenState.selectedProductProducer.apply { value = value.toLoading() }
-                screenState.selectedProductCategory.apply { value = value.toLoading() }
-
-                mProduct = productRepository.get(productId).first()
-                mMergeMessageProductName.value = mProduct?.name.orEmpty()
-
-                val producer: ProductProducerEntity? =
-                    mProduct?.productProducerEntityId?.let { producerRepository.get(it).first() }
-                val category =
-                    mProduct?.productCategoryEntityId?.let { categoryRepository.get(it).first() }
-
-                screenState.name.apply {
-                    value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-                }
-
-                screenState.selectedProductProducer.apply {
-                    value = producer?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-                }
-
-                screenState.selectedProductCategory.apply {
-                    value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-                }
-
-                return@async mProduct != null
+                return@async productRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(productId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating productId
+            if (productId == mProduct?.id) return@launch
+
+            screenState.name.apply { value = value.toLoading() }
+            screenState.selectedProductProducer.apply { value = value.toLoading() }
+            screenState.selectedProductCategory.apply { value = value.toLoading() }
+
+            mProduct = productRepository.get(productId).first()
+            mMergeMessageProductName.value = mProduct?.name.orEmpty()
+
+            val producer: ProductProducerEntity? =
+                mProduct?.productProducerEntityId?.let { producerRepository.get(it).first() }
+            val category =
+                mProduct?.productCategoryEntityId?.let { categoryRepository.get(it).first() }
+
+            screenState.name.apply {
+                value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            }
+
+            screenState.selectedProductProducer.apply {
+                value = producer?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            }
+
+            screenState.selectedProductCategory.apply {
+                value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            }
+        }
 
     /** @return list of merge candidates as flow */
     fun allMergeCandidates(productId: Long): Flow<ImmutableList<ProductEntity>> {

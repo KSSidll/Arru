@@ -20,6 +20,8 @@ import com.kssidll.arru.domain.data.interfaces.ChartSource
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
@@ -30,8 +32,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import javax.inject.Inject
 
 @Immutable
 data class HomeUiState(
@@ -155,9 +155,7 @@ constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 transactions =
-                    transactionRepository
-                        .transactionBasketsPaged()
-                        .cachedIn(viewModelScope)
+                    transactionRepository.transactionBasketsPaged().cachedIn(viewModelScope)
             )
         }
 
@@ -191,7 +189,8 @@ constructor(
         when (event) {
             is HomeEvent.ChangeScreenDestination -> changeScreenDestination(event.newDestination)
 
-            is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> changeDashboardSpentByTimeChartPeriod(event.newPeriod)
+            is HomeEvent.ChangeDashboardSpentByTimeChartPeriod ->
+                changeDashboardSpentByTimeChartPeriod(event.newPeriod)
 
             is HomeEvent.IncrementCurrentAnalysisDate -> incrementCurrentAnalysisDate()
 

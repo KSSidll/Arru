@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -27,26 +28,24 @@ constructor(
 ) : ModifyItemViewModel() {
     private var mItem: ItemEntity? = null
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [itemId] was valid, false otherwise
-     */
-    suspend fun updateState(itemId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating itemId
-                if (itemId == mItem?.id) return@async true
-
-                screenState.allToLoading()
-
-                mItem = itemRepository.get(itemId).first()
-
-                updateStateForItem(mItem)
-
-                return@async mItem != null
+                return@async itemRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(itemId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating itemId
+            if (itemId == mItem?.id) return@launch
+
+            screenState.allToLoading()
+
+            mItem = itemRepository.get(itemId).first()
+
+            updateStateForItem(mItem)
+        }
 
     /**
      * Tries to update item with provided [itemId] with current screen state data

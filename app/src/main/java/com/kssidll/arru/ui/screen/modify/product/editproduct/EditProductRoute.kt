@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.product.editproduct
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
@@ -15,7 +16,6 @@ import kotlinx.coroutines.launch
 fun EditProductRoute(
     productId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
     navigateAddProductCategory: (query: String?) -> Unit,
     navigateAddProductProducer: (query: String?) -> Unit,
     navigateEditProductCategory: (categoryId: Long) -> Unit,
@@ -26,11 +26,15 @@ fun EditProductRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(productId) {
-        if (!viewModel.updateState(productId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(productId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(productId) { viewModel.updateState(productId) }
 
     LaunchedEffect(providedProducerId) { viewModel.setSelectedProducer(providedProducerId) }
 
@@ -53,14 +57,14 @@ fun EditProductRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteProduct(productId).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },
         onMerge = {
             scope.launch {
                 if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },

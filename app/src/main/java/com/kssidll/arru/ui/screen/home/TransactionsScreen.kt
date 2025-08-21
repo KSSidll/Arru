@@ -301,12 +301,9 @@ fun TransactionScreenContent(
 
                     transactionBasketCard(
                         transaction = transaction,
-                        itemsVisible =
-                            uiState.transactionWithVisibleItems.contains(transaction.id),
+                        itemsVisible = uiState.transactionWithVisibleItems.contains(transaction.id),
                         onTransactionClick = {
-                            onEvent(
-                                HomeEvent.ToggleTransactionItemVisibility(transaction.id)
-                            )
+                            onEvent(HomeEvent.ToggleTransactionItemVisibility(transaction.id))
 
                             scope.launch {
                                 // the transaction basket card has 2 separate lazy list scope DSL
@@ -319,9 +316,7 @@ fun TransactionScreenContent(
                         onTransactionLongClick = {
                             onEvent(HomeEvent.NavigateEditTransaction(transaction.id))
                         },
-                        onItemAddClick = {
-                            onEvent(HomeEvent.NavigateAddItem(transaction.id))
-                        },
+                        onItemAddClick = { onEvent(HomeEvent.NavigateAddItem(transaction.id)) },
                         onItemClick = { onEvent(HomeEvent.NavigateDisplayProduct(it.productId)) },
                         onItemLongClick = { onEvent(HomeEvent.NavigateEditItem(it.id)) },
                         onItemCategoryClick = {

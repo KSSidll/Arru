@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
@@ -16,7 +17,6 @@ fun EditTransactionRoute(
     isExpandedScreen: Boolean,
     transactionId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: (transactionId: Long) -> Unit,
     navigateAddShop: (query: String?) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
     providedShopId: Long?,
@@ -24,11 +24,15 @@ fun EditTransactionRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(transactionId) {
-        if (!viewModel.updateState(transactionId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(transactionId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(transactionId) { viewModel.updateState(transactionId) }
 
     LaunchedEffect(providedShopId) { viewModel.setSelectedShopToProvided(providedShopId) }
 
@@ -48,7 +52,7 @@ fun EditTransactionRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteTransaction(transactionId).isNotError()) {
-                    navigateBackDelete(transactionId)
+                    navigateBack()
                 }
             }
         },

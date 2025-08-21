@@ -20,6 +20,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -35,29 +36,27 @@ class EditShopViewModel @Inject constructor(override val shopRepository: ShopRep
     val chosenMergeCandidate: MutableState<ShopEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [shopId] was valid, false otherwise
-     */
-    suspend fun updateState(shopId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating shopId
-                if (shopId == mShop?.id) return@async true
-
-                screenState.name.apply { value = value.toLoading() }
-
-                mShop = shopRepository.get(shopId).first()
-                mMergeMessageShopName.value = mShop?.name.orEmpty()
-
-                screenState.name.apply {
-                    value = mShop?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-                }
-
-                return@async mShop != null
+                return@async shopRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(shopId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating shopId
+            if (shopId == mShop?.id) return@launch
+
+            screenState.name.apply { value = value.toLoading() }
+
+            mShop = shopRepository.get(shopId).first()
+            mMergeMessageShopName.value = mShop?.name.orEmpty()
+
+            screenState.name.apply {
+                value = mShop?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            }
+        }
 
     /** @return list of merge candidates as flow */
     fun allMergeCandidates(shopId: Long): Flow<ImmutableList<ShopEntity>> {

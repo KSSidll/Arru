@@ -77,35 +77,37 @@ constructor(
 
     private var _shopId: Long? = null
 
-    /** @return True if provided [shopId] was valid, false otherwise */
-    suspend fun performDataUpdate(shopId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                val shop = getShopEntityUseCase(shopId).first() ?: return@async false
-                _shopId = shop.id
+                return@async getShopEntityUseCase(id).first() != null
+            }
+            .await()
 
-                job?.cancel()
-                job =
-                    viewModelScope.launch {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                shopName = shop.name,
-                                items = getItemsForShopUseCase(shopId),
-                            )
-                        }
-                    }
+    fun updateState(shopId: Long) =
+        viewModelScope.launch {
+            val shop = getShopEntityUseCase(shopId).first() ?: return@launch
+            _shopId = shop.id
 
+            job?.cancel()
+            job =
                 viewModelScope.launch {
-                    getTotalSpentForShopUseCase(shopId).collectLatest {
-                        _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            shopName = shop.name,
+                            items = getItemsForShopUseCase(shopId),
+                        )
                     }
                 }
 
-                updateChartJob(_uiState.value.spentByTimePeriod, shopId)
-
-                return@async true
+            viewModelScope.launch {
+                getTotalSpentForShopUseCase(shopId).collectLatest {
+                    _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                }
             }
-            .await()
+
+            updateChartJob(_uiState.value.spentByTimePeriod, shopId)
+        }
 
     fun handleEvent(event: DisplayShopEvent) {
         when (event) {

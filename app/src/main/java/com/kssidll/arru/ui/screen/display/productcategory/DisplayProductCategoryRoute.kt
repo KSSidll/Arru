@@ -2,8 +2,11 @@ package com.kssidll.arru.ui.screen.display.productcategory
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DisplayProductCategoryRoute(
@@ -16,11 +19,17 @@ fun DisplayProductCategoryRoute(
     navigateDisplayShop: (shopId: Long) -> Unit,
     viewModel: DisplayProductCategoryViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(categoryId) {
-        if (!viewModel.performDataUpdate(categoryId)) {
-            navigateBack()
+    val scope = rememberCoroutineScope()
+
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(categoryId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(categoryId) { viewModel.updateState(categoryId) }
 
     DisplayProductCategoryScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,

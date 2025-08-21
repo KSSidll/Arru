@@ -20,6 +20,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 // TODO refactor uiState Event UseCase
 
@@ -37,29 +38,27 @@ constructor(override val categoryRepository: ProductCategoryRepositorySource) :
     val chosenMergeCandidate: MutableState<ProductCategoryEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    /**
-     * Updates data in the screen state
-     *
-     * @return true if provided [categoryId] was valid, false otherwise
-     */
-    suspend fun updateState(categoryId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                // skip state update for repeating categoryId
-                if (categoryId == mCategory?.id) return@async true
-
-                screenState.name.value = screenState.name.value.toLoading()
-
-                mCategory = categoryRepository.get(categoryId).first()
-                mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
-
-                screenState.name.apply {
-                    value = mCategory?.let { Field.Loaded(it.name) } ?: value.toLoadedOrError()
-                }
-
-                return@async mCategory != null
+                return@async categoryRepository.get(id).first() != null
             }
             .await()
+
+    fun updateState(categoryId: Long) =
+        viewModelScope.launch {
+            // skip state update for repeating categoryId
+            if (categoryId == mCategory?.id) return@launch
+
+            screenState.name.value = screenState.name.value.toLoading()
+
+            mCategory = categoryRepository.get(categoryId).first()
+            mMergeMessageCategoryName.value = mCategory?.name.orEmpty()
+
+            screenState.name.apply {
+                value = mCategory?.let { Field.Loaded(it.name) } ?: value.toLoadedOrError()
+            }
+        }
 
     /** @return list of merge candidates as flow */
     fun allMergeCandidates(categoryId: Long): Flow<ImmutableList<ProductCategoryEntity>> {

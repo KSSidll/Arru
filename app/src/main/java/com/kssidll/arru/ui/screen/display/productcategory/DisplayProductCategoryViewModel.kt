@@ -83,38 +83,39 @@ constructor(
 
     private var _categoryId: Long? = null
 
-    /** @return true if provided [categoryId] was valid, false otherwise */
-    suspend fun performDataUpdate(categoryId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                val category =
-                    getProductCategoryEntityUseCase(categoryId).first() ?: return@async false
-                _categoryId = categoryId
+                return@async getProductCategoryEntityUseCase(id).first() != null
+            }
+            .await()
 
-                job?.cancel()
-                job =
+    fun updateState(categoryId: Long) =
+        viewModelScope.launch {
+            val category = getProductCategoryEntityUseCase(categoryId).first() ?: return@launch
+            _categoryId = categoryId
+
+            job?.cancel()
+            job =
+                viewModelScope.launch {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            categoryName = category.name,
+                            items = getItemsForProductCategoryUseCase(categoryId),
+                        )
+                    }
+
                     viewModelScope.launch {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                categoryName = category.name,
-                                items = getItemsForProductCategoryUseCase(categoryId),
-                            )
-                        }
-
-                        viewModelScope.launch {
-                            getTotalSpentForProductCategoryUseCase(categoryId).collectLatest {
-                                _uiState.update { currentState ->
-                                    currentState.copy(totalSpent = it ?: 0f)
-                                }
+                        getTotalSpentForProductCategoryUseCase(categoryId).collectLatest {
+                            _uiState.update { currentState ->
+                                currentState.copy(totalSpent = it ?: 0f)
                             }
                         }
                     }
+                }
 
-                updateChartJob(_uiState.value.spentByTimePeriod, categoryId)
-
-                return@async true
-            }
-            .await()
+            updateChartJob(_uiState.value.spentByTimePeriod, categoryId)
+        }
 
     fun handleEvent(event: DisplayProductCategoryEvent) {
         when (event) {

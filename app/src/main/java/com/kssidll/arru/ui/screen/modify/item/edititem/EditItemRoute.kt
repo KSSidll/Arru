@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.item.edititem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
@@ -15,7 +16,6 @@ import kotlinx.coroutines.launch
 fun EditItemRoute(
     itemId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
     navigateAddProduct: (query: String?) -> Unit,
     navigateAddProductVariant: (productId: Long, query: String?) -> Unit,
     navigateEditProduct: (productId: Long) -> Unit,
@@ -26,11 +26,15 @@ fun EditItemRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(itemId) {
-        if (!viewModel.updateState(itemId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(itemId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(itemId) { viewModel.updateState(itemId) }
 
     LaunchedEffect(providedProductId, providedVariantId) {
         viewModel.setSelectedProductToProvided(providedProductId, providedVariantId)
@@ -53,7 +57,7 @@ fun EditItemRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteItem(itemId).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },

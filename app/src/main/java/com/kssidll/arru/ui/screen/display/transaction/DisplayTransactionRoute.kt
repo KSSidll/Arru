@@ -2,8 +2,11 @@ package com.kssidll.arru.ui.screen.display.transaction
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DisplayTransactionRoute(
@@ -18,11 +21,17 @@ fun DisplayTransactionRoute(
     navigateDisplayShop: (shopId: Long) -> Unit,
     viewModel: DisplayTransactionViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(transactionId) {
-        if (!viewModel.performDataUpdate(transactionId)) {
-            navigateBack()
+    val scope = rememberCoroutineScope()
+
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(transactionId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(transactionId) { viewModel.updateState(transactionId) }
 
     DisplayTransactionScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,

@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.productcategory.editproductcategory
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
@@ -13,16 +14,19 @@ import kotlinx.coroutines.launch
 fun EditProductCategoryRoute(
     categoryId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
     viewModel: EditProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(categoryId) {
-        if (!viewModel.updateState(categoryId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(categoryId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(categoryId) { viewModel.updateState(categoryId) }
 
     ModifyProductCategoryScreenImpl(
         onBack = navigateBack,
@@ -37,14 +41,14 @@ fun EditProductCategoryRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteCategory(categoryId).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },
         onMerge = {
             scope.launch {
                 if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },

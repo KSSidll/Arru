@@ -2,8 +2,11 @@ package com.kssidll.arru.ui.screen.display.product
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DisplayProductRoute(
@@ -16,11 +19,17 @@ fun DisplayProductRoute(
     navigateEditProduct: () -> Unit,
     viewModel: DisplayProductViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(productId) {
-        if (!viewModel.performDataUpdate(productId)) {
-            navigateBack()
+    val scope = rememberCoroutineScope()
+
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(productId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(productId) { viewModel.updateState(productId) }
 
     DisplayProductScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,

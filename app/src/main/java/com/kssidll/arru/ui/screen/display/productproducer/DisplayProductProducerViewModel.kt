@@ -83,36 +83,38 @@ constructor(
 
     private var _productProducerId: Long? = null
 
-    /** @return true if provided [productProducerId] was valid, false otherwise */
-    suspend fun performDataUpdate(productProducerId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                val productProducer =
-                    getProductProducerEntityUseCase(productProducerId).first() ?: return@async false
-                _productProducerId = productProducer.id
+                return@async getProductProducerEntityUseCase(id).first() != null
+            }
+            .await()
 
-                job?.cancel()
-                job =
-                    viewModelScope.launch {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                productProducerName = productProducer.name,
-                                items = getItemsForProductProducerUseCase(productProducerId),
-                            )
-                        }
-                    }
+    fun updateState(productProducerId: Long) =
+        viewModelScope.launch {
+            val productProducer =
+                getProductProducerEntityUseCase(productProducerId).first() ?: return@launch
+            _productProducerId = productProducer.id
 
+            job?.cancel()
+            job =
                 viewModelScope.launch {
-                    getTotalSpentForProductProducerUseCase(productProducerId).collectLatest {
-                        _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            productProducerName = productProducer.name,
+                            items = getItemsForProductProducerUseCase(productProducerId),
+                        )
                     }
                 }
 
-                updateChartJob(_uiState.value.spentByTimePeriod, productProducerId)
-
-                return@async true
+            viewModelScope.launch {
+                getTotalSpentForProductProducerUseCase(productProducerId).collectLatest {
+                    _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                }
             }
-            .await()
+
+            updateChartJob(_uiState.value.spentByTimePeriod, productProducerId)
+        }
 
     fun handleEvent(event: DisplayProductProducerEvent) {
         when (event) {

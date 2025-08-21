@@ -54,23 +54,24 @@ constructor(
 
     private var _transactionId: Long? = null
 
-    /** @return true if provided [transactionId] was valid, false otherwise */
-    suspend fun performDataUpdate(transactionId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                val transaction =
-                    getTransactionEntityUseCase(transactionId).first() ?: return@async false
-                _transactionId = transaction.id
-
-                job?.cancel()
-                job =
-                    viewModelScope.launch {
-                        getTransactionUseCase(transactionId).collectLatest {
-                            _uiState.update { currentState -> currentState.copy(transaction = it) }
-                        }
-                    }
-
-                return@async true
+                return@async getTransactionEntityUseCase(id).first() != null
             }
             .await()
+
+    fun updateState(transactionId: Long) =
+        viewModelScope.launch {
+            val transaction = getTransactionEntityUseCase(transactionId).first() ?: return@launch
+            _transactionId = transaction.id
+
+            job?.cancel()
+            job =
+                viewModelScope.launch {
+                    getTransactionUseCase(transactionId).collectLatest {
+                        _uiState.update { currentState -> currentState.copy(transaction = it) }
+                    }
+                }
+        }
 }

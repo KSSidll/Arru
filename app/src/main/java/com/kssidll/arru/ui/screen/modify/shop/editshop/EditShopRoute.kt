@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.shop.editshop
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
@@ -13,16 +14,19 @@ import kotlinx.coroutines.launch
 fun EditShopRoute(
     shopId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
     viewModel: EditShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(shopId) {
-        if (!viewModel.updateState(shopId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(shopId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(shopId) { viewModel.updateState(shopId) }
 
     ModifyShopScreenImpl(
         onBack = navigateBack,
@@ -37,14 +41,14 @@ fun EditShopRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteShop(shopId).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },
         onMerge = {
             scope.launch {
                 if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },

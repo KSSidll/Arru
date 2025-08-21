@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.productproducer.editproductproducer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
@@ -13,16 +14,19 @@ import kotlinx.coroutines.launch
 fun EditProductProducerRoute(
     producerId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
     viewModel: EditProducerViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(producerId) {
-        if (!viewModel.updateState(producerId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(producerId)) {
+                navigateBack()
+            }
         }
     }
+
+    LaunchedEffect(producerId) { viewModel.updateState(producerId) }
 
     ModifyProductProducerScreenImpl(
         onBack = navigateBack,
@@ -37,14 +41,14 @@ fun EditProductProducerRoute(
         onDelete = {
             scope.launch {
                 if (viewModel.deleteProducer(producerId).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },
         onMerge = {
             scope.launch {
                 if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBackDelete()
+                    navigateBack()
                 }
             }
         },
