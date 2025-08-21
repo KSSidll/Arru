@@ -43,6 +43,7 @@ import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.other.ProgressBar
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -121,7 +122,7 @@ fun <T> RankingList(
     val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
     var maxItemValue by remember { mutableLongStateOf(Long.MAX_VALUE) }
 
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     LaunchedEffect(items) {
         if (items.isNotEmpty()) {

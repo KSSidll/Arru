@@ -58,6 +58,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.common.shader.ShaderProvider
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 
 private val HALF_CHART_TOP_PADDING: Dp = 36.dp
@@ -87,7 +88,7 @@ fun TotalAverageAndMedianSpendingComponent(
     val totalStartValue = if (skipAnimation) totalSpentData else 0f
     val averageStartValue = if (skipAnimation) spentByTimeData.avg() else 0f
     val medianStartValue = if (skipAnimation) spentByTimeData.median() else 0f
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     Column(modifier) {
         Card(

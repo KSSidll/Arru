@@ -51,6 +51,7 @@ import com.patrykandpatrick.vico.core.common.LegendItem
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shader.ShaderProvider
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 
 private val LegendLabelKey = ExtraStore.Key<List<String>>()
@@ -66,7 +67,7 @@ fun ProductPriceCompareChart(
 
     val defaultVariantName = stringResource(id = R.string.item_product_variant_default_value)
 
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     val lineColors = vicoTheme.lineCartesianLayerColors
     val legendItemLabelComponent =

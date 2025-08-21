@@ -36,6 +36,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 
 private val TopAxisLabelKey = ExtraStore.Key<Map<Float, String>>()
@@ -64,7 +65,7 @@ fun OneDimensionalColumnChart(
     scrollState: VicoScrollState = oneDimensionalColumnChartDefaultScrollState(),
     runInitialAnimation: Boolean = true,
 ) {
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     LaunchedEffect(data) {
         // Peak engineering

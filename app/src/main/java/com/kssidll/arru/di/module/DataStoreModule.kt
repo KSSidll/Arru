@@ -43,6 +43,7 @@ class DataStoreModule {
     }
 
     @Provides
+    @Singleton
     fun providePreferences(@ApplicationContext context: Context): Preferences {
         return runBlocking {
             return@runBlocking getPreferences(context)

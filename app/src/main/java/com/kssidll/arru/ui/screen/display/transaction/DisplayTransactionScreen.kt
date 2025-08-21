@@ -38,6 +38,7 @@ import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArruTheme
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +47,7 @@ fun DisplayTransactionScreen(
     onEvent: (event: DisplayTransactionEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
     val headerColor = MaterialTheme.colorScheme.background
 
     Scaffold(

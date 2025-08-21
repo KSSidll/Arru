@@ -1,5 +1,8 @@
 package com.kssidll.arru.di.module.data
 
+import com.kssidll.arru.data.dao.ItemEntityDao
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ItemRepository
 import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetItemEntityUseCase
 import dagger.Module
@@ -12,6 +15,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class ItemModule {
 
+    @Provides
+    @Singleton
+    fun provideItemEntityDao(appDatabase: AppDatabase): ItemEntityDao {
+        return appDatabase.getItemEntityDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideItemRepository(dao: ItemEntityDao): ItemRepositorySource {
+        return ItemRepository(dao)
+    }
+
     /** ENTITY */
     @Provides
     @Singleton
@@ -22,12 +37,4 @@ class ItemModule {
     }
 
     /** DOMAIN */
-
-    // @Provides
-    // @Singleton
-    // fun provideGetItemUseCase(
-    //     getItemEntityUseCase: GetItemEntityUseCase
-    // ): GetItemUseCase {
-    //     return GetItemUseCase(getItemEntityUseCase)
-    // }
 }

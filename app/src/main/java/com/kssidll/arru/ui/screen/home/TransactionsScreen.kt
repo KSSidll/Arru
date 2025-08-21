@@ -65,6 +65,7 @@ import com.kssidll.arru.ui.component.list.transactionBasketCardHeaderPlaceholder
 import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.theme.ArruTheme
+import java.util.Locale
 import kotlinx.coroutines.launch
 
 private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
@@ -201,7 +202,7 @@ fun TransactionScreenContent(
     modifier: Modifier = Modifier,
     fabPadding: PaddingValues = PaddingValues(),
 ) {
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     val headerColor = MaterialTheme.colorScheme.background
 

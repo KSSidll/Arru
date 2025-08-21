@@ -7,7 +7,7 @@ data class DatabaseBackup(
     val file: File,
     val name: String,
     val time: Long,
-    val totalTransactions: Int,
+    val totalTransactions: Long,
     val totalSpending: Long,
     val locked: Boolean,
     val hasLockMarkInName: Boolean,
@@ -30,7 +30,7 @@ data class DatabaseBackup(
          */
         fun makeName(
             time: Long,
-            totalTransactions: Int,
+            totalTransactions: Long,
             totalSpending: Long,
             locked: Boolean,
         ): String {
@@ -86,8 +86,8 @@ data class DatabaseBackup(
             )
         }
 
-        private fun transactionsFromName(name: String): Int? {
-            return name.split(FILE_NAME_SEPARATOR).getOrNull(3)?.toIntOrNull()
+        private fun transactionsFromName(name: String): Long? {
+            return name.split(FILE_NAME_SEPARATOR).getOrNull(3)?.toLongOrNull()
         }
 
         private fun spendingFromName(name: String): Long? {

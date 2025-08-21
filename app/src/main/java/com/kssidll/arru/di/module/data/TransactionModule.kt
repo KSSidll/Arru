@@ -1,5 +1,8 @@
 package com.kssidll.arru.di.module.data
 
+import com.kssidll.arru.data.dao.TransactionEntityDao
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.TransactionRepository
 import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthUseCase
@@ -17,6 +20,18 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class TransactionModule {
+
+    @Provides
+    @Singleton
+    fun provideTransactionEntityDao(appDatabase: AppDatabase): TransactionEntityDao {
+        return appDatabase.getTransactionEntityDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionRepository(dao: TransactionEntityDao): TransactionRepositorySource {
+        return TransactionRepository(dao)
+    }
 
     /** ENTITY */
     @Provides

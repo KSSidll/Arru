@@ -25,6 +25,7 @@ import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.optionalAlpha
+import java.util.Locale
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -54,7 +55,7 @@ fun <T> SpendingComparisonList(
     modifier: Modifier = Modifier,
     itemDisplayLimit: Int? = null,
 ) where T : RankSource {
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     Row(modifier = modifier) {
         val leftGroupped = leftSideItems.groupBy { it.displayName() }

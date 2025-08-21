@@ -48,7 +48,6 @@ import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.DatabaseBackup
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.theme.ArruTheme
@@ -58,25 +57,20 @@ import com.kssidll.arru.ui.theme.optionalAlpha
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun BackupsScreen(
-    createBackup: () -> Unit,
-    loadBackup: (dbFile: DatabaseBackup) -> Unit,
-    deleteBackup: (dbFile: DatabaseBackup) -> Unit,
-    toggleLockBackup: (dbFile: DatabaseBackup) -> Unit,
-    availableBackups: ImmutableList<DatabaseBackup>,
-    onBack: () -> Unit,
+    uiState: BackupsUiState,
+    onEvent: (event: BackupsEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     Scaffold(
         topBar = {
             SecondaryAppBar(
-                onBack = onBack,
+                onBack = { onEvent(BackupsEvent.NavigateBack) },
                 title = {
                     Text(
                         text = stringResource(id = R.string.backups),
@@ -86,7 +80,7 @@ fun BackupsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { createBackup() }) {
+            FloatingActionButton(onClick = { onEvent(BackupsEvent.CreateBackup) }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(id = R.string.backup_create),
@@ -98,7 +92,7 @@ fun BackupsScreen(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
             AnimatedVisibility(
-                visible = availableBackups.isEmpty(),
+                visible = uiState.backups.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -106,13 +100,13 @@ fun BackupsScreen(
             }
 
             AnimatedVisibility(
-                visible = availableBackups.isNotEmpty(),
+                visible = uiState.backups.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     var lastDate: Long? = null
-                    availableBackups.forEach {
+                    uiState.backups.forEach {
                         val currentDate = it.time
 
                         if (lastDate == null || currentDate != lastDate) {
@@ -167,7 +161,7 @@ fun BackupsScreen(
                                     IconButton(
                                         onClick = {
                                             if (!it.locked) {
-                                                deleteBackup(it)
+                                                onEvent(BackupsEvent.DeleteBackup(it))
                                             }
                                         }
                                     ) {
@@ -205,7 +199,9 @@ fun BackupsScreen(
                                                     role = Role.Button,
                                                     onClickLabel =
                                                         stringResource(id = R.string.backup_load),
-                                                    onClick = { loadBackup(it) },
+                                                    onClick = {
+                                                        onEvent(BackupsEvent.LoadBackup(it))
+                                                    },
                                                 )
                                     ) {
                                         Box(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
@@ -276,7 +272,9 @@ fun BackupsScreen(
                                         }
                                     }
 
-                                    IconButton(onClick = { toggleLockBackup(it) }) {
+                                    IconButton(
+                                        onClick = { onEvent(BackupsEvent.ToggleBackupLock(it)) }
+                                    ) {
                                         Crossfade(
                                             targetState = it.locked,
                                             label = "lock status change animation",
@@ -359,14 +357,7 @@ fun BackupsScreenNothingToDisplayOverlay(modifier: Modifier = Modifier) {
 private fun BackupsScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            BackupsScreen(
-                createBackup = {},
-                loadBackup = {},
-                deleteBackup = {},
-                toggleLockBackup = {},
-                availableBackups = emptyImmutableList(),
-                onBack = {},
-            )
+            BackupsScreen(uiState = BackupsUiState(), onEvent = {})
         }
     }
 }

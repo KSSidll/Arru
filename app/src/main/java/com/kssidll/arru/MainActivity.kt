@@ -14,6 +14,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
@@ -34,7 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 @SuppressLint("ComposeCompositionLocalUsage")
-val LocalCurrencyFormatLocale = compositionLocalOf { Locale.getDefault() }
+val LocalCurrencyFormatLocale: ProvidableCompositionLocal<Locale?> = compositionLocalOf { null }
 
 const val BUNDLE_NAV_CONTROLLER = "NAV_CONTROLLER"
 const val INTENT_NAVIGATE_TO_KEY = "intent_navigate_to_key"

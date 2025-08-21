@@ -1,5 +1,8 @@
 package com.kssidll.arru.di.module.data
 
+import com.kssidll.arru.data.dao.ShopEntityDao
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ShopRepository
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
@@ -18,6 +21,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class ShopModule {
 
+    @Provides
+    @Singleton
+    fun provideShopEntityDao(appDatabase: AppDatabase): ShopEntityDao {
+        return appDatabase.getShopEntityDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideShopRepository(dao: ShopEntityDao): ShopRepositorySource {
+        return ShopRepository(dao)
+    }
+
     /** ENTITY */
     @Provides
     @Singleton
@@ -28,15 +43,6 @@ class ShopModule {
     }
 
     /** DOMAIN */
-
-    // @Provides
-    // @Singleton
-    // fun provideGetShopUseCase(
-    //     getShopEntityUseCase: GetShopEntityUseCase
-    // ): GetShopUseCase {
-    //     return GetShopUseCase(getShopEntityUseCase)
-    // }
-
     @Provides
     @Singleton
     fun provideGetTotalSpentForShopUseCase(

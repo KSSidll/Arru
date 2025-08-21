@@ -47,6 +47,7 @@ import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
+import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -59,7 +60,7 @@ fun ItemCard(
     onProducerClick: ((item: Item) -> Unit)? = null,
     onShopClick: ((item: Item) -> Unit)? = null,
 ) {
-    val currencyLocale = LocalCurrencyFormatLocale.current
+    val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     val itemModifier =
         if (onItemClick != null || onItemLongClick != null)

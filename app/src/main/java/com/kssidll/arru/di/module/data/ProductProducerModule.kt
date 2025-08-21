@@ -1,5 +1,8 @@
 package com.kssidll.arru.di.module.data
 
+import com.kssidll.arru.data.dao.ProductProducerEntityDao
+import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ProductProducerRepository
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductProducerUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductProducerEntityUseCase
@@ -18,6 +21,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class ProductProducerModule {
 
+    @Provides
+    @Singleton
+    fun provideProductProducerEntityDao(appDatabase: AppDatabase): ProductProducerEntityDao {
+        return appDatabase.getProductProducerEntityDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductProducerRepository(
+        dao: ProductProducerEntityDao
+    ): ProductProducerRepositorySource {
+        return ProductProducerRepository(dao)
+    }
+
     /** ENTITY */
     @Provides
     @Singleton
@@ -28,15 +45,6 @@ class ProductProducerModule {
     }
 
     /** DOMAIN */
-
-    // @Provides
-    // @Singleton
-    // fun provideGetProductProducerUseCase(
-    //     getProductProducerEntityUseCase: GetProductProducerEntityUseCase
-    // ): GetProductProducerUseCase {
-    //     return GetProductProducerUseCase(getProductProducerEntityUseCase)
-    // }
-
     @Provides
     @Singleton
     fun provideGetTotalSpentForProductProducerUseCase(

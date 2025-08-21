@@ -13,6 +13,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kssidll.arru.APPLICATION_NAME
 import com.kssidll.arru.Arru
+import com.kssidll.arru.data.dao.BackupDao
 import com.kssidll.arru.data.dao.ExportDao
 import com.kssidll.arru.data.dao.ImportDao
 import com.kssidll.arru.data.dao.ItemEntityDao
@@ -33,8 +34,11 @@ import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getDatabaseLocation
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.emptyImmutableList
 import java.io.File
 import java.util.Calendar
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -127,6 +131,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getExportDao(): ExportDao
 
     abstract fun getImportDao(): ImportDao
+
+    abstract fun getBackupDao(): BackupDao
 
     companion object {
         /**
@@ -347,7 +353,7 @@ abstract class AppDatabase : RoomDatabase() {
          */
         suspend fun saveDbBackup(
             context: Context,
-            totalTransactions: Int,
+            totalTransactions: Long,
             totalSpending: Long,
             time: Long = Calendar.getInstance().timeInMillis,
         ): File {
@@ -410,7 +416,7 @@ abstract class AppDatabase : RoomDatabase() {
         suspend fun availableBackups(
             context: Context,
             directory: File? = null,
-        ): List<DatabaseBackup> {
+        ): ImmutableList<DatabaseBackup> {
             @Suppress("LocalVariableName")
             val _directory = directory ?: context.currentDbBackupDirectory()
 
@@ -447,12 +453,12 @@ abstract class AppDatabase : RoomDatabase() {
                     return if (changed) {
                         availableBackups(context)
                     } else {
-                        dbFiles.toList().sortedByDescending { it.time }
+                        dbFiles.sortedByDescending { it.time }.toImmutableList()
                     }
                 }
             }
 
-            return emptyList()
+            return emptyImmutableList()
         }
     }
 }
