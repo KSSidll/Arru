@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.home.component
+package com.kssidll.arru.ui.screen.home
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kssidll.arru.R
 import com.kssidll.arru.ui.theme.Typography
 
 @Composable
@@ -26,16 +27,13 @@ fun HomeScreenNothingToDisplayOverlay(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_text),
+                text = stringResource(id = R.string.no_data_to_display_text),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )
 
             Text(
-                text =
-                    stringResource(
-                        id = com.kssidll.arru.R.string.no_data_to_display_add_transaction_hint
-                    ),
+                text = stringResource(id = R.string.no_data_to_display_add_transaction_hint),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )
@@ -93,16 +91,13 @@ fun ExpandedHomeScreenNothingToDisplayOverlay(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text =
-                    stringResource(
-                        id = com.kssidll.arru.R.string.no_data_to_display_add_transaction_hint
-                    ),
+                text = stringResource(id = R.string.no_data_to_display_add_transaction_hint),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )
 
             Text(
-                text = stringResource(id = com.kssidll.arru.R.string.no_data_to_display_text),
+                text = stringResource(id = R.string.no_data_to_display_text),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )

@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.home.component
+package com.kssidll.arru.ui.screen.home.analysis
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

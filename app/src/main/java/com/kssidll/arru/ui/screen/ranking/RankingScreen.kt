@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.list.RankingList
@@ -131,7 +131,7 @@ private fun RankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = ItemSpentByCategory.generateList().toImmutableList(),
+                data = TotalSpentByCategory.generateList().toImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},
@@ -167,7 +167,7 @@ private fun ExpandedRankingScreenPreview() {
             RankingScreen(
                 onBack = {},
                 title = "test",
-                data = ItemSpentByCategory.generateList().toImmutableList(),
+                data = TotalSpentByCategory.generateList().toImmutableList(),
                 onItemClick = {},
                 onItemClickLabel = String(),
                 onItemLongClick = {},

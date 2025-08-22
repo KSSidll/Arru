@@ -5,8 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductCategoryEntityDao
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
@@ -17,7 +17,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -111,6 +110,10 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao) :
 
     override fun get(id: Long): Flow<ProductCategoryEntity?> = dao.get(id).cancellable()
 
+    override fun all(): Flow<ImmutableList<ProductCategoryEntity>> {
+        return dao.all().cancellable().map { it.toImmutableList() }
+    }
+
     override fun totalSpent(id: Long): Flow<Float?> =
         dao.totalSpent(id).cancellable().map {
             it?.toFloat()?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
@@ -136,20 +139,14 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao) :
     override fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>> =
         dao.totalSpentByYear(id).cancellable().map { it.toImmutableList() }
 
-    override fun all(): Flow<ImmutableList<ProductCategoryEntity>> {
-        return dao.all().cancellable().distinctUntilChanged().map { it.toImmutableList() }
-    }
-
-    override fun totalSpentByCategory(): Flow<ImmutableList<ItemSpentByCategory>> {
-        return dao.totalSpentByCategory().cancellable().distinctUntilChanged().map {
-            it.toImmutableList()
-        }
+    override fun totalSpentByCategory(): Flow<ImmutableList<TotalSpentByCategory>> {
+        return dao.totalSpentByCategory().cancellable().map { it.toImmutableList() }
     }
 
     override fun totalSpentByCategoryByMonth(
         year: Int,
         month: Int,
-    ): Flow<ImmutableList<ItemSpentByCategory>> {
+    ): Flow<ImmutableList<TotalSpentByCategory>> {
         val date: String = buildString {
             append(year)
             append("-")
@@ -163,8 +160,6 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao) :
             append(monthStr)
         }
 
-        return dao.totalSpentByCategoryByMonth(date).cancellable().distinctUntilChanged().map {
-            it.toImmutableList()
-        }
+        return dao.totalSpentByCategoryByMonth(date).cancellable().map { it.toImmutableList() }
     }
 }

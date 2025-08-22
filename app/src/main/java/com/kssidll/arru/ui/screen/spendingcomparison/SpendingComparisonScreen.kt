@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.list.SpendingComparisonList
@@ -123,9 +123,9 @@ private fun SpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
+                leftSideItems = TotalSpentByCategory.generateList(4).toImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
+                rightSideItems = TotalSpentByCategory.generateList(4).toImmutableList(),
                 rightSideHeader = "right",
             )
         }
@@ -157,9 +157,9 @@ private fun ExpandedSpendingComparisonScreenPreview() {
             SpendingComparisonScreen(
                 onBack = {},
                 title = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
+                leftSideItems = TotalSpentByCategory.generateList(4).toImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
+                rightSideItems = TotalSpentByCategory.generateList(4).toImmutableList(),
                 rightSideHeader = "right",
             )
         }

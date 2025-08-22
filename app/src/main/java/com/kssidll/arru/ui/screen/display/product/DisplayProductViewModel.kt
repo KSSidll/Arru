@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import com.kssidll.arru.domain.data.emptyImmutableList
@@ -98,28 +99,32 @@ constructor(
             job?.cancel()
             job =
                 viewModelScope.launch {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            productName = product.name,
-                            items = getItemsForProductUseCase(productId),
-                        )
-                    }
-                }
-
-            viewModelScope.launch {
-                getTotalSpentForProductUseCase(productId).collectLatest {
-                    _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
-                }
-            }
-
-            viewModelScope.launch {
-                getAveragePriceByShopByVariantByProducerByDayForProductUseCase(productId)
-                    .collectLatest {
+                    viewModelScope.launch {
                         _uiState.update { currentState ->
-                            currentState.copy(productPriceByTime = it)
+                            currentState.copy(
+                                productName = product.name,
+                                items = getItemsForProductUseCase(productId).cachedIn(this),
+                            )
                         }
                     }
-            }
+
+                    viewModelScope.launch {
+                        getTotalSpentForProductUseCase(productId).collectLatest {
+                            _uiState.update { currentState ->
+                                currentState.copy(totalSpent = it ?: 0f)
+                            }
+                        }
+                    }
+
+                    viewModelScope.launch {
+                        getAveragePriceByShopByVariantByProducerByDayForProductUseCase(productId)
+                            .collectLatest {
+                                _uiState.update { currentState ->
+                                    currentState.copy(productPriceByTime = it)
+                                }
+                            }
+                    }
+                }
 
             updateChartJob(_uiState.value.spentByTimePeriod, productId)
         }

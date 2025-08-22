@@ -1,7 +1,6 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.view.Item
@@ -131,6 +130,9 @@ interface ProductProducerRepositorySource {
      */
     fun get(id: Long): Flow<ProductProducerEntity?>
 
+    /** @return list of all [ProductProducerEntity] */
+    fun all(): Flow<ImmutableList<ProductProducerEntity>>
+
     /**
      * @param id id of the [ProductProducerEntity]
      * @return float representing total spending for [ProductProducerEntity] matching [id] id or
@@ -167,10 +169,4 @@ interface ProductProducerRepositorySource {
      * @return List of [ItemSpentChartData] representing total spending partitioned by year
      */
     fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
-
-    /** @return list of all [ProductProducerEntity] */
-    fun all(): Flow<ImmutableList<ProductProducerEntity>>
-
-    /** @param producer [ProductProducerEntity] to match the items to */
-    fun fullItemsPaged(producer: ProductProducerEntity): Flow<PagingData<FullItem>>
 }

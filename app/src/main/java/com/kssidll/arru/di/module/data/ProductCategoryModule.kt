@@ -8,6 +8,8 @@ import com.kssidll.arru.domain.usecase.data.GetItemsForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthForProductCategoryUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByProductCategoryByMonthUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductCategoryUseCase
@@ -92,5 +94,21 @@ class ProductCategoryModule {
         productCategoryRepositorySource: ProductCategoryRepositorySource
     ): GetTotalSpentByYearForProductCategoryUseCase {
         return GetTotalSpentByYearForProductCategoryUseCase(productCategoryRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByProductCategoryUseCase(
+        productCategoryRepositorySource: ProductCategoryRepositorySource
+    ): GetTotalSpentByProductCategoryUseCase {
+        return GetTotalSpentByProductCategoryUseCase(productCategoryRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByProductCategoryByMonthUseCase(
+        productCategoryRepositorySource: ProductCategoryRepositorySource
+    ): GetTotalSpentByProductCategoryByMonthUseCase {
+        return GetTotalSpentByProductCategoryByMonthUseCase(productCategoryRepositorySource)
     }
 }

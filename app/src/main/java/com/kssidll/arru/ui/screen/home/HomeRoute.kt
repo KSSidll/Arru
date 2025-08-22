@@ -14,6 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisEvent
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisViewModel
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardEvent
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardViewModel
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsEvent
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsViewModel
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Immutable
@@ -67,52 +73,56 @@ fun HomeRoute(
     navigateShopSpendingComparison: (year: Int, month: Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
+    dashboardViewModel: DashboardViewModel = hiltViewModel(),
+    analysisViewModel: AnalysisViewModel = hiltViewModel(),
+    transactionsViewModel: TransactionsViewModel = hiltViewModel(),
 ) {
     HomeScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        dashboardUiState = dashboardViewModel.uiState.collectAsStateWithLifecycle().value,
+        analysisUiState = analysisViewModel.uiState.collectAsStateWithLifecycle().value,
+        transactionsUiState = transactionsViewModel.uiState.collectAsStateWithLifecycle().value,
         onEvent = { event ->
             when (event) {
                 is HomeEvent.ChangeScreenDestination -> viewModel.handleEvent(event)
 
-                is HomeEvent.ChangeDashboardSpentByTimeChartPeriod -> viewModel.handleEvent(event)
-
-                is HomeEvent.IncrementCurrentAnalysisDate -> viewModel.handleEvent(event)
-
-                is HomeEvent.DecrementCurrentAnalysisDate -> viewModel.handleEvent(event)
-
-                is HomeEvent.NavigateSettings -> navigateSettings()
-
-                is HomeEvent.NavigateSearch -> navigateSearch()
-
-                is HomeEvent.NavigateDisplayProduct -> navigateDisplayProduct(event.productId)
-
-                is HomeEvent.NavigateDisplayProductCategory ->
-                    navigateDisplayProductCategory(event.categoryId)
-
-                is HomeEvent.NavigateDisplayProductProducer ->
-                    navigateDisplayProductProducer(event.producerId)
-
-                is HomeEvent.NavigateDisplayShop -> navigateDisplayShop(event.shopId)
-
-                is HomeEvent.NavigateAddItem -> navigateAddItem(event.transactionId)
-
-                is HomeEvent.NavigateEditItem -> navigateEditItem(event.itemId)
-
                 is HomeEvent.NavigateAddTransaction -> navigateAddTransaction()
-
-                is HomeEvent.NavigateEditTransaction -> navigateEditTransaction(event.transactionId)
-
-                is HomeEvent.NavigateCategoryRanking -> navigateCategoryRanking()
-
-                is HomeEvent.NavigateShopRanking -> navigateShopRanking()
-
-                is HomeEvent.NavigateCategorySpendingComparison ->
+            }
+        },
+        dashboardOnEvent = { event ->
+            when (event) {
+                is DashboardEvent.ChangeSpentByTimePeriod -> dashboardViewModel.handleEvent(event)
+                is DashboardEvent.NavigateCategoryRanking -> navigateCategoryRanking()
+                is DashboardEvent.NavigateSettings -> navigateSettings()
+                is DashboardEvent.NavigateShopRanking -> navigateShopRanking()
+            }
+        },
+        analysisOnEvent = { event ->
+            when (event) {
+                is AnalysisEvent.DecrementCurrentDate -> analysisViewModel.handleEvent(event)
+                is AnalysisEvent.IncrementCurrentDate -> analysisViewModel.handleEvent(event)
+                is AnalysisEvent.NavigateCategorySpendingComparison ->
                     navigateCategorySpendingComparison(event.year, event.month)
-
-                is HomeEvent.NavigateShopSpendingComparison ->
+                is AnalysisEvent.NavigateShopSpendingComparison ->
                     navigateShopSpendingComparison(event.year, event.month)
-
-                is HomeEvent.ToggleTransactionItemVisibility -> viewModel.handleEvent(event)
+            }
+        },
+        transactionsOnEvent = { event ->
+            when (event) {
+                is TransactionsEvent.NavigateAddItem -> navigateAddItem(event.transactionId)
+                is TransactionsEvent.NavigateDisplayProduct ->
+                    navigateDisplayProduct(event.productId)
+                is TransactionsEvent.NavigateDisplayProductCategory ->
+                    navigateDisplayProductCategory(event.productCategoryId)
+                is TransactionsEvent.NavigateDisplayProductProducer ->
+                    navigateDisplayProductProducer(event.productProducerId)
+                is TransactionsEvent.NavigateDisplayShop -> navigateDisplayShop(event.shopId)
+                is TransactionsEvent.NavigateEditItem -> navigateEditItem(event.itemId)
+                is TransactionsEvent.NavigateEditTransaction ->
+                    navigateEditTransaction(event.transactionId)
+                is TransactionsEvent.NavigateSearch -> navigateSearch()
+                is TransactionsEvent.ToggleTransactionItemVisibility ->
+                    transactionsViewModel.handleEvent(event)
             }
         },
         modifier = modifier,

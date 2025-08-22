@@ -4,6 +4,7 @@ import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.repository.TransactionRepository
 import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetAllTransactionsUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekUseCase
@@ -49,6 +50,14 @@ class TransactionModule {
         transactionRepositorySource: TransactionRepositorySource
     ): GetTransactionUseCase {
         return GetTransactionUseCase(transactionRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllTransactionsUseCase(
+        transactionRepositorySource: TransactionRepositorySource
+    ): GetAllTransactionsUseCase {
+        return GetAllTransactionsUseCase(transactionRepositorySource)
     }
 
     @Provides

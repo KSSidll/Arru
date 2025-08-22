@@ -32,12 +32,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisEvent
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisScreen
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisUiState
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardEvent
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardScreen
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardUiState
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsEvent
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsScreen
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsUiState
 import com.kssidll.arru.ui.theme.Typography
 
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
+    dashboardUiState: DashboardUiState,
+    analysisUiState: AnalysisUiState,
+    transactionsUiState: TransactionsUiState,
     onEvent: (event: HomeEvent) -> Unit,
+    dashboardOnEvent: (event: DashboardEvent) -> Unit,
+    analysisOnEvent: (event: AnalysisEvent) -> Unit,
+    transactionsOnEvent: (event: TransactionsEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navSuiteType =
@@ -155,7 +170,16 @@ fun HomeScreen(
                             }
                         }
                     ) {
-                        HomeScreenContent(uiState = uiState, onEvent = onEvent, modifier = modifier)
+                        HomeScreenContent(
+                            uiState = uiState,
+                            dashboardUiState = dashboardUiState,
+                            analysisUiState = analysisUiState,
+                            transactionsUiState = transactionsUiState,
+                            dashboardOnEvent = dashboardOnEvent,
+                            analysisOnEvent = analysisOnEvent,
+                            transactionsOnEvent = transactionsOnEvent,
+                            modifier = modifier,
+                        )
                     }
                 }
 
@@ -203,14 +227,28 @@ fun HomeScreen(
             }
         },
     ) {
-        HomeScreenContent(uiState = uiState, onEvent = onEvent, modifier = modifier)
+        HomeScreenContent(
+            uiState = uiState,
+            dashboardUiState = dashboardUiState,
+            analysisUiState = analysisUiState,
+            transactionsUiState = transactionsUiState,
+            dashboardOnEvent = dashboardOnEvent,
+            analysisOnEvent = analysisOnEvent,
+            transactionsOnEvent = transactionsOnEvent,
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
 fun HomeScreenContent(
     uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    dashboardUiState: DashboardUiState,
+    analysisUiState: AnalysisUiState,
+    transactionsUiState: TransactionsUiState,
+    dashboardOnEvent: (event: DashboardEvent) -> Unit,
+    analysisOnEvent: (event: AnalysisEvent) -> Unit,
+    transactionsOnEvent: (event: TransactionsEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Crossfade(
@@ -220,15 +258,15 @@ fun HomeScreenContent(
     ) {
         when (it) {
             HomeDestinations.DASHBOARD -> {
-                DashboardScreen(uiState = uiState, onEvent = onEvent)
+                DashboardScreen(uiState = dashboardUiState, onEvent = dashboardOnEvent)
             }
 
             HomeDestinations.ANALYSIS -> {
-                AnalysisScreen(uiState = uiState, onEvent = onEvent)
+                AnalysisScreen(uiState = analysisUiState, onEvent = analysisOnEvent)
             }
 
             HomeDestinations.TRANSACTIONS -> {
-                TransactionsScreen(uiState = uiState, onEvent = onEvent)
+                TransactionsScreen(uiState = transactionsUiState, onEvent = transactionsOnEvent)
             }
         }
     }

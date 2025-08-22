@@ -11,8 +11,6 @@ import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
@@ -34,9 +32,6 @@ interface ProductEntityDao {
 
     // Helper
 
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
-    suspend fun shopById(shopId: Long): ShopEntity
-
     @Query(
         "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId"
     )
@@ -56,30 +51,6 @@ interface ProductEntityDao {
         "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
     )
     suspend fun categoryById(categoryId: Long): ProductCategoryEntity?
-
-    @Query(
-        """
-        SELECT TransactionEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id = :itemEntityId
-    """
-    )
-    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.id = :productId
-        ORDER BY date DESC
-        LIMIT :count
-        OFFSET :offset
-    """
-    )
-    suspend fun itemsByProduct(productId: Long, count: Int, offset: Int): List<ItemEntity>
 
     @Query(
         "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId"
@@ -104,28 +75,12 @@ interface ProductEntityDao {
 
     @Update suspend fun updateItems(entities: List<ItemEntity>)
 
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        WHERE ItemEntity.id < :itemEntityId AND ItemEntity.productEntityId = :productId
-    """
-    )
-    suspend fun countItemsBefore(itemEntityId: Long, productId: Long): Int
-
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        WHERE ItemEntity.id > :itemEntityId AND ItemEntity.productEntityId = :productId
-    """
-    )
-    suspend fun countItemsAfter(itemEntityId: Long, productId: Long): Int
-
     // Read
 
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :id")
     fun get(id: Long): Flow<ProductEntity?>
+
+    @Query("SELECT ProductEntity.* FROM ProductEntity") fun all(): Flow<List<ProductEntity>>
 
     @Query(
         """
@@ -347,9 +302,6 @@ interface ProductEntityDao {
     fun averagePriceByShopByVariantByProducerByDay(
         id: Long
     ): Flow<List<ProductPriceByShopByVariantByProducerByTime>>
-
-    @Query("SELECT ProductEntity.* FROM ProductEntity ORDER BY ProductEntity.id DESC")
-    fun all(): Flow<List<ProductEntity>>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
     fun byName(name: String): Flow<ProductEntity?>

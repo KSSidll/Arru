@@ -9,11 +9,13 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.helper.RegexHelper
 import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
 import com.kssidll.arru.helper.generateRandomTime
 import kotlin.math.log10
+import kotlinx.collections.immutable.toImmutableList
 
 @Entity(
     foreignKeys =
@@ -78,7 +80,7 @@ data class TransactionEntity(
          *
          * @return [String] representing the [TransactionEntity] csv format headers
          */
-        @Ignore const val csvHeaders: String = "id;date;shopId;totalCost;note"
+        @Ignore const val CSV_HEADERS: String = "id;date;shopId;totalCost;note"
 
         @Ignore
         fun actualTotalCost(cost: Long): Float {
@@ -129,33 +131,6 @@ data class TransactionEntity(
     }
 }
 
-@Immutable
-data class TransactionBasketWithItems(
-    val id: Long,
-    val date: Long,
-    val shop: ShopEntity?,
-    val totalCost: Long,
-    val note: String?,
-    val items: List<Item>,
-) {
-    companion object {
-        fun generate(transactionBasketWithItemsId: Long = 0): TransactionBasketWithItems {
-            return TransactionBasketWithItems(
-                id = transactionBasketWithItemsId,
-                date = generateRandomTime(),
-                shop = ShopEntity.generate(),
-                totalCost = generateRandomLongValue(),
-                note = generateRandomStringValue(),
-                items = Item.generateList(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<TransactionBasketWithItems> {
-            return List(amount) { generate(it.toLong()) }
-        }
-    }
-}
-
 /**
  * Converts a list of [TransactionEntity] data to a list of strings with csv format
  *
@@ -165,7 +140,7 @@ data class TransactionBasketWithItems(
 fun List<TransactionEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(TransactionEntity.csvHeaders + "\n")
+        add(TransactionEntity.CSV_HEADERS + "\n")
     }
 
     // Add rows
@@ -177,4 +152,16 @@ data class IntermediateTransaction(
     @Embedded val entity: TransactionEntity,
     @Relation(parentColumn = "id", entityColumn = "transactionId") val items: List<Item>,
     @Relation(parentColumn = "shopEntityId", entityColumn = "id") val shopEntity: ShopEntity?,
-)
+) {
+    @Ignore
+    fun toTransaction(): Transaction =
+        Transaction(
+            id = entity.id,
+            date = entity.date,
+            shopId = entity.shopEntityId,
+            shopName = shopEntity?.name,
+            totalCost = entity.totalCost,
+            note = entity.note,
+            items = items.toImmutableList(),
+        )
+}

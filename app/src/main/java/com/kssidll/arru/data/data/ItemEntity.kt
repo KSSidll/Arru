@@ -1,18 +1,13 @@
 package com.kssidll.arru.data.data
 
 import androidx.compose.runtime.Immutable
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.kssidll.arru.domain.data.interfaces.RankSource
-import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.RegexHelper
-import com.kssidll.arru.helper.generateRandomDate
 import com.kssidll.arru.helper.generateRandomLongValue
-import java.util.Locale
 import kotlin.math.log10
 
 @Entity(
@@ -118,7 +113,7 @@ data class ItemEntity(
          * @return [String] representing the [ItemEntity] csv format headers
          */
         @Ignore
-        const val csvHeaders: String = "id;transactionBasketId;productId;variantId;quantity;price"
+        const val CSV_HEADERS: String = "id;transactionBasketId;productId;variantId;quantity;price"
 
         @Ignore
         fun generate(itemId: Long = 0): ItemEntity {
@@ -188,121 +183,9 @@ data class ItemEntity(
 fun List<ItemEntity>.asCsvList(includeHeaders: Boolean = false): List<String> = buildList {
     // Add headers
     if (includeHeaders) {
-        add(ItemEntity.csvHeaders + "\n")
+        add(ItemEntity.CSV_HEADERS + "\n")
     }
 
     // Add rows
     this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
-}
-
-data class FullItem(
-    val id: Long,
-    val quantity: Long,
-    val price: Long,
-    val product: ProductEntity,
-    val variant: ProductVariantEntity?,
-    val category: ProductCategoryEntity,
-    val producer: ProductProducerEntity?,
-    val date: Long,
-    val shop: ShopEntity?,
-) {
-    fun actualQuantity(): Float {
-        return ItemEntity.actualQuantity(quantity)
-    }
-
-    fun actualPrice(): Float {
-        return ItemEntity.actualPrice(price)
-    }
-
-    companion object {
-        fun generate(itemId: Long = 0): FullItem {
-            return FullItem(
-                id = itemId,
-                quantity = generateRandomLongValue(),
-                price = generateRandomLongValue(),
-                product = ProductEntity.generate(),
-                variant = ProductVariantEntity.generate(),
-                category = ProductCategoryEntity.generate(),
-                producer = ProductProducerEntity.generate(),
-                date = generateRandomDate().time,
-                shop = ShopEntity.generate(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<FullItem> {
-            return List(amount) { generate(it.toLong()) }
-        }
-    }
-}
-
-data class TransactionTotalSpentByShop(@Embedded val shop: ShopEntity, val total: Long) :
-    RankSource {
-    companion object {
-        fun generate(shopId: Long = 0): TransactionTotalSpentByShop {
-            return TransactionTotalSpentByShop(
-                shop = ShopEntity.generate(shopId),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<TransactionTotalSpentByShop> {
-            return List(amount) { generate(it.toLong()) }
-        }
-    }
-
-    override fun value(): Float {
-        return total.toFloat().div(TransactionEntity.COST_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun displayName(): String {
-        return shop.name
-    }
-
-    override fun displayValue(locale: Locale): String {
-        return value().formatToCurrency(locale, dropDecimal = true)
-    }
-
-    override fun identificator(): Long {
-        return shop.id
-    }
-}
-
-data class ItemSpentByCategory(@Embedded val category: ProductCategoryEntity, val total: Long) :
-    RankSource {
-    companion object {
-        fun generate(categoryId: Long = 0): ItemSpentByCategory {
-            return ItemSpentByCategory(
-                category = ProductCategoryEntity.generate(categoryId),
-                total = generateRandomLongValue(),
-            )
-        }
-
-        fun generateList(amount: Int = 10): List<ItemSpentByCategory> {
-            return List(amount) { generate(it.toLong()) }
-        }
-    }
-
-    override fun value(): Float {
-        return total.toFloat().div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
-    }
-
-    override fun sortValue(): Long {
-        return total
-    }
-
-    override fun displayName(): String {
-        return category.name
-    }
-
-    override fun displayValue(locale: Locale): String {
-        return value().formatToCurrency(locale, dropDecimal = true)
-    }
-
-    override fun identificator(): Long {
-        return category.id
-    }
 }

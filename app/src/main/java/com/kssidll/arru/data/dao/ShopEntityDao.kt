@@ -5,21 +5,14 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.data.TotalSpentByShop
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 @Dao
 interface ShopEntityDao {
@@ -36,48 +29,6 @@ interface ShopEntityDao {
     @Delete suspend fun delete(entity: ShopEntity)
 
     // Helper
-
-    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
-    suspend fun productById(productId: Long): ProductEntity
-
-    @Query(
-        "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId"
-    )
-    suspend fun producerById(producerId: Long): ProductProducerEntity
-
-    @Query(
-        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
-    )
-    suspend fun variantById(variantId: Long): ProductVariantEntity
-
-    @Query(
-        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
-    )
-    suspend fun categoryById(categoryId: Long): ProductCategoryEntity
-
-    @Query(
-        """
-        SELECT TransactionEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id = :itemEntityId
-    """
-    )
-    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE TransactionEntity.shopEntityId = :entityId
-        ORDER BY date DESC
-        LIMIT :count
-        OFFSET :offset
-    """
-    )
-    suspend fun itemsByShop(entityId: Long, count: Int, offset: Int): List<ItemEntity>
 
     @Query(
         """
@@ -100,30 +51,12 @@ interface ShopEntityDao {
 
     @Delete suspend fun deleteItems(entities: List<ItemEntity>)
 
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id < :itemEntityId AND TransactionEntity.shopEntityId = :entityId
-    """
-    )
-    suspend fun countItemsBefore(itemEntityId: Long, entityId: Long): Int
-
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id > :itemEntityId AND TransactionEntity.shopEntityId = :entityId
-    """
-    )
-    suspend fun countItemsAfter(itemEntityId: Long, entityId: Long): Int
-
     // Read
 
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :id")
     fun get(id: Long): Flow<ShopEntity?>
+
+    @Query("SELECT ShopEntity.* FROM ShopEntity") fun all(): Flow<List<ShopEntity>>
 
     @Query(
         """
@@ -285,42 +218,6 @@ interface ShopEntityDao {
     )
     fun totalSpentByYear(id: Long): Flow<List<TransactionSpentChartData>>
 
-    @Query("SELECT ShopEntity.* FROM ShopEntity ORDER BY ShopEntity.id DESC")
-    fun all(): Flow<List<ShopEntity>>
-
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.name = :name")
-    fun byName(name: String): Flow<ShopEntity?>
-
-    @Transaction
-    suspend fun fullItems(entityId: Long, count: Int, offset: Int): List<FullItem> {
-        val shop = get(entityId).first() ?: return emptyList()
-
-        val itemEntities = itemsByShop(entityId, count, offset)
-
-        if (itemEntities.isEmpty()) return emptyList()
-
-        return itemEntities.map { entity ->
-            val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val productEntity = productById(entity.productEntityId)
-            val productVariantEntity = entity.productVariantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(productEntity.productCategoryEntityId)
-            val productProducerEntity =
-                productEntity.productProducerEntityId?.let { producerById(it) }
-
-            FullItem(
-                id = entity.id,
-                quantity = entity.quantity,
-                price = entity.price,
-                product = productEntity,
-                variant = productVariantEntity,
-                category = productCategoryEntity,
-                producer = productProducerEntity,
-                date = transactionEntity.date,
-                shop = shop,
-            )
-        }
-    }
-
     @Query(
         """
         SELECT ShopEntity.*, SUM(TransactionEntity.totalCost) as total
@@ -329,7 +226,7 @@ interface ShopEntityDao {
         GROUP BY ShopEntity.id
     """
     )
-    fun totalSpentByShop(): Flow<List<TransactionTotalSpentByShop>>
+    fun totalSpentByShop(): Flow<List<TotalSpentByShop>>
 
     @Query(
         """
@@ -340,5 +237,8 @@ interface ShopEntityDao {
         GROUP BY ShopEntity.id
     """
     )
-    fun totalSpentByShopByMonth(date: String): Flow<List<TransactionTotalSpentByShop>>
+    fun totalSpentByShopByMonth(date: String): Flow<List<TotalSpentByShop>>
+
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.name = :name")
+    fun byName(name: String): Flow<ShopEntity?>
 }

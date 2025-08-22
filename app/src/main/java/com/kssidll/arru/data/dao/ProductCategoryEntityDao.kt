@@ -7,10 +7,10 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.coroutines.flow.Flow
@@ -79,6 +79,9 @@ interface ProductCategoryEntityDao {
         "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id"
     )
     fun get(id: Long): Flow<ProductCategoryEntity?>
+
+    @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity")
+    fun all(): Flow<List<ProductCategoryEntity>>
 
     @Query(
         """
@@ -269,16 +272,6 @@ interface ProductCategoryEntityDao {
     fun totalSpentByYear(id: Long): Flow<List<ItemSpentChartData>>
 
     @Query(
-        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity ORDER BY ProductCategoryEntity.id DESC"
-    )
-    fun all(): Flow<List<ProductCategoryEntity>>
-
-    @Query(
-        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name"
-    )
-    fun byName(name: String): Flow<ProductCategoryEntity?>
-
-    @Query(
         """
         SELECT ProductCategoryEntity.*, SUM(ItemEntity.price * ItemEntity.quantity) as total
         FROM ItemEntity
@@ -288,7 +281,7 @@ interface ProductCategoryEntityDao {
         GROUP BY ProductCategoryEntity.id
     """
     )
-    fun totalSpentByCategory(): Flow<List<ItemSpentByCategory>>
+    fun totalSpentByCategory(): Flow<List<TotalSpentByCategory>>
 
     @Query(
         """
@@ -301,5 +294,10 @@ interface ProductCategoryEntityDao {
         GROUP BY ProductCategoryEntity.id
     """
     )
-    fun totalSpentByCategoryByMonth(date: String): Flow<List<ItemSpentByCategory>>
+    fun totalSpentByCategoryByMonth(date: String): Flow<List<TotalSpentByCategory>>
+
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name"
+    )
+    fun byName(name: String): Flow<ProductCategoryEntity?>
 }

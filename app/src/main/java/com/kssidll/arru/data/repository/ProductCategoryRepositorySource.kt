@@ -1,8 +1,8 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.ItemSpentByCategory
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.collections.immutable.ImmutableList
@@ -130,6 +130,9 @@ interface ProductCategoryRepositorySource {
      */
     fun get(id: Long): Flow<ProductCategoryEntity?>
 
+    /** @return list of all [ProductCategoryEntity] */
+    fun all(): Flow<ImmutableList<ProductCategoryEntity>>
+
     /**
      * @param id id of the [ProductCategoryEntity]
      * @return float representing total spending for [ProductCategoryEntity] matching [id] id or
@@ -167,17 +170,17 @@ interface ProductCategoryRepositorySource {
      */
     fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
-    /** @return list of all [ProductCategoryEntity] */
-    fun all(): Flow<ImmutableList<ProductCategoryEntity>>
-
-    /** @return list of [ItemSpentByCategory] representing total spending groupped by category */
-    fun totalSpentByCategory(): Flow<ImmutableList<ItemSpentByCategory>>
+    /** @return list of [TotalSpentByCategory] representing total spending groupped by category */
+    fun totalSpentByCategory(): Flow<ImmutableList<TotalSpentByCategory>>
 
     /**
      * @param year year to match the data to
      * @param month month to match the data to
-     * @return list of [ItemSpentByCategory] representing total spending groupped by category in
+     * @return list of [TotalSpentByCategory] representing total spending groupped by category in
      *   [year] and [month]
      */
-    fun totalSpentByCategoryByMonth(year: Int, month: Int): Flow<ImmutableList<ItemSpentByCategory>>
+    fun totalSpentByCategoryByMonth(
+        year: Int,
+        month: Int,
+    ): Flow<ImmutableList<TotalSpentByCategory>>
 }

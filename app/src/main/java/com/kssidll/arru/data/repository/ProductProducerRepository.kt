@@ -4,10 +4,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.ProductProducerEntityDao
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.paging.FullItemPagingSource
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource.Companion.MergeResult
@@ -18,7 +16,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -110,6 +107,9 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao) :
 
     override fun get(id: Long): Flow<ProductProducerEntity?> = dao.get(id).cancellable()
 
+    override fun all(): Flow<ImmutableList<ProductProducerEntity>> =
+        dao.all().cancellable().map { it.toImmutableList() }
+
     override fun totalSpent(id: Long): Flow<Float?> =
         dao.totalSpent(id).cancellable().map {
             it?.toFloat()?.div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
@@ -134,23 +134,4 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao) :
 
     override fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>> =
         dao.totalSpentByYear(id).cancellable().map { it.toImmutableList() }
-
-    override fun fullItemsPaged(producer: ProductProducerEntity): Flow<PagingData<FullItem>> {
-        return Pager(
-                config = PagingConfig(pageSize = 3),
-                initialKey = 0,
-                pagingSourceFactory = {
-                    FullItemPagingSource(
-                        query = { start, loadSize -> dao.fullItems(producer.id, loadSize, start) },
-                        itemsBefore = { dao.countItemsBefore(it, producer.id) },
-                        itemsAfter = { dao.countItemsAfter(it, producer.id) },
-                    )
-                },
-            )
-            .flow
-    }
-
-    override fun all(): Flow<ImmutableList<ProductProducerEntity>> {
-        return dao.all().cancellable().distinctUntilChanged().map { it.toImmutableList() }
-    }
 }

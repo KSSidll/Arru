@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.ChartSource
@@ -98,17 +99,19 @@ constructor(
             job?.cancel()
             job =
                 viewModelScope.launch {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            categoryName = category.name,
-                            items = getItemsForProductCategoryUseCase(categoryId),
-                        )
-                    }
-
                     viewModelScope.launch {
-                        getTotalSpentForProductCategoryUseCase(categoryId).collectLatest {
-                            _uiState.update { currentState ->
-                                currentState.copy(totalSpent = it ?: 0f)
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                categoryName = category.name,
+                                items = getItemsForProductCategoryUseCase(categoryId).cachedIn(this),
+                            )
+                        }
+
+                        viewModelScope.launch {
+                            getTotalSpentForProductCategoryUseCase(categoryId).collectLatest {
+                                _uiState.update { currentState ->
+                                    currentState.copy(totalSpent = it ?: 0f)
+                                }
                             }
                         }
                     }

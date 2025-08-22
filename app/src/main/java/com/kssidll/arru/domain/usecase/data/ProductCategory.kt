@@ -56,3 +56,17 @@ class GetTotalSpentByYearForProductCategoryUseCase(
     operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         productCategoryRepository.totalSpentByYear(id).flowOn(dispatcher)
 }
+
+class GetTotalSpentByProductCategoryUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource
+) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        productCategoryRepository.totalSpentByCategory().flowOn(dispatcher)
+}
+
+class GetTotalSpentByProductCategoryByMonthUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource
+) {
+    operator fun invoke(year: Int, month: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        productCategoryRepository.totalSpentByCategoryByMonth(year, month).flowOn(dispatcher)
+}

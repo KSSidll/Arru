@@ -1,13 +1,18 @@
 package com.kssidll.arru.data.data
 
 import androidx.compose.runtime.Immutable
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.domain.data.interfaces.NameSource
+import com.kssidll.arru.domain.data.interfaces.RankSource
+import com.kssidll.arru.domain.utils.formatToCurrency
+import com.kssidll.arru.helper.generateRandomLongValue
 import com.kssidll.arru.helper.generateRandomStringValue
+import java.util.Locale
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Entity(
@@ -37,7 +42,7 @@ data class ProductCategoryEntity(@PrimaryKey(autoGenerate = true) val id: Long, 
          *
          * @return [String] representing the [ProductCategoryEntity] csv format headers
          */
-        @Ignore const val csvHeaders: String = "id;name"
+        @Ignore const val CSV_HEADERS: String = "id;name"
 
         @Ignore
         fun generate(categoryId: Long = 0): ProductCategoryEntity {
@@ -77,9 +82,53 @@ fun List<ProductCategoryEntity>.asCsvList(includeHeaders: Boolean = false): List
     buildList {
         // Add headers
         if (includeHeaders) {
-            add(ProductCategoryEntity.csvHeaders + "\n")
+            add(ProductCategoryEntity.CSV_HEADERS + "\n")
         }
 
         // Add rows
         this@asCsvList.forEach { add(it.formatAsCsvString() + "\n") }
     }
+
+@Immutable
+data class TotalSpentByCategory(@Embedded val category: ProductCategoryEntity, val total: Long) :
+    RankSource {
+    companion object {
+        @Ignore
+        fun generate(categoryId: Long = 0): TotalSpentByCategory {
+            return TotalSpentByCategory(
+                category = ProductCategoryEntity.generate(categoryId),
+                total = generateRandomLongValue(),
+            )
+        }
+
+        @Ignore
+        fun generateList(amount: Int = 10): List<TotalSpentByCategory> {
+            return List(amount) { generate(it.toLong()) }
+        }
+    }
+
+    @Ignore
+    override fun value(): Float {
+        return total.toFloat().div(ItemEntity.PRICE_DIVISOR * ItemEntity.QUANTITY_DIVISOR)
+    }
+
+    @Ignore
+    override fun sortValue(): Long {
+        return total
+    }
+
+    @Ignore
+    override fun displayName(): String {
+        return category.name
+    }
+
+    @Ignore
+    override fun displayValue(locale: Locale): String {
+        return value().formatToCurrency(locale, dropDecimal = true)
+    }
+
+    @Ignore
+    override fun identificator(): Long {
+        return category.id
+    }
+}

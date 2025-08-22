@@ -1,9 +1,8 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionTotalSpentByShop
+import com.kssidll.arru.data.data.TotalSpentByShop
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
@@ -127,6 +126,9 @@ interface ShopRepositorySource {
      */
     fun get(id: Long): Flow<ShopEntity?>
 
+    /** @return list of all [ShopEntity] */
+    fun all(): Flow<ImmutableList<ShopEntity>>
+
     /**
      * @param id id of the [ShopEntity]
      * @return float representing total spending for [ShopEntity] matching [id] id or null if none
@@ -164,25 +166,14 @@ interface ShopRepositorySource {
      */
     fun totalSpentByYear(id: Long): Flow<ImmutableList<TransactionSpentChartData>>
 
-    /** @return list of all [ShopEntity] */
-    fun all(): Flow<ImmutableList<ShopEntity>>
-
-    /** @param entity [ShopEntity] to match the items to */
-    fun fullItemsPaged(entity: ShopEntity): Flow<PagingData<FullItem>>
-
-    /**
-     * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop
-     */
-    fun totalSpentByShop(): Flow<ImmutableList<TransactionTotalSpentByShop>>
+    /** @return list of [TotalSpentByShop] representing total spending groupped by shop */
+    fun totalSpentByShop(): Flow<ImmutableList<TotalSpentByShop>>
 
     /**
      * @param year year to match the data to
      * @param month month to match the data to
-     * @return list of [TransactionTotalSpentByShop] representing total spending groupped by shop in
-     *   [year] and [month]
+     * @return list of [TotalSpentByShop] representing total spending groupped by shop in [year] and
+     *   [month]
      */
-    fun totalSpentByShopByMonth(
-        year: Int,
-        month: Int,
-    ): Flow<ImmutableList<TransactionTotalSpentByShop>>
+    fun totalSpentByShopByMonth(year: Int, month: Int): Flow<ImmutableList<TotalSpentByShop>>
 }

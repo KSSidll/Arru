@@ -141,6 +141,9 @@ interface ProductRepositorySource {
      */
     fun get(id: Long): Flow<ProductEntity?>
 
+    /** @return list of all [ProductEntity] */
+    fun all(): Flow<ImmutableList<ProductEntity>>
+
     /**
      * @param id id of the [ProductEntity]
      * @return float representing total spending for [ProductEntity] matching [id] id or null if
@@ -186,9 +189,6 @@ interface ProductRepositorySource {
     fun averagePriceByShopByVariantByProducerByDay(
         id: Long
     ): Flow<ImmutableList<ProductPriceByShopByVariantByProducerByTime>>
-
-    /** @return list of all [ProductEntity] */
-    fun all(): Flow<ImmutableList<ProductEntity>>
 
     /**
      * @param entity [ProductEntity] to match the [ItemEntity] with

@@ -3,9 +3,7 @@ package com.kssidll.arru.data.repository
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.IntermediateTransaction
 import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -166,54 +164,9 @@ interface TransactionRepositorySource {
      */
     fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>>
 
-    /** @return value representing the count of [TransactionEntity] */
-    suspend fun count(): Int
-
-    /**
-     * @param [id] id of the [TransactionEntity] that acts as the breakpoint before which the
-     *   transactions are counted
-     * @return value representing the count of [TransactionEntity] added before (chronologically)
-     *   [id], counts by id, so doesn't check if the transaction actually exists
-     */
-    suspend fun countBefore(id: Long): Int
-
-    /**
-     * @param [id] id of the [TransactionEntity] that acts as the breakpoint after which the
-     *   transactions are counted
-     * @return value representing the count of [TransactionEntity] added after (chronologically)
-     *   [id], counts by id, so doesn't check if the transaction actually exists
-     */
-    suspend fun countAfter(id: Long): Int
-
     /**
      * @return newest [TransactionEntity] (by time added, not transaction date) or null if none
      *   exist
      */
     fun newest(): Flow<TransactionEntity?>
-
-    /** @return long representing total spending for the [category] */
-    fun totalSpentLong(): Flow<Long?>
-
-    /**
-     * @param startPosition position, from 0 up, to get next [count] items from
-     * @param count how many items to query
-     * @return list of [count] [TransactionBasketWithItems] where the first item is the item at
-     *   [startPosition]
-     */
-    suspend fun transactionBasketsWithItems(
-        startPosition: Int,
-        count: Int,
-    ): ImmutableList<TransactionBasketWithItems>
-
-    /**
-     * @return [TransactionBasketWithItems] as [PagingData] as [Flow], includes null data for
-     *   placeholder values
-     */
-    fun transactionBasketsPaged(): Flow<PagingData<Transaction>>
-
-    /**
-     * @param transactionId id to match [TransactionBasketWithItems] with
-     * @return [TransactionBasketWithItems] matching [transactionId]
-     */
-    fun transactionBasketWithItems(transactionId: Long): Flow<TransactionBasketWithItems?>
 }

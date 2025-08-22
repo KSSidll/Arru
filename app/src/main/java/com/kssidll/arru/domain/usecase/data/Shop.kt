@@ -42,3 +42,13 @@ class GetTotalSpentByYearForShopUseCase(private val shopRepository: ShopReposito
     operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         shopRepository.totalSpentByYear(id).flowOn(dispatcher)
 }
+
+class GetTotalSpentByShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByShop().flowOn(dispatcher)
+}
+
+class GetTotalSpentByShopByMonthUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(year: Int, month: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByShopByMonth(year, month).flowOn(dispatcher)
+}

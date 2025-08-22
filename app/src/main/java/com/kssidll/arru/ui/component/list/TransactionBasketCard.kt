@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.Transaction
@@ -133,7 +132,7 @@ fun LazyListScope.transactionBasketCardHeader(
     headerColor: Color,
     currencyLocale: Locale,
 ) {
-    stickyHeader(key = transaction.id, contentType = TransactionBasketWithItems) {
+    stickyHeader(key = transaction.id, contentType = Transaction) {
         Column(modifier = modifier.fillMaxWidth()) {
             val transactionModifier =
                 if (onTransactionClick != null && onTransactionLongClick != null) {

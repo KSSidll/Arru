@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.home
+package com.kssidll.arru.ui.screen.home.transactions
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -63,8 +62,8 @@ import com.kssidll.arru.domain.data.loadedEmpty
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
 import com.kssidll.arru.ui.component.list.transactionBasketCard
 import com.kssidll.arru.ui.component.list.transactionBasketCardHeaderPlaceholder
-import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
-import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.screen.home.ExpandedHomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.screen.home.HomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.theme.ArruTheme
 import java.util.Locale
 import kotlinx.coroutines.launch
@@ -74,8 +73,8 @@ private val BOTTOM_SHEET_PEEK_HEIGHT: Dp = 48.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: TransactionsUiState,
+    onEvent: (event: TransactionsEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navSuiteType =
@@ -127,7 +126,6 @@ fun TransactionsScreen(
                         TransactionScreenContent(
                             uiState = uiState,
                             onEvent = onEvent,
-                            listState = uiState.transactionsListState,
                             transactions = transactions,
                         )
                     }
@@ -138,7 +136,7 @@ fun TransactionsScreen(
                                 .padding(paddingValues)
                                 .consumeWindowInsets(paddingValues)
                     ) {
-                        IconButton(onClick = { onEvent(HomeEvent.NavigateSearch) }) {
+                        IconButton(onClick = { onEvent(TransactionsEvent.NavigateSearch) }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription =
@@ -167,7 +165,7 @@ fun TransactionsScreen(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
                         ) {
                             IconButton(
-                                onClick = { onEvent(HomeEvent.NavigateSearch) },
+                                onClick = { onEvent(TransactionsEvent.NavigateSearch) },
                                 modifier = Modifier.minimumInteractiveComponentSize(),
                             ) {
                                 Icon(
@@ -186,7 +184,6 @@ fun TransactionsScreen(
                         TransactionScreenContent(
                             uiState = uiState,
                             onEvent = onEvent,
-                            listState = uiState.transactionsListState,
                             transactions = transactions,
                             fabPadding = innerPaddingValues,
                         )
@@ -199,9 +196,8 @@ fun TransactionsScreen(
 
 @Composable
 fun TransactionScreenContent(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
-    listState: LazyListState,
+    uiState: TransactionsUiState,
+    onEvent: (event: TransactionsEvent) -> Unit,
     transactions: LazyPagingItems<Transaction>,
     modifier: Modifier = Modifier,
     fabPadding: PaddingValues = PaddingValues(),
@@ -212,7 +208,9 @@ fun TransactionScreenContent(
 
     val scope = rememberCoroutineScope()
 
-    val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+    val firstVisibleItemIndex by remember {
+        derivedStateOf { uiState.listState.firstVisibleItemIndex }
+    }
 
     var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
 
@@ -251,7 +249,7 @@ fun TransactionScreenContent(
             ) {
                 Box(modifier = Modifier.padding(fabPadding)) {
                     FloatingActionButton(
-                        onClick = { scope.launch { listState.animateScrollToItem(0) } },
+                        onClick = { scope.launch { uiState.listState.animateScrollToItem(0) } },
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ) {
@@ -263,7 +261,7 @@ fun TransactionScreenContent(
         modifier = modifier,
     ) { paddingValues ->
         LazyColumn(
-            state = listState,
+            state = uiState.listState,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier =
                 Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxWidth(),
@@ -303,33 +301,47 @@ fun TransactionScreenContent(
                         transaction = transaction,
                         itemsVisible = uiState.transactionWithVisibleItems.contains(transaction.id),
                         onTransactionClick = {
-                            onEvent(HomeEvent.ToggleTransactionItemVisibility(transaction.id))
+                            onEvent(
+                                TransactionsEvent.ToggleTransactionItemVisibility(transaction.id)
+                            )
 
                             scope.launch {
                                 // the transaction basket card has 2 separate lazy list scope DSL
                                 // calls
-                                if (listState.firstVisibleItemIndex > index.times(2)) {
-                                    listState.animateScrollToItem(index.times(2))
+                                if (firstVisibleItemIndex > index.times(2)) {
+                                    uiState.listState.animateScrollToItem(index.times(2))
                                 }
                             }
                         },
                         onTransactionLongClick = {
-                            onEvent(HomeEvent.NavigateEditTransaction(transaction.id))
+                            onEvent(TransactionsEvent.NavigateEditTransaction(transaction.id))
                         },
-                        onItemAddClick = { onEvent(HomeEvent.NavigateAddItem(transaction.id)) },
-                        onItemClick = { onEvent(HomeEvent.NavigateDisplayProduct(it.productId)) },
-                        onItemLongClick = { onEvent(HomeEvent.NavigateEditItem(it.id)) },
+                        onItemAddClick = {
+                            onEvent(TransactionsEvent.NavigateAddItem(transaction.id))
+                        },
+                        onItemClick = {
+                            onEvent(TransactionsEvent.NavigateDisplayProduct(it.productId))
+                        },
+                        onItemLongClick = { onEvent(TransactionsEvent.NavigateEditItem(it.id)) },
                         onItemCategoryClick = {
-                            onEvent(HomeEvent.NavigateDisplayProductCategory(it.productCategoryId))
+                            onEvent(
+                                TransactionsEvent.NavigateDisplayProductCategory(
+                                    it.productCategoryId
+                                )
+                            )
                         },
                         onItemProducerClick = {
                             it.productProducerId?.let { productProducerId ->
-                                onEvent(HomeEvent.NavigateDisplayProductProducer(productProducerId))
+                                onEvent(
+                                    TransactionsEvent.NavigateDisplayProductProducer(
+                                        productProducerId
+                                    )
+                                )
                             }
                         },
                         onItemShopClick = {
                             transaction.shopId?.let { shopId ->
-                                onEvent(HomeEvent.NavigateDisplayShop(shopId))
+                                onEvent(TransactionsEvent.NavigateDisplayShop(shopId))
                             }
                         },
                         headerColor = headerColor,
@@ -355,7 +367,7 @@ fun TransactionScreenContent(
 private fun TransactionsScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            TransactionsScreen(uiState = HomeUiState(), onEvent = {})
+            TransactionsScreen(uiState = TransactionsUiState(), onEvent = {})
         }
     }
 }
@@ -365,7 +377,7 @@ private fun TransactionsScreenPreview() {
 private fun ExpandedTransactionsScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            TransactionsScreen(uiState = HomeUiState(), onEvent = {})
+            TransactionsScreen(uiState = TransactionsUiState(), onEvent = {})
         }
     }
 }

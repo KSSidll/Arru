@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.home
+package com.kssidll.arru.ui.screen.home.analysis
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -42,7 +42,6 @@ import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
 import com.kssidll.arru.ui.component.list.SpendingComparisonList
-import com.kssidll.arru.ui.screen.home.component.AnalysisDateHeader
 import com.kssidll.arru.ui.theme.ArruTheme
 
 private val TileOuterPadding: Dp = 8.dp
@@ -50,8 +49,8 @@ private val TileInnerPadding: Dp = 12.dp
 
 @Composable
 fun AnalysisScreen(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: AnalysisUiState,
+    onEvent: (event: AnalysisEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navSuiteType =
@@ -66,15 +65,15 @@ fun AnalysisScreen(
 
 @Composable
 fun AnalysisScreenContent(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: AnalysisUiState,
+    onEvent: (event: AnalysisEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         bottomBar = {
             Column(modifier = Modifier.padding(vertical = 12.dp)) {
                 AnimatedVisibility(
-                    visible = uiState.analysisScreenNothingToDisplayVisible,
+                    visible = uiState.nothingToDisplayVisible,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
@@ -90,10 +89,10 @@ fun AnalysisScreenContent(
                 }
 
                 AnalysisDateHeader(
-                    year = uiState.analysisCurrentDateYear,
-                    month = uiState.analysisCurrentDateMonth,
-                    onMonthIncrement = { onEvent(HomeEvent.IncrementCurrentAnalysisDate) },
-                    onMonthDecrement = { onEvent(HomeEvent.DecrementCurrentAnalysisDate) },
+                    year = uiState.currentDateYear,
+                    month = uiState.currentDateMonth,
+                    onMonthIncrement = { onEvent(AnalysisEvent.IncrementCurrentDate) },
+                    onMonthDecrement = { onEvent(AnalysisEvent.DecrementCurrentDate) },
                 )
             }
         },
@@ -110,7 +109,7 @@ fun AnalysisScreenContent(
             Spacer(modifier = Modifier.height(12.dp))
 
             AnimatedVisibility(
-                visible = uiState.analysisScreenCategoryCardVisible,
+                visible = uiState.categoryCardVisible,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -125,18 +124,18 @@ fun AnalysisScreenContent(
                         modifier =
                             Modifier.heightIn(min = 144.dp).clickable {
                                 onEvent(
-                                    HomeEvent.NavigateCategorySpendingComparison(
-                                        year = uiState.analysisCurrentDateYear,
-                                        month = uiState.analysisCurrentDateMonth,
+                                    AnalysisEvent.NavigateCategorySpendingComparison(
+                                        year = uiState.currentDateYear,
+                                        month = uiState.currentDateMonth,
                                     )
                                 )
                             }
                     ) {
                         SpendingComparisonList(
                             listHeader = stringResource(id = R.string.categories),
-                            leftSideItems = uiState.analysisPreviousDateCategoryData,
+                            leftSideItems = uiState.previousDateCategoryData,
                             leftSideHeader = stringResource(id = R.string.previous),
-                            rightSideItems = uiState.analysisCurrentDateCategoryData,
+                            rightSideItems = uiState.currentDateCategoryData,
                             rightSideHeader = stringResource(id = R.string.current),
                             itemDisplayLimit = 6,
                             modifier = Modifier.padding(TileInnerPadding),
@@ -148,7 +147,7 @@ fun AnalysisScreenContent(
             Spacer(modifier = Modifier.height(12.dp))
 
             AnimatedVisibility(
-                visible = uiState.analysisScreenShopCardVisible,
+                visible = uiState.shopCardVisible,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -163,18 +162,18 @@ fun AnalysisScreenContent(
                         modifier =
                             Modifier.heightIn(min = 144.dp).clickable {
                                 onEvent(
-                                    HomeEvent.NavigateShopSpendingComparison(
-                                        year = uiState.analysisCurrentDateYear,
-                                        month = uiState.analysisCurrentDateMonth,
+                                    AnalysisEvent.NavigateShopSpendingComparison(
+                                        year = uiState.currentDateYear,
+                                        month = uiState.currentDateMonth,
                                     )
                                 )
                             }
                     ) {
                         SpendingComparisonList(
                             listHeader = stringResource(id = R.string.shops),
-                            leftSideItems = uiState.analysisPreviousDateShopData,
+                            leftSideItems = uiState.previousDateShopData,
                             leftSideHeader = stringResource(id = R.string.previous),
-                            rightSideItems = uiState.analysisCurrentDateShopData,
+                            rightSideItems = uiState.currentDateShopData,
                             rightSideHeader = stringResource(id = R.string.current),
                             itemDisplayLimit = 6,
                             modifier = Modifier.padding(TileInnerPadding),
@@ -188,18 +187,18 @@ fun AnalysisScreenContent(
 
 @Composable
 fun ExpandedAnalysisScreenContent(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: AnalysisUiState,
+    onEvent: (event: AnalysisEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
             Box(modifier = Modifier.padding(top = 4.dp)) {
                 AnalysisDateHeader(
-                    year = uiState.analysisCurrentDateYear,
-                    month = uiState.analysisCurrentDateMonth,
-                    onMonthIncrement = { onEvent(HomeEvent.IncrementCurrentAnalysisDate) },
-                    onMonthDecrement = { onEvent(HomeEvent.DecrementCurrentAnalysisDate) },
+                    year = uiState.currentDateYear,
+                    month = uiState.currentDateMonth,
+                    onMonthIncrement = { onEvent(AnalysisEvent.IncrementCurrentDate) },
+                    onMonthDecrement = { onEvent(AnalysisEvent.DecrementCurrentDate) },
                 )
             }
         },
@@ -212,7 +211,7 @@ fun ExpandedAnalysisScreenContent(
                     .verticalScroll(rememberScrollState())
         ) {
             AnimatedVisibility(
-                visible = uiState.analysisScreenNothingToDisplayVisible,
+                visible = uiState.nothingToDisplayVisible,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -229,7 +228,7 @@ fun ExpandedAnalysisScreenContent(
 
             Row {
                 AnimatedVisibility(
-                    visible = uiState.analysisScreenCategoryCardVisible,
+                    visible = uiState.categoryCardVisible,
                     enter = fadeIn(),
                     exit = fadeOut(),
                     modifier = Modifier.weight(1f),
@@ -245,18 +244,18 @@ fun ExpandedAnalysisScreenContent(
                             modifier =
                                 Modifier.heightIn(min = 144.dp).clickable {
                                     onEvent(
-                                        HomeEvent.NavigateCategorySpendingComparison(
-                                            year = uiState.analysisCurrentDateYear,
-                                            month = uiState.analysisCurrentDateMonth,
+                                        AnalysisEvent.NavigateCategorySpendingComparison(
+                                            year = uiState.currentDateYear,
+                                            month = uiState.currentDateMonth,
                                         )
                                     )
                                 }
                         ) {
                             SpendingComparisonList(
                                 listHeader = stringResource(id = R.string.categories),
-                                leftSideItems = uiState.analysisPreviousDateCategoryData,
+                                leftSideItems = uiState.previousDateCategoryData,
                                 leftSideHeader = stringResource(id = R.string.previous),
-                                rightSideItems = uiState.analysisCurrentDateCategoryData,
+                                rightSideItems = uiState.currentDateCategoryData,
                                 rightSideHeader = stringResource(id = R.string.current),
                                 itemDisplayLimit = 6,
                                 modifier = Modifier.padding(TileInnerPadding),
@@ -268,7 +267,7 @@ fun ExpandedAnalysisScreenContent(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 AnimatedVisibility(
-                    visible = uiState.analysisScreenShopCardVisible,
+                    visible = uiState.shopCardVisible,
                     enter = fadeIn(),
                     exit = fadeOut(),
                     modifier = Modifier.weight(1f),
@@ -284,18 +283,18 @@ fun ExpandedAnalysisScreenContent(
                             modifier =
                                 Modifier.heightIn(min = 144.dp).clickable {
                                     onEvent(
-                                        HomeEvent.NavigateShopSpendingComparison(
-                                            year = uiState.analysisCurrentDateYear,
-                                            month = uiState.analysisCurrentDateMonth,
+                                        AnalysisEvent.NavigateShopSpendingComparison(
+                                            year = uiState.currentDateYear,
+                                            month = uiState.currentDateMonth,
                                         )
                                     )
                                 }
                         ) {
                             SpendingComparisonList(
                                 listHeader = stringResource(id = R.string.shops),
-                                leftSideItems = uiState.analysisPreviousDateShopData,
+                                leftSideItems = uiState.previousDateShopData,
                                 leftSideHeader = stringResource(id = R.string.previous),
-                                rightSideItems = uiState.analysisCurrentDateShopData,
+                                rightSideItems = uiState.currentDateShopData,
                                 rightSideHeader = stringResource(id = R.string.current),
                                 itemDisplayLimit = 6,
                                 modifier = Modifier.padding(TileInnerPadding),
@@ -313,7 +312,7 @@ fun ExpandedAnalysisScreenContent(
 private fun AnalysisScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            AnalysisScreen(uiState = HomeUiState(), onEvent = {})
+            AnalysisScreen(uiState = AnalysisUiState(), onEvent = {})
         }
     }
 }
@@ -323,7 +322,7 @@ private fun AnalysisScreenPreview() {
 private fun ExpandedAnalysisScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            AnalysisScreen(uiState = HomeUiState(), onEvent = {})
+            AnalysisScreen(uiState = AnalysisUiState(), onEvent = {})
         }
     }
 }

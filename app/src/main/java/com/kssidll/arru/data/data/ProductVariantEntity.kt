@@ -57,7 +57,7 @@ data class ProductVariantEntity(
          *
          * @return [String] representing the [ProductVariantEntity] csv format headers
          */
-        @Ignore const val csvHeaders: String = "id;productId;name"
+        @Ignore const val CSV_HEADERS: String = "id;productId;name"
 
         @Ignore
         fun generate(variantId: Long = 0): ProductVariantEntity {
@@ -96,7 +96,7 @@ fun List<ProductVariantEntity>.asCsvList(includeHeaders: Boolean = false): List<
     buildList {
         // Add headers
         if (includeHeaders) {
-            add(ProductVariantEntity.csvHeaders + "\n")
+            add(ProductVariantEntity.CSV_HEADERS + "\n")
         }
 
         // Add rows

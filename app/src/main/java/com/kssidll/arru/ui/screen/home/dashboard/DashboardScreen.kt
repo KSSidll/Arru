@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.home
+package com.kssidll.arru.ui.screen.home.dashboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -49,8 +49,8 @@ import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
 import com.kssidll.arru.ui.component.SpendingSummaryComponent
 import com.kssidll.arru.ui.component.TotalAverageAndMedianSpendingComponent
 import com.kssidll.arru.ui.component.list.RankingList
-import com.kssidll.arru.ui.screen.home.component.ExpandedHomeScreenNothingToDisplayOverlay
-import com.kssidll.arru.ui.screen.home.component.HomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.screen.home.ExpandedHomeScreenNothingToDisplayOverlay
+import com.kssidll.arru.ui.screen.home.HomeScreenNothingToDisplayOverlay
 import com.kssidll.arru.ui.theme.ArruTheme
 
 private val TileOuterPadding: Dp = 8.dp
@@ -58,8 +58,8 @@ private val TileInnerPadding: Dp = 12.dp
 
 @Composable
 fun DashboardScreen(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: DashboardUiState,
+    onEvent: (event: DashboardEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navSuiteType =
@@ -75,8 +75,8 @@ fun DashboardScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreenContent(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: DashboardUiState,
+    onEvent: (event: DashboardEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -90,7 +90,7 @@ fun DashboardScreenContent(
                 title = {},
                 actions = {
                     // 'settings' action
-                    IconButton(onClick = { onEvent(HomeEvent.NavigateSettings) }) {
+                    IconButton(onClick = { onEvent(DashboardEvent.NavigateSettings) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription =
@@ -110,7 +110,7 @@ fun DashboardScreenContent(
         modifier = modifier,
     ) { paddingValues ->
         Crossfade(
-            targetState = uiState.dashboardScreenNothingToDisplayVisible,
+            targetState = uiState.nothingToDisplayVisible,
             label = "crossfade between nothing overlay and data display screen",
         ) { nothingToDisplayVisible ->
             if (nothingToDisplayVisible) {
@@ -123,20 +123,19 @@ fun DashboardScreenContent(
                         Modifier.padding(paddingValues)
                             .consumeWindowInsets(paddingValues)
                             .nestedScroll(nestedScrollConnection)
-                            .verticalScroll(state = uiState.dashboardScrollState)
+                            .verticalScroll(state = uiState.scrollState)
                 ) {
                     Spacer(Modifier.height(16.dp))
 
                     AnimatedVisibility(
-                        visible = uiState.dashboardChartSectionVisible,
+                        visible = uiState.chartSectionVisible,
                         enter = fadeIn(),
                         exit = fadeOut(),
                     ) {
                         Column {
                             TotalAverageAndMedianSpendingComponent(
-                                totalChartEntryModelProducer =
-                                    uiState.dashboardTotalChartEntryModelProducer,
-                                spentByTimeData = uiState.dashboardSpentByTimeChartData,
+                                totalChartEntryModelProducer = uiState.chartEntryModelProducer,
+                                spentByTimeData = uiState.spentByTime,
                                 totalSpentData = uiState.totalSpent,
                                 modifier = Modifier.padding(horizontal = 12.dp),
                             )
@@ -144,10 +143,10 @@ fun DashboardScreenContent(
                             Spacer(Modifier.height(28.dp))
 
                             SpendingSummaryComponent(
-                                spentByTimeData = uiState.dashboardSpentByTimeChartData,
-                                spentByTimePeriod = uiState.dashboardSpentByTimeChartCurrentPeriod,
+                                spentByTimeData = uiState.spentByTime,
+                                spentByTimePeriod = uiState.spentByTimePeriod,
                                 onSpentByTimePeriodUpdate = {
-                                    onEvent(HomeEvent.ChangeDashboardSpentByTimeChartPeriod(it))
+                                    onEvent(DashboardEvent.ChangeSpentByTimePeriod(it))
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                             )
@@ -157,7 +156,7 @@ fun DashboardScreenContent(
                     Spacer(Modifier.height(4.dp))
 
                     AnimatedVisibility(
-                        visible = uiState.dashboardCategoryCardVisible,
+                        visible = uiState.categoryCardVisible,
                         enter = fadeIn(),
                         exit = fadeOut(),
                     ) {
@@ -170,20 +169,20 @@ fun DashboardScreenContent(
                         ) {
                             RankingList(
                                 innerItemPadding = PaddingValues(TileInnerPadding),
-                                items = uiState.dashboardCategorySpendingRankingData,
+                                items = uiState.categorySpendingRankingData,
                                 modifier =
                                     Modifier.heightIn(min = 144.dp).clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = indication,
                                     ) {
-                                        onEvent(HomeEvent.NavigateCategoryRanking)
+                                        onEvent(DashboardEvent.NavigateCategoryRanking)
                                     },
                             )
                         }
                     }
 
                     AnimatedVisibility(
-                        visible = uiState.dashboardShopCardVisible,
+                        visible = uiState.shopCardVisible,
                         enter = fadeIn(),
                         exit = fadeOut(),
                     ) {
@@ -196,13 +195,13 @@ fun DashboardScreenContent(
                         ) {
                             RankingList(
                                 innerItemPadding = PaddingValues(TileInnerPadding),
-                                items = uiState.dashboardShopSpendingRankingData,
+                                items = uiState.shopSpendingRankingData,
                                 modifier =
                                     Modifier.heightIn(min = 144.dp).clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = indication,
                                     ) {
-                                        onEvent(HomeEvent.NavigateShopRanking)
+                                        onEvent(DashboardEvent.NavigateShopRanking)
                                     },
                             )
                         }
@@ -215,14 +214,14 @@ fun DashboardScreenContent(
 
 @Composable
 fun ExpandedDashboardScreenContent(
-    uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
+    uiState: DashboardUiState,
+    onEvent: (event: DashboardEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val indication = LocalIndication.current
 
     Crossfade(
-        targetState = uiState.dashboardScreenNothingToDisplayVisible,
+        targetState = uiState.nothingToDisplayVisible,
         label = "crossfade between nothing overlay and data display screen",
         modifier = modifier,
     ) { nothingToDisplayVisible ->
@@ -230,22 +229,19 @@ fun ExpandedDashboardScreenContent(
             ExpandedHomeScreenNothingToDisplayOverlay()
         } else {
             Column(
-                modifier =
-                    Modifier.animateContentSize()
-                        .verticalScroll(state = uiState.dashboardScrollState)
+                modifier = Modifier.animateContentSize().verticalScroll(state = uiState.scrollState)
             ) {
                 Spacer(Modifier.height(12.dp))
 
                 AnimatedVisibility(
-                    visible = uiState.dashboardSpentByTimeChartData.isNotEmpty(),
+                    visible = uiState.spentByTime.isNotEmpty(),
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
                     Column {
                         TotalAverageAndMedianSpendingComponent(
-                            totalChartEntryModelProducer =
-                                uiState.dashboardTotalChartEntryModelProducer,
-                            spentByTimeData = uiState.dashboardSpentByTimeChartData,
+                            totalChartEntryModelProducer = uiState.chartEntryModelProducer,
+                            spentByTimeData = uiState.spentByTime,
                             totalSpentData = uiState.totalSpent,
                             modifier = Modifier.padding(horizontal = 12.dp),
                         )
@@ -253,10 +249,10 @@ fun ExpandedDashboardScreenContent(
                         Spacer(Modifier.height(28.dp))
 
                         SpendingSummaryComponent(
-                            spentByTimeData = uiState.dashboardSpentByTimeChartData,
-                            spentByTimePeriod = uiState.dashboardSpentByTimeChartCurrentPeriod,
+                            spentByTimeData = uiState.spentByTime,
+                            spentByTimePeriod = uiState.spentByTimePeriod,
                             onSpentByTimePeriodUpdate = {
-                                onEvent(HomeEvent.ChangeDashboardSpentByTimeChartPeriod(it))
+                                onEvent(DashboardEvent.ChangeSpentByTimePeriod(it))
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -267,7 +263,7 @@ fun ExpandedDashboardScreenContent(
 
                 Row {
                     AnimatedVisibility(
-                        visible = uiState.dashboardCategoryCardVisible,
+                        visible = uiState.categoryCardVisible,
                         enter = fadeIn(),
                         exit = fadeOut(),
                         modifier = Modifier.weight(1f),
@@ -281,20 +277,20 @@ fun ExpandedDashboardScreenContent(
                         ) {
                             RankingList(
                                 innerItemPadding = PaddingValues(TileInnerPadding),
-                                items = uiState.dashboardCategorySpendingRankingData,
+                                items = uiState.categorySpendingRankingData,
                                 modifier =
                                     Modifier.heightIn(min = 144.dp).clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = indication,
                                     ) {
-                                        onEvent(HomeEvent.NavigateCategoryRanking)
+                                        onEvent(DashboardEvent.NavigateCategoryRanking)
                                     },
                             )
                         }
                     }
 
                     AnimatedVisibility(
-                        visible = uiState.dashboardShopCardVisible,
+                        visible = uiState.shopCardVisible,
                         enter = fadeIn(),
                         exit = fadeOut(),
                         modifier = Modifier.weight(1f),
@@ -308,13 +304,13 @@ fun ExpandedDashboardScreenContent(
                         ) {
                             RankingList(
                                 innerItemPadding = PaddingValues(TileInnerPadding),
-                                items = uiState.dashboardShopSpendingRankingData,
+                                items = uiState.shopSpendingRankingData,
                                 modifier =
                                     Modifier.heightIn(min = 144.dp).clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = indication,
                                     ) {
-                                        onEvent(HomeEvent.NavigateShopRanking)
+                                        onEvent(DashboardEvent.NavigateShopRanking)
                                     },
                             )
                         }
@@ -330,7 +326,7 @@ fun ExpandedDashboardScreenContent(
 private fun DashboardScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DashboardScreen(uiState = HomeUiState(), onEvent = {})
+            DashboardScreen(uiState = DashboardUiState(), onEvent = {})
         }
     }
 }
@@ -340,7 +336,7 @@ private fun DashboardScreenPreview() {
 private fun ExpandedDashboardScreenPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            DashboardScreen(uiState = HomeUiState(), onEvent = {})
+            DashboardScreen(uiState = DashboardUiState(), onEvent = {})
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison
 
 import androidx.lifecycle.ViewModel
-import com.kssidll.arru.data.data.TransactionTotalSpentByShop
+import com.kssidll.arru.data.data.TotalSpentByShop
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -16,10 +16,7 @@ class ShopSpendingComparisonViewModel
 constructor(private val shopRepository: ShopRepositorySource) : ViewModel() {
 
     /** @return List of data points representing category spending in [year] and [month] */
-    fun shopTotalSpentCurrentMonth(
-        year: Int,
-        month: Int,
-    ): Flow<ImmutableList<TransactionTotalSpentByShop>> {
+    fun shopTotalSpentCurrentMonth(year: Int, month: Int): Flow<ImmutableList<TotalSpentByShop>> {
         return shopRepository.totalSpentByShopByMonth(year, month)
     }
 
@@ -27,10 +24,7 @@ constructor(private val shopRepository: ShopRepositorySource) : ViewModel() {
      * @return List of data points representing category spending in previous month for [year] and
      *   [month]
      */
-    fun shopTotalSpentPreviousMonth(
-        year: Int,
-        month: Int,
-    ): Flow<ImmutableList<TransactionTotalSpentByShop>> {
+    fun shopTotalSpentPreviousMonth(year: Int, month: Int): Flow<ImmutableList<TotalSpentByShop>> {
         var localYear: Int = year
         var localMonth: Int = month
 

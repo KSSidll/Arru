@@ -5,20 +5,14 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import com.kssidll.arru.data.data.FullItem
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 @Dao
 interface ProductProducerEntityDao {
@@ -35,46 +29,6 @@ interface ProductProducerEntityDao {
     @Delete suspend fun delete(entity: ProductProducerEntity)
 
     // Helper
-
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
-    suspend fun shopById(shopId: Long): ShopEntity
-
-    @Query("SELECT * FROM ProductEntity WHERE ProductEntity.id = :productId")
-    suspend fun productById(productId: Long): ProductEntity
-
-    @Query(
-        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
-    )
-    suspend fun variantById(variantId: Long): ProductVariantEntity
-
-    @Query(
-        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
-    )
-    suspend fun categoryById(categoryId: Long): ProductCategoryEntity
-
-    @Query(
-        """
-        SELECT TransactionEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE ItemEntity.id = :itemEntityId
-    """
-    )
-    suspend fun transactionEntityByItemEntityId(itemEntityId: Long): TransactionEntity
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.productProducerEntityId = :producerId
-        ORDER BY date DESC
-        LIMIT :count
-        OFFSET :offset
-    """
-    )
-    suspend fun itemsByProducer(producerId: Long, count: Int, offset: Int): List<ItemEntity>
 
     @Query(
         """
@@ -116,32 +70,15 @@ interface ProductProducerEntityDao {
 
     @Update suspend fun updateProducts(entities: List<ProductEntity>)
 
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ItemEntity.id < :itemEntityId AND ProductEntity.productProducerEntityId = :producerId
-    """
-    )
-    suspend fun countItemsBefore(itemEntityId: Long, producerId: Long): Int
-
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ItemEntity.id > :itemEntityId AND ProductEntity.productProducerEntityId = :producerId
-    """
-    )
-    suspend fun countItemsAfter(itemEntityId: Long, producerId: Long): Int
-
     // Read
 
     @Query(
         "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :id"
     )
     fun get(id: Long): Flow<ProductProducerEntity?>
+
+    @Query("SELECT ProductProducerEntity.* FROM ProductProducerEntity")
+    fun all(): Flow<List<ProductProducerEntity>>
 
     @Query(
         """
@@ -331,41 +268,7 @@ interface ProductProducerEntityDao {
     fun totalSpentByYear(id: Long): Flow<List<ItemSpentChartData>>
 
     @Query(
-        "SELECT ProductProducerEntity.* FROM ProductProducerEntity ORDER BY ProductProducerEntity.id DESC"
-    )
-    fun all(): Flow<List<ProductProducerEntity>>
-
-    @Query(
         "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.name = :name"
     )
     suspend fun byName(name: String): ProductProducerEntity?
-
-    @Transaction
-    suspend fun fullItems(entityId: Long, count: Int, offset: Int): List<FullItem> {
-        val producer = get(entityId).first() ?: return emptyList()
-
-        val itemEntities = itemsByProducer(entityId, count, offset)
-
-        if (itemEntities.isEmpty()) return emptyList()
-
-        return itemEntities.map { entity ->
-            val transactionEntity = transactionEntityByItemEntityId(entity.id)
-            val productEntity = productById(entity.productEntityId)
-            val productVariantEntity = entity.productVariantEntityId?.let { variantById(it) }
-            val productCategoryEntity = categoryById(productEntity.productCategoryEntityId)
-            val shopEntity = transactionEntity.shopEntityId?.let { shopById(it) }
-
-            FullItem(
-                id = entity.id,
-                quantity = entity.quantity,
-                price = entity.price,
-                product = productEntity,
-                variant = productVariantEntity,
-                category = productCategoryEntity,
-                producer = producer,
-                date = transactionEntity.date,
-                shop = shopEntity,
-            )
-        }
-    }
 }

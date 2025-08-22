@@ -8,6 +8,8 @@ import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthForShopUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByShopByMonthUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForShopUseCase
@@ -90,5 +92,21 @@ class ShopModule {
         shopRepositorySource: ShopRepositorySource
     ): GetTotalSpentByYearForShopUseCase {
         return GetTotalSpentByYearForShopUseCase(shopRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByShopUseCase(
+        shopRepositorySource: ShopRepositorySource
+    ): GetTotalSpentByShopUseCase {
+        return GetTotalSpentByShopUseCase(shopRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTotalSpentByShopByMonthUseCase(
+        shopRepositorySource: ShopRepositorySource
+    ): GetTotalSpentByShopByMonthUseCase {
+        return GetTotalSpentByShopByMonthUseCase(shopRepositorySource)
     }
 }

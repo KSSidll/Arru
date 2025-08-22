@@ -1,8 +1,7 @@
 package com.kssidll.arru.domain.usecase.data
 
+import androidx.paging.map
 import com.kssidll.arru.data.repository.TransactionRepositorySource
-import com.kssidll.arru.domain.data.data.Transaction
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,19 +20,16 @@ class GetTransactionUseCase(private val transactionRepository: TransactionReposi
     operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         transactionRepository
             .intermediateFor(id)
-            .map { intermediate ->
-                intermediate?.let { transaction ->
-                    Transaction(
-                        id = transaction.entity.id,
-                        date = transaction.entity.date,
-                        shopId = transaction.entity.shopEntityId,
-                        shopName = transaction.shopEntity?.name,
-                        totalCost = transaction.entity.totalCost,
-                        note = transaction.entity.note,
-                        items = transaction.items.toImmutableList(),
-                    )
-                }
-            }
+            .map { intermediate -> intermediate?.toTransaction() }
+            .flowOn(dispatcher)
+}
+
+class GetAllTransactionsUseCase(private val transactionRepository: TransactionRepositorySource) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        transactionRepository
+            .intermediates()
+            .map { pagingData -> pagingData.map { intermediate -> intermediate.toTransaction() } }
             .flowOn(dispatcher)
 }
 

@@ -10,7 +10,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -126,10 +125,6 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao) :
     override fun byProduct(
         productEntity: ProductEntity,
         showGlobal: Boolean,
-    ): Flow<ImmutableList<ProductVariantEntity>> {
-        return dao.byProduct(productEntity.id, showGlobal)
-            .cancellable()
-            .distinctUntilChanged()
-            .map { it.toImmutableList() }
-    }
+    ): Flow<ImmutableList<ProductVariantEntity>> =
+        dao.byProduct(productEntity.id, showGlobal).cancellable().map { it.toImmutableList() }
 }

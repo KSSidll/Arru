@@ -3,21 +3,17 @@ package com.kssidll.arru.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.map
 import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.data.IntermediateTransaction
-import com.kssidll.arru.data.data.TransactionBasketWithItems
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
 import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.domain.data.data.Transaction
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -131,57 +127,5 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
     override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>> =
         dao.totalSpentByYear().cancellable().map { it.toImmutableList() }
 
-    override suspend fun count(): Int {
-        return dao.count()
-    }
-
-    override suspend fun countBefore(id: Long): Int {
-        return dao.countBefore(id)
-    }
-
-    override suspend fun countAfter(id: Long): Int {
-        return dao.countAfter(id)
-    }
-
-    override fun newest(): Flow<TransactionEntity?> {
-        return dao.newest()
-    }
-
-    override fun totalSpentLong(): Flow<Long?> {
-        return dao.totalSpent()
-    }
-
-    override suspend fun transactionBasketsWithItems(
-        startPosition: Int,
-        count: Int,
-    ): ImmutableList<TransactionBasketWithItems> {
-        return dao.transactionBasketsWithItems(startPosition, count).toImmutableList()
-    }
-
-    override fun transactionBasketsPaged(): Flow<PagingData<Transaction>> {
-        return Pager(
-                config = PagingConfig(pageSize = 12, enablePlaceholders = true, jumpThreshold = 24),
-                pagingSourceFactory = { dao.intermediates() },
-            )
-            .flow
-            .map { pagingData ->
-                pagingData.map {
-                    Transaction(
-                        id = it.entity.id,
-                        date = it.entity.date,
-                        shopId = it.entity.shopEntityId,
-                        shopName = it.shopEntity?.name,
-                        totalCost = it.entity.totalCost,
-                        note = it.entity.note,
-                        items = it.items.toImmutableList(),
-                    )
-                }
-            }
-    }
-
-    override fun transactionBasketWithItems(
-        transactionId: Long
-    ): Flow<TransactionBasketWithItems?> {
-        return dao.transactionBasketWithItems(transactionId).cancellable().distinctUntilChanged()
-    }
+    override fun newest(): Flow<TransactionEntity?> = dao.newest().cancellable()
 }

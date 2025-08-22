@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
-import com.kssidll.arru.data.data.ItemSpentByCategory
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
@@ -197,9 +197,9 @@ private fun SpendingComparisonListPreview() {
         Surface {
             SpendingComparisonList(
                 listHeader = "test",
-                leftSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
+                leftSideItems = TotalSpentByCategory.generateList(4).toImmutableList(),
                 leftSideHeader = "left",
-                rightSideItems = ItemSpentByCategory.generateList(4).toImmutableList(),
+                rightSideItems = TotalSpentByCategory.generateList(4).toImmutableList(),
                 rightSideHeader = "right",
             )
         }
