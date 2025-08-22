@@ -18,14 +18,15 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentUseCase
 import com.kssidll.arru.ui.component.SpendingSummaryPeriod
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @Immutable
 data class DashboardUiState(
@@ -84,14 +85,14 @@ constructor(
         viewModelScope.launch {
             getTotalSpentByProductCategoryUseCase().collectLatest {
                 _uiState.update { currentState ->
-                    currentState.copy(categorySpendingRankingData = it)
+                    currentState.copy(categorySpendingRankingData = it.take(6).toImmutableList())
                 }
             }
         }
 
         viewModelScope.launch {
             getTotalSpentByShopUseCase().collectLatest {
-                _uiState.update { currentState -> currentState.copy(shopSpendingRankingData = it) }
+                _uiState.update { currentState -> currentState.copy(shopSpendingRankingData = it.take(6).toImmutableList()) }
             }
         }
 

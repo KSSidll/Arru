@@ -109,7 +109,6 @@ fun <T> RankingScreen(
                         RankingList(
                             innerItemPadding = PaddingValues(horizontal = 16.dp),
                             items = data,
-                            displayCount = 0,
                             scaleByRank = false,
                             onItemClick = onItemClick,
                             onItemClickLabel = onItemClickLabel,

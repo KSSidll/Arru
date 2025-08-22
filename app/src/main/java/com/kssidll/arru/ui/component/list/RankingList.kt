@@ -43,9 +43,9 @@ import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.other.ProgressBar
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
-import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import java.util.Locale
 
 private val firstTextStyle: TextStyle = Typography.titleLarge
 private val secondTextStyle: TextStyle = Typography.titleMedium
@@ -111,7 +111,6 @@ fun <T> RankingList(
     items: ImmutableList<T>,
     modifier: Modifier = Modifier,
     innerItemPadding: PaddingValues = PaddingValues(0.dp),
-    displayCount: Int = 6,
     animationSpec: AnimationSpec<Float> = tween(1200),
     scaleByRank: Boolean = true,
     onItemClick: ((T) -> Unit)? = null,
@@ -127,11 +126,7 @@ fun <T> RankingList(
     LaunchedEffect(items) {
         if (items.isNotEmpty()) {
             displayItems.clear()
-
-            var sortedItems = items.sortedByDescending { it.sortValue() }
-            if (displayCount > 0) sortedItems = sortedItems.take(displayCount)
-
-            displayItems.addAll(sortedItems)
+            displayItems.addAll(items.sortedByDescending { it.sortValue() })
             maxItemValue = displayItems.first().sortValue()
         }
     }
