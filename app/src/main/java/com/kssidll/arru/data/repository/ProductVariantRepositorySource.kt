@@ -117,12 +117,9 @@ interface ProductVariantRepositorySource {
     fun get(id: Long): Flow<ProductVariantEntity?>
 
     /**
-     * @param productEntity [ProductEntity] to match the [ProductVariantEntity] with
+     * @param id of the [ProductEntity]
      * @param showGlobal whether to return global variants as well
-     * @return list of [ProductVariantEntity] matching [productEntity]
+     * @return list of [ProductVariantEntity] with matching [ProductEntity] [id]
      */
-    fun byProduct(
-        productEntity: ProductEntity,
-        showGlobal: Boolean,
-    ): Flow<ImmutableList<ProductVariantEntity>>
+    fun byProduct(id: Long, showGlobal: Boolean): Flow<ImmutableList<ProductVariantEntity>>
 }

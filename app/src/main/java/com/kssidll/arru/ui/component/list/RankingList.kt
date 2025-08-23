@@ -43,9 +43,9 @@ import com.kssidll.arru.domain.data.interfaces.RankSource
 import com.kssidll.arru.ui.component.other.ProgressBar
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
+import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import java.util.Locale
 
 private val firstTextStyle: TextStyle = Typography.titleLarge
 private val secondTextStyle: TextStyle = Typography.titleMedium
@@ -95,7 +95,6 @@ private fun getRowHeight(position: Int, scaleByRank: Boolean): Dp {
  *   implement [RankSource]
  * @param modifier Modifier applied to the container
  * @param innerItemPadding Padding applied to the item container
- * @param displayCount How many items to display, 0 means all
  * @param animationSpec Animation Spec for the item relative to max value animation
  * @param scaleByRank Whether to scale the item values based on their position
  * @param onItemClick Function to call when an item is clicked, null disables click event if

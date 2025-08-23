@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditProductVariantRoute(
     variantId: Long,
-    navigateBack: () -> Unit,
+    navigateBack: (variantId: Long?) -> Unit,
     viewModel: EditProductVariantViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -21,7 +21,7 @@ fun EditProductVariantRoute(
     SideEffect {
         scope.launch {
             if (!viewModel.checkExists(variantId)) {
-                navigateBack()
+                navigateBack(null)
             }
         }
     }
@@ -29,19 +29,19 @@ fun EditProductVariantRoute(
     LaunchedEffect(variantId) { viewModel.updateState(variantId) }
 
     ModifyProductVariantScreenImpl(
-        onBack = navigateBack,
+        onBack = { navigateBack(variantId) },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
                 if (viewModel.updateVariant(variantId).isNotError()) {
-                    navigateBack()
+                    navigateBack(variantId)
                 }
             }
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteVariant(variantId).isNotError()) {
-                    navigateBack()
+                    navigateBack(null)
                 }
             }
         },

@@ -76,8 +76,9 @@ class ProductCategoryRepository(private val dao: ProductCategoryEntityDao) :
             return MergeResult.Error(MergeResult.InvalidMergingInto)
         }
 
-        val products = dao.getProducts(entity.id)
-        products.forEach { it.productCategoryEntityId = mergingInto.id }
+        val products =
+            dao.getProducts(entity.id).map { it.copy(productCategoryEntityId = mergingInto.id) }
+
         dao.updateProducts(products)
 
         dao.delete(entity)

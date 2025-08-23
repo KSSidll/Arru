@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditProductRoute(
     productId: Long,
-    navigateBack: () -> Unit,
+    navigateBack: (productId: Long?) -> Unit,
     navigateAddProductCategory: (query: String?) -> Unit,
     navigateAddProductProducer: (query: String?) -> Unit,
     navigateEditProductCategory: (categoryId: Long) -> Unit,
@@ -29,7 +29,7 @@ fun EditProductRoute(
     SideEffect {
         scope.launch {
             if (!viewModel.checkExists(productId)) {
-                navigateBack()
+                navigateBack(null)
             }
         }
     }
@@ -41,7 +41,7 @@ fun EditProductRoute(
     LaunchedEffect(providedCategoryId) { viewModel.setSelectedCategory(providedCategoryId) }
 
     ModifyProductScreenImpl(
-        onBack = navigateBack,
+        onBack = { navigateBack(productId) },
         state = viewModel.screenState,
         categories = viewModel.allCategories().collectAsState(initial = emptyImmutableList()).value,
         producers = viewModel.allProducers().collectAsState(initial = emptyImmutableList()).value,
@@ -50,21 +50,21 @@ fun EditProductRoute(
         onSubmit = {
             scope.launch {
                 if (viewModel.updateProduct(productId).isNotError()) {
-                    navigateBack()
+                    navigateBack(productId)
                 }
             }
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteProduct(productId).isNotError()) {
-                    navigateBack()
+                    navigateBack(null)
                 }
             }
         },
         onMerge = {
             scope.launch {
                 if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBack()
+                    navigateBack(it.id)
                 }
             }
         },

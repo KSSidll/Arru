@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddProductProducerRoute(
     defaultName: String?,
-    navigateBack: (producerId: Long?) -> Unit,
+    navigateBack: (productProducerId: Long?) -> Unit,
     viewModel: AddProductProducerViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()

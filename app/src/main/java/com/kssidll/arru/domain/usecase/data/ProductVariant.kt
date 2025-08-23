@@ -13,4 +13,14 @@ class GetProductVariantEntityUseCase(
         productVariantRepository.get(id).flowOn(dispatcher)
 }
 
+class GetProductVariantEntityByProductUseCase(
+    private val productVariantRepository: ProductVariantRepositorySource
+) {
+    operator fun invoke(
+        id: Long,
+        showGlobal: Boolean = true,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productVariantRepository.byProduct(id, showGlobal).flowOn(dispatcher)
+}
+
 /** DOMAIN */

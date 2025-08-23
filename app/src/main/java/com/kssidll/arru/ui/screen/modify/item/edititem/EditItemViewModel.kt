@@ -3,35 +3,48 @@ package com.kssidll.arru.ui.screen.modify.item.edititem
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.UpdateResult
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.DeleteItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.DeleteItemEntityUseCaseResult
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityByProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityByProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateItemEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-// TODO refactor uiState Event UseCase
 
 @HiltViewModel
 class EditItemViewModel
 @Inject
 constructor(
-    override val itemRepository: ItemRepositorySource,
-    override val productRepository: ProductRepositorySource,
-    override val variantsRepository: ProductVariantRepositorySource,
+    private val getItemEntityUseCase: GetItemEntityUseCase,
+    private val updateItemEntityUseCase: UpdateItemEntityUseCase,
+    private val deleteItemEntityUseCase: DeleteItemEntityUseCase,
+    override val getNewestItemEntityUseCase: GetNewestItemEntityUseCase,
+    override val getNewestItemEntityByProductUseCase: GetNewestItemEntityByProductUseCase,
+    override val getProductEntityUseCase: GetProductEntityUseCase,
+    override val getAllProductEntityUseCase: GetAllProductEntityUseCase,
+    override val getProductVariantEntityUseCase: GetProductVariantEntityUseCase,
+    override val getProductVariantEntityByProductUseCase: GetProductVariantEntityByProductUseCase,
 ) : ModifyItemViewModel() {
     private var mItem: ItemEntity? = null
 
     suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                return@async itemRepository.get(id).first() != null
+                return@async getItemEntityUseCase(id).first() != null
             }
             .await()
 
@@ -40,102 +53,179 @@ constructor(
             // skip state update for repeating itemId
             if (itemId == mItem?.id) return@launch
 
-            screenState.allToLoading()
+            _uiState.update { currentState ->
+                currentState.copy(
+                    price = currentState.price.toLoading(),
+                    quantity = currentState.quantity.toLoading(),
+                    selectedProduct = currentState.selectedProduct.toLoading(),
+                    selectedProductVariant = currentState.selectedProductVariant.toLoading(),
+                )
+            }
 
-            mItem = itemRepository.get(itemId).first()
+            mItem = getItemEntityUseCase(itemId).first()
 
             updateStateForItem(mItem)
         }
 
-    /**
-     * Tries to update item with provided [itemId] with current screen state data
-     *
-     * @return resulting [UpdateResult]
-     */
-    suspend fun updateItem(itemId: Long) =
-        viewModelScope
-            .async {
-                screenState.attemptedToSubmit.value = true
+    fun updateStateForItem(item: ItemEntity?) {
+        val productId: Long? = item?.productEntityId
+        val productVariantId: Long? = item?.productVariantEntityId
+        val price: String? = item?.actualPrice()?.toString()
+        val quantity: String? = item?.actualQuantity()?.toString()
 
-                val result =
-                    itemRepository.update(
-                        id = itemId,
-                        productId =
-                            screenState.selectedProduct.value.data?.id
-                                ?: ItemEntity.INVALID_PRODUCT_ID,
-                        variantId = screenState.selectedVariant.value.data?.id,
-                        quantity =
-                            screenState.quantity.value.data?.let {
-                                ItemEntity.quantityFromString(it)
-                            } ?: ItemEntity.INVALID_QUANTITY,
-                        price =
-                            screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
-                                ?: ItemEntity.INVALID_PRICE,
-                    )
+        productId?.let { setProductListener(it) }
+        setProductVariantListener(productVariantId)
 
-                if (result.isError()) {
-                    when (result.error!!) {
-                        UpdateResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to update item with invalid item id in EditItemViewModel",
-                            )
-                            return@async UpdateResult.Success
-                        }
+        _uiState.update { currentState ->
+            currentState.copy(price = Field.Loaded(price), quantity = Field.Loaded(quantity))
+        }
+    }
 
-                        UpdateResult.InvalidPrice -> {
-                            screenState.price.apply {
-                                value = value.toError(FieldError.InvalidValueError)
+    init {
+        init()
+
+        _uiState.update { currentState -> currentState.copy(isDeleteVisible = true) }
+    }
+
+    override suspend fun handleEvent(event: ModifyItemEvent): Boolean {
+        when (event) {
+            is ModifyItemEvent.Submit -> {
+                val state = uiState.value
+                val updateResult =
+                    mItem?.let { item ->
+                        updateItemEntityUseCase(
+                            id = item.id,
+                            transactionEntityId = item.transactionEntityId,
+                            productEntityId = state.selectedProduct.data?.id,
+                            productVariantEntityId = state.selectedProductVariant.data?.id,
+                            quantity = state.quantity.data,
+                            price = state.price.data,
+                        )
+                    } ?: return true
+
+                return when (updateResult) {
+                    is UpdateItemEntityUseCaseResult.Error -> {
+                        updateResult.errors.forEach {
+                            when (it) {
+                                UpdateItemEntityUseCaseResult.PriceNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            price =
+                                                currentState.price.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.PriceInvalid -> {
+                                    Log.d(
+                                        "ModifyItem",
+                                        "Insert invalid price `${state.price.data}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            price =
+                                                currentState.price.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.ProductIdNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProduct =
+                                                currentState.selectedProduct.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.ProductIdInvalid -> {
+                                    Log.d(
+                                        "ModifyItem",
+                                        "Insert invalid product `${state.selectedProduct.data?.id}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProduct =
+                                                currentState.selectedProduct.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.ProductVariantIdInvalid -> {
+                                    Log.d(
+                                        "ModifyItem",
+                                        "Insert invalid product variant `${state.selectedProductVariant.data?.id}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductVariant =
+                                                currentState.selectedProductVariant.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.QuantityNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            quantity =
+                                                currentState.quantity.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.QuantityInvalid -> {
+                                    Log.d(
+                                        "ModifyItem",
+                                        "Insert invalid quantity `${state.quantity.data}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            quantity =
+                                                currentState.quantity.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateItemEntityUseCaseResult.TransactionIdInvalid -> {
+                                    Log.d(
+                                        "ModifyItem",
+                                        "Insert invalid transaction `${mItem?.transactionEntityId}`",
+                                    )
+                                }
                             }
                         }
 
-                        UpdateResult.InvalidProductId -> {
-                            screenState.selectedProduct.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        UpdateResult.InvalidQuantity -> {
-                            screenState.quantity.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        UpdateResult.InvalidVariantId -> {
-                            screenState.selectedVariant.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
+                        false
                     }
+                    is UpdateItemEntityUseCaseResult.Success -> true
                 }
-
-                return@async result
             }
-            .await()
+            is ModifyItemEvent.DeleteItem -> {
+                val deleteResult =
+                    mItem?.let { item -> deleteItemEntityUseCase(id = item.id) } ?: return true
 
-    /**
-     * Tries to delete item with provided [itemId]
-     *
-     * @return resulting [DeleteResult]
-     */
-    suspend fun deleteItem(itemId: Long) =
-        viewModelScope
-            .async {
-                val result = itemRepository.delete(itemId)
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        DeleteResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to delete item with invalid item id in EditItemViewModel",
-                            )
-                            return@async DeleteResult.Success
+                return when (deleteResult) {
+                    is DeleteItemEntityUseCaseResult.Error -> {
+                        deleteResult.errors.forEach {
+                            when (it) {
+                                DeleteItemEntityUseCaseResult.ItemIdInvalid -> {
+                                    Log.d("EditItem", "Delete invalid item id `${mItem?.id}`")
+                                }
+                            }
                         }
-                    }
-                }
 
-                return@async result
+                        false
+                    }
+
+                    is DeleteItemEntityUseCaseResult.Success -> true
+                }
             }
-            .await()
+            else -> return super.handleEvent(event)
+        }
+    }
 }

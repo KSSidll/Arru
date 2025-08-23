@@ -32,110 +32,76 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
-import com.kssidll.arru.helper.RegexHelper
-import com.kssidll.arru.helper.StringHelper
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
-import kotlinx.collections.immutable.ImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
-/**
- * [ModifyScreen] implementation for [ItemEntity]
- *
- * @param onBack Called to request a back navigation, isn't triggered by other events like
- *   submission or deletion
- * @param state [ModifyItemScreenState] instance representing the screen state
- * @param products Products that can be set for the item
- * @param variants Variants that can be set for current item
- * @param onNewProductSelected Callback called when a new product is selected. Provides newly
- *   selected product as parameter
- * @param onNewVariantSelected Callback called when a new variant is selected. Provides newly
- *   selected variant as parameter
- * @param onSubmit Callback called when the submit action is triggered
- * @param onDelete Callback called when the delete action is triggered
- * @param submitButtonText Text displayed in the submit button, defaults to product add string
- *   resource
- * @param onProductAddButtonClick Callback called when the product add button is clicked. Provides
- *   search value or null as parameter
- * @param onVariantAddButtonClick Callback called when the variant add button is clicked. Provides
- *   product id and potentially a search value as parameters
- * @param onItemLongClick Callback called when the item is long clicked/pressed. Provides product id
- *   as parameter
- * @param onItemVariantLongClick Callback called when the item variant label is long
- *   clicked/pressed. Provides variant id as parameter
- */
 @Composable
 fun ModifyItemScreenImpl(
-    onBack: () -> Unit,
-    state: ModifyItemScreenState,
-    products: ImmutableList<ProductEntity>,
-    variants: ImmutableList<ProductVariantEntity>,
-    onNewProductSelected: (product: ProductEntity?) -> Unit,
-    onNewVariantSelected: (variant: ProductVariantEntity?) -> Unit,
-    onSubmit: () -> Unit,
-    onProductAddButtonClick: (query: String?) -> Unit,
-    onVariantAddButtonClick: (productId: Long, query: String?) -> Unit,
-    onItemLongClick: (productId: Long) -> Unit,
+    uiState: ModifyItemUiState,
+    onEvent: (event: ModifyItemEvent) -> Unit,
     modifier: Modifier = Modifier,
-    onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_add),
-    onItemVariantLongClick: (variantId: Long) -> Unit,
 ) {
     ModifyScreen<FuzzySearchSource>(
-        onBack = onBack,
+        onBack = { onEvent(ModifyItemEvent.NavigateBack) },
         title = stringResource(id = R.string.item),
-        onSubmit = onSubmit,
-        onDelete = onDelete,
+        onSubmit = { onEvent(ModifyItemEvent.Submit) },
+        onDelete =
+            if (uiState.isDeleteVisible) {
+                { onEvent(ModifyItemEvent.DeleteItem) }
+            } else null,
         submitButtonText = submitButtonText,
         modifier = modifier,
     ) {
-        if (state.isProductSearchDialogExpanded.value) {
+        if (uiState.isProductSearchDialogExpanded) {
             SearchableListDialog(
-                onDismissRequest = { state.isProductSearchDialogExpanded.value = false },
-                items = products,
+                onDismissRequest = {
+                    onEvent(ModifyItemEvent.SetProductSearchDialogVisibility(false))
+                },
+                items = uiState.allProducts,
                 onItemClick = {
-                    state.isProductSearchDialogExpanded.value = false
-                    onNewProductSelected(it)
+                    onEvent(ModifyItemEvent.SetProductSearchDialogVisibility(false))
+                    it?.id?.let { productId -> onEvent(ModifyItemEvent.SelectProduct(productId)) }
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
-                    state.isProductSearchDialogExpanded.value = false
-                    onItemLongClick(it.id)
+                    onEvent(ModifyItemEvent.SetProductSearchDialogVisibility(false))
+                    onEvent(ModifyItemEvent.NavigateEditProduct(it.id))
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 itemText = { it.name },
-                onAddButtonClick = onProductAddButtonClick,
+                onAddButtonClick = {},
                 addButtonDescription = stringResource(R.string.item_product_add_description),
                 calculateScore = { item, query -> item.fuzzyScore(query) },
             )
-        } else if (state.isVariantSearchDialogExpanded.value) {
+        } else if (uiState.isProductVariantSearchDialogExpanded) {
             SearchableListDialog(
-                onDismissRequest = { state.isVariantSearchDialogExpanded.value = false },
-                items = variants,
+                onDismissRequest = {
+                    onEvent(ModifyItemEvent.SetProductVariantSearchDialogVisibility(false))
+                },
+                items = uiState.allProductVariants,
                 itemText = { it.name },
                 onItemClick = {
-                    state.isVariantSearchDialogExpanded.value = false
-                    onNewVariantSelected(it)
+                    onEvent(ModifyItemEvent.SetProductVariantSearchDialogVisibility(false))
+                    onEvent(ModifyItemEvent.SelectProductVariant(it?.id))
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
-                    state.isVariantSearchDialogExpanded.value = false
-                    onItemVariantLongClick(it.id)
+                    onEvent(ModifyItemEvent.SetProductVariantSearchDialogVisibility(false))
+                    onEvent(ModifyItemEvent.NavigateEditProductVariant(it.id))
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 onAddButtonClick = { query ->
-                    state.selectedProduct.value.data?.let { onVariantAddButtonClick(it.id, query) }
+                    uiState.selectedProduct.data?.let {
+                        onEvent(ModifyItemEvent.NavigateAddProductVariant(it.id, query))
+                    }
                 },
                 addButtonDescription =
                     stringResource(R.string.item_product_variant_add_description),
@@ -156,46 +122,21 @@ fun ModifyItemScreenImpl(
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
-                    enabled = state.price.value.isEnabled(),
-                    value = state.price.value.data ?: String(),
+                    enabled = uiState.price.isEnabled(),
+                    value = uiState.price.data ?: String(),
                     keyboardOptions =
                         KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    onValueChange = { newValue ->
-                        state.price.apply {
-                            if (newValue.isBlank()) {
-                                value = Field.Loaded(String())
-                            } else if (RegexHelper.isFloat(newValue, 2)) {
-                                value = Field.Loaded(newValue)
-                            }
-                        }
-                    },
+                    onValueChange = { onEvent(ModifyItemEvent.SetPrice(it)) },
                     label = { Text(text = stringResource(R.string.item_price), fontSize = 16.sp) },
-                    supportingText = {
-                        if (state.attemptedToSubmit.value) {
-                            state.price.value.error?.ErrorText()
-                        }
-                    },
-                    isError =
-                        if (state.attemptedToSubmit.value) state.price.value.isError() else false,
+                    supportingText = { uiState.price.error?.ErrorText() },
+                    isError = uiState.price.isError(),
                     modifier = Modifier.weight(1f),
                 )
 
                 Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
-                        enabled = state.price.value.isEnabled(),
-                        onClick = {
-                            if (state.price.value.data.isNullOrBlank()) {
-                                state.price.value = Field.Loaded("%.2f".format(0f))
-                            } else {
-                                val value =
-                                    state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
-
-                                if (value != null) {
-                                    state.price.value =
-                                        Field.Loaded("%.2f".format(value.plus(0.5f)))
-                                }
-                            }
-                        },
+                        enabled = uiState.price.isEnabled(),
+                        onClick = { onEvent(ModifyItemEvent.IncrementPrice) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -212,28 +153,8 @@ fun ModifyItemScreenImpl(
                     }
 
                     IconButton(
-                        enabled = state.price.value.isEnabled(),
-                        onClick = {
-                            if (state.price.value.data.isNullOrBlank()) {
-                                state.price.value = Field.Loaded("%.2f".format(0f))
-                            } else {
-                                val value =
-                                    state.price.value.data!!.let { StringHelper.toDoubleOrNull(it) }
-
-                                if (value != null) {
-                                    state.price.value =
-                                        Field.Loaded(
-                                            "%.2f"
-                                                .format(
-                                                    if (value > 0.5f) value.minus(0.5f)
-                                                    else {
-                                                        0f
-                                                    }
-                                                )
-                                        )
-                                }
-                            }
-                        },
+                        enabled = uiState.price.isEnabled(),
+                        onClick = { onEvent(ModifyItemEvent.DecrementPrice) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -258,57 +179,29 @@ fun ModifyItemScreenImpl(
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
-                    enabled = state.quantity.value.isEnabled(),
-                    value = state.quantity.value.data ?: String(),
+                    enabled = uiState.quantity.isEnabled(),
+                    value = uiState.quantity.data ?: String(),
                     keyboardOptions =
                         KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    onValueChange = { newValue ->
-                        state.quantity.apply {
-                            if (newValue.isBlank()) {
-                                value = Field.Loaded(String())
-                            } else if (RegexHelper.isFloat(newValue, 3)) {
-                                value = Field.Loaded(newValue)
-                            }
-                        }
-                    },
+                    onValueChange = { onEvent(ModifyItemEvent.SetQuantity(it)) },
                     label = {
                         Text(
                             text =
-                                if (state.selectedVariant.value.data == null)
+                                if (uiState.selectedProductVariant.data == null)
                                     stringResource(R.string.item_product_variant_default_value)
                                 else stringResource(R.string.item_quantity),
                             fontSize = 16.sp,
                         )
                     },
-                    supportingText = {
-                        if (state.attemptedToSubmit.value) {
-                            state.quantity.value.error?.ErrorText()
-                        }
-                    },
-                    isError =
-                        if (state.attemptedToSubmit.value) state.quantity.value.isError()
-                        else false,
+                    supportingText = { uiState.quantity.error?.ErrorText() },
+                    isError = uiState.quantity.isError(),
                     modifier = Modifier.weight(1f),
                 )
 
                 Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
-                        enabled = state.quantity.value.isEnabled(),
-                        onClick = {
-                            if (state.quantity.value.data.isNullOrBlank()) {
-                                state.quantity.value = Field.Loaded("%.3f".format(0f))
-                            } else {
-                                val value =
-                                    state.quantity.value.data!!.let {
-                                        StringHelper.toDoubleOrNull(it)
-                                    }
-
-                                if (value != null) {
-                                    state.quantity.value =
-                                        Field.Loaded("%.3f".format(value.plus(0.5f)))
-                                }
-                            }
-                        },
+                        enabled = uiState.quantity.isEnabled(),
+                        onClick = { onEvent(ModifyItemEvent.IncrementQuantity) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -325,30 +218,8 @@ fun ModifyItemScreenImpl(
                     }
 
                     IconButton(
-                        enabled = state.quantity.value.isEnabled(),
-                        onClick = {
-                            if (state.quantity.value.data.isNullOrBlank()) {
-                                state.quantity.value = Field.Loaded("%.3f".format(0f))
-                            } else {
-                                val value =
-                                    state.quantity.value.data!!.let {
-                                        StringHelper.toDoubleOrNull(it)
-                                    }
-
-                                if (value != null) {
-                                    state.quantity.value =
-                                        Field.Loaded(
-                                            "%.3f"
-                                                .format(
-                                                    if (value > 0.5f) value.minus(0.5f)
-                                                    else {
-                                                        0f
-                                                    }
-                                                )
-                                        )
-                                }
-                            }
-                        },
+                        enabled = uiState.quantity.isEnabled(),
+                        onClick = { onEvent(ModifyItemEvent.DecrementQuantity) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -370,26 +241,24 @@ fun ModifyItemScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                enabled = state.selectedProduct.value.isEnabled(),
-                value = state.selectedProduct.value.data?.name ?: String(),
+                enabled = uiState.selectedProduct.isEnabled(),
+                value = uiState.selectedProduct.data?.name ?: String(),
                 onClick = {
-                    if (products.isNotEmpty()) {
-                        state.isProductSearchDialogExpanded.value = true
+                    if (uiState.allProducts.isNotEmpty()) {
+                        onEvent(ModifyItemEvent.SetProductSearchDialogVisibility(true))
                     } else {
-                        onProductAddButtonClick(null)
+                        onEvent(ModifyItemEvent.NavigateAddProduct(String()))
                     }
                 },
-                onLongClick = { state.selectedProduct.value.data?.let { onItemLongClick(it.id) } },
+                onLongClick = {
+                    uiState.selectedProduct.data?.let {
+                        onEvent(ModifyItemEvent.NavigateEditProduct(it.id))
+                    }
+                },
                 label = stringResource(R.string.item_product),
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.selectedProduct.value.error?.ErrorText()
-                    }
-                },
-                error =
-                    if (state.attemptedToSubmit.value) state.selectedProduct.value.isError()
-                    else false,
-                onAddButtonClick = { onProductAddButtonClick(null) },
+                supportingText = { uiState.selectedProduct.error?.ErrorText() },
+                error = uiState.selectedProduct.isError(),
+                onAddButtonClick = { onEvent(ModifyItemEvent.NavigateAddProduct(String())) },
                 addButtonDescription = stringResource(R.string.item_product_add_description),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
             )
@@ -398,26 +267,30 @@ fun ModifyItemScreenImpl(
 
             SearchField(
                 enabled =
-                    state.selectedProduct.value.data != null &&
-                        state.selectedVariant.value.isEnabled(),
+                    uiState.selectedProduct.data != null &&
+                        uiState.selectedProductVariant.isEnabled(),
                 value =
-                    state.selectedVariant.value.data?.name
+                    uiState.selectedProductVariant.data?.name
                         ?: stringResource(R.string.item_product_variant_default_value),
                 onClick = {
-                    state.selectedProduct.value.data?.let {
-                        if (variants.isNotEmpty()) {
-                            state.isVariantSearchDialogExpanded.value = true
+                    uiState.selectedProduct.data?.let {
+                        if (uiState.allProductVariants.isNotEmpty()) {
+                            onEvent(ModifyItemEvent.SetProductVariantSearchDialogVisibility(true))
                         } else {
-                            onVariantAddButtonClick(it.id, null)
+                            onEvent(ModifyItemEvent.NavigateAddProductVariant(it.id, String()))
                         }
                     }
                 },
                 onLongClick = {
-                    state.selectedVariant.value.data?.let { onItemVariantLongClick(it.id) }
+                    uiState.selectedProductVariant.data?.let {
+                        onEvent(ModifyItemEvent.NavigateEditProductVariant(it.id))
+                    }
                 },
                 label = stringResource(R.string.item_product_variant),
                 onAddButtonClick = {
-                    state.selectedProduct.value.data?.let { onVariantAddButtonClick(it.id, null) }
+                    uiState.selectedProduct.data?.let {
+                        onEvent(ModifyItemEvent.NavigateAddProductVariant(it.id, String()))
+                    }
                 },
                 addButtonDescription =
                     stringResource(R.string.item_product_variant_add_description),
@@ -433,19 +306,7 @@ fun ModifyItemScreenImpl(
 private fun ModifyItemScreenImplPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            ModifyItemScreenImpl(
-                onBack = {},
-                state = ModifyItemScreenState(),
-                products = emptyImmutableList(),
-                variants = emptyImmutableList(),
-                onNewProductSelected = {},
-                onNewVariantSelected = {},
-                onSubmit = {},
-                onProductAddButtonClick = {},
-                onItemLongClick = {},
-                onVariantAddButtonClick = { _, _ -> },
-                onItemVariantLongClick = {},
-            )
+            ModifyItemScreenImpl(uiState = ModifyItemUiState(), onEvent = {})
         }
     }
 }

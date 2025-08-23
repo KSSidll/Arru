@@ -4,6 +4,7 @@ import com.kssidll.arru.data.dao.ProductEntityDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.repository.ProductRepository
 import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetAveragePriceByShopByVariantByProducerByDayForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
@@ -41,6 +42,14 @@ class ProductModule {
         productRepositorySource: ProductRepositorySource
     ): GetProductEntityUseCase {
         return GetProductEntityUseCase(productRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllProductEntityUseCase(
+        productRepositorySource: ProductRepositorySource
+    ): GetAllProductEntityUseCase {
+        return GetAllProductEntityUseCase(productRepositorySource)
     }
 
     /** DOMAIN */

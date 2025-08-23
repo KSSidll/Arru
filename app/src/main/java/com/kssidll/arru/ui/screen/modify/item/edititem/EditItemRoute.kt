@@ -3,11 +3,11 @@ package com.kssidll.arru.ui.screen.modify.item.edititem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ fun EditItemRoute(
     navigateEditProduct: (productId: Long) -> Unit,
     navigateEditProductVariant: (variantId: Long) -> Unit,
     providedProductId: Long?,
-    providedVariantId: Long?,
+    providedProductVariantId: Long?,
     viewModel: EditItemViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -36,35 +36,50 @@ fun EditItemRoute(
 
     LaunchedEffect(itemId) { viewModel.updateState(itemId) }
 
-    LaunchedEffect(providedProductId, providedVariantId) {
-        viewModel.setSelectedProductToProvided(providedProductId, providedVariantId)
+    LaunchedEffect(providedProductId, providedProductVariantId) {
+        providedProductId?.let { viewModel.handleEvent(ModifyItemEvent.SelectProduct(it)) }
+
+        providedProductVariantId?.let {
+            viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(it))
+        }
     }
 
     ModifyItemScreenImpl(
-        onBack = navigateBack,
-        state = viewModel.screenState,
-        products = viewModel.allProducts().collectAsState(initial = emptyImmutableList()).value,
-        variants = viewModel.productVariants.collectAsState(initial = emptyImmutableList()).value,
-        onNewProductSelected = { scope.launch { viewModel.onNewProductSelected(it) } },
-        onNewVariantSelected = { viewModel.onNewVariantSelected(it) },
-        onSubmit = {
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
             scope.launch {
-                if (viewModel.updateItem(itemId).isNotError()) {
-                    navigateBack()
-                }
-            }
-        },
-        onDelete = {
-            scope.launch {
-                if (viewModel.deleteItem(itemId).isNotError()) {
-                    navigateBack()
+                when (event) {
+                    is ModifyItemEvent.DecrementPrice -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.DecrementQuantity -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.DeleteItem -> {
+                        viewModel.handleEvent(event)
+                        navigateBack()
+                    }
+                    is ModifyItemEvent.IncrementPrice -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.IncrementQuantity -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.NavigateAddProduct -> navigateAddProduct(event.name)
+                    is ModifyItemEvent.NavigateAddProductVariant ->
+                        navigateAddProductVariant(event.productVariantId, event.name)
+                    is ModifyItemEvent.NavigateBack -> navigateBack()
+                    is ModifyItemEvent.NavigateEditProduct -> navigateEditProduct(event.productId)
+                    is ModifyItemEvent.NavigateEditProductVariant ->
+                        navigateEditProductVariant(event.productVariantId)
+                    is ModifyItemEvent.SelectProduct -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.SelectProductVariant -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetPrice -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetProductSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetProductVariantSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetQuantity -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.Submit -> {
+                        if (viewModel.handleEvent(event)) {
+                            navigateBack()
+                        }
+                    }
                 }
             }
         },
         submitButtonText = stringResource(id = R.string.item_edit),
-        onProductAddButtonClick = navigateAddProduct,
-        onVariantAddButtonClick = navigateAddProductVariant,
-        onItemLongClick = navigateEditProduct,
-        onItemVariantLongClick = navigateEditProductVariant,
     )
 }

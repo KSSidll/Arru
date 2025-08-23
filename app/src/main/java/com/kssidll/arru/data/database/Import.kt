@@ -1526,18 +1526,20 @@ suspend fun handleJsonImport(
                                                 itemProductId != null
                                         ) {
                                             if (items.add(itemId)) {
-                                                itemVariant
-                                                    ?.let { // update id because now productId has
-                                                        // to be set
-                                                        // only update id if not null, null means
-                                                        // that the variant is global
+                                                itemVariant?.let {
+                                                    // update id because now productId has to be set
+                                                    // only update id
+                                                    // if not null, null means that the variant is
+                                                    // global
+                                                    val variant =
                                                         if (it.productEntityId != null) {
-                                                            it.productEntityId = itemProductId
-                                                        }
-                                                        productVariantEntities.add(
-                                                            it
-                                                        ) // also add to list
-                                                    }
+                                                            it.copy(productEntityId = itemProductId)
+                                                        } else it
+
+                                                    productVariantEntities.add(
+                                                        variant
+                                                    ) // then add to list
+                                                }
 
                                                 transactionItemEntities.add(
                                                     ItemEntity(
@@ -1581,9 +1583,10 @@ suspend fun handleJsonImport(
 
                     if (id != null && date != null && cost != null) {
                         if (transactions.add(id)) {
-                            transactionItemEntities.forEach { it.transactionEntityId = id }
+                            val items =
+                                transactionItemEntities.map { it.copy(transactionEntityId = id) }
 
-                            itemEntities.addAll(transactionItemEntities)
+                            itemEntities.addAll(items)
 
                             transactionEntities.add(
                                 TransactionEntity(

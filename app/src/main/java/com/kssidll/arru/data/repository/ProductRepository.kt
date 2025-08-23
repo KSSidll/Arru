@@ -105,30 +105,36 @@ class ProductRepository(private val dao: ProductEntityDao) : ProductRepositorySo
         val variants = dao.variants(entity.id)
         val mergingIntoVariantsNames = dao.variants(mergingInto.id).map { it.name }
 
-        val newVariants = variants.filterNot { it.name in mergingIntoVariantsNames }
+        val newVariants =
+            variants
+                .filterNot { it.name in mergingIntoVariantsNames }
+                .map { it.copy(productEntityId = mergingInto.id) }
+
         val duplicateVariants = variants.filter { it.name in mergingIntoVariantsNames }
 
         // update new variants
-        newVariants.forEach { it.productEntityId = mergingInto.id }
         dao.updateVariants(newVariants)
 
-        items.forEach {
-            it.productEntityId = mergingInto.id
-
-            // update id in case it's part of the duplicate variants
-            if (
-                it.productVariantEntityId != null &&
-                    it.productVariantEntityId in duplicateVariants.map { variant -> variant.id }
-            ) {
-                it.productVariantEntityId =
-                    dao.variantByName(
-                            it.productEntityId,
-                            dao.variantById(it.productVariantEntityId!!)!!.name,
-                        )!!
-                        .id
+        val itemsToUpdate =
+            items.map {
+                // update id in case it's part of the duplicate variants
+                if (
+                    it.productVariantEntityId != null &&
+                        it.productVariantEntityId in duplicateVariants.map { variant -> variant.id }
+                ) {
+                    it.copy(
+                        productEntityId = mergingInto.id,
+                        productVariantEntityId =
+                            dao.variantByName(
+                                    it.productEntityId,
+                                    dao.variantById(it.productVariantEntityId)!!.name,
+                                )!!
+                                .id,
+                    )
+                } else it.copy(productEntityId = mergingInto.id)
             }
-        }
-        dao.updateItems(items)
+
+        dao.updateItems(itemsToUpdate)
 
         dao.deleteVariants(duplicateVariants)
         dao.delete(entity)

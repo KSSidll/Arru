@@ -11,6 +11,11 @@ class GetProductEntityUseCase(private val productRepository: ProductRepositorySo
         productRepository.get(id).flowOn(dispatcher)
 }
 
+class GetAllProductEntityUseCase(private val productRepository: ProductRepositorySource) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        productRepository.all().flowOn(dispatcher)
+}
+
 /** DOMAIN */
 class GetTotalSpentForProductUseCase(private val productRepository: ProductRepositorySource) {
     operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =

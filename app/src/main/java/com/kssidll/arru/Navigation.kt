@@ -59,45 +59,37 @@ private interface AcceptsShopId {
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
-     * @param forceToNull whether to set the value to null if [id] is null, false by default
      */
-    fun provideShop(id: Long? = null, forceToNull: Boolean = false) {
-        if (!forceToNull && id != null) {
-            providedShopId.value = id
-        }
+    fun provideShop(id: Long? = null) {
+        providedShopId.value = id
     }
 }
 
 /** Interface for navigation destinations that can accept product id with product variant id */
 private interface AcceptsProductId {
     val providedProductId: MutableState<Long?>
-    val providedVariantId: MutableState<Long?>
 
     /**
-     * Provides the [productId] and [variantId] to the navigation destination
+     * Provides the [id] to the navigation destination
      *
-     * Will forcefully set variant to null if only [productId] is provided
-     *
-     * @param productId product id to provide
-     * @param variantId variant id to provide
-     * @param forceProductToNull whether to set the product value to null if [productId] is null,
-     *   false by default
-     * @param forceVariantToNull whether to set the variant value to null if [variantId] is null,
-     *   false by default
+     * @param id id to provide
      */
-    fun provideProduct(
-        productId: Long? = null,
-        variantId: Long? = null,
-        forceProductToNull: Boolean = false,
-        forceVariantToNull: Boolean = false,
-    ) {
-        if (forceProductToNull || productId != null) {
-            providedProductId.value = productId
-        }
+    fun provideProduct(id: Long? = null) {
+        providedProductId.value = id
+    }
+}
 
-        if ((forceVariantToNull || productId != null) || variantId != null) {
-            providedVariantId.value = variantId
-        }
+/** Interface for navigation destinations that can accept product variant id */
+private interface AcceptsProductVariantId {
+    val providedProductVariantId: MutableState<Long?>
+
+    /**
+     * Provides the [id] to the navigation destination
+     *
+     * @param id id to provide
+     */
+    fun provideProductVariant(id: Long? = null) {
+        providedProductVariantId.value = id
     }
 }
 
@@ -109,12 +101,9 @@ private interface AcceptsProducerId {
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
-     * @param forceToNull whether to set the value to null if [id] is null, false by default
      */
-    fun provideProducer(id: Long? = null, forceToNull: Boolean = false) {
-        if (!forceToNull && id != null) {
-            providedProducerId.value = id
-        }
+    fun provideProducer(id: Long? = null) {
+        providedProducerId.value = id
     }
 }
 
@@ -126,12 +115,9 @@ private interface AcceptsCategoryId {
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
-     * @param forceToNull whether to set the value to null if [id] is null, false by default
      */
-    fun provideCategory(id: Long? = null, forceToNull: Boolean = false) {
-        if (!forceToNull && id != null) {
-            providedCategoryId.value = id
-        }
+    fun provideCategory(id: Long? = null) {
+        providedCategoryId.value = id
     }
 }
 
@@ -162,8 +148,8 @@ sealed class Screen : Parcelable {
     data class AddItem(
         val transactionId: Long,
         override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
-        override val providedVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ) : Screen(), AcceptsProductId
+        override val providedProductVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
+    ) : Screen(), AcceptsProductId, AcceptsProductVariantId
 
     @Stable
     data class AddProduct(
@@ -191,8 +177,8 @@ sealed class Screen : Parcelable {
     data class EditItem(
         val itemId: Long,
         override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
-        override val providedVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
-    ) : Screen(), AcceptsProductId
+        override val providedProductVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
+    ) : Screen(), AcceptsProductId, AcceptsProductVariantId
 
     @Stable
     data class EditProduct(
@@ -464,19 +450,19 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateEditProduct = navigateEditProduct,
                     navigateEditProductVariant = navigateEditProductVariant,
                     providedProductId = screen.providedProductId.value,
-                    providedVariantId = screen.providedVariantId.value,
+                    providedProductVariantId = screen.providedProductVariantId.value,
                 )
             }
 
             is Screen.AddProduct -> {
                 AddProductRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = {
+                    navigateBack = { productId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProductId
                         ) {
-                            previousDestination.provideProduct(it)
+                            productId?.let { previousDestination.provideProduct(it) }
                         }
                         navigateBack()
                     },
@@ -493,12 +479,15 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                 AddProductVariantRoute(
                     productId = screen.productId,
                     defaultName = screen.defaultName,
-                    navigateBack = {
+                    navigateBack = { productVariantId ->
                         val previousDestination = navController.previousDestination()
                         if (
-                            previousDestination != null && previousDestination is AcceptsProductId
+                            previousDestination != null &&
+                                previousDestination is AcceptsProductVariantId
                         ) {
-                            previousDestination.provideProduct(screen.productId, it)
+                            productVariantId?.let {
+                                previousDestination.provideProductVariant(productVariantId)
+                            }
                         }
                         navigateBack()
                     },
@@ -508,12 +497,12 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.AddProductCategory -> {
                 AddProductCategoryRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = {
+                    navigateBack = { productCategoryId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsCategoryId
                         ) {
-                            previousDestination.provideCategory(it)
+                            productCategoryId?.let { previousDestination.provideCategory(it) }
                         }
                         navigateBack()
                     },
@@ -523,12 +512,12 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.AddProductProducer -> {
                 AddProductProducerRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = {
+                    navigateBack = { productProducerId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProducerId
                         ) {
-                            previousDestination.provideProducer(it)
+                            productProducerId?.let { previousDestination.provideProducer(it) }
                         }
                         navigateBack()
                     },
@@ -538,10 +527,10 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.AddShop -> {
                 AddShopRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = {
+                    navigateBack = { shopId ->
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsShopId) {
-                            previousDestination.provideShop(it)
+                            shopId?.let { previousDestination.provideShop(it) }
                         }
                         navigateBack()
                     },
@@ -613,17 +602,48 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             }
 
             is Screen.EditShop -> {
-                EditShopRoute(shopId = screen.shopId, navigateBack = navigateBack)
+                EditShopRoute(
+                    shopId = screen.shopId,
+                    navigateBack = { shopId ->
+                        val previousDestination = navController.previousDestination()
+                        if (previousDestination != null && previousDestination is AcceptsShopId) {
+                            previousDestination.provideShop(shopId)
+                        }
+                        navigateBack()
+                    },
+                )
             }
 
             is Screen.EditProductVariant -> {
-                EditProductVariantRoute(variantId = screen.variantId, navigateBack = navigateBack)
+                EditProductVariantRoute(
+                    variantId = screen.variantId,
+                    navigateBack = { variantId ->
+                        val previousDestination = navController.previousDestination()
+                        if (
+                            previousDestination != null &&
+                                previousDestination is AcceptsProductVariantId
+                        ) {
+                            previousDestination.provideProductVariant(variantId)
+                        }
+                        navigateBack()
+                    },
+                )
             }
 
             is Screen.EditProduct -> {
                 EditProductRoute(
                     productId = screen.productId,
-                    navigateBack = navigateBack,
+                    navigateBack = { productId ->
+                        // TODO if we navigate back after merge with a duplicate variant, it will
+                        // null display it in item modification
+                        val previousDestination = navController.previousDestination()
+                        if (
+                            previousDestination != null && previousDestination is AcceptsProductId
+                        ) {
+                            previousDestination.provideProduct(productId)
+                        }
+                        navigateBack()
+                    },
                     navigateAddProductCategory = navigateAddProductCategory,
                     navigateAddProductProducer = navigateAddProductProducer,
                     navigateEditProductCategory = navigateEditProductCategory,
@@ -636,14 +656,30 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.EditProductCategory -> {
                 EditProductCategoryRoute(
                     categoryId = screen.categoryId,
-                    navigateBack = navigateBack,
+                    navigateBack = { categoryId ->
+                        val previousDestination = navController.previousDestination()
+                        if (
+                            previousDestination != null && previousDestination is AcceptsCategoryId
+                        ) {
+                            previousDestination.provideCategory(categoryId)
+                        }
+                        navigateBack()
+                    },
                 )
             }
 
             is Screen.EditProductProducer -> {
                 EditProductProducerRoute(
                     producerId = screen.producerId,
-                    navigateBack = navigateBack,
+                    navigateBack = { producerId ->
+                        val previousDestination = navController.previousDestination()
+                        if (
+                            previousDestination != null && previousDestination is AcceptsProducerId
+                        ) {
+                            previousDestination.provideProducer(producerId)
+                        }
+                        navigateBack()
+                    },
                 )
             }
 
@@ -656,7 +692,7 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateEditProduct = navigateEditProduct,
                     navigateEditProductVariant = navigateEditProductVariant,
                     providedProductId = screen.providedProductId.value,
-                    providedVariantId = screen.providedVariantId.value,
+                    providedProductVariantId = screen.providedProductVariantId.value,
                 )
             }
 

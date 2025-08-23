@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddProductCategoryRoute(
     defaultName: String?,
-    navigateBack: (categoryId: Long?) -> Unit,
+    navigateBack: (productCategoryId: Long?) -> Unit,
     viewModel: AddProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()

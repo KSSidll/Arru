@@ -2,9 +2,10 @@ package com.kssidll.arru.ui.screen.modify.item.additem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import com.kssidll.arru.domain.data.emptyImmutableList
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -18,32 +19,63 @@ fun AddItemRoute(
     navigateEditProduct: (productId: Long) -> Unit,
     navigateEditProductVariant: (variantId: Long) -> Unit,
     providedProductId: Long?,
-    providedVariantId: Long?,
+    providedProductVariantId: Long?,
     viewModel: AddItemViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(providedProductId, providedVariantId) {
-        viewModel.setSelectedProductToProvided(providedProductId, providedVariantId)
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(transactionId)) {
+                navigateBack()
+            }
+        }
+    }
+
+    LaunchedEffect(providedProductId, providedProductVariantId) {
+        providedProductId?.let { viewModel.handleEvent(ModifyItemEvent.SelectProduct(it)) }
+
+        providedProductVariantId?.let {
+            viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(it))
+        }
     }
 
     ModifyItemScreenImpl(
-        onBack = navigateBack,
-        state = viewModel.screenState,
-        products = viewModel.allProducts().collectAsState(initial = emptyImmutableList()).value,
-        variants = viewModel.productVariants.collectAsState(initial = emptyImmutableList()).value,
-        onNewProductSelected = { scope.launch { viewModel.onNewProductSelected(it) } },
-        onNewVariantSelected = { viewModel.onNewVariantSelected(it) },
-        onSubmit = {
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
             scope.launch {
-                if (viewModel.addItem(transactionId).isNotError()) {
-                    navigateBack()
+                when (event) {
+                    is ModifyItemEvent.DecrementPrice -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.DecrementQuantity -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.DeleteItem -> {
+                        if (viewModel.handleEvent(event)) {
+                            navigateBack()
+                        }
+                    }
+                    is ModifyItemEvent.IncrementPrice -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.IncrementQuantity -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.NavigateAddProduct -> navigateAddProduct(event.name)
+                    is ModifyItemEvent.NavigateAddProductVariant ->
+                        navigateAddProductVariant(event.productVariantId, event.name)
+                    is ModifyItemEvent.NavigateBack -> navigateBack()
+                    is ModifyItemEvent.NavigateEditProduct -> navigateEditProduct(event.productId)
+                    is ModifyItemEvent.NavigateEditProductVariant ->
+                        navigateEditProductVariant(event.productVariantId)
+                    is ModifyItemEvent.SelectProduct -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.SelectProductVariant -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetPrice -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetProductSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetProductVariantSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyItemEvent.SetQuantity -> viewModel.handleEvent(event)
+                    is ModifyItemEvent.Submit -> {
+                        if (viewModel.handleEvent(event)) {
+                            navigateBack()
+                        }
+                    }
                 }
             }
         },
-        onProductAddButtonClick = navigateAddProduct,
-        onVariantAddButtonClick = navigateAddProductVariant,
-        onItemLongClick = navigateEditProduct,
-        onItemVariantLongClick = navigateEditProductVariant,
     )
 }

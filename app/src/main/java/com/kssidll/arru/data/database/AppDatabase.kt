@@ -1056,6 +1056,7 @@ val MIGRATION_8_9 =
             LEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId
             LEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId 
             LEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId
+            ORDER BY id DESC
         """
                     .trimIndent()
             )

@@ -9,6 +9,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.ui.theme.Typography
 
 /** Generic abstraction for data and its status */
+@Immutable
 sealed class Field<T>(val data: T? = null, val error: FieldError? = null) {
     /** Field status signifying that it's loaded correctly and can display and use [data] */
     class Loaded<T>(data: T? = null) : Field<T>(data)

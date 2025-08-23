@@ -2,97 +2,168 @@ package com.kssidll.arru.ui.screen.modify.item.additem
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ItemRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityByProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityByProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertItemEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.async
-
-// TODO refactor uiState Event UseCase
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class AddItemViewModel
 @Inject
 constructor(
-    override val itemRepository: ItemRepositorySource,
-    override val productRepository: ProductRepositorySource,
-    override val variantsRepository: ProductVariantRepositorySource,
+    private val insertItemEntityUseCase: InsertItemEntityUseCase,
+    private val getTransactionEntityUseCase: GetTransactionEntityUseCase,
+    override val getNewestItemEntityUseCase: GetNewestItemEntityUseCase,
+    override val getNewestItemEntityByProductUseCase: GetNewestItemEntityByProductUseCase,
+    override val getProductEntityUseCase: GetProductEntityUseCase,
+    override val getAllProductEntityUseCase: GetAllProductEntityUseCase,
+    override val getProductVariantEntityUseCase: GetProductVariantEntityUseCase,
+    override val getProductVariantEntityByProductUseCase: GetProductVariantEntityByProductUseCase,
 ) : ModifyItemViewModel() {
+    var transactionEntityId: Long? = null
 
-    init {
-        loadLastItem()
-    }
-
-    /**
-     * Tries to add an item to the repository
-     *
-     * @param transactionId id of the [TransactionEntity] to add the item to
-     * @return resulting [InsertResult]
-     */
-    suspend fun addItem(transactionId: Long) =
+    suspend fun checkExists(id: Long) =
         viewModelScope
             .async {
-                screenState.attemptedToSubmit.value = true
-
-                val result =
-                    itemRepository.insert(
-                        transactionId = transactionId,
-                        productId =
-                            screenState.selectedProduct.value.data?.id
-                                ?: ItemEntity.INVALID_PRODUCT_ID,
-                        variantId = screenState.selectedVariant.value.data?.id,
-                        quantity =
-                            screenState.quantity.value.data?.let {
-                                ItemEntity.quantityFromString(it)
-                            } ?: ItemEntity.INVALID_QUANTITY,
-                        price =
-                            screenState.price.value.data?.let { ItemEntity.priceFromString(it) }
-                                ?: ItemEntity.INVALID_PRICE,
-                    )
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        is InsertResult.InvalidTransactionId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried inserting an item to a transaction that doesn't exist in AddItemViewModel",
-                            )
-                            return@async InsertResult.Success(-1)
-                        }
-
-                        is InsertResult.InvalidProductId -> {
-                            screenState.selectedProduct.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        is InsertResult.InvalidVariantId -> {
-                            screenState.selectedVariant.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        is InsertResult.InvalidQuantity -> {
-                            screenState.quantity.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        is InsertResult.InvalidPrice -> {
-                            screenState.price.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-                    }
-                }
-
-                return@async result
+                transactionEntityId = getTransactionEntityUseCase(id).first()?.id
+                return@async transactionEntityId != null
             }
             .await()
+
+    init {
+        init()
+    }
+
+    /** @return true if handled without errors, false otherwise */
+    override suspend fun handleEvent(event: ModifyItemEvent): Boolean {
+        when (event) {
+            is ModifyItemEvent.Submit -> {
+                val state = uiState.value
+                val insertResult =
+                    transactionEntityId?.let { transactionId ->
+                        insertItemEntityUseCase(
+                            transactionEntityId = transactionId,
+                            productEntityId = state.selectedProduct.data?.id,
+                            productVariantEntityId = state.selectedProductVariant.data?.id,
+                            quantity = state.quantity.data,
+                            price = state.price.data,
+                        )
+                    } ?: return true
+
+                return when (insertResult) {
+                    is InsertItemEntityUseCaseResult.Error -> {
+                        insertResult.errors.forEach {
+                            when (it) {
+                                InsertItemEntityUseCaseResult.PriceNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            price =
+                                                currentState.price.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.PriceInvalid -> {
+                                    Log.d("AddItem", "Insert invalid price `${state.price.data}`")
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            price =
+                                                currentState.price.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.ProductIdNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProduct =
+                                                currentState.selectedProduct.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.ProductIdInvalid -> {
+                                    Log.d(
+                                        "AddItem",
+                                        "Insert invalid product `${state.selectedProduct.data?.id}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProduct =
+                                                currentState.selectedProduct.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.ProductVariantIdInvalid -> {
+                                    Log.d(
+                                        "AddItem",
+                                        "Insert invalid product variant `${state.selectedProductVariant.data?.id}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductVariant =
+                                                currentState.selectedProductVariant.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.QuantityNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            quantity =
+                                                currentState.quantity.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.QuantityInvalid -> {
+                                    Log.d(
+                                        "AddItem",
+                                        "Insert invalid quantity `${state.quantity.data}`",
+                                    )
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            quantity =
+                                                currentState.quantity.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertItemEntityUseCaseResult.TransactionIdInvalid -> {
+                                    Log.d(
+                                        "AddItem",
+                                        "Insert invalid transaction `${transactionEntityId}`",
+                                    )
+                                }
+                            }
+                        }
+
+                        false
+                    }
+
+                    is InsertItemEntityUseCaseResult.Success -> true
+                }
+            }
+            else -> return super.handleEvent(event)
+        }
+    }
 }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditShopRoute(
     shopId: Long,
-    navigateBack: () -> Unit,
+    navigateBack: (shopId: Long?) -> Unit,
     viewModel: EditShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -21,7 +21,7 @@ fun EditShopRoute(
     SideEffect {
         scope.launch {
             if (!viewModel.checkExists(shopId)) {
-                navigateBack()
+                navigateBack(null)
             }
         }
     }
@@ -29,26 +29,26 @@ fun EditShopRoute(
     LaunchedEffect(shopId) { viewModel.updateState(shopId) }
 
     ModifyShopScreenImpl(
-        onBack = navigateBack,
+        onBack = { navigateBack(shopId) },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
                 if (viewModel.updateShop(shopId).isNotError()) {
-                    navigateBack()
+                    navigateBack(shopId)
                 }
             }
         },
         onDelete = {
             scope.launch {
                 if (viewModel.deleteShop(shopId).isNotError()) {
-                    navigateBack()
+                    navigateBack(null)
                 }
             }
         },
         onMerge = {
             scope.launch {
                 if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBack()
+                    navigateBack(it.id)
                 }
             }
         },

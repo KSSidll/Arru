@@ -47,8 +47,8 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 @Immutable
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    var productCategoryEntityId: Long,
-    var productProducerEntityId: Long?,
+    val productCategoryEntityId: Long,
+    val productProducerEntityId: Long?,
     val name: String,
 ) : FuzzySearchSource, NameSource {
     @Ignore

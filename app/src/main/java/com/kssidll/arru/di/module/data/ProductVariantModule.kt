@@ -4,6 +4,7 @@ import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.repository.ProductVariantRepository
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityByProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -36,6 +37,14 @@ class ProductVariantModule {
         productVariantRepositorySource: ProductVariantRepositorySource
     ): GetProductVariantEntityUseCase {
         return GetProductVariantEntityUseCase(productVariantRepositorySource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetProductVariantEntityByProductUseCase(
+        productVariantRepositorySource: ProductVariantRepositorySource
+    ): GetProductVariantEntityByProductUseCase {
+        return GetProductVariantEntityByProductUseCase(productVariantRepositorySource)
     }
 
     /** DOMAIN */

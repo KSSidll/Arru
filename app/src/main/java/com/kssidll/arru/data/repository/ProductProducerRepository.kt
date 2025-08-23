@@ -42,9 +42,9 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao) :
     // Update
 
     override suspend fun update(id: Long, name: String): UpdateResult {
-        val producer = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
-
-        producer.name = name
+        val producer =
+            dao.get(id).first()?.copy(name = name)
+                ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         if (producer.validName().not()) {
             return UpdateResult.Error(UpdateResult.InvalidName)
@@ -73,8 +73,9 @@ class ProductProducerRepository(private val dao: ProductProducerEntityDao) :
             return MergeResult.Error(MergeResult.InvalidMergingInto)
         }
 
-        val products = dao.getProducts(entity.id)
-        products.forEach { it.productProducerEntityId = mergingInto.id }
+        val products =
+            dao.getProducts(entity.id).map { it.copy(productProducerEntityId = mergingInto.id) }
+
         dao.updateProducts(products)
 
         dao.delete(entity)

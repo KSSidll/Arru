@@ -15,7 +15,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
     tableName = "ProductProducerEntity",
 )
 @Immutable
-data class ProductProducerEntity(@PrimaryKey(autoGenerate = true) val id: Long, var name: String) :
+data class ProductProducerEntity(@PrimaryKey(autoGenerate = true) val id: Long, val name: String) :
     FuzzySearchSource, NameSource {
     /**
      * Converts the [ProductProducerEntity] data to a string with csv format

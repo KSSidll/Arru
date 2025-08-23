@@ -46,6 +46,11 @@ interface ProductVariantEntityDao {
     fun get(id: Long): Flow<ProductVariantEntity?>
 
     @Query(
+        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE (:includeGlobal AND ProductVariantEntity.productEntityId IS NULL) OR ProductVariantEntity.productEntityId = :productId"
+    )
+    fun byProduct(productId: Long, includeGlobal: Boolean): Flow<List<ProductVariantEntity>>
+
+    @Query(
         "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.name = :name"
     )
     fun byName(name: String): Flow<List<ProductVariantEntity>>
@@ -58,9 +63,4 @@ interface ProductVariantEntityDao {
         name: String,
         includeGlobal: Boolean,
     ): Flow<ProductVariantEntity?>
-
-    @Query(
-        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE (:includeGlobal AND ProductVariantEntity.productEntityId IS NULL) OR ProductVariantEntity.productEntityId = :productId"
-    )
-    fun byProduct(productId: Long, includeGlobal: Boolean): Flow<List<ProductVariantEntity>>
 }

@@ -1,7 +1,6 @@
 package com.kssidll.arru.data.repository
 
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
-import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.DeleteResult
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource.Companion.InsertResult
@@ -41,9 +40,8 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao) :
             val others = dao.byName(name).first().filter { it.id != newVariantId }
 
             others.forEach { variant ->
-                val othersItems = dao.getItems(variant.id)
-
-                othersItems.forEach { it.productVariantEntityId = newVariantId }
+                val othersItems =
+                    dao.getItems(variant.id).map { it.copy(productVariantEntityId = newVariantId) }
 
                 dao.updateItems(othersItems)
                 dao.delete(variant)
@@ -56,9 +54,9 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao) :
     // Update
 
     override suspend fun update(id: Long, name: String): UpdateResult {
-        val variant = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
-
-        variant.name = name.trim()
+        val variant =
+            dao.get(id).first()?.copy(name = name.trim())
+                ?: return UpdateResult.Error(UpdateResult.InvalidId)
 
         if (variant.validName().not()) {
             return UpdateResult.Error(UpdateResult.InvalidName)
@@ -123,8 +121,8 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao) :
     override fun get(id: Long): Flow<ProductVariantEntity?> = dao.get(id).cancellable()
 
     override fun byProduct(
-        productEntity: ProductEntity,
+        id: Long,
         showGlobal: Boolean,
     ): Flow<ImmutableList<ProductVariantEntity>> =
-        dao.byProduct(productEntity.id, showGlobal).cancellable().map { it.toImmutableList() }
+        dao.byProduct(id, showGlobal).cancellable().map { it.toImmutableList() }
 }

@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 fun AddProductVariantRoute(
     productId: Long,
     defaultName: String?,
-    navigateBack: (variantId: Long?) -> Unit,
+    navigateBack: (productVariantId: Long?) -> Unit,
     viewModel: AddProductVariantViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()

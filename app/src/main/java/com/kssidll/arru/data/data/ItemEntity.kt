@@ -49,11 +49,11 @@ import kotlin.math.log10
 @Immutable
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    var transactionEntityId: Long,
-    var productEntityId: Long,
-    var productVariantEntityId: Long?,
-    var quantity: Long,
-    var price: Long,
+    val transactionEntityId: Long,
+    val productEntityId: Long,
+    val productVariantEntityId: Long?,
+    val quantity: Long,
+    val price: Long,
 ) {
     @Ignore
     constructor(
@@ -94,8 +94,6 @@ data class ItemEntity(
         @Ignore const val INVALID_PRICE: Long = Long.MIN_VALUE
 
         @Ignore const val INVALID_QUANTITY: Long = Long.MIN_VALUE
-
-        @Ignore const val INVALID_PRODUCT_ID: Long = Long.MIN_VALUE
 
         @Ignore
         fun actualQuantity(quantity: Long): Float {
