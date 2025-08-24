@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DisplayProductCategoryRoute(
-    categoryId: Long,
+    categoryId: Long?,
     navigateBack: () -> Unit,
     navigateEditProductCategory: () -> Unit,
     navigateDisplayProduct: (productId: Long) -> Unit,

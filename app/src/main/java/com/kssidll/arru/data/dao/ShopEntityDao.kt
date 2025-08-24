@@ -6,10 +6,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TotalSpentByShop
-import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.coroutines.flow.Flow
@@ -28,33 +26,13 @@ interface ShopEntityDao {
 
     @Delete suspend fun delete(entity: ShopEntity)
 
-    // Helper
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN TransactionEntity ON TransactionEntity.id = ItemEntity.transactionEntityId
-        WHERE shopEntityId = :entityId
-    """
-    )
-    suspend fun getItems(entityId: Long): List<ItemEntity>
-
-    @Query(
-        "SELECT TransactionEntity.* FROM TransactionEntity WHERE TransactionEntity.shopEntityId = :entityId"
-    )
-    suspend fun getTransactionBaskets(entityId: Long): List<TransactionEntity>
-
-    @Update suspend fun updateTransactionBaskets(baskets: List<TransactionEntity>)
-
-    @Delete suspend fun deleteTransactionBaskets(baskets: List<TransactionEntity>)
-
-    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
-
     // Read
 
     @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :id")
     fun get(id: Long): Flow<ShopEntity?>
+
+    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.name = :name")
+    fun byName(name: String): Flow<ShopEntity?>
 
     @Query("SELECT ShopEntity.* FROM ShopEntity") fun all(): Flow<List<ShopEntity>>
 
@@ -238,7 +216,4 @@ interface ShopEntityDao {
     """
     )
     fun totalSpentByShopByMonth(date: String): Flow<List<TotalSpentByShop>>
-
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.name = :name")
-    fun byName(name: String): Flow<ShopEntity?>
 }

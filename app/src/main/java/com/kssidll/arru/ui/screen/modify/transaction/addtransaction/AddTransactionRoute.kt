@@ -31,11 +31,11 @@ fun AddTransactionRoute(
         onNewShopSelected = { viewModel.onNewShopSelected(it) },
         onSubmit = {
             scope.launch {
-                val result = viewModel.addTransaction()
-                if (result.isNotError() && result.id != null) {
-                    navigateBack()
-                    navigateDisplayTransaction(result.id)
-                }
+                // val result = viewModel.addTransaction()
+                // if (result.isNotError() && result.id != null) {
+                //     navigateBack()
+                //     navigateDisplayTransaction(result.id)
+                // }
             }
         },
         onShopAddButtonClick = navigateAddShop,

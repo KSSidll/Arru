@@ -41,74 +41,74 @@ class ProductCategoryModule {
     @Provides
     @Singleton
     fun provideGetProductCategoryEntityUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetProductCategoryEntityUseCase {
-        return GetProductCategoryEntityUseCase(productCategoryRepositorySource)
+        return GetProductCategoryEntityUseCase(productCategoryRepository)
     }
 
     /** DOMAIN */
     @Provides
     @Singleton
     fun provideGetTotalSpentForProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentForProductCategoryUseCase {
-        return GetTotalSpentForProductCategoryUseCase(productCategoryRepositorySource)
+        return GetTotalSpentForProductCategoryUseCase(productCategoryRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetItemsForProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetItemsForProductCategoryUseCase {
-        return GetItemsForProductCategoryUseCase(productCategoryRepositorySource)
+        return GetItemsForProductCategoryUseCase(productCategoryRepository)
     }
 
     /** DOMAIN CHART */
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayForProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentByDayForProductCategoryUseCase {
-        return GetTotalSpentByDayForProductCategoryUseCase(productCategoryRepositorySource)
+        return GetTotalSpentByDayForProductCategoryUseCase(productCategoryRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByWeekForProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentByWeekForProductCategoryUseCase {
-        return GetTotalSpentByWeekForProductCategoryUseCase(productCategoryRepositorySource)
+        return GetTotalSpentByWeekForProductCategoryUseCase(productCategoryRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByMonthForProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentByMonthForProductCategoryUseCase {
-        return GetTotalSpentByMonthForProductCategoryUseCase(productCategoryRepositorySource)
+        return GetTotalSpentByMonthForProductCategoryUseCase(productCategoryRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByYearForProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentByYearForProductCategoryUseCase {
-        return GetTotalSpentByYearForProductCategoryUseCase(productCategoryRepositorySource)
+        return GetTotalSpentByYearForProductCategoryUseCase(productCategoryRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByProductCategoryUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentByProductCategoryUseCase {
-        return GetTotalSpentByProductCategoryUseCase(productCategoryRepositorySource)
+        return GetTotalSpentByProductCategoryUseCase(productCategoryRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByProductCategoryByMonthUseCase(
-        productCategoryRepositorySource: ProductCategoryRepositorySource
+        productCategoryRepository: ProductCategoryRepositorySource
     ): GetTotalSpentByProductCategoryByMonthUseCase {
-        return GetTotalSpentByProductCategoryByMonthUseCase(productCategoryRepositorySource)
+        return GetTotalSpentByProductCategoryByMonthUseCase(productCategoryRepository)
     }
 }

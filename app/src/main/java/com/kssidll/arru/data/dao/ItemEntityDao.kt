@@ -21,9 +21,13 @@ interface ItemEntityDao {
 
     @Update suspend fun update(entity: ItemEntity)
 
+    @Update suspend fun update(entity: List<ItemEntity>)
+
     // Delete
 
     @Delete suspend fun delete(entity: ItemEntity)
+
+    @Delete suspend fun delete(entity: List<ItemEntity>)
 
     // Helper
 
@@ -44,6 +48,9 @@ interface ItemEntityDao {
 
     @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.id = :id")
     fun get(id: Long): Flow<ItemEntity?>
+
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.productEntityId = :id")
+    fun byProduct(id: Long): Flow<List<ItemEntity>>
 
     @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
     fun newest(): Flow<ItemEntity?>

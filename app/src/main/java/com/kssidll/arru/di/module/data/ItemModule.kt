@@ -4,6 +4,9 @@ import com.kssidll.arru.data.dao.ItemEntityDao
 import com.kssidll.arru.data.database.AppDatabase
 import com.kssidll.arru.data.repository.ItemRepository
 import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.usecase.data.DeleteItemEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityByProductUseCase
@@ -36,9 +39,9 @@ class ItemModule {
     @Provides
     @Singleton
     fun provideInsertItemEntityUseCase(
-        transactionRepository: ItemRepositorySource,
-        productRepository: ItemRepositorySource,
-        productVariantRepository: ItemRepositorySource,
+        transactionRepository: TransactionRepositorySource,
+        productRepository: ProductRepositorySource,
+        productVariantRepository: ProductVariantRepositorySource,
         itemRepository: ItemRepositorySource,
     ): InsertItemEntityUseCase {
         return InsertItemEntityUseCase(
@@ -52,9 +55,9 @@ class ItemModule {
     @Provides
     @Singleton
     fun provideUpdateItemEntityUseCase(
-        transactionRepository: ItemRepositorySource,
-        productRepository: ItemRepositorySource,
-        productVariantRepository: ItemRepositorySource,
+        transactionRepository: TransactionRepositorySource,
+        productRepository: ProductRepositorySource,
+        productVariantRepository: ProductVariantRepositorySource,
         itemRepository: ItemRepositorySource,
     ): UpdateItemEntityUseCase {
         return UpdateItemEntityUseCase(
@@ -75,26 +78,24 @@ class ItemModule {
 
     @Provides
     @Singleton
-    fun provideGetItemEntityUseCase(
-        itemRepositorySource: ItemRepositorySource
-    ): GetItemEntityUseCase {
-        return GetItemEntityUseCase(itemRepositorySource)
+    fun provideGetItemEntityUseCase(itemRepository: ItemRepositorySource): GetItemEntityUseCase {
+        return GetItemEntityUseCase(itemRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetNewestItemEntityUseCase(
-        itemRepositorySource: ItemRepositorySource
+        itemRepository: ItemRepositorySource
     ): GetNewestItemEntityUseCase {
-        return GetNewestItemEntityUseCase(itemRepositorySource)
+        return GetNewestItemEntityUseCase(itemRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetNewestItemEntityByProductUseCase(
-        itemRepositorySource: ItemRepositorySource
+        itemRepository: ItemRepositorySource
     ): GetNewestItemEntityByProductUseCase {
-        return GetNewestItemEntityByProductUseCase(itemRepositorySource)
+        return GetNewestItemEntityByProductUseCase(itemRepository)
     }
 
     /** DOMAIN */

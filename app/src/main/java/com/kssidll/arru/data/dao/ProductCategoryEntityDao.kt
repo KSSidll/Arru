@@ -6,10 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
@@ -25,53 +22,9 @@ interface ProductCategoryEntityDao {
 
     @Update suspend fun update(entity: ProductCategoryEntity)
 
-    @Update suspend fun update(entities: List<ProductCategoryEntity>)
-
     // Delete
 
     @Delete suspend fun delete(entity: ProductCategoryEntity)
-
-    // Helper
-
-    @Query(
-        """
-        SELECT ProductEntity.*
-        FROM ProductEntity
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
-        WHERE ProductCategoryEntity.id = :categoryId
-    """
-    )
-    suspend fun getProducts(categoryId: Long): List<ProductEntity>
-
-    @Query(
-        """
-        SELECT ProductVariantEntity.*
-        FROM ProductVariantEntity
-        JOIN ProductEntity ON ProductEntity.id = ProductVariantEntity.productEntityId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
-        WHERE ProductCategoryEntity.id = :categoryId
-    """
-    )
-    suspend fun getProductsVariants(categoryId: Long): List<ProductVariantEntity>
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
-        WHERE ProductCategoryEntity.id = :categoryId
-    """
-    )
-    suspend fun getItems(categoryId: Long): List<ItemEntity>
-
-    @Delete suspend fun deleteProducts(entities: List<ProductEntity>)
-
-    @Delete suspend fun deleteProductVariants(entities: List<ProductVariantEntity>)
-
-    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
-
-    @Update suspend fun updateProducts(entities: List<ProductEntity>)
 
     // Read
 
@@ -79,6 +32,11 @@ interface ProductCategoryEntityDao {
         "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :id"
     )
     fun get(id: Long): Flow<ProductCategoryEntity?>
+
+    @Query(
+        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name"
+    )
+    fun byName(name: String): Flow<ProductCategoryEntity?>
 
     @Query("SELECT ProductCategoryEntity.* FROM ProductCategoryEntity")
     fun all(): Flow<List<ProductCategoryEntity>>
@@ -295,9 +253,4 @@ interface ProductCategoryEntityDao {
     """
     )
     fun totalSpentByCategoryByMonth(date: String): Flow<List<TotalSpentByCategory>>
-
-    @Query(
-        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.name = :name"
-    )
-    fun byName(name: String): Flow<ProductCategoryEntity?>
 }

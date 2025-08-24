@@ -2,8 +2,13 @@ package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.dao.ProductEntityDao
 import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepository
 import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.domain.usecase.data.DeleteProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetAveragePriceByShopByVariantByProducerByDayForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductUseCase
@@ -13,6 +18,9 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthForProductUseCas
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.MergeProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateProductEntityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,77 +46,131 @@ class ProductModule {
     /** ENTITY */
     @Provides
     @Singleton
+    fun provideInsertProductEntityUseCase(
+        productRepository: ProductRepositorySource,
+        productProducerRepository: ProductProducerRepositorySource,
+        productCategoryRepository: ProductCategoryRepositorySource,
+    ): InsertProductEntityUseCase {
+        return InsertProductEntityUseCase(
+            productRepository,
+            productProducerRepository,
+            productCategoryRepository,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateProductEntityUseCase(
+        productRepository: ProductRepositorySource,
+        productProducerRepository: ProductProducerRepositorySource,
+        productCategoryRepository: ProductCategoryRepositorySource,
+    ): UpdateProductEntityUseCase {
+        return UpdateProductEntityUseCase(
+            productRepository,
+            productProducerRepository,
+            productCategoryRepository,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMergeProductEntityUseCase(
+        productRepository: ProductRepositorySource,
+        productVariantRepository: ProductVariantRepositorySource,
+        itemRepository: ItemRepositorySource,
+    ): MergeProductEntityUseCase {
+        return MergeProductEntityUseCase(
+            productRepository,
+            productVariantRepository,
+            itemRepository,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteProductEntityUseCase(
+        productRepository: ProductRepositorySource,
+        productVariantRepository: ProductVariantRepositorySource,
+        itemRepository: ItemRepositorySource,
+    ): DeleteProductEntityUseCase {
+        return DeleteProductEntityUseCase(
+            productRepository,
+            productVariantRepository,
+            itemRepository,
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideGetProductEntityUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetProductEntityUseCase {
-        return GetProductEntityUseCase(productRepositorySource)
+        return GetProductEntityUseCase(productRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetAllProductEntityUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetAllProductEntityUseCase {
-        return GetAllProductEntityUseCase(productRepositorySource)
+        return GetAllProductEntityUseCase(productRepository)
     }
 
     /** DOMAIN */
     @Provides
     @Singleton
     fun provideGetTotalSpentForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetTotalSpentForProductUseCase {
-        return GetTotalSpentForProductUseCase(productRepositorySource)
+        return GetTotalSpentForProductUseCase(productRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetItemsForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetItemsForProductUseCase {
-        return GetItemsForProductUseCase(productRepositorySource)
+        return GetItemsForProductUseCase(productRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetTotalSpentByDayForProductUseCase {
-        return GetTotalSpentByDayForProductUseCase(productRepositorySource)
+        return GetTotalSpentByDayForProductUseCase(productRepository)
     }
 
     /** DOMAIN CHART */
     @Provides
     @Singleton
     fun provideGetTotalSpentByWeekForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetTotalSpentByWeekForProductUseCase {
-        return GetTotalSpentByWeekForProductUseCase(productRepositorySource)
+        return GetTotalSpentByWeekForProductUseCase(productRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByMonthForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetTotalSpentByMonthForProductUseCase {
-        return GetTotalSpentByMonthForProductUseCase(productRepositorySource)
+        return GetTotalSpentByMonthForProductUseCase(productRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByYearForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetTotalSpentByYearForProductUseCase {
-        return GetTotalSpentByYearForProductUseCase(productRepositorySource)
+        return GetTotalSpentByYearForProductUseCase(productRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetAveragePriceByShopByVariantByProducerByDayForProductUseCase(
-        productRepositorySource: ProductRepositorySource
+        productRepository: ProductRepositorySource
     ): GetAveragePriceByShopByVariantByProducerByDayForProductUseCase {
-        return GetAveragePriceByShopByVariantByProducerByDayForProductUseCase(
-            productRepositorySource
-        )
+        return GetAveragePriceByShopByVariantByProducerByDayForProductUseCase(productRepository)
     }
 }

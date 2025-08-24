@@ -2,6 +2,9 @@ package com.kssidll.arru.domain.usecase.data
 
 import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -48,6 +51,8 @@ sealed class UpdateItemEntityUseCaseResult {
 
     sealed class Errors
 
+    data object ItemIdInvalid : Errors()
+
     data object TransactionIdInvalid : Errors()
 
     data object ProductIdNoValue : Errors()
@@ -81,9 +86,9 @@ sealed class DeleteItemEntityUseCaseResult {
 
 /** ENTITY */
 class InsertItemEntityUseCase(
-    private val transactionRepository: ItemRepositorySource,
-    private val productRepository: ItemRepositorySource,
-    private val productVariantRepository: ItemRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
+    private val productRepository: ProductRepositorySource,
+    private val productVariantRepository: ProductVariantRepositorySource,
     private val itemRepository: ItemRepositorySource,
 ) {
     suspend operator fun invoke(
@@ -155,9 +160,9 @@ class InsertItemEntityUseCase(
 }
 
 class UpdateItemEntityUseCase(
-    private val transactionRepository: ItemRepositorySource,
-    private val productRepository: ItemRepositorySource,
-    private val productVariantRepository: ItemRepositorySource,
+    private val transactionRepository: TransactionRepositorySource,
+    private val productRepository: ProductRepositorySource,
+    private val productVariantRepository: ProductVariantRepositorySource,
     private val itemRepository: ItemRepositorySource,
 ) {
     suspend operator fun invoke(
@@ -170,6 +175,10 @@ class UpdateItemEntityUseCase(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ): UpdateItemEntityUseCaseResult {
         val errors = mutableListOf<UpdateItemEntityUseCaseResult.Errors>()
+
+        if (itemRepository.get(id).first() == null) {
+            errors.add(UpdateItemEntityUseCaseResult.ItemIdInvalid)
+        }
 
         if (transactionRepository.get(transactionEntityId).first() == null) {
             errors.add(UpdateItemEntityUseCaseResult.TransactionIdInvalid)

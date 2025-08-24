@@ -33,16 +33,16 @@ fun EditProductVariantRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateVariant(variantId).isNotError()) {
-                    navigateBack(variantId)
-                }
+                // if (viewModel.updateVariant(variantId).isNotError()) {
+                //     navigateBack(variantId)
+                // }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteVariant(variantId).isNotError()) {
-                    navigateBack(null)
-                }
+                // if (viewModel.deleteVariant(variantId).isNotError()) {
+                //     navigateBack(null)
+                // }
             }
         },
         submitButtonText = stringResource(id = R.string.item_product_variant_edit),

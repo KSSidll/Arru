@@ -38,66 +38,66 @@ class TransactionModule {
     @Provides
     @Singleton
     fun provideGetTransactionEntityUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTransactionEntityUseCase {
-        return GetTransactionEntityUseCase(transactionRepositorySource)
+        return GetTransactionEntityUseCase(transactionRepository)
     }
 
     /** DOMAIN */
     @Provides
     @Singleton
     fun provideGetTransactionUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTransactionUseCase {
-        return GetTransactionUseCase(transactionRepositorySource)
+        return GetTransactionUseCase(transactionRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetAllTransactionsUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetAllTransactionsUseCase {
-        return GetAllTransactionsUseCase(transactionRepositorySource)
+        return GetAllTransactionsUseCase(transactionRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTotalSpentUseCase {
-        return GetTotalSpentUseCase(transactionRepositorySource)
+        return GetTotalSpentUseCase(transactionRepository)
     }
 
     /** DOMAIN CHART */
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTotalSpentByDayUseCase {
-        return GetTotalSpentByDayUseCase(transactionRepositorySource)
+        return GetTotalSpentByDayUseCase(transactionRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByWeekUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTotalSpentByWeekUseCase {
-        return GetTotalSpentByWeekUseCase(transactionRepositorySource)
+        return GetTotalSpentByWeekUseCase(transactionRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByMonthUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTotalSpentByMonthUseCase {
-        return GetTotalSpentByMonthUseCase(transactionRepositorySource)
+        return GetTotalSpentByMonthUseCase(transactionRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByYearUseCase(
-        transactionRepositorySource: TransactionRepositorySource
+        transactionRepository: TransactionRepositorySource
     ): GetTotalSpentByYearUseCase {
-        return GetTotalSpentByYearUseCase(transactionRepositorySource)
+        return GetTotalSpentByYearUseCase(transactionRepository)
     }
 }

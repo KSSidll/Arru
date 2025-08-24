@@ -23,10 +23,10 @@ fun AddProductProducerRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                val result = viewModel.addProducer()
-                if (result.isNotError()) {
-                    navigateBack(result.id)
-                }
+                // val result = viewModel.addProducer()
+                // if (result.isNotError()) {
+                //     navigateBack(result.id)
+                // }
             }
         },
     )

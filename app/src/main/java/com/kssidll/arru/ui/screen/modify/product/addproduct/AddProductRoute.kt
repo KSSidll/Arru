@@ -39,9 +39,9 @@ fun AddProductRoute(
         onNewCategorySelected = { viewModel.onNewCategorySelected(it) },
         onSubmit = {
             scope.launch {
-                val result = viewModel.addProduct()
-                if (result.isNotError()) {
-                    navigateBack(result.id)
+                val id = viewModel.addProduct()
+                if (id != null) {
+                    navigateBack(id)
                 }
             }
         },

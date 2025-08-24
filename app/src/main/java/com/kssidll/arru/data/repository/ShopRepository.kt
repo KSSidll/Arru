@@ -7,105 +7,32 @@ import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TotalSpentByShop
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class ShopRepository(private val dao: ShopEntityDao) : ShopRepositorySource {
     // Create
 
-    override suspend fun insert(name: String): InsertResult {
-        val entity = ShopEntity(name)
-
-        if (entity.validName().not()) {
-            return InsertResult.Error(InsertResult.InvalidName)
-        }
-
-        val other = dao.byName(entity.name).first()
-
-        if (other != null) {
-            return InsertResult.Error(InsertResult.DuplicateName)
-        }
-
-        return InsertResult.Success(dao.insert(entity))
-    }
+    override suspend fun insert(entity: ShopEntity): Long = dao.insert(entity)
 
     // Update
 
-    override suspend fun update(id: Long, name: String): UpdateResult {
-        if (dao.get(id).first() == null) {
-            return UpdateResult.Error(UpdateResult.InvalidId)
-        }
-
-        val shop = ShopEntity(id = id, name = name.trim())
-
-        if (shop.validName().not()) {
-            return UpdateResult.Error(UpdateResult.InvalidName)
-        }
-
-        val other = dao.byName(shop.name).first()
-
-        if (other != null && other.id != shop.id) {
-            return UpdateResult.Error(UpdateResult.DuplicateName)
-        }
-
-        dao.update(shop)
-
-        return UpdateResult.Success
-    }
-
-    override suspend fun merge(entity: ShopEntity, mergingInto: ShopEntity): MergeResult {
-        if (dao.get(entity.id).first() == null) {
-            return MergeResult.Error(MergeResult.InvalidShop)
-        }
-
-        if (dao.get(mergingInto.id).first() == null) {
-            return MergeResult.Error(MergeResult.InvalidMergingInto)
-        }
-
-        val transactionBaskets = dao.getTransactionBaskets(entity.id)
-
-        val newTransactionBaskets =
-            transactionBaskets.map { it.copy(shopEntityId = mergingInto.id) }
-
-        dao.updateTransactionBaskets(newTransactionBaskets)
-
-        dao.delete(entity)
-
-        return MergeResult.Success
-    }
+    override suspend fun update(entity: ShopEntity) = dao.update(entity)
 
     // Delete
 
-    override suspend fun delete(id: Long, force: Boolean): DeleteResult {
-        val shop = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
-
-        val transactionBaskets = dao.getTransactionBaskets(id)
-        val items = dao.getItems(id)
-
-        if (!force && transactionBaskets.isNotEmpty()) {
-            return DeleteResult.Error(DeleteResult.DangerousDelete)
-        } else {
-            dao.deleteItems(items)
-            dao.deleteTransactionBaskets(transactionBaskets)
-            dao.delete(shop)
-        }
-
-        return DeleteResult.Success
-    }
+    override suspend fun delete(entity: ShopEntity) = dao.delete(entity)
 
     // Read
 
     override fun get(id: Long): Flow<ShopEntity?> = dao.get(id).cancellable()
+
+    override fun byName(name: String): Flow<ShopEntity?> = dao.byName(name).cancellable()
 
     override fun all(): Flow<ImmutableList<ShopEntity>> =
         dao.all().cancellable().map { it.toImmutableList() }

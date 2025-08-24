@@ -9,11 +9,14 @@ import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.DeleteProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.DeleteProductEntityUseCaseResult
+import com.kssidll.arru.domain.usecase.data.MergeProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.MergeProductEntityUseCaseResult
+import com.kssidll.arru.domain.usecase.data.UpdateProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateProductEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -34,6 +37,9 @@ constructor(
     override val productRepository: ProductRepositorySource,
     override val producerRepository: ProductProducerRepositorySource,
     override val categoryRepository: ProductCategoryRepositorySource,
+    private val updateProductEntityUseCase: UpdateProductEntityUseCase,
+    private val deleteProductEntityUseCase: DeleteProductEntityUseCase,
+    private val mergeProductEntityUseCase: MergeProductEntityUseCase,
 ) : ModifyProductViewModel() {
     private var mProduct: ProductEntity? = null
 
@@ -88,55 +94,45 @@ constructor(
         }
     }
 
-    /**
-     * Tries to update product with provided [productId] with current screen state data
-     *
-     * @return resulting [UpdateResult]
-     */
-    suspend fun updateProduct(productId: Long) =
-        viewModelScope
-            .async {
-                screenState.attemptedToSubmit.value = true
+    suspend fun updateProduct(productId: Long): Boolean {
+        screenState.attemptedToSubmit.value = true
 
-                val result =
-                    productRepository.update(
-                        id = productId,
-                        name = screenState.name.value.data.orEmpty(),
-                        categoryId =
-                            screenState.selectedProductCategory.value.data?.id
-                                ?: ProductEntity.INVALID_CATEGORY_ID,
-                        producerId = screenState.selectedProductProducer.value.data?.id,
-                    )
+        val result =
+            updateProductEntityUseCase(
+                id = productId,
+                name = screenState.name.value.data,
+                productProducerEntityId = screenState.selectedProductProducer.value.data?.id,
+                productCategoryEntityId = screenState.selectedProductCategory.value.data?.id,
+            )
 
-                if (result.isError()) {
-                    when (result.error!!) {
-                        UpdateResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to update product with invalid product id in EditProductViewModel",
-                            )
-                            return@async UpdateResult.Success
+        return when (result) {
+            is UpdateProductEntityUseCaseResult.Error -> {
+                result.errors.forEach {
+                    when (it) {
+                        UpdateProductEntityUseCaseResult.ProductIdInvalid -> {
+                            Log.d("ModifyProduct", "Insert invalid price `${productId}`")
                         }
-
-                        UpdateResult.InvalidName -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        UpdateResult.DuplicateName -> {
+                        UpdateProductEntityUseCaseResult.NameDuplicateValue -> {
                             screenState.name.apply {
                                 value = value.toError(FieldError.DuplicateValueError)
                             }
                         }
-
-                        UpdateResult.InvalidCategoryId -> {
+                        UpdateProductEntityUseCaseResult.NameNoValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.NoValueError)
+                            }
+                        }
+                        UpdateProductEntityUseCaseResult.ProductCategoryIdInvalid -> {
                             screenState.selectedProductCategory.apply {
                                 value = value.toError(FieldError.InvalidValueError)
                             }
                         }
-
-                        UpdateResult.InvalidProducerId -> {
+                        UpdateProductEntityUseCaseResult.ProductCategoryNoValue -> {
+                            screenState.selectedProductCategory.apply {
+                                value = value.toError(FieldError.NoValueError)
+                            }
+                        }
+                        UpdateProductEntityUseCaseResult.ProductProducerIdInvalid -> {
                             screenState.selectedProductProducer.apply {
                                 value = value.toError(FieldError.InvalidValueError)
                             }
@@ -144,82 +140,73 @@ constructor(
                     }
                 }
 
-                return@async result
+                false
             }
-            .await()
+            is UpdateProductEntityUseCaseResult.Success -> {
+                true
+            }
+        }
+    }
 
-    /**
-     * Tries to delete product with provided [productId], sets showDeleteWarning flag in state if
-     * operation would require deleting foreign constrained data, state deleteWarningConfirmed flag
-     * needs to be set to start foreign constrained data deletion
-     *
-     * @return resulting [DeleteResult]
-     */
-    suspend fun deleteProduct(productId: Long) =
-        viewModelScope
-            .async {
-                val result =
-                    productRepository.delete(productId, screenState.deleteWarningConfirmed.value)
+    suspend fun deleteProduct(productId: Long): Boolean {
+        val result = deleteProductEntityUseCase(productId, screenState.deleteWarningConfirmed.value)
 
-                if (result.isError()) {
-                    when (result.error!!) {
-                        DeleteResult.InvalidId -> {
+        return when (result) {
+            is DeleteProductEntityUseCaseResult.Error -> {
+                result.errors.forEach {
+                    when (it) {
+                        DeleteProductEntityUseCaseResult.DangerousDelete -> {
+                            screenState.showDeleteWarning.value = true
+                        }
+                        DeleteProductEntityUseCaseResult.ProductIdInvalid -> {
                             Log.e(
                                 "InvalidId",
                                 "Tried to delete product with invalid product id in EditProductViewModel",
                             )
-                            return@async DeleteResult.Success
-                        }
-
-                        DeleteResult.DangerousDelete -> {
-                            screenState.showDeleteWarning.value = true
                         }
                     }
                 }
 
-                return@async result
+                false
             }
-            .await()
+            is DeleteProductEntityUseCaseResult.Success -> {
+                true
+            }
+        }
+    }
 
-    /**
-     * Tries to delete merge product into provided [mergeCandidate]
-     *
-     * @return resulting [MergeResult]
-     */
-    suspend fun mergeWith(mergeCandidate: ProductEntity) =
-        viewModelScope
-            .async {
-                if (mProduct == null) {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to merge product without the product being set in EditProductViewModel",
-                    )
-                    return@async MergeResult.Success
-                }
+    suspend fun mergeWith(mergeCandidate: ProductEntity): ProductEntity? {
+        if (mProduct == null) {
+            Log.e(
+                "ModifyProduct",
+                "Tried to merge product without the product being set in EditProductViewModel",
+            )
+            return null
+        }
 
-                val result = productRepository.merge(mProduct!!, mergeCandidate)
+        val result = mergeProductEntityUseCase(mProduct!!.id, mergeCandidate.id)
 
-                if (result.isError()) {
-                    when (result.error!!) {
-                        MergeResult.InvalidProduct -> {
+        return when (result) {
+            is MergeProductEntityUseCaseResult.Error -> {
+                result.errors.forEach {
+                    when (it) {
+                        MergeProductEntityUseCaseResult.MergeIntoIdInvalid -> {
                             Log.e(
-                                "InvalidId",
-                                "Tried to merge product without the product being set in EditProductViewModel",
+                                "ModifyProduct",
+                                "Tried to merge product but merge id was invalid",
                             )
-                            return@async MergeResult.Success
                         }
-
-                        MergeResult.InvalidMergingInto -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to merge product without the product being set in EditProductViewModel",
-                            )
-                            return@async MergeResult.Success
+                        MergeProductEntityUseCaseResult.ProductIdInvalid -> {
+                            Log.e("ModifyProduct", "Tried to merge product but id was invalid")
                         }
                     }
                 }
 
-                return@async result
+                null
             }
-            .await()
+            is MergeProductEntityUseCaseResult.Success -> {
+                result.mergedEntity
+            }
+        }
+    }
 }

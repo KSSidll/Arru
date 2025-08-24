@@ -44,16 +44,16 @@ fun EditTransactionRoute(
         onNewShopSelected = { viewModel.onNewShopSelected(it) },
         onSubmit = {
             scope.launch {
-                if (viewModel.updateTransaction(transactionId).isNotError()) {
-                    navigateBack()
-                }
+                // if (viewModel.updateTransaction(transactionId).isNotError()) {
+                //     navigateBack()
+                // }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteTransaction(transactionId).isNotError()) {
-                    navigateBack()
-                }
+                // if (viewModel.deleteTransaction(transactionId).isNotError()) {
+                //     navigateBack()
+                // }
             }
         },
         submitButtonText = stringResource(id = R.string.transaction_edit),

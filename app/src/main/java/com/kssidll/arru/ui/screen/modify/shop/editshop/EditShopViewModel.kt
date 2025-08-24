@@ -1,16 +1,11 @@
 package com.kssidll.arru.ui.screen.modify.shop.editshop
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.shop.ModifyShopViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -70,113 +65,118 @@ class EditShopViewModel @Inject constructor(override val shopRepository: ShopRep
      *
      * @return resulting [UpdateResult]
      */
-    suspend fun updateShop(shopId: Long) =
-        viewModelScope
-            .async {
-                screenState.attemptedToSubmit.value = true
-
-                val result =
-                    shopRepository.update(id = shopId, name = screenState.name.value.data.orEmpty())
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        UpdateResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to update shop with invalid shop id in EditShopViewModel",
-                            )
-                            return@async UpdateResult.Success
-                        }
-
-                        UpdateResult.InvalidName -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        UpdateResult.DuplicateName -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.DuplicateValueError)
-                            }
-                        }
-                    }
-                }
-
-                return@async result
-            }
-            .await()
-
-    /**
-     * Tries to delete shop with provided [shopId], sets showDeleteWarning flag in state if
-     * operation would require deleting foreign constrained data, state deleteWarningConfirmed flag
-     * needs to be set to start foreign constrained data deletion
-     *
-     * @return resulting [DeleteResult]
-     */
-    suspend fun deleteShop(shopId: Long) =
-        viewModelScope
-            .async {
-                val result = shopRepository.delete(shopId, screenState.deleteWarningConfirmed.value)
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        DeleteResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to delete shop with invalid shop id in EditShopViewModel",
-                            )
-                            return@async DeleteResult.Success
-                        }
-
-                        DeleteResult.DangerousDelete -> {
-                            screenState.showDeleteWarning.value = true
-                        }
-                    }
-                }
-
-                return@async result
-            }
-            .await()
-
-    /**
-     * Tries to delete merge shop into provided [mergeCandidate]
-     *
-     * @return resulting [MergeResult]
-     */
-    suspend fun mergeWith(mergeCandidate: ShopEntity) =
-        viewModelScope
-            .async {
-                if (mShop == null) {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to merge shop without the shop being set in EditShopViewModel",
-                    )
-                    return@async MergeResult.Success
-                }
-
-                val result = shopRepository.merge(mShop!!, mergeCandidate)
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        MergeResult.InvalidShop -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to merge shop without the shop being set in EditShopViewModel",
-                            )
-                            return@async MergeResult.Success
-                        }
-
-                        MergeResult.InvalidMergingInto -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to merge shop without the shop being set in EditShopViewModel",
-                            )
-                            return@async MergeResult.Success
-                        }
-                    }
-                }
-
-                return@async result
-            }
-            .await()
+    // suspend fun updateShop(shopId: Long) =
+    //     viewModelScope
+    //         .async {
+    //             screenState.attemptedToSubmit.value = true
+    //
+    //             val result =
+    //                 shopRepository.update(id = shopId, name =
+    // screenState.name.value.data.orEmpty())
+    //
+    //             if (result.isError()) {
+    //                 when (result.error!!) {
+    //                     UpdateResult.InvalidId -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to update shop with invalid shop id in EditShopViewModel",
+    //                         )
+    //                         return@async UpdateResult.Success
+    //                     }
+    //
+    //                     UpdateResult.InvalidName -> {
+    //                         screenState.name.apply {
+    //                             value = value.toError(FieldError.InvalidValueError)
+    //                         }
+    //                     }
+    //
+    //                     UpdateResult.DuplicateName -> {
+    //                         screenState.name.apply {
+    //                             value = value.toError(FieldError.DuplicateValueError)
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //
+    //             return@async result
+    //         }
+    //         .await()
+    //
+    // /**
+    //  * Tries to delete shop with provided [shopId], sets showDeleteWarning flag in state if
+    //  * operation would require deleting foreign constrained data, state deleteWarningConfirmed
+    // flag
+    //  * needs to be set to start foreign constrained data deletion
+    //  *
+    //  * @return resulting [DeleteResult]
+    //  */
+    // suspend fun deleteShop(shopId: Long) =
+    //     viewModelScope
+    //         .async {
+    //             val result = shopRepository.delete(shopId,
+    // screenState.deleteWarningConfirmed.value)
+    //
+    //             if (result.isError()) {
+    //                 when (result.error!!) {
+    //                     DeleteResult.InvalidId -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to delete shop with invalid shop id in EditShopViewModel",
+    //                         )
+    //                         return@async DeleteResult.Success
+    //                     }
+    //
+    //                     DeleteResult.DangerousDelete -> {
+    //                         screenState.showDeleteWarning.value = true
+    //                     }
+    //                 }
+    //             }
+    //
+    //             return@async result
+    //         }
+    //         .await()
+    //
+    // /**
+    //  * Tries to delete merge shop into provided [mergeCandidate]
+    //  *
+    //  * @return resulting [MergeResult]
+    //  */
+    // suspend fun mergeWith(mergeCandidate: ShopEntity) =
+    //     viewModelScope
+    //         .async {
+    //             if (mShop == null) {
+    //                 Log.e(
+    //                     "InvalidId",
+    //                     "Tried to merge shop without the shop being set in EditShopViewModel",
+    //                 )
+    //                 return@async MergeResult.Success
+    //             }
+    //
+    //             val result = shopRepository.merge(mShop!!, mergeCandidate)
+    //
+    //             if (result.isError()) {
+    //                 when (result.error!!) {
+    //                     MergeResult.InvalidShop -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to merge shop without the shop being set in
+    // EditShopViewModel",
+    //                         )
+    //                         return@async MergeResult.Success
+    //                     }
+    //
+    //                     MergeResult.InvalidMergingInto -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to merge shop without the shop being set in
+    // EditShopViewModel",
+    //                         )
+    //                         return@async MergeResult.Success
+    //                     }
+    //                 }
+    //             }
+    //
+    //             return@async result
+    //         }
+    //         .await()
 }

@@ -34,17 +34,17 @@ class ProductVariantModule {
     @Provides
     @Singleton
     fun provideGetProductVariantEntityUseCase(
-        productVariantRepositorySource: ProductVariantRepositorySource
+        productVariantRepository: ProductVariantRepositorySource
     ): GetProductVariantEntityUseCase {
-        return GetProductVariantEntityUseCase(productVariantRepositorySource)
+        return GetProductVariantEntityUseCase(productVariantRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetProductVariantEntityByProductUseCase(
-        productVariantRepositorySource: ProductVariantRepositorySource
+        productVariantRepository: ProductVariantRepositorySource
     ): GetProductVariantEntityByProductUseCase {
-        return GetProductVariantEntityByProductUseCase(productVariantRepositorySource)
+        return GetProductVariantEntityByProductUseCase(productVariantRepository)
     }
 
     /** DOMAIN */

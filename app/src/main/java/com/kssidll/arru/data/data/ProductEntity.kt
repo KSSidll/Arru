@@ -53,10 +53,10 @@ data class ProductEntity(
 ) : FuzzySearchSource, NameSource {
     @Ignore
     constructor(
-        categoryEntityId: Long,
-        producerEntityId: Long?,
+        productCategoryEntityId: Long,
+        productProducerEntityId: Long?,
         name: String,
-    ) : this(0, categoryEntityId, producerEntityId, name.trim())
+    ) : this(0, productCategoryEntityId, productProducerEntityId, name.trim())
 
     /**
      * Converts the [ProductEntity] data to a string with csv format

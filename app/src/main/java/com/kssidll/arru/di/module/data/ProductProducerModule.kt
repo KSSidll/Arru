@@ -39,58 +39,58 @@ class ProductProducerModule {
     @Provides
     @Singleton
     fun provideGetProductProducerEntityUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetProductProducerEntityUseCase {
-        return GetProductProducerEntityUseCase(productProducerRepositorySource)
+        return GetProductProducerEntityUseCase(productProducerRepository)
     }
 
     /** DOMAIN */
     @Provides
     @Singleton
     fun provideGetTotalSpentForProductProducerUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetTotalSpentForProductProducerUseCase {
-        return GetTotalSpentForProductProducerUseCase(productProducerRepositorySource)
+        return GetTotalSpentForProductProducerUseCase(productProducerRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetItemsForProductProducerUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetItemsForProductProducerUseCase {
-        return GetItemsForProductProducerUseCase(productProducerRepositorySource)
+        return GetItemsForProductProducerUseCase(productProducerRepository)
     }
 
     /** DOMAIN CHART */
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayForProductProducerUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetTotalSpentByDayForProductProducerUseCase {
-        return GetTotalSpentByDayForProductProducerUseCase(productProducerRepositorySource)
+        return GetTotalSpentByDayForProductProducerUseCase(productProducerRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByWeekForProductProducerUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetTotalSpentByWeekForProductProducerUseCase {
-        return GetTotalSpentByWeekForProductProducerUseCase(productProducerRepositorySource)
+        return GetTotalSpentByWeekForProductProducerUseCase(productProducerRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByMonthForProductProducerUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetTotalSpentByMonthForProductProducerUseCase {
-        return GetTotalSpentByMonthForProductProducerUseCase(productProducerRepositorySource)
+        return GetTotalSpentByMonthForProductProducerUseCase(productProducerRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByYearForProductProducerUseCase(
-        productProducerRepositorySource: ProductProducerRepositorySource
+        productProducerRepository: ProductProducerRepositorySource
     ): GetTotalSpentByYearForProductProducerUseCase {
-        return GetTotalSpentByYearForProductProducerUseCase(productProducerRepositorySource)
+        return GetTotalSpentByYearForProductProducerUseCase(productProducerRepository)
     }
 }

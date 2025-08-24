@@ -1,16 +1,11 @@
 package com.kssidll.arru.ui.screen.modify.productcategory.editproductcategory
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
-import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.MergeResult
-import com.kssidll.arru.data.repository.ProductCategoryRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -72,114 +67,122 @@ constructor(override val categoryRepository: ProductCategoryRepositorySource) :
      *
      * @return resulting [UpdateResult]
      */
-    suspend fun updateCategory(categoryId: Long) =
-        viewModelScope
-            .async {
-                screenState.attemptedToSubmit.value = true
-
-                val result =
-                    categoryRepository.update(categoryId, screenState.name.value.data.orEmpty())
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        UpdateResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to update category with invalid category id in EditCategoryViewModel",
-                            )
-                            return@async UpdateResult.Success
-                        }
-
-                        UpdateResult.InvalidName -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-
-                        UpdateResult.DuplicateName -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.DuplicateValueError)
-                            }
-                        }
-                    }
-                }
-
-                return@async result
-            }
-            .await()
-
-    /**
-     * Tries to delete category with provided [categoryId], sets showDeleteWarning flag in state if
-     * operation would require deleting foreign constrained data, state deleteWarningConfirmed flag
-     * needs to be set to start foreign constrained data deletion
-     *
-     * @return resulting [DeleteResult]
-     */
-    suspend fun deleteCategory(categoryId: Long) =
-        viewModelScope
-            .async {
-                val result =
-                    categoryRepository.delete(categoryId, screenState.deleteWarningConfirmed.value)
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        DeleteResult.InvalidId -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to delete category with invalid category id in EditCategoryViewModel",
-                            )
-                            return@async DeleteResult.Success
-                        }
-
-                        DeleteResult.DangerousDelete -> {
-                            screenState.showDeleteWarning.value = true
-                        }
-                    }
-                }
-
-                return@async result
-            }
-            .await()
-
-    /**
-     * Tries to delete merge category into provided [mergeCandidate]
-     *
-     * @return resulting [MergeResult]
-     */
-    suspend fun mergeWith(mergeCandidate: ProductCategoryEntity) =
-        viewModelScope
-            .async {
-                if (mCategory == null) {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to merge category without the category being set in EditCategoryViewModel",
-                    )
-                    return@async MergeResult.Success
-                }
-
-                val result = categoryRepository.merge(mCategory!!, mergeCandidate)
-
-                if (result.isError()) {
-                    when (result.error!!) {
-                        MergeResult.InvalidCategory -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to merge category without the category being set in EditCategoryViewModel",
-                            )
-                            return@async MergeResult.Success
-                        }
-
-                        MergeResult.InvalidMergingInto -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to merge category without the category being set in EditCategoryViewModel",
-                            )
-                            return@async MergeResult.Success
-                        }
-                    }
-                }
-
-                return@async result
-            }
-            .await()
+    // suspend fun updateCategory(categoryId: Long) =
+    //     viewModelScope
+    //         .async {
+    //             screenState.attemptedToSubmit.value = true
+    //
+    //             val result =
+    //                 categoryRepository.update(categoryId, screenState.name.value.data.orEmpty())
+    //
+    //             if (result.isError()) {
+    //                 when (result.error!!) {
+    //                     UpdateResult.InvalidId -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to update category with invalid category id in
+    // EditCategoryViewModel",
+    //                         )
+    //                         return@async UpdateResult.Success
+    //                     }
+    //
+    //                     UpdateResult.InvalidName -> {
+    //                         screenState.name.apply {
+    //                             value = value.toError(FieldError.InvalidValueError)
+    //                         }
+    //                     }
+    //
+    //                     UpdateResult.DuplicateName -> {
+    //                         screenState.name.apply {
+    //                             value = value.toError(FieldError.DuplicateValueError)
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //
+    //             return@async result
+    //         }
+    //         .await()
+    //
+    // /**
+    //  * Tries to delete category with provided [categoryId], sets showDeleteWarning flag in state
+    // if
+    //  * operation would require deleting foreign constrained data, state deleteWarningConfirmed
+    // flag
+    //  * needs to be set to start foreign constrained data deletion
+    //  *
+    //  * @return resulting [DeleteResult]
+    //  */
+    // suspend fun deleteCategory(categoryId: Long) =
+    //     viewModelScope
+    //         .async {
+    //             val result =
+    //                 categoryRepository.delete(categoryId,
+    // screenState.deleteWarningConfirmed.value)
+    //
+    //             if (result.isError()) {
+    //                 when (result.error!!) {
+    //                     DeleteResult.InvalidId -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to delete category with invalid category id in
+    // EditCategoryViewModel",
+    //                         )
+    //                         return@async DeleteResult.Success
+    //                     }
+    //
+    //                     DeleteResult.DangerousDelete -> {
+    //                         screenState.showDeleteWarning.value = true
+    //                     }
+    //                 }
+    //             }
+    //
+    //             return@async result
+    //         }
+    //         .await()
+    //
+    // /**
+    //  * Tries to delete merge category into provided [mergeCandidate]
+    //  *
+    //  * @return resulting [MergeResult]
+    //  */
+    // suspend fun mergeWith(mergeCandidate: ProductCategoryEntity) =
+    //     viewModelScope
+    //         .async {
+    //             if (mCategory == null) {
+    //                 Log.e(
+    //                     "InvalidId",
+    //                     "Tried to merge category without the category being set in
+    // EditCategoryViewModel",
+    //                 )
+    //                 return@async MergeResult.Success
+    //             }
+    //
+    //             val result = categoryRepository.merge(mCategory!!, mergeCandidate)
+    //
+    //             if (result.isError()) {
+    //                 when (result.error!!) {
+    //                     MergeResult.InvalidCategory -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to merge category without the category being set in
+    // EditCategoryViewModel",
+    //                         )
+    //                         return@async MergeResult.Success
+    //                     }
+    //
+    //                     MergeResult.InvalidMergingInto -> {
+    //                         Log.e(
+    //                             "InvalidId",
+    //                             "Tried to merge category without the category being set in
+    // EditCategoryViewModel",
+    //                         )
+    //                         return@async MergeResult.Success
+    //                     }
+    //                 }
+    //             }
+    //
+    //             return@async result
+    //         }
+    //         .await()
 }

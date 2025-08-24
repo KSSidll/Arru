@@ -107,6 +107,9 @@ constructor(
                     is UpdateItemEntityUseCaseResult.Error -> {
                         updateResult.errors.forEach {
                             when (it) {
+                                UpdateItemEntityUseCaseResult.ItemIdInvalid -> {
+                                    Log.d("ModifyItem", "Insert invalid item `${mItem?.id}`")
+                                }
                                 UpdateItemEntityUseCaseResult.PriceNoValue -> {
                                     _uiState.update { currentState ->
                                         currentState.copy(

@@ -38,75 +38,73 @@ class ShopModule {
     /** ENTITY */
     @Provides
     @Singleton
-    fun provideGetShopEntityUseCase(
-        shopRepositorySource: ShopRepositorySource
-    ): GetShopEntityUseCase {
-        return GetShopEntityUseCase(shopRepositorySource)
+    fun provideGetShopEntityUseCase(shopRepository: ShopRepositorySource): GetShopEntityUseCase {
+        return GetShopEntityUseCase(shopRepository)
     }
 
     /** DOMAIN */
     @Provides
     @Singleton
     fun provideGetTotalSpentForShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentForShopUseCase {
-        return GetTotalSpentForShopUseCase(shopRepositorySource)
+        return GetTotalSpentForShopUseCase(shopRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetItemsForShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetItemsForShopUseCase {
-        return GetItemsForShopUseCase(shopRepositorySource)
+        return GetItemsForShopUseCase(shopRepository)
     }
 
     /** DOMAIN CHART */
     @Provides
     @Singleton
     fun provideGetTotalSpentByDayForShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentByDayForShopUseCase {
-        return GetTotalSpentByDayForShopUseCase(shopRepositorySource)
+        return GetTotalSpentByDayForShopUseCase(shopRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByWeekForShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentByWeekForShopUseCase {
-        return GetTotalSpentByWeekForShopUseCase(shopRepositorySource)
+        return GetTotalSpentByWeekForShopUseCase(shopRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByMonthForShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentByMonthForShopUseCase {
-        return GetTotalSpentByMonthForShopUseCase(shopRepositorySource)
+        return GetTotalSpentByMonthForShopUseCase(shopRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByYearForShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentByYearForShopUseCase {
-        return GetTotalSpentByYearForShopUseCase(shopRepositorySource)
+        return GetTotalSpentByYearForShopUseCase(shopRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByShopUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentByShopUseCase {
-        return GetTotalSpentByShopUseCase(shopRepositorySource)
+        return GetTotalSpentByShopUseCase(shopRepository)
     }
 
     @Provides
     @Singleton
     fun provideGetTotalSpentByShopByMonthUseCase(
-        shopRepositorySource: ShopRepositorySource
+        shopRepository: ShopRepositorySource
     ): GetTotalSpentByShopByMonthUseCase {
-        return GetTotalSpentByShopByMonthUseCase(shopRepositorySource)
+        return GetTotalSpentByShopByMonthUseCase(shopRepository)
     }
 }

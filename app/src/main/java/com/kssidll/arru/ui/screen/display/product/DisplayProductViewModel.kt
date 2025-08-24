@@ -84,15 +84,16 @@ constructor(
 
     private var _productId: Long? = null
 
-    suspend fun checkExists(id: Long) =
+    suspend fun checkExists(id: Long?) =
         viewModelScope
             .async {
-                return@async getProductEntityUseCase(id).first() != null
+                return@async id?.let { getProductEntityUseCase(it).first() } != null
             }
             .await()
 
-    fun updateState(productId: Long) =
+    fun updateState(productId: Long?) =
         viewModelScope.launch {
+            if (productId == null) return@launch
             val product = getProductEntityUseCase(productId).first() ?: return@launch
             _productId = productId
 

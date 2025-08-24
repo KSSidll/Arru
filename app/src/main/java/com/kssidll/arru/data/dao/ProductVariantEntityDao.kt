@@ -5,8 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -20,23 +18,13 @@ interface ProductVariantEntityDao {
 
     @Update suspend fun update(entity: ProductVariantEntity)
 
+    @Update suspend fun update(entity: List<ProductVariantEntity>)
+
     // Delete
 
     @Delete suspend fun delete(entity: ProductVariantEntity)
 
-    // Helper
-
-    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :productId")
-    suspend fun getProduct(productId: Long): ProductEntity?
-
-    @Query(
-        "SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.productVariantEntityId = :variantId"
-    )
-    suspend fun getItems(variantId: Long): List<ItemEntity>
-
-    @Update suspend fun updateItems(entities: List<ItemEntity>)
-
-    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
+    @Delete suspend fun delete(entity: List<ProductVariantEntity>)
 
     // Read
 

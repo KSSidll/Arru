@@ -33,23 +33,23 @@ fun EditProductProducerRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateProducer(producerId).isNotError()) {
-                    navigateBack(producerId)
-                }
+                // if (viewModel.updateProducer(producerId).isNotError()) {
+                //     navigateBack(producerId)
+                // }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteProducer(producerId).isNotError()) {
-                    navigateBack(null)
-                }
+                // if (viewModel.deleteProducer(producerId).isNotError()) {
+                //     navigateBack(null)
+                // }
             }
         },
         onMerge = {
             scope.launch {
-                if (viewModel.mergeWith(it).isNotError()) {
-                    navigateBack(it.id)
-                }
+                // if (viewModel.mergeWith(it).isNotError()) {
+                //     navigateBack(it.id)
+                // }
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(producerId),

@@ -9,118 +9,17 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ProductCategoryRepositorySource {
-    companion object {
-        sealed class InsertResult(val id: Long? = null, val error: Errors? = null) {
-            class Success(id: Long) : InsertResult(id)
-
-            class Error(error: Errors) : InsertResult(error = error)
-
-            fun isError(): Boolean = this is Error
-
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-
-            data object InvalidName : Errors()
-
-            data object DuplicateName : Errors()
-        }
-
-        sealed class UpdateResult(val error: Errors? = null) {
-            data object Success : UpdateResult()
-
-            class Error(error: Errors) : UpdateResult(error = error)
-
-            fun isError(): Boolean = this is Error
-
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-
-            data object InvalidId : Errors()
-
-            data object InvalidName : Errors()
-
-            data object DuplicateName : Errors()
-        }
-
-        sealed class MergeResult(val error: Errors? = null) {
-            data object Success : MergeResult()
-
-            class Error(error: Errors) : MergeResult(error = error)
-
-            fun isError(): Boolean = this is Error
-
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-
-            data object InvalidCategory : Errors()
-
-            data object InvalidMergingInto : Errors()
-        }
-
-        sealed class DeleteResult(val error: Errors? = null) {
-            data object Success : DeleteResult()
-
-            class Error(error: Errors) : DeleteResult(error = error)
-
-            fun isError(): Boolean = this is Error
-
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-
-            data object InvalidId : Errors()
-
-            data object DangerousDelete : Errors()
-        }
-    }
-
     // Create
 
-    /**
-     * Inserts [ProductCategoryEntity]
-     *
-     * @param name name of the [ProductCategoryEntity] to insert
-     * @return [InsertResult] with id of the newly inserted [ProductCategoryEntity] or an error if
-     *   any
-     */
-    suspend fun insert(name: String): InsertResult
+    suspend fun insert(entity: ProductCategoryEntity): Long
 
     // Update
 
-    /**
-     * Updates [ProductCategoryEntity] with [id] id to provided [name]
-     *
-     * @param id id to match [ProductCategoryEntity]
-     * @param name name to update the matching [ProductCategoryEntity] to
-     * @return [UpdateResult] with the result
-     */
-    suspend fun update(id: Long, name: String): UpdateResult
-
-    /**
-     * Merges [entity] into [mergingInto]
-     *
-     * @param entity [ProductCategoryEntity] to merge
-     * @param mergingInto [ProductCategoryEntity] to merge the [entity] into
-     * @return [MergeResult] with the result
-     */
-    suspend fun merge(
-        entity: ProductCategoryEntity,
-        mergingInto: ProductCategoryEntity,
-    ): MergeResult
+    suspend fun update(entity: ProductCategoryEntity)
 
     // Delete
 
-    /**
-     * Deletes [ProductCategoryEntity] matching [id]
-     *
-     * @param id id of the [ProductCategoryEntity] to delete
-     * @param force whether to force delete on dangerous delete
-     * @return [DeleteResult] with the result
-     */
-    suspend fun delete(id: Long, force: Boolean): DeleteResult
+    suspend fun delete(entity: ProductCategoryEntity)
 
     // Read
 
@@ -129,6 +28,12 @@ interface ProductCategoryRepositorySource {
      * @return [ProductCategoryEntity] matching [id] id or null if none match
      */
     fun get(id: Long): Flow<ProductCategoryEntity?>
+
+    /**
+     * @param name name of the [ProductCategoryEntity]
+     * @return [ProductCategoryEntity] matching [name] name or null if none match
+     */
+    fun byName(name: String): Flow<ProductCategoryEntity?>
 
     /** @return list of all [ProductCategoryEntity] */
     fun all(): Flow<ImmutableList<ProductCategoryEntity>>

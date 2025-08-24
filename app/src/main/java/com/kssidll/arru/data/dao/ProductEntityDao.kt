@@ -6,11 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
@@ -30,55 +26,15 @@ interface ProductEntityDao {
 
     @Delete suspend fun delete(entity: ProductEntity)
 
-    // Helper
-
-    @Query(
-        "SELECT ProductProducerEntity.* FROM ProductProducerEntity WHERE ProductProducerEntity.id = :producerId"
-    )
-    suspend fun producerById(producerId: Long): ProductProducerEntity?
-
-    @Query(
-        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.id = :variantId"
-    )
-    suspend fun variantById(variantId: Long): ProductVariantEntity?
-
-    @Query(
-        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId AND ProductVariantEntity.name = :variantName"
-    )
-    suspend fun variantByName(productId: Long, variantName: String): ProductVariantEntity?
-
-    @Query(
-        "SELECT ProductCategoryEntity.* FROM ProductCategoryEntity WHERE ProductCategoryEntity.id = :categoryId"
-    )
-    suspend fun categoryById(categoryId: Long): ProductCategoryEntity?
-
-    @Query(
-        "SELECT ProductVariantEntity.* FROM ProductVariantEntity WHERE ProductVariantEntity.productEntityId = :productId"
-    )
-    suspend fun variants(productId: Long): List<ProductVariantEntity>
-
-    @Query(
-        """
-        SELECT ItemEntity.*
-        FROM ItemEntity
-        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
-        WHERE ProductEntity.id = :productId
-    """
-    )
-    suspend fun getItems(productId: Long): List<ItemEntity>
-
-    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
-
-    @Delete suspend fun deleteVariants(entities: List<ProductVariantEntity>)
-
-    @Update suspend fun updateVariants(entities: List<ProductVariantEntity>)
-
-    @Update suspend fun updateItems(entities: List<ItemEntity>)
+    @Delete suspend fun delete(entity: List<ProductEntity>)
 
     // Read
 
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.id = :id")
     fun get(id: Long): Flow<ProductEntity?>
+
+    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
+    fun byName(name: String): Flow<ProductEntity?>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity") fun all(): Flow<List<ProductEntity>>
 
@@ -302,12 +258,4 @@ interface ProductEntityDao {
     fun averagePriceByShopByVariantByProducerByDay(
         id: Long
     ): Flow<List<ProductPriceByShopByVariantByProducerByTime>>
-
-    @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
-    fun byName(name: String): Flow<ProductEntity?>
-
-    @Query(
-        "SELECT ItemEntity.* FROM ProductEntity JOIN ItemEntity ON ItemEntity.productEntityId = ProductEntity.id WHERE ProductEntity.id = :entityId ORDER BY ItemEntity.id DESC LIMIT 1"
-    )
-    suspend fun newestItem(entityId: Long): ItemEntity?
 }

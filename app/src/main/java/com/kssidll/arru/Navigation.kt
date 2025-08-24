@@ -131,13 +131,25 @@ sealed class Screen : Parcelable {
 
     @Immutable data class DisplayTransaction(val transactionId: Long) : Screen()
 
-    @Immutable data class DisplayProduct(val productId: Long) : Screen()
+    @Stable
+    data class DisplayProduct(
+        override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null)
+    ) : Screen(), AcceptsProductId
 
-    @Immutable data class DisplayProductCategory(val categoryId: Long) : Screen()
+    @Stable
+    data class DisplayProductCategory(
+        override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null)
+    ) : Screen(), AcceptsCategoryId
 
-    @Immutable data class DisplayProductProducer(val producerId: Long) : Screen()
+    @Stable
+    data class DisplayProductProducer(
+        override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null)
+    ) : Screen(), AcceptsProducerId
 
-    @Immutable data class DisplayShop(val shopId: Long) : Screen()
+    @Stable
+    data class DisplayShop(
+        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null)
+    ) : Screen(), AcceptsShopId
 
     @Stable
     data class AddTransaction(
@@ -270,25 +282,33 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
 
     val navigateDisplayProduct: (productId: Long) -> Unit = {
         if (navController.currentDestination() !is Screen.DisplayProduct) {
-            navController.navigate(Screen.DisplayProduct(it))
+            val newScreen = Screen.DisplayProduct()
+            newScreen.provideProduct(it)
+            navController.navigate(newScreen)
         }
     }
 
     val navigateDisplayProductCategory: (categoryId: Long) -> Unit = {
         if (navController.currentDestination() !is Screen.DisplayProductCategory) {
-            navController.navigate(Screen.DisplayProductCategory(it))
+            val newScreen = Screen.DisplayProductCategory()
+            newScreen.provideCategory(it)
+            navController.navigate(newScreen)
         }
     }
 
     val navigateDisplayProductProducer: (producerId: Long) -> Unit = {
         if (navController.currentDestination() !is Screen.DisplayProductProducer) {
-            navController.navigate(Screen.DisplayProductProducer(it))
+            val newScreen = Screen.DisplayProductProducer()
+            newScreen.provideProducer(it)
+            navController.navigate(newScreen)
         }
     }
 
     val navigateDisplayShop: (shopId: Long) -> Unit = {
         if (navController.currentDestination() !is Screen.DisplayShop) {
-            navController.navigate(Screen.DisplayShop(it))
+            val newScreen = Screen.DisplayShop()
+            newScreen.provideShop(it)
+            navController.navigate(newScreen)
         }
     }
 
@@ -346,9 +366,11 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
         }
     }
 
-    val navigateEditProduct: (productId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.EditProduct) {
-            navController.navigate(Screen.EditProduct(it))
+    val navigateEditProduct: (productId: Long?) -> Unit = { id ->
+        id?.let {
+            if (navController.currentDestination() !is Screen.EditProduct) {
+                navController.navigate(Screen.EditProduct(it))
+            }
         }
     }
 
@@ -358,21 +380,27 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
         }
     }
 
-    val navigateEditProductCategory: (categoryId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.EditProductCategory) {
-            navController.navigate(Screen.EditProductCategory(it))
+    val navigateEditProductCategory: (categoryId: Long?) -> Unit = { id ->
+        id?.let {
+            if (navController.currentDestination() !is Screen.EditProductCategory) {
+                navController.navigate(Screen.EditProductCategory(it))
+            }
         }
     }
 
-    val navigateEditProductProducer: (producerId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.EditProductProducer) {
-            navController.navigate(Screen.EditProductProducer(it))
+    val navigateEditProductProducer: (producerId: Long?) -> Unit = { id ->
+        id?.let {
+            if (navController.currentDestination() !is Screen.EditProductProducer) {
+                navController.navigate(Screen.EditProductProducer(it))
+            }
         }
     }
 
-    val navigateEditShop: (shopId: Long) -> Unit = {
-        if (navController.currentDestination() !is Screen.EditShop) {
-            navController.navigate(Screen.EditShop(it))
+    val navigateEditShop: (shopId: Long?) -> Unit = { id ->
+        id?.let {
+            if (navController.currentDestination() !is Screen.EditShop) {
+                navController.navigate(Screen.EditShop(it))
+            }
         }
     }
 
@@ -555,49 +583,53 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
 
             is Screen.DisplayProductCategory -> {
                 DisplayProductCategoryRoute(
-                    categoryId = screen.categoryId,
+                    categoryId = screen.providedCategoryId.value,
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProductCategory = { navigateEditProductCategory(screen.categoryId) },
+                    navigateEditProductCategory = {
+                        navigateEditProductCategory(screen.providedCategoryId.value)
+                    },
                 )
             }
 
             is Screen.DisplayProductProducer -> {
                 DisplayProductProducerRoute(
-                    producerId = screen.producerId,
+                    producerId = screen.providedProducerId.value,
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProductProducer = { navigateEditProductProducer(screen.producerId) },
+                    navigateEditProductProducer = {
+                        navigateEditProductProducer(screen.providedProducerId.value)
+                    },
                 )
             }
 
             is Screen.DisplayProduct -> {
                 DisplayProductRoute(
-                    productId = screen.productId,
+                    productId = screen.providedProductId.value,
                     navigateBack = navigateBack,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProduct = { navigateEditProduct(screen.productId) },
+                    navigateEditProduct = { navigateEditProduct(screen.providedProductId.value) },
                 )
             }
 
             is Screen.DisplayShop -> {
                 DisplayShopRoute(
-                    shopId = screen.shopId,
+                    shopId = screen.providedShopId.value,
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateEditItem = navigateEditItem,
-                    navigateEditShop = { navigateEditShop(screen.shopId) },
+                    navigateEditShop = { navigateEditShop(screen.providedShopId.value) },
                 )
             }
 

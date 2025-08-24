@@ -8,8 +8,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.kssidll.arru.data.data.IntermediateTransaction
-import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.coroutines.flow.Flow
@@ -28,17 +26,7 @@ interface TransactionEntityDao {
 
     @Delete suspend fun delete(entity: TransactionEntity)
 
-    // Helper
-
-    @Query("SELECT ShopEntity.* FROM ShopEntity WHERE ShopEntity.id = :shopId")
-    suspend fun shopById(shopId: Long): ShopEntity?
-
-    @Query(
-        "SELECT ItemEntity.* FROM ItemEntity WHERE transactionEntityId = :transactionBasketId ORDER BY id DESC"
-    )
-    suspend fun itemsByTransactionBasketId(transactionBasketId: Long): List<ItemEntity>
-
-    @Delete suspend fun deleteItems(entities: List<ItemEntity>)
+    @Delete suspend fun delete(entity: List<TransactionEntity>)
 
     // Read
 

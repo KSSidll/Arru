@@ -6,96 +6,27 @@ import androidx.paging.PagingData
 import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.data.IntermediateTransaction
 import com.kssidll.arru.data.data.TransactionEntity
-import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.InsertResult
-import com.kssidll.arru.data.repository.TransactionRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class TransactionRepository(private val dao: TransactionEntityDao) : TransactionRepositorySource {
     // Create
 
-    override suspend fun insert(
-        date: Long,
-        totalCost: Long,
-        shopId: Long?,
-        note: String?,
-    ): InsertResult {
-        val transaction =
-            TransactionEntity(
-                date = date,
-                totalCost = totalCost,
-                shopEntityId = shopId,
-                note = note,
-            )
-
-        if (!transaction.validDate()) {
-            return InsertResult.Error(InsertResult.InvalidDate)
-        }
-
-        if (!transaction.validTotalCost()) {
-            return InsertResult.Error(InsertResult.InvalidTotalCost)
-        }
-
-        if (shopId != null && dao.shopById(shopId) == null) {
-            return InsertResult.Error(InsertResult.InvalidShopId)
-        }
-
-        return InsertResult.Success(dao.insert(transaction))
-    }
+    override suspend fun insert(entity: TransactionEntity): Long = dao.insert(entity)
 
     // Update
 
-    override suspend fun update(
-        id: Long,
-        date: Long,
-        totalCost: Long,
-        shopId: Long?,
-        note: String?,
-    ): UpdateResult {
-        val transaction = dao.get(id).first() ?: return UpdateResult.Error(UpdateResult.InvalidId)
-
-        val newTransaction =
-            transaction.copy(date = date, totalCost = totalCost, shopEntityId = shopId, note = note)
-
-        if (!newTransaction.validDate()) {
-            return UpdateResult.Error(UpdateResult.InvalidDate)
-        }
-
-        if (!newTransaction.validTotalCost()) {
-            return UpdateResult.Error(UpdateResult.InvalidTotalCost)
-        }
-
-        if (shopId != null && dao.shopById(shopId) == null) {
-            return UpdateResult.Error(UpdateResult.InvalidShopId)
-        }
-
-        dao.update(newTransaction)
-
-        return UpdateResult.Success
-    }
+    override suspend fun update(entity: TransactionEntity) = dao.update(entity)
 
     // Delete
 
-    override suspend fun delete(id: Long, force: Boolean): DeleteResult {
-        val transaction = dao.get(id).first() ?: return DeleteResult.Error(DeleteResult.InvalidId)
+    override suspend fun delete(entity: TransactionEntity) = dao.delete(entity)
 
-        val items = dao.itemsByTransactionBasketId(id)
-
-        if (!force && (items.isNotEmpty())) {
-            return DeleteResult.Error(DeleteResult.DangerousDelete)
-        } else {
-            dao.deleteItems(items)
-            dao.delete(transaction)
-        }
-
-        return DeleteResult.Success
-    }
+    override suspend fun delete(entity: List<TransactionEntity>) = dao.delete(entity)
 
     // Read
 
