@@ -76,7 +76,7 @@ constructor(
                                     }
                                 }
                                 InsertItemEntityUseCaseResult.PriceInvalid -> {
-                                    Log.d("AddItem", "Insert invalid price `${state.price.data}`")
+                                    Log.e("AddItem", "Insert invalid price `${state.price.data}`")
                                     _uiState.update { currentState ->
                                         currentState.copy(
                                             price =
@@ -97,7 +97,7 @@ constructor(
                                     }
                                 }
                                 InsertItemEntityUseCaseResult.ProductIdInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "AddItem",
                                         "Insert invalid product `${state.selectedProduct.data?.id}`",
                                     )
@@ -111,7 +111,7 @@ constructor(
                                     }
                                 }
                                 InsertItemEntityUseCaseResult.ProductVariantIdInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "AddItem",
                                         "Insert invalid product variant `${state.selectedProductVariant.data?.id}`",
                                     )
@@ -135,7 +135,7 @@ constructor(
                                     }
                                 }
                                 InsertItemEntityUseCaseResult.QuantityInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "AddItem",
                                         "Insert invalid quantity `${state.quantity.data}`",
                                     )
@@ -149,7 +149,7 @@ constructor(
                                     }
                                 }
                                 InsertItemEntityUseCaseResult.TransactionIdInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "AddItem",
                                         "Insert invalid transaction `${transactionEntityId}`",
                                     )

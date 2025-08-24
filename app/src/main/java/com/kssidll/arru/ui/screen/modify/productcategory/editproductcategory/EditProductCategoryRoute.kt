@@ -33,23 +33,22 @@ fun EditProductCategoryRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                // if (viewModel.updateCategory(categoryId).isNotError()) {
-                //     navigateBack(categoryId)
-                // }
+                if (viewModel.updateCategory(categoryId)) {
+                    navigateBack(categoryId)
+                }
             }
         },
         onDelete = {
             scope.launch {
-                // if (viewModel.deleteCategory(categoryId).isNotError()) {
-                //     navigateBack(null)
-                // }
+                if (viewModel.deleteCategory(categoryId)) {
+                    navigateBack(null)
+                }
             }
         },
         onMerge = {
             scope.launch {
-                // if (viewModel.mergeWith(it).isNotError()) {
-                //     navigateBack(it.id)
-                // }
+                val new = viewModel.mergeWith(it)
+                navigateBack(new?.id)
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(categoryId),

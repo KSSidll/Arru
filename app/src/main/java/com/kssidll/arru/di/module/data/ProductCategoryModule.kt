@@ -2,8 +2,12 @@ package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.dao.ProductCategoryEntityDao
 import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ProductCategoryRepository
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductRepositorySource
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import com.kssidll.arru.domain.usecase.data.DeleteProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductCategoryUseCase
@@ -13,6 +17,9 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByProductCategoryUseCas
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductCategoryUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.MergeProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateProductCategoryEntityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +45,47 @@ class ProductCategoryModule {
     }
 
     /** ENTITY */
+    @Provides
+    @Singleton
+    fun provideInsertProductCategoryEntityUseCase(
+        productCategoryRepository: ProductCategoryRepositorySource
+    ): InsertProductCategoryEntityUseCase {
+        return InsertProductCategoryEntityUseCase(productCategoryRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateProductCategoryEntityUseCase(
+        productCategoryRepository: ProductCategoryRepositorySource
+    ): UpdateProductCategoryEntityUseCase {
+        return UpdateProductCategoryEntityUseCase(productCategoryRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMergeProductCategoryEntityUseCase(
+        productRepository: ProductRepositorySource,
+        productCategoryRepository: ProductCategoryRepositorySource,
+    ): MergeProductCategoryEntityUseCase {
+        return MergeProductCategoryEntityUseCase(productRepository, productCategoryRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteProductCategoryEntityUseCase(
+        productRepository: ProductRepositorySource,
+        productVariantRepository: ProductVariantRepositorySource,
+        itemRepository: ItemRepositorySource,
+        productCategoryRepository: ProductCategoryRepositorySource,
+    ): DeleteProductCategoryEntityUseCase {
+        return DeleteProductCategoryEntityUseCase(
+            productRepository,
+            productVariantRepository,
+            itemRepository,
+            productCategoryRepository,
+        )
+    }
+
     @Provides
     @Singleton
     fun provideGetProductCategoryEntityUseCase(

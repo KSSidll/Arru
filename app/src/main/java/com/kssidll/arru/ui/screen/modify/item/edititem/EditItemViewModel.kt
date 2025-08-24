@@ -108,7 +108,7 @@ constructor(
                         updateResult.errors.forEach {
                             when (it) {
                                 UpdateItemEntityUseCaseResult.ItemIdInvalid -> {
-                                    Log.d("ModifyItem", "Insert invalid item `${mItem?.id}`")
+                                    Log.e("ModifyItem", "Insert invalid item `${mItem?.id}`")
                                 }
                                 UpdateItemEntityUseCaseResult.PriceNoValue -> {
                                     _uiState.update { currentState ->
@@ -119,7 +119,7 @@ constructor(
                                     }
                                 }
                                 UpdateItemEntityUseCaseResult.PriceInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "ModifyItem",
                                         "Insert invalid price `${state.price.data}`",
                                     )
@@ -143,7 +143,7 @@ constructor(
                                     }
                                 }
                                 UpdateItemEntityUseCaseResult.ProductIdInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "ModifyItem",
                                         "Insert invalid product `${state.selectedProduct.data?.id}`",
                                     )
@@ -157,7 +157,7 @@ constructor(
                                     }
                                 }
                                 UpdateItemEntityUseCaseResult.ProductVariantIdInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "ModifyItem",
                                         "Insert invalid product variant `${state.selectedProductVariant.data?.id}`",
                                     )
@@ -181,7 +181,7 @@ constructor(
                                     }
                                 }
                                 UpdateItemEntityUseCaseResult.QuantityInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "ModifyItem",
                                         "Insert invalid quantity `${state.quantity.data}`",
                                     )
@@ -195,7 +195,7 @@ constructor(
                                     }
                                 }
                                 UpdateItemEntityUseCaseResult.TransactionIdInvalid -> {
-                                    Log.d(
+                                    Log.e(
                                         "ModifyItem",
                                         "Insert invalid transaction `${mItem?.transactionEntityId}`",
                                     )
@@ -217,7 +217,7 @@ constructor(
                         deleteResult.errors.forEach {
                             when (it) {
                                 DeleteItemEntityUseCaseResult.ItemIdInvalid -> {
-                                    Log.d("EditItem", "Delete invalid item id `${mItem?.id}`")
+                                    Log.e("EditItem", "Delete invalid item id `${mItem?.id}`")
                                 }
                             }
                         }

@@ -24,6 +24,8 @@ class ProductRepository(private val dao: ProductEntityDao) : ProductRepositorySo
 
     override suspend fun update(entity: ProductEntity) = dao.update(entity)
 
+    override suspend fun update(entity: List<ProductEntity>) = dao.update(entity)
+
     // Delete
 
     override suspend fun delete(entity: ProductEntity) = dao.delete(entity)
@@ -35,6 +37,12 @@ class ProductRepository(private val dao: ProductEntityDao) : ProductRepositorySo
     override fun get(id: Long): Flow<ProductEntity?> = dao.get(id).cancellable()
 
     override fun byName(name: String): Flow<ProductEntity?> = dao.byName(name).cancellable()
+
+    override fun byCategory(id: Long): Flow<ImmutableList<ProductEntity>> =
+        dao.byCategory(id).cancellable().map { it.toImmutableList() }
+
+    override fun byProducer(id: Long): Flow<ImmutableList<ProductEntity>> =
+        dao.byProducer(id).cancellable().map { it.toImmutableList() }
 
     override fun all(): Flow<ImmutableList<ProductEntity>> =
         dao.all().cancellable().map { it.toImmutableList() }

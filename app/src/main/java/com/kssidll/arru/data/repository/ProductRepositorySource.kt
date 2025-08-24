@@ -1,7 +1,9 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
+import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.view.Item
 import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
@@ -16,6 +18,8 @@ interface ProductRepositorySource {
     // Update
 
     suspend fun update(entity: ProductEntity)
+
+    suspend fun update(entity: List<ProductEntity>)
 
     // Delete
 
@@ -36,6 +40,18 @@ interface ProductRepositorySource {
      * @return [ProductEntity] matching [name] name or null if none match
      */
     fun byName(name: String): Flow<ProductEntity?>
+
+    /**
+     * @param id id of the [ProductCategoryEntity]
+     * @return list of all [ProductEntity] matching [ProductCategoryEntity] id or null if none match
+     */
+    fun byCategory(id: Long): Flow<ImmutableList<ProductEntity>>
+
+    /**
+     * @param id id of the [ProductProducerEntity]
+     * @return list of all [ProductEntity] matching [ProductProducerEntity] id or null if none match
+     */
+    fun byProducer(id: Long): Flow<ImmutableList<ProductEntity>>
 
     /** @return list of all [ProductEntity] */
     fun all(): Flow<ImmutableList<ProductEntity>>

@@ -231,15 +231,17 @@ class MergeProductEntityUseCase(
             return MergeProductEntityUseCaseResult.Error(errors.toImmutableList())
         }
 
-        val variants = productVariantRepository.byProduct(id, false).first()
+        val productVariants = productVariantRepository.byProduct(id, false).first()
         val items = itemRepository.byProduct(id).first()
 
         val mergingIntoVariants = productVariantRepository.byProduct(mergeIntoId, false).first()
         val duplicateVariants =
-            variants.filter { variant -> variant.name in mergingIntoVariants.map { it.name } }
+            productVariants.filter { variant ->
+                variant.name in mergingIntoVariants.map { it.name }
+            }
 
-        val variantsToUpdate =
-            variants
+        val productVariantsToUpdate =
+            productVariants
                 .filterNot { variant -> variant.name in mergingIntoVariants.map { it.name } }
                 .map { it.copy(productEntityId = mergeIntoId) }
 
@@ -250,10 +252,10 @@ class MergeProductEntityUseCase(
                     it.copy(
                         productEntityId = mergeIntoId,
                         productVariantEntityId =
-                            (variantsToUpdate + mergingIntoVariants)
+                            (productVariantsToUpdate + mergingIntoVariants)
                                 .first { variant ->
                                     variant.name ==
-                                        variants
+                                        productVariants
                                             .first { original ->
                                                 original.id == it.productVariantEntityId
                                             }
@@ -266,7 +268,7 @@ class MergeProductEntityUseCase(
                 }
             }
 
-        productVariantRepository.update(variantsToUpdate)
+        productVariantRepository.update(productVariantsToUpdate)
         itemRepository.update(itemsToUpdate)
         productVariantRepository.delete(duplicateVariants)
         productRepository.delete(entity!!)
@@ -292,9 +294,9 @@ class DeleteProductEntityUseCase(
             errors.add(DeleteProductEntityUseCaseResult.ProductIdInvalid)
         }
 
-        val variants = productVariantRepository.byProduct(id, false).first()
+        val productVariants = productVariantRepository.byProduct(id, false).first()
         val items = itemRepository.byProduct(id).first()
-        if (!ignoreDangerous && (variants.isNotEmpty() || items.isNotEmpty())) {
+        if (!ignoreDangerous && (productVariants.isNotEmpty() || items.isNotEmpty())) {
             errors.add(DeleteProductEntityUseCaseResult.DangerousDelete)
         }
 
@@ -303,7 +305,7 @@ class DeleteProductEntityUseCase(
         }
 
         itemRepository.delete(items)
-        productVariantRepository.delete(variants)
+        productVariantRepository.delete(productVariants)
         productRepository.delete(entity!!)
 
         return DeleteProductEntityUseCaseResult.Success

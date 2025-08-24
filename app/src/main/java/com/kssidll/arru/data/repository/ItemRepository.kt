@@ -29,6 +29,9 @@ class ItemRepository(private val dao: ItemEntityDao) : ItemRepositorySource {
 
     override fun get(id: Long): Flow<ItemEntity?> = dao.get(id).cancellable()
 
+    override fun byCategory(id: Long): Flow<ImmutableList<ItemEntity>> =
+        dao.byCategory(id).cancellable().map { it.toImmutableList() }
+
     override fun byProduct(id: Long): Flow<ImmutableList<ItemEntity>> =
         dao.byProduct(id).cancellable().map { it.toImmutableList() }
 

@@ -22,6 +22,8 @@ interface ProductEntityDao {
 
     @Update suspend fun update(entity: ProductEntity)
 
+    @Update suspend fun update(entity: List<ProductEntity>)
+
     // Delete
 
     @Delete suspend fun delete(entity: ProductEntity)
@@ -35,6 +37,16 @@ interface ProductEntityDao {
 
     @Query("SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.name = :name")
     fun byName(name: String): Flow<ProductEntity?>
+
+    @Query(
+        "SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.productCategoryEntityId = :id"
+    )
+    fun byCategory(id: Long): Flow<List<ProductEntity>>
+
+    @Query(
+        "SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.productProducerEntityId = :id"
+    )
+    fun byProducer(id: Long): Flow<List<ProductEntity>>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity") fun all(): Flow<List<ProductEntity>>
 

@@ -110,7 +110,7 @@ constructor(
                 result.errors.forEach {
                     when (it) {
                         UpdateProductEntityUseCaseResult.ProductIdInvalid -> {
-                            Log.d("ModifyProduct", "Insert invalid price `${productId}`")
+                            Log.e("ModifyProduct", "Insert invalid product `${productId}`")
                         }
                         UpdateProductEntityUseCaseResult.NameDuplicateValue -> {
                             screenState.name.apply {
@@ -159,10 +159,7 @@ constructor(
                             screenState.showDeleteWarning.value = true
                         }
                         DeleteProductEntityUseCaseResult.ProductIdInvalid -> {
-                            Log.e(
-                                "InvalidId",
-                                "Tried to delete product with invalid product id in EditProductViewModel",
-                            )
+                            Log.e("ModifyProduct", "Tried to delete product with invalid id")
                         }
                     }
                 }
@@ -177,10 +174,7 @@ constructor(
 
     suspend fun mergeWith(mergeCandidate: ProductEntity): ProductEntity? {
         if (mProduct == null) {
-            Log.e(
-                "ModifyProduct",
-                "Tried to merge product without the product being set in EditProductViewModel",
-            )
+            Log.e("ModifyProduct", "Tried to merge product without being set")
             return null
         }
 

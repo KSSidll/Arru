@@ -1,6 +1,9 @@
 package com.kssidll.arru.ui.screen.modify.productcategory.addproductcategory
 
 import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.InsertProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductCategoryEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -10,38 +13,38 @@ import javax.inject.Inject
 @HiltViewModel
 class AddProductCategoryViewModel
 @Inject
-constructor(override val categoryRepository: ProductCategoryRepositorySource) :
-    ModifyProductCategoryViewModel() {
+constructor(
+    override val categoryRepository: ProductCategoryRepositorySource,
+    private val insertProductCategoryEntityUseCase: InsertProductCategoryEntityUseCase,
+) : ModifyProductCategoryViewModel() {
 
-    /**
-     * Tries to add a product category to the repository
-     *
-     * @return resulting [InsertResult]
-     */
-    // suspend fun addCategory(): InsertResult =
-    //     viewModelScope
-    //         .async {
-    //             screenState.attemptedToSubmit.value = true
-    //
-    //             val result = categoryRepository.insert(screenState.name.value.data.orEmpty())
-    //
-    //             if (result.isError()) {
-    //                 when (result.error!!) {
-    //                     is InsertResult.InvalidName -> {
-    //                         screenState.name.apply {
-    //                             value = value.toError(FieldError.InvalidValueError)
-    //                         }
-    //                     }
-    //
-    //                     is InsertResult.DuplicateName -> {
-    //                         screenState.name.apply {
-    //                             value = value.toError(FieldError.DuplicateValueError)
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //
-    //             return@async result
-    //         }
-    //         .await()
+    suspend fun addCategory(): Long? {
+        screenState.attemptedToSubmit.value = true
+
+        val result = insertProductCategoryEntityUseCase(name = screenState.name.value.data)
+
+        return when (result) {
+            is InsertProductCategoryEntityUseCaseResult.Error -> {
+                result.errors.forEach {
+                    when (it) {
+                        InsertProductCategoryEntityUseCaseResult.NameDuplicateValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.DuplicateValueError)
+                            }
+                        }
+                        InsertProductCategoryEntityUseCaseResult.NameNoValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.NoValueError)
+                            }
+                        }
+                    }
+                }
+
+                null
+            }
+            is InsertProductCategoryEntityUseCaseResult.Success -> {
+                result.id
+            }
+        }
+    }
 }
