@@ -222,12 +222,12 @@ sealed class Screen : Parcelable {
 fun <T> NavController<T>.previousDestination(): T? {
     if (backstack.entries.size == 1) return null
 
-    return backstack.entries.let { it[it.lastIndex - 1].destination }
+    return backstack.entries.let { it.getOrNull(it.lastIndex - 1)?.destination }
 }
 
 /** @return current destination from the backstack, null if none exists */
 fun <T> NavController<T>.currentDestination(): T? {
-    return backstack.entries.last().destination
+    return backstack.entries.lastOrNull()?.destination
 }
 
 fun defaultNavigateContentTransformation(screenWidth: Int): ContentTransform {
