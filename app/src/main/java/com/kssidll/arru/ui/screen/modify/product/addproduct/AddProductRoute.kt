@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -14,54 +14,40 @@ import kotlinx.coroutines.launch
 fun AddProductRoute(
     defaultName: String?,
     navigateBack: (productId: Long?) -> Unit,
-    navigateCategoryAdd: (query: String?) -> Unit,
-    navigateProducerAdd: (query: String?) -> Unit,
-    navigateCategoryEdit: (categoryId: Long) -> Unit,
-    navigateProducerEdit: (producerId: Long) -> Unit,
+    navigateAddProductCategory: (query: String?) -> Unit,
+    navigateAddProductProducer: (query: String?) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
+    viewModel: AddProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddProductViewModel = hiltViewModel()
 
-    LaunchedEffect(Unit) {
-        viewModel.screenState.name.value = Field.Loaded(defaultName)
-    }
+    LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 
-    LaunchedEffect(providedProducerId) {
-        viewModel.setSelectedProducer(providedProducerId)
-    }
+    LaunchedEffect(providedProducerId) { viewModel.setSelectedProducer(providedProducerId) }
 
-    LaunchedEffect(providedCategoryId) {
-        viewModel.setSelectedCategory(providedCategoryId)
-    }
+    LaunchedEffect(providedCategoryId) { viewModel.setSelectedCategory(providedCategoryId) }
 
     ModifyProductScreenImpl(
-        onBack = {
-            navigateBack(null)
-        },
+        onBack = { navigateBack(null) },
         state = viewModel.screenState,
-        categories = viewModel.allCategories()
-            .collectAsState(initial = Data.Loading()).value,
-        producers = viewModel.allProducers()
-            .collectAsState(initial = Data.Loading()).value,
-        onNewProducerSelected = {
-            viewModel.onNewProducerSelected(it)
-        },
-        onNewCategorySelected = {
-            viewModel.onNewCategorySelected(it)
-        },
+        categories = viewModel.allCategories().collectAsState(initial = emptyImmutableList()).value,
+        producers = viewModel.allProducers().collectAsState(initial = emptyImmutableList()).value,
+        onNewProducerSelected = { viewModel.onNewProducerSelected(it) },
+        onNewCategorySelected = { viewModel.onNewCategorySelected(it) },
         onSubmit = {
             scope.launch {
-                val result = viewModel.addProduct()
-                if (result.isNotError()) {
-                    navigateBack(result.id)
+                val id = viewModel.addProduct()
+                if (id != null) {
+                    navigateBack(id)
                 }
             }
         },
-        onCategoryAddButtonClick = navigateCategoryAdd,
-        onProducerAddButtonClick = navigateProducerAdd,
-        onItemCategoryLongClick = navigateCategoryEdit,
-        onItemProducerLongClick = navigateProducerEdit,
+        onCategoryAddButtonClick = navigateAddProductCategory,
+        onProducerAddButtonClick = navigateAddProductProducer,
+        onItemCategoryLongClick = navigateEditProductCategory,
+        onItemProducerLongClick = navigateEditProductProducer,
     )
 }

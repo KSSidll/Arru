@@ -2,11 +2,12 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -16,53 +17,47 @@ fun EditTransactionRoute(
     isExpandedScreen: Boolean,
     transactionId: Long,
     navigateBack: () -> Unit,
-    navigateBackDelete: (transactionId: Long) -> Unit,
-    navigateShopAdd: (query: String?) -> Unit,
-    navigateShopEdit: (shopId: Long) -> Unit,
+    navigateAddShop: (query: String?) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     providedShopId: Long?,
+    viewModel: EditTransactionViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: EditTransactionViewModel = hiltViewModel()
 
-    LaunchedEffect(transactionId) {
-        if (!viewModel.updateState(transactionId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(transactionId)) {
+                navigateBack()
+            }
         }
     }
 
-    LaunchedEffect(providedShopId) {
-        viewModel.setSelectedShopToProvided(providedShopId)
-    }
+    LaunchedEffect(transactionId) { viewModel.updateState(transactionId) }
+
+    LaunchedEffect(providedShopId) { viewModel.setSelectedShopToProvided(providedShopId) }
 
     ModifyTransactionScreenImpl(
         isExpandedScreen = isExpandedScreen,
         onBack = navigateBack,
         state = viewModel.screenState,
-        shops = viewModel.allShops()
-            .collectAsState(initial = Data.Loading()).value,
-        onNewShopSelected = {
-            viewModel.onNewShopSelected(it)
-        },
+        shops = viewModel.allShops().collectAsState(initial = emptyImmutableList()).value,
+        onNewShopSelected = { viewModel.onNewShopSelected(it) },
         onSubmit = {
             scope.launch {
-                if (viewModel.updateTransaction(transactionId)
-                        .isNotError()
-                ) {
-                    navigateBack()
-                }
+                // if (viewModel.updateTransaction(transactionId).isNotError()) {
+                //     navigateBack()
+                // }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteTransaction(transactionId)
-                        .isNotError()
-                ) {
-                    navigateBackDelete(transactionId)
-                }
+                // if (viewModel.deleteTransaction(transactionId).isNotError()) {
+                //     navigateBack()
+                // }
             }
         },
         submitButtonText = stringResource(id = R.string.transaction_edit),
-        onShopAddButtonClick = navigateShopAdd,
-        onTransactionShopLongClick = navigateShopEdit,
+        onShopAddButtonClick = navigateAddShop,
+        onTransactionShopLongClick = navigateEditShop,
     )
 }

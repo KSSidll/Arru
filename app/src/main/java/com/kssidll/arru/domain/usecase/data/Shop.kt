@@ -1,0 +1,54 @@
+package com.kssidll.arru.domain.usecase.data
+
+import com.kssidll.arru.data.repository.ShopRepositorySource
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+
+/** ENTITY */
+class GetShopEntityUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.get(id).flowOn(dispatcher)
+}
+
+/** DOMAIN */
+class GetTotalSpentForShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpent(id).flowOn(dispatcher)
+}
+
+class GetItemsForShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.itemsFor(id).flowOn(dispatcher)
+}
+
+/** DOMAIN CHART */
+class GetTotalSpentByDayForShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByDay(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByWeekForShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByWeek(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByMonthForShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByMonth(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByYearForShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByYear(id).flowOn(dispatcher)
+}
+
+class GetTotalSpentByShopUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByShop().flowOn(dispatcher)
+}
+
+class GetTotalSpentByShopByMonthUseCase(private val shopRepository: ShopRepositorySource) {
+    operator fun invoke(year: Int, month: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        shopRepository.totalSpentByShopByMonth(year, month).flowOn(dispatcher)
+}

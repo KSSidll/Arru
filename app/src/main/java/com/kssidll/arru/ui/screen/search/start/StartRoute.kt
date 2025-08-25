@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.search.start
 
-
 import androidx.compose.runtime.Composable
 
 @Composable

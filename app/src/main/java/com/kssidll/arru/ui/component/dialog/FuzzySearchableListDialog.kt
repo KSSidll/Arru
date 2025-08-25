@@ -43,38 +43,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductWithAltNames
-import com.kssidll.arru.domain.data.Data
-import com.kssidll.arru.domain.data.loadedData
-import com.kssidll.arru.domain.data.loadedEmpty
-import com.kssidll.arru.domain.data.searchSort
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.component.list.BaseClickableListItem
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 /**
  * @param T: Type of the item, needs to implement FuzzySearchSource
- * @param onDismissRequest: Function called when the user tries to dismiss the Dialog by clicking outside. This is also called when the Add/'+' button is clicked
+ * @param onDismissRequest: Function called when the user tries to dismiss the Dialog by clicking
+ *   outside. This is also called when the Add/'+' button is clicked
  * @param items: Items to be displayed in the list
  * @param itemText: Transformation used to determine what to display on the item card
+ * @param calculateScore function to use to calculate the score of an item which determines the
+ *   order of the items
  * @param onItemClick: Function called when an item is clicked
+ * @param onItemLongClick: Function called when an item is long clicked
  * @param showAddButton: Whether to show an Add/'+' button in the search field
- * @param onAddButtonClick: Function called when the Add/'+' button is clicked. Provides searched for value at the time of the event as parameter
+ * @param onAddButtonClick: Function called when the Add/'+' button is clicked. Provides searched
+ *   for value at the time of the event as parameter
  * @param addButtonDescription: Description for the Add/'+' button icon
  * @param showDefaultValueItem: Whether to show a default, null value item under the search field
  * @param defaultItemText: String to display on the default, null value item
  * @param shape: Shape of the Dialog
- * @param calculateScore function to use to calculate the score of an item which determines the order of the items
  */
 @Composable
 fun <T> SearchableListDialog(
     onDismissRequest: () -> Unit,
-    items: Data<ImmutableList<T>>,
+    items: ImmutableList<T>,
     itemText: (T) -> String,
+    calculateScore: (item: T, query: String) -> Int,
+    modifier: Modifier = Modifier,
     onItemClick: ((T?) -> Unit)? = null,
     onItemClickLabel: String? = null,
     onItemLongClick: ((T) -> Unit)? = null,
@@ -85,36 +89,23 @@ fun <T> SearchableListDialog(
     showDefaultValueItem: Boolean = false,
     defaultItemText: String = String(),
     shape: Shape = ShapeDefaults.ExtraLarge,
-    calculateScore: (item: T, query: String) -> Int
 ) {
-    var query: String by remember {
-        mutableStateOf(String())
-    }
+    var query: String by remember { mutableStateOf(String()) }
 
-    var displayedItems: List<T> by remember {
-        mutableStateOf(listOf())
-    }
+    var displayedItems: List<T> by remember { mutableStateOf(listOf()) }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
-            modifier = Modifier
-                .width(400.dp)
-                .height(600.dp),
+            modifier = modifier.width(400.dp).height(600.dp),
             shape = shape,
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 1.dp,
         ) {
-            AnimatedVisibility(
-                visible = items.loadedEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            AnimatedVisibility(visible = items.isEmpty(), enter = fadeIn(), exit = fadeOut()) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 4.dp)
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp),
                 ) {
                     Text(
                         text = stringResource(id = R.string.no_data_to_display_text),
@@ -124,98 +115,72 @@ fun <T> SearchableListDialog(
                 }
             }
 
-            AnimatedVisibility(
-                visible = items.loadedData(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                if (items is Data.Loaded) {
-                    LaunchedEffect(
-                        items,
-                        query
-                    ) {
-                        displayedItems = if (query.isNotBlank()) items.data.searchSort {
-                            calculateScore(
-                                it,
-                                query
+            AnimatedVisibility(visible = items.isNotEmpty(), enter = fadeIn(), exit = fadeOut()) {
+                LaunchedEffect(items, query) {
+                    displayedItems =
+                        if (query.isNotBlank()) items.searchSort { calculateScore(it, query) }
+                        else items
+                }
+
+                Column {
+                    LazyColumn(modifier = Modifier.weight(1f), reverseLayout = true) {
+                        items(items = displayedItems) {
+                            BaseClickableListItem(
+                                text = itemText(it),
+                                onClick = { onItemClick?.invoke(it) },
+                                onClickLabel = onItemClickLabel,
+                                onLongClick = { onItemLongClick?.invoke(it) },
+                                onLongClickLabel = onItemLongClickLabel,
                             )
-                        } else items.data
+                            HorizontalDivider()
+                        }
                     }
 
-                    Column {
-                        LazyColumn(
-                            modifier = Modifier.weight(1f),
-                            reverseLayout = true,
-                        ) {
-                            items(items = displayedItems) {
-                                BaseClickableListItem(
-                                    text = itemText(it),
-                                    onClick = {
-                                        onItemClick?.invoke(it)
-                                    },
-                                    onClickLabel = onItemClickLabel,
-                                    onLongClick = {
-                                        onItemLongClick?.invoke(it)
-                                    },
-                                    onLongClickLabel = onItemLongClickLabel,
-                                )
-                                HorizontalDivider()
-                            }
-                        }
+                    if (showDefaultValueItem) {
+                        HorizontalDivider()
+                        BaseClickableListItem(
+                            onClick = { onItemClick?.invoke(null) },
+                            onClickLabel = onItemClickLabel,
+                            text = defaultItemText,
+                        )
+                    }
 
-                        if (showDefaultValueItem) {
-                            HorizontalDivider()
-                            BaseClickableListItem(
-                                onClick = {
-                                    onItemClick?.invoke(null)
-                                },
-                                onClickLabel = onItemClickLabel,
-                                text = defaultItemText
-                            )
-                        }
-
-                        Box(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                            StyledOutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 6.dp),
-                                singleLine = true,
-                                value = query,
-                                onValueChange = {
-                                    query = it
-                                },
-                                textStyle = TextStyle.Default.copy(
+                    Box(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                        StyledOutlinedTextField(
+                            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+                            singleLine = true,
+                            value = query,
+                            onValueChange = { query = it },
+                            textStyle =
+                                TextStyle.Default.copy(
                                     color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
                                 ),
-                                label = {
-                                    Text(
-                                        text = stringResource(R.string.search),
-                                        fontSize = 16.sp,
-                                    )
-                                },
-                                colors = styledTextFieldColorDefaults(
+                            label = {
+                                Text(text = stringResource(R.string.search), fontSize = 16.sp)
+                            },
+                            colors =
+                                styledTextFieldColorDefaults(
                                     focusedIndicator = Color.Transparent,
                                     unfocusedIndicator = Color.Transparent,
                                 ),
-                                trailingIcon = {
-                                    if (showAddButton) {
-                                        IconButton(
-                                            onClick = {
-                                                onDismissRequest()
-                                                onAddButtonClick?.invoke(query)
-                                            }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Add,
-                                                contentDescription = addButtonDescription,
-                                                modifier = Modifier.size(40.dp)
-                                            )
+                            trailingIcon = {
+                                if (showAddButton) {
+                                    IconButton(
+                                        onClick = {
+                                            onDismissRequest()
+                                            onAddButtonClick?.invoke(query)
                                         }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = addButtonDescription,
+                                            modifier = Modifier.size(40.dp),
+                                        )
                                     }
                                 }
-                            )
-                        }
+                            },
+                        )
                     }
                 }
             }
@@ -226,13 +191,13 @@ fun <T> SearchableListDialog(
 @PreviewLightDark
 @Composable
 private fun FuzzySearchableListDialogPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = Data.Loaded(ProductWithAltNames.generateList().toImmutableList()),
+                items = ProductEntity.generateList().toImmutableList(),
                 itemText = { "test" },
-                calculateScore = { _, _ -> 0 }
+                calculateScore = { _, _ -> 0 },
             )
         }
     }
@@ -241,13 +206,13 @@ private fun FuzzySearchableListDialogPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyFuzzySearchableListDialogPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             SearchableListDialog(
                 onDismissRequest = {},
-                items = Data.Loaded(emptyList<ProductWithAltNames>().toImmutableList()),
+                items = emptyImmutableList<ProductEntity>(),
                 itemText = { "test" },
-                calculateScore = { _, _ -> 0 }
+                calculateScore = { _, _ -> 0 },
             )
         }
     }

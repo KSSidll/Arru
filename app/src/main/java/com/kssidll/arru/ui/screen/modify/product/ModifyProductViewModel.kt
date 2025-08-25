@@ -4,29 +4,31 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductCategoryWithAltNames
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
+import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.screen.modify.ModifyScreenState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+
+// TODO refactor uiState Event UseCase
 
 /**
  * Base [ViewModel] class for Product modification view models
+ *
  * @property screenState A [ModifyProductScreenState] instance to use as screen state representation
  */
-abstract class ModifyProductViewModel: ViewModel() {
+abstract class ModifyProductViewModel : ViewModel() {
     protected abstract val productRepository: ProductRepositorySource
-    protected abstract val producerRepository: ProducerRepositorySource
-    protected abstract val categoryRepository: CategoryRepositorySource
+    protected abstract val producerRepository: ProductProducerRepositorySource
+    protected abstract val categoryRepository: ProductCategoryRepositorySource
     internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
 
     private var mProducerListener: Job? = null
@@ -35,18 +37,18 @@ abstract class ModifyProductViewModel: ViewModel() {
     suspend fun setSelectedProducer(providedProducerId: Long?) {
         if (providedProducerId != null) {
             screenState.selectedProductProducer.apply { value = value.toLoading() }
-            onNewProducerSelected(producerRepository.get(providedProducerId))
+            onNewProducerSelected(producerRepository.get(providedProducerId).first())
         }
     }
 
     suspend fun setSelectedCategory(providedCategoryId: Long?) {
         if (providedCategoryId != null) {
             screenState.selectedProductCategory.apply { value = value.toLoading() }
-            onNewCategorySelected(categoryRepository.get(providedCategoryId))
+            onNewCategorySelected(categoryRepository.get(providedCategoryId).first())
         }
     }
 
-    fun onNewProducerSelected(producer: ProductProducer?) {
+    fun onNewProducerSelected(producer: ProductProducerEntity?) {
         // Don't do anything if the producer is the same as already selected
         if (screenState.selectedProductProducer.value.data == producer) {
             screenState.selectedProductProducer.apply { value = value.toLoaded() }
@@ -57,18 +59,16 @@ abstract class ModifyProductViewModel: ViewModel() {
 
         mProducerListener?.cancel()
         if (producer != null) {
-            mProducerListener = viewModelScope.launch {
-                producerRepository.getFlow(producer.id)
-                    .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedProductProducer.value = Field.Loaded(it.data)
-                        }
+            mProducerListener =
+                viewModelScope.launch {
+                    producerRepository.get(producer.id).collectLatest {
+                        screenState.selectedProductProducer.value = Field.Loaded(it)
                     }
-            }
+                }
         }
     }
 
-    fun onNewCategorySelected(category: ProductCategory?) {
+    fun onNewCategorySelected(category: ProductCategoryEntity?) {
         // Don't do anything if the producer is the same as already selected
         if (screenState.selectedProductCategory.value.data == category) {
             screenState.selectedProductCategory.apply { value = value.toLoaded() }
@@ -79,40 +79,33 @@ abstract class ModifyProductViewModel: ViewModel() {
 
         mCategoryListener?.cancel()
         if (category != null) {
-            mCategoryListener = viewModelScope.launch {
-                categoryRepository.getFlow(category.id)
-                    .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedProductCategory.value = Field.Loaded(it.data)
-                        }
+            mCategoryListener =
+                viewModelScope.launch {
+                    categoryRepository.get(category.id).collectLatest {
+                        screenState.selectedProductCategory.value = Field.Loaded(it)
                     }
-            }
+                }
         }
     }
 
-    /**
-     * @return List of all categories
-     */
-    fun allCategories(): Flow<Data<ImmutableList<ProductCategoryWithAltNames>>> {
-        return categoryRepository.allWithAltNamesFlow()
+    /** @return List of all categories */
+    fun allCategories(): Flow<ImmutableList<ProductCategoryEntity>> {
+        return categoryRepository.all()
     }
 
-    /**
-     * @return List of all producers
-     */
-    fun allProducers(): Flow<Data<ImmutableList<ProductProducer>>> {
-        return producerRepository.allFlow()
+    /** @return List of all producers */
+    fun allProducers(): Flow<ImmutableList<ProductProducerEntity>> {
+        return producerRepository.all()
     }
 }
 
-/**
- * Data representing [ModifyProductScreenImpl] screen state
- */
+/** Data representing [ModifyProductScreenImpl] screen state */
 data class ModifyProductScreenState(
-    val selectedProductCategory: MutableState<Field<ProductCategory>> = mutableStateOf(Field.Loaded()),
-    val selectedProductProducer: MutableState<Field<ProductProducer?>> = mutableStateOf(Field.Loaded()),
+    val selectedProductCategory: MutableState<Field<ProductCategoryEntity>> =
+        mutableStateOf(Field.Loaded()),
+    val selectedProductProducer: MutableState<Field<ProductProducerEntity?>> =
+        mutableStateOf(Field.Loaded()),
     val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-
     val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-): ModifyScreenState()
+) : ModifyScreenState()

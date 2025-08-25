@@ -1,0 +1,3 @@
+- Fix crash on empty chart
+- Improve app reactivity
+- Rendering optimisations

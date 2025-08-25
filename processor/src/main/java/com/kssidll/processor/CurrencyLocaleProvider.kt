@@ -8,8 +8,7 @@ class LocaleDataGeneratorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         return CurrencyLocaleDataGenerator(
             codeGenerator = environment.codeGenerator,
-            logger = environment.logger
+            logger = environment.logger,
         )
     }
 }
-

@@ -1,13 +1,7 @@
 package com.kssidll.arru.di.module
 
 import android.content.Context
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
+import com.kssidll.arru.data.repository.ExportRepositorySource
 import com.kssidll.arru.domain.usecase.ExportDataUIBlockingUseCase
 import com.kssidll.arru.domain.usecase.ExportDataWithServiceUseCase
 import dagger.Module
@@ -22,7 +16,9 @@ import javax.inject.Singleton
 class ExportDataUseCaseModule {
     @Provides
     @Singleton
-    fun provideExportDataWithServiceUseCase(@ApplicationContext context: Context): ExportDataWithServiceUseCase {
+    fun provideExportDataWithServiceUseCase(
+        @ApplicationContext context: Context
+    ): ExportDataWithServiceUseCase {
         return ExportDataWithServiceUseCase(context)
     }
 
@@ -30,23 +26,8 @@ class ExportDataUseCaseModule {
     @Singleton
     fun provideExportDataUIBlockingUseCase(
         @ApplicationContext context: Context,
-        categoryRepository: CategoryRepositorySource,
-        itemRepository: ItemRepositorySource,
-        producerRepository: ProducerRepositorySource,
-        productRepository: ProductRepositorySource,
-        shopRepository: ShopRepositorySource,
-        transactionRepository: TransactionBasketRepositorySource,
-        variantRepository: VariantRepositorySource,
+        exportRepository: ExportRepositorySource,
     ): ExportDataUIBlockingUseCase {
-        return ExportDataUIBlockingUseCase(
-            context,
-            categoryRepository,
-            itemRepository,
-            producerRepository,
-            productRepository,
-            shopRepository,
-            transactionRepository,
-            variantRepository
-        )
+        return ExportDataUIBlockingUseCase(context, exportRepository)
     }
 }

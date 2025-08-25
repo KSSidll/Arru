@@ -1,0 +1,26 @@
+package com.kssidll.arru.domain.usecase.data
+
+import com.kssidll.arru.data.repository.ProductVariantRepositorySource
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+
+/** ENTITY */
+class GetProductVariantEntityUseCase(
+    private val productVariantRepository: ProductVariantRepositorySource
+) {
+    operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        productVariantRepository.get(id).flowOn(dispatcher)
+}
+
+class GetProductVariantEntityByProductUseCase(
+    private val productVariantRepository: ProductVariantRepositorySource
+) {
+    operator fun invoke(
+        id: Long,
+        showGlobal: Boolean = true,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) = productVariantRepository.byProduct(id, showGlobal).flowOn(dispatcher)
+}
+
+/** DOMAIN */

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.search.shoplist
 
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,12 +8,13 @@ import com.kssidll.arru.data.repository.ShopRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+// TODO refactor uiState Event UseCase
+
 @HiltViewModel
-class ShopListViewModel @Inject constructor(
-    private val shopRepository: ShopRepositorySource,
-): ViewModel() {
+class ShopListViewModel @Inject constructor(private val shopRepository: ShopRepositorySource) :
+    ViewModel() {
     private val _filter = mutableStateOf(String())
     var filter by _filter
 
-    fun items() = shopRepository.allFlow()
+    fun items() = shopRepository.all()
 }

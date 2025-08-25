@@ -1,10 +1,10 @@
 package com.kssidll.arru.ui.screen.spendingcomparison.categoryspendingcomparison
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.screen.spendingcomparison.SpendingComparisonScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import java.text.SimpleDateFormat
@@ -16,38 +16,32 @@ fun CategorySpendingComparisonRoute(
     navigateBack: () -> Unit,
     year: Int,
     month: Int,
+    viewModel: CategorySpendingComparisonViewModel = hiltViewModel(),
 ) {
-    val viewModel: CategorySpendingComparisonViewModel = hiltViewModel()
-
     val calendar = Calendar.getInstance()
     calendar.clear()
-    calendar.set(
-        Calendar.MONTH,
-        month - 1
-    ) // calendar has 0 - 11 month indexes
+    calendar.set(Calendar.MONTH, month - 1) // calendar has 0 - 11 month indexes
 
-    val formatter = SimpleDateFormat(
-        "LLLL",
-        Locale.getDefault()
-    )
+    val formatter = SimpleDateFormat("LLLL", Locale.getDefault())
 
     SpendingComparisonScreen(
         onBack = navigateBack,
-        title = "${
+        title =
+            "${
             formatter.format(calendar.time)
                 .replaceFirstChar { it.titlecase() }
         } $year",
-        leftSideItems = viewModel.categoryTotalSpentPreviousMonth(
-            year,
-            month
-        )
-            .collectAsState(initial = emptyList()).value,
+        leftSideItems =
+            viewModel
+                .categoryTotalSpentPreviousMonth(year, month)
+                .collectAsState(initial = emptyImmutableList())
+                .value,
         leftSideHeader = stringResource(id = R.string.previous),
-        rightSideItems = viewModel.categoryTotalSpentCurrentMonth(
-            year,
-            month
-        )
-            .collectAsState(initial = emptyList()).value,
+        rightSideItems =
+            viewModel
+                .categoryTotalSpentCurrentMonth(year, month)
+                .collectAsState(initial = emptyImmutableList())
+                .value,
         rightSideHeader = stringResource(id = R.string.current),
     )
 }

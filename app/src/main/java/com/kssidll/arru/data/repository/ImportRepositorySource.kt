@@ -1,21 +1,21 @@
 package com.kssidll.arru.data.repository
 
-import com.kssidll.arru.data.data.Item
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.data.ProductVariantEntity
+import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.data.TransactionEntity
 
 interface ImportRepositorySource {
     suspend fun insertAll(
-        shops: List<Shop>,
-        producers: List<ProductProducer>,
-        categories: List<ProductCategory>,
-        transactions: List<TransactionBasket>,
-        products: List<Product>,
-        variants: List<ProductVariant>,
-        items: List<Item>
+        shopEntities: List<ShopEntity>,
+        productProducerEntities: List<ProductProducerEntity>,
+        productCategoryEntities: List<ProductCategoryEntity>,
+        transactionEntities: List<TransactionEntity>,
+        productEntities: List<ProductEntity>,
+        productVariantEntities: List<ProductVariantEntity>,
+        itemEntities: List<ItemEntity>,
     )
 }
