@@ -1,6 +1,7 @@
 package com.kssidll.arru.data
 
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -12,15 +13,7 @@ import com.kssidll.arru.data.dao.ProductProducerEntityDao
 import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
-import com.kssidll.arru.data.data.ItemEntity
-import com.kssidll.arru.data.data.ProductCategoryEntity
-import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.database.AppDatabase
-import java.io.IOException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
@@ -29,6 +22,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
+
+// Sanity check tests
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -50,8 +46,8 @@ class DatabaseUnitTest {
         transactionDao = db.getTransactionEntityDao()
         productCategoryDao = db.getProductCategoryEntityDao()
         productProducerDao = db.getProductProducerEntityDao()
-        productVariantDao = db.getProductVariantEntityDao()
         productDao = db.getProductEntityDao()
+        productVariantDao = db.getProductVariantEntityDao()
         itemDao = db.getItemEntityDao()
     }
 
@@ -61,103 +57,225 @@ class DatabaseUnitTest {
         db.close()
     }
 
-    /** Check by ID */
     @Test
-    @Throws(Exception::class)
     fun insertShopEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val entity = ShopEntity(id, "")
+        shopEntityMockData.forEach { entity ->
+            val expectingNone = shopDao.get(entity.id).first()
+            shopDao.insert(entity)
+            val expectingEntity = shopDao.get(entity.id).first()
 
-        shopDao.insert(entity)
-
-        val byId = shopDao.get(id).first()
-
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun insertTransactionEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val entity = TransactionEntity(id, 0, null, 0, null)
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertTransactionEntityWithoutShopExpectingException() = runTest {
+        val entity = transactionEntityMockData.first { it.shopEntityId != null }
+        val expectingNone = transactionDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
 
+        // expecting SQLiteConstraintException since no ShopEntity was inserted
         transactionDao.insert(entity)
-
-        val byId = transactionDao.get(id).first()
-
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
     }
 
     @Test
-    @Throws(Exception::class)
+    fun insertTransactionEntityAndCheckExistsById() = runTest {
+        shopEntityMockData.forEach { shopDao.insert(it) }
+
+        transactionEntityMockData.forEach { entity ->
+            val expectingNone = transactionDao.get(entity.id).first()
+            transactionDao.insert(entity)
+            val expectingEntity = transactionDao.get(entity.id).first()
+
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
+    }
+
+    @Test
     fun insertProductCategoryEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val entity = ProductCategoryEntity(id, "")
+        productCategoryEntityMockData.forEach { entity ->
+            val expectingNone = productCategoryDao.get(entity.id).first()
+            productCategoryDao.insert(entity)
+            val expectingEntity = productCategoryDao.get(entity.id).first()
 
-        productCategoryDao.insert(entity)
-
-        val byId = productCategoryDao.get(id).first()
-
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
     }
 
     @Test
-    @Throws(Exception::class)
     fun insertProductProducerEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val entity = ProductProducerEntity(id, "")
+        productProducerEntityMockData.forEach { entity ->
+            val expectingNone = productProducerDao.get(entity.id).first()
+            productProducerDao.insert(entity)
+            val expectingEntity = productProducerDao.get(entity.id).first()
 
-        productProducerDao.insert(entity)
-
-        val byId = productProducerDao.get(id).first()
-
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun insertProductVariantEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val entity = ProductVariantEntity(id, null, "")
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertProductEntityWithoutCategoryExpectingException() = runTest {
+        productProducerEntityMockData.forEach { productProducerDao.insert(it) }
 
-        productVariantDao.insert(entity)
+        val entity = productEntityMockData.first()
 
-        val byId = productVariantDao.get(id).first()
+        val expectingNone = transactionDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
 
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun insertProductEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val categoryEntity = ProductCategoryEntity(1, "")
-        val entity = ProductEntity(id, categoryEntity.id, null, "")
-
-        productCategoryDao.insert(categoryEntity)
+        // expecting SQLiteConstraintException since no ProductCategoryEntity was inserted
         productDao.insert(entity)
+    }
 
-        val byId = productDao.get(id).first()
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertProductEntityWithoutProducerExpectingException() = runTest {
+        productCategoryEntityMockData.forEach { productCategoryDao.insert(it) }
 
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
+        val entity = productEntityMockData.first { it.productProducerEntityId != null }
+
+        val expectingNone = productDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+
+        // expecting SQLiteConstraintException since no ProductProducerEntity was inserted
+        productDao.insert(entity)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun insertItemEntityAndCheckExistsById() = runTest {
-        val id = 7L
-        val transactionEntity = TransactionEntity(1, 0, null, 0, null)
-        val categoryEntity = ProductCategoryEntity(1, "")
-        val productEntity = ProductEntity(id, categoryEntity.id, null, "")
-        val entity = ItemEntity(id, transactionEntity.id, productEntity.id, null, 0, 0)
+    fun insertProductEntityAndCheckExistsById() = runTest {
+        productProducerEntityMockData.forEach { productProducerDao.insert(it) }
+        productCategoryEntityMockData.forEach { productCategoryDao.insert(it) }
 
-        transactionDao.insert(transactionEntity)
-        productCategoryDao.insert(categoryEntity)
-        productDao.insert(productEntity)
+        productEntityMockData.forEach { entity ->
+            val expectingNone = productDao.get(entity.id).first()
+            productDao.insert(entity)
+            val expectingEntity = productDao.get(entity.id).first()
+
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
+    }
+
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertProductVariantEntityWithoutProductExpectingException() = runTest {
+        val entity = productVariantEntityMockData.first { it.productEntityId != null }
+        val expectingNone = productVariantDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+
+        // expecting SQLiteConstraintException since no ProductEntity was inserted
+        productVariantDao.insert(entity)
+    }
+
+    @Test
+    fun insertProductVariantEntityAndCheckExistsById() = runTest {
+        productCategoryEntityMockData.forEach { productCategoryDao.insert(it) }
+        productProducerEntityMockData.forEach { productProducerDao.insert(it) }
+        productEntityMockData.forEach { productDao.insert(it) }
+
+        productVariantEntityMockData.forEach { entity ->
+            val expectingNone = productVariantDao.get(entity.id).first()
+            productVariantDao.insert(entity)
+            val expectingEntity = productVariantDao.get(entity.id).first()
+
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
+    }
+
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertItemEntityWithoutTransactionExpectingException() = runTest {
+        productCategoryEntityMockData.forEach { productCategoryDao.insert(it) }
+        productProducerEntityMockData.forEach { productProducerDao.insert(it) }
+        productEntityMockData.forEach { productDao.insert(it) }
+        productVariantEntityMockData.forEach { productVariantDao.insert(it) }
+
+        val entity = itemEntityMockData.first()
+
+        val expectingNone = itemDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+
+        // expecting SQLiteConstraintException since no TransactionEntity was inserted
         itemDao.insert(entity)
+    }
 
-        val byId = itemDao.get(id).first()
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertItemEntityWithoutProductExpectingException() = runTest {
+        shopEntityMockData.forEach { shopDao.insert(it) }
+        transactionEntityMockData.forEach { transactionDao.insert(it) }
+        productVariantEntityMockData.forEach { productVariantDao.insert(it) }
 
-        assertThat("Returned entity is not equal to the inserted one", byId, equalTo(entity))
+        val entity = itemEntityMockData.first()
+
+        val expectingNone = itemDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+
+        // expecting SQLiteConstraintException since no ProductEntity was inserted
+        itemDao.insert(entity)
+    }
+
+    @Test(expected = SQLiteConstraintException::class)
+    fun insertItemEntityWithoutVariantExpectingException() = runTest {
+        shopEntityMockData.forEach { shopDao.insert(it) }
+        transactionEntityMockData.forEach { transactionDao.insert(it) }
+        productCategoryEntityMockData.forEach { productCategoryDao.insert(it) }
+        productProducerEntityMockData.forEach { productProducerDao.insert(it) }
+        productEntityMockData.forEach { productDao.insert(it) }
+
+        val entity = itemEntityMockData.first { it.productVariantEntityId != null }
+
+        val expectingNone = itemDao.get(entity.id).first()
+        assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+
+        // expecting SQLiteConstraintException since no ProductVariantEntity was inserted
+        itemDao.insert(entity)
+    }
+
+    @Test
+    fun insertItemEntityAndCheckExistsById() = runTest {
+        shopEntityMockData.forEach { shopDao.insert(it) }
+        transactionEntityMockData.forEach { transactionDao.insert(it) }
+        productCategoryEntityMockData.forEach { productCategoryDao.insert(it) }
+        productProducerEntityMockData.forEach { productProducerDao.insert(it) }
+        productEntityMockData.forEach { productDao.insert(it) }
+        productVariantEntityMockData.forEach { productVariantDao.insert(it) }
+
+        itemEntityMockData.forEach { entity ->
+            val expectingNone = itemDao.get(entity.id).first()
+            itemDao.insert(entity)
+            val expectingEntity = itemDao.get(entity.id).first()
+
+            assertThat("Got entity before it was inserted", expectingNone, equalTo(null))
+            assertThat(
+                "Returned entity is not equal to the inserted one",
+                expectingEntity,
+                equalTo(entity),
+            )
+        }
     }
 }
