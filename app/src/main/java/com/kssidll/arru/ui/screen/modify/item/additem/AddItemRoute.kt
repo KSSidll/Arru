@@ -3,12 +3,14 @@ package com.kssidll.arru.ui.screen.modify.item.additem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 @Composable
 fun AddItemRoute(
@@ -23,10 +25,12 @@ fun AddItemRoute(
     viewModel: AddItemViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
+    val navigateBackLock = remember { Mutex() }
 
     SideEffect {
         scope.launch {
-            if (!viewModel.checkExists(transactionId)) {
+            if (!viewModel.checkExists(transactionId) && !navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
                 navigateBack()
             }
         }
@@ -48,7 +52,8 @@ fun AddItemRoute(
                     is ModifyItemEvent.DecrementPrice -> viewModel.handleEvent(event)
                     is ModifyItemEvent.DecrementQuantity -> viewModel.handleEvent(event)
                     is ModifyItemEvent.DeleteItem -> {
-                        if (viewModel.handleEvent(event)) {
+                        if (viewModel.handleEvent(event) && !navigateBackLock.isLocked) {
+                            navigateBackLock.tryLock()
                             navigateBack()
                         }
                     }
@@ -57,7 +62,12 @@ fun AddItemRoute(
                     is ModifyItemEvent.NavigateAddProduct -> navigateAddProduct(event.name)
                     is ModifyItemEvent.NavigateAddProductVariant ->
                         navigateAddProductVariant(event.productVariantId, event.name)
-                    is ModifyItemEvent.NavigateBack -> navigateBack()
+                    is ModifyItemEvent.NavigateBack -> {
+                        if (!navigateBackLock.isLocked) {
+                            navigateBackLock.tryLock()
+                            navigateBack()
+                        }
+                    }
                     is ModifyItemEvent.NavigateEditProduct -> navigateEditProduct(event.productId)
                     is ModifyItemEvent.NavigateEditProductVariant ->
                         navigateEditProductVariant(event.productVariantId)
@@ -70,7 +80,8 @@ fun AddItemRoute(
                         viewModel.handleEvent(event)
                     is ModifyItemEvent.SetQuantity -> viewModel.handleEvent(event)
                     is ModifyItemEvent.Submit -> {
-                        if (viewModel.handleEvent(event)) {
+                        if (viewModel.handleEvent(event) && !navigateBackLock.isLocked) {
+                            navigateBackLock.lock()
                             navigateBack()
                         }
                     }

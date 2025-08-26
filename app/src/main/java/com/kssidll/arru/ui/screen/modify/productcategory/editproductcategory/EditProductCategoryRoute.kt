@@ -3,12 +3,14 @@ package com.kssidll.arru.ui.screen.modify.productcategory.editproductcategory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 @Composable
 fun EditProductCategoryRoute(
@@ -17,10 +19,12 @@ fun EditProductCategoryRoute(
     viewModel: EditProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
+    val navigateBackLock = remember { Mutex() }
 
     SideEffect {
         scope.launch {
-            if (!viewModel.checkExists(categoryId)) {
+            if (!viewModel.checkExists(categoryId) && !navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
                 navigateBack(null)
             }
         }
@@ -29,18 +33,25 @@ fun EditProductCategoryRoute(
     LaunchedEffect(categoryId) { viewModel.updateState(categoryId) }
 
     ModifyProductCategoryScreenImpl(
-        onBack = { navigateBack(categoryId) },
+        onBack = {
+            if (!navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
+                navigateBack(categoryId)
+            }
+        },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                if (viewModel.updateCategory(categoryId)) {
+                if (viewModel.updateCategory(categoryId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
                     navigateBack(categoryId)
                 }
             }
         },
         onDelete = {
             scope.launch {
-                if (viewModel.deleteCategory(categoryId)) {
+                if (viewModel.deleteCategory(categoryId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
                     navigateBack(null)
                 }
             }
@@ -48,7 +59,10 @@ fun EditProductCategoryRoute(
         onMerge = {
             scope.launch {
                 val new = viewModel.mergeWith(it)
-                navigateBack(new?.id)
+                if (!navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(new?.id)
+                }
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(categoryId),

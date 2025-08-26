@@ -3,12 +3,14 @@ package com.kssidll.arru.ui.screen.modify.shop.editshop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.modify.shop.ModifyShopScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 @Composable
 fun EditShopRoute(
@@ -17,10 +19,12 @@ fun EditShopRoute(
     viewModel: EditShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
+    val navigateBackLock = remember { Mutex() }
 
     SideEffect {
         scope.launch {
-            if (!viewModel.checkExists(shopId)) {
+            if (!viewModel.checkExists(shopId) && !navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
                 navigateBack(null)
             }
         }
@@ -29,25 +33,33 @@ fun EditShopRoute(
     LaunchedEffect(shopId) { viewModel.updateState(shopId) }
 
     ModifyShopScreenImpl(
-        onBack = { navigateBack(shopId) },
+        onBack = {
+            if (!navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
+                navigateBack(shopId)
+            }
+        },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                // if (viewModel.updateShop(shopId).isNotError()) {
+                // if (viewModel.updateShop(shopId).isNotError() && !navigateBackLock.isLocked) {
+                // navigateBackLock.tryLock()
                 //     navigateBack(shopId)
                 // }
             }
         },
         onDelete = {
             scope.launch {
-                // if (viewModel.deleteShop(shopId).isNotError()) {
+                // if (viewModel.deleteShop(shopId).isNotError() && !navigateBackLock.isLocked) {
+                // navigateBackLock.tryLock()
                 //     navigateBack(null)
                 // }
             }
         },
         onMerge = {
             scope.launch {
-                // if (viewModel.mergeWith(it).isNotError()) {
+                // if (viewModel.mergeWith(it).isNotError() && !navigateBackLock.isLocked) {
+                // navigateBackLock.tryLock()
                 //     navigateBack(it.id)
                 // }
             }
