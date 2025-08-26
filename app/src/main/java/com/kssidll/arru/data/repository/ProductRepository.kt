@@ -38,11 +38,11 @@ class ProductRepository(private val dao: ProductEntityDao) : ProductRepositorySo
 
     override fun byName(name: String): Flow<ProductEntity?> = dao.byName(name).cancellable()
 
-    override fun byCategory(id: Long): Flow<ImmutableList<ProductEntity>> =
-        dao.byCategory(id).cancellable().map { it.toImmutableList() }
+    override fun byProductCategory(id: Long): Flow<ImmutableList<ProductEntity>> =
+        dao.byProductCategory(id).cancellable().map { it.toImmutableList() }
 
-    override fun byProducer(id: Long): Flow<ImmutableList<ProductEntity>> =
-        dao.byProducer(id).cancellable().map { it.toImmutableList() }
+    override fun byProductProducer(id: Long): Flow<ImmutableList<ProductEntity>> =
+        dao.byProductProducer(id).cancellable().map { it.toImmutableList() }
 
     override fun all(): Flow<ImmutableList<ProductEntity>> =
         dao.all().cancellable().map { it.toImmutableList() }

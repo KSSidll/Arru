@@ -30,8 +30,11 @@ class ProductVariantRepository(private val dao: ProductVariantEntityDao) :
 
     override fun get(id: Long): Flow<ProductVariantEntity?> = dao.get(id).cancellable()
 
-    override fun byCategory(id: Long): Flow<ImmutableList<ProductVariantEntity>> =
-        dao.byCategory(id).cancellable().map { it.toImmutableList() }
+    override fun byProductCategory(id: Long): Flow<ImmutableList<ProductVariantEntity>> =
+        dao.byProductCategory(id).cancellable().map { it.toImmutableList() }
+
+    override fun byProductProducer(id: Long): Flow<ImmutableList<ProductVariantEntity>> =
+        dao.byProductProducer(id).cancellable().map { it.toImmutableList() }
 
     override fun byProduct(
         id: Long,

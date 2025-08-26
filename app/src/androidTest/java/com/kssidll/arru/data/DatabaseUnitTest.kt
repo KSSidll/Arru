@@ -14,6 +14,7 @@ import com.kssidll.arru.data.dao.ProductVariantEntityDao
 import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.database.AppDatabase
+import java.io.IOException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
@@ -22,7 +23,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
 
 // Sanity check tests
 

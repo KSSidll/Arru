@@ -41,12 +41,12 @@ interface ProductEntityDao {
     @Query(
         "SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.productCategoryEntityId = :id"
     )
-    fun byCategory(id: Long): Flow<List<ProductEntity>>
+    fun byProductCategory(id: Long): Flow<List<ProductEntity>>
 
     @Query(
         "SELECT ProductEntity.* FROM ProductEntity WHERE ProductEntity.productProducerEntityId = :id"
     )
-    fun byProducer(id: Long): Flow<List<ProductEntity>>
+    fun byProductProducer(id: Long): Flow<List<ProductEntity>>
 
     @Query("SELECT ProductEntity.* FROM ProductEntity") fun all(): Flow<List<ProductEntity>>
 

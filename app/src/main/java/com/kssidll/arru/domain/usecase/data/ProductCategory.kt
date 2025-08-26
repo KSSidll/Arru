@@ -172,7 +172,7 @@ class MergeProductCategoryEntityUseCase(
             return MergeProductCategoryEntityUseCaseResult.Error(errors.toImmutableList())
         }
 
-        val products = productRepository.byCategory(id).first()
+        val products = productRepository.byProductCategory(id).first()
 
         val productsToUpdate = products.map { it.copy(productCategoryEntityId = mergeIntoId) }
 
@@ -201,9 +201,9 @@ class DeleteProductCategoryEntityUseCase(
             errors.add(DeleteProductCategoryEntityUseCaseResult.ProductCategoryIdInvalid)
         }
 
-        val products = productRepository.byCategory(id).first()
-        val productVariants = productVariantRepository.byCategory(id).first()
-        val items = itemRepository.byCategory(id).first()
+        val products = productRepository.byProductCategory(id).first()
+        val productVariants = productVariantRepository.byProductCategory(id).first()
+        val items = itemRepository.byProductCategory(id).first()
 
         if (
             !ignoreDangerous &&

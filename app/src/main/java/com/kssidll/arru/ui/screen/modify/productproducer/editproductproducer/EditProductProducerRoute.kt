@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 fun EditProductProducerRoute(
     producerId: Long,
     navigateBack: (producerId: Long?) -> Unit,
-    viewModel: EditProducerViewModel = hiltViewModel(),
+    viewModel: EditProductProducerViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
@@ -33,23 +33,22 @@ fun EditProductProducerRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                // if (viewModel.updateProducer(producerId).isNotError()) {
-                //     navigateBack(producerId)
-                // }
+                if (viewModel.updateProducer(producerId)) {
+                    navigateBack(producerId)
+                }
             }
         },
         onDelete = {
             scope.launch {
-                // if (viewModel.deleteProducer(producerId).isNotError()) {
-                //     navigateBack(null)
-                // }
+                if (viewModel.deleteProducer(producerId)) {
+                    navigateBack(null)
+                }
             }
         },
         onMerge = {
             scope.launch {
-                // if (viewModel.mergeWith(it).isNotError()) {
-                //     navigateBack(it.id)
-                // }
+                val new = viewModel.mergeWith(it)
+                navigateBack(new?.id)
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(producerId),

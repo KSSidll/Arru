@@ -45,13 +45,13 @@ interface ProductRepositorySource {
      * @param id id of the [ProductCategoryEntity]
      * @return list of all [ProductEntity] matching [ProductCategoryEntity] id or null if none match
      */
-    fun byCategory(id: Long): Flow<ImmutableList<ProductEntity>>
+    fun byProductCategory(id: Long): Flow<ImmutableList<ProductEntity>>
 
     /**
      * @param id id of the [ProductProducerEntity]
      * @return list of all [ProductEntity] matching [ProductProducerEntity] id or null if none match
      */
-    fun byProducer(id: Long): Flow<ImmutableList<ProductEntity>>
+    fun byProductProducer(id: Long): Flow<ImmutableList<ProductEntity>>
 
     /** @return list of all [ProductEntity] */
     fun all(): Flow<ImmutableList<ProductEntity>>

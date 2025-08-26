@@ -1,6 +1,9 @@
 package com.kssidll.arru.ui.screen.modify.productproducer.addproductproducer
 
 import com.kssidll.arru.data.repository.ProductProducerRepositorySource
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.InsertProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductProducerEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.productproducer.ModifyProductProducerViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -10,38 +13,38 @@ import javax.inject.Inject
 @HiltViewModel
 class AddProductProducerViewModel
 @Inject
-constructor(override val producerRepository: ProductProducerRepositorySource) :
-    ModifyProductProducerViewModel() {
+constructor(
+    override val producerRepository: ProductProducerRepositorySource,
+    private val insertProductProducerEntityUseCase: InsertProductProducerEntityUseCase,
+) : ModifyProductProducerViewModel() {
 
-    /**
-     * Tries to add a product producer to the repository
-     *
-     * @return resulting [InsertResult]
-     */
-    // suspend fun addProducer() =
-    //     viewModelScope
-    //         .async {
-    //             screenState.attemptedToSubmit.value = true
-    //
-    //             val result = producerRepository.insert(screenState.name.value.data.orEmpty())
-    //
-    //             if (result.isError()) {
-    //                 when (result.error!!) {
-    //                     InsertResult.InvalidName -> {
-    //                         screenState.name.apply {
-    //                             value = value.toError(FieldError.InvalidValueError)
-    //                         }
-    //                     }
-    //
-    //                     InsertResult.DuplicateName -> {
-    //                         screenState.name.apply {
-    //                             value = value.toError(FieldError.DuplicateValueError)
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //
-    //             return@async result
-    //         }
-    //         .await()
+    suspend fun addProducer(): Long? {
+        screenState.attemptedToSubmit.value = true
+
+        val result = insertProductProducerEntityUseCase(name = screenState.name.value.data)
+
+        return when (result) {
+            is InsertProductProducerEntityUseCaseResult.Error -> {
+                result.errors.forEach {
+                    when (it) {
+                        InsertProductProducerEntityUseCaseResult.NameDuplicateValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.DuplicateValueError)
+                            }
+                        }
+                        InsertProductProducerEntityUseCaseResult.NameNoValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.NoValueError)
+                            }
+                        }
+                    }
+                }
+
+                null
+            }
+            is InsertProductProducerEntityUseCaseResult.Success -> {
+                result.id
+            }
+        }
+    }
 }

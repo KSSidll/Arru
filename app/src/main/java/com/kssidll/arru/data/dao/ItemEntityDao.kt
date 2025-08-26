@@ -57,7 +57,17 @@ interface ItemEntityDao {
         WHERE ProductEntity.productCategoryEntityId = :id
     """
     )
-    fun byCategory(id: Long): Flow<List<ItemEntity>>
+    fun byProductCategory(id: Long): Flow<List<ItemEntity>>
+
+    @Query(
+        """
+        SELECT ItemEntity.* 
+        FROM ItemEntity 
+        JOIN ProductEntity ON ProductEntity.id = ItemEntity.productEntityId
+        WHERE ProductEntity.productProducerEntityId = :id
+    """
+    )
+    fun byProductProducer(id: Long): Flow<List<ItemEntity>>
 
     @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.productEntityId = :id")
     fun byProduct(id: Long): Flow<List<ItemEntity>>
