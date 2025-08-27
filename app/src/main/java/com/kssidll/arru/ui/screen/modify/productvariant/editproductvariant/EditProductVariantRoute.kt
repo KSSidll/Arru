@@ -42,18 +42,18 @@ fun EditProductVariantRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                // if (viewModel.updateVariant(variantId).isNotError() && !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack(variantId)
-                // }
+                if (viewModel.updateVariant(variantId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(variantId)
+                }
             }
         },
         onDelete = {
             scope.launch {
-                // if (viewModel.deleteVariant(variantId).isNotError() && !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack(null)
-                // }
+                if (viewModel.deleteVariant(variantId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(null)
+                }
             }
         },
         submitButtonText = stringResource(id = R.string.item_product_variant_edit),

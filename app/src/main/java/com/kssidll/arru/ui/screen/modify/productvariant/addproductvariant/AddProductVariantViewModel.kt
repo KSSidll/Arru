@@ -1,70 +1,84 @@
 package com.kssidll.arru.ui.screen.modify.productvariant.addproductvariant
 
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductVariantEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductVariantEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.productvariant.ModifyProductVariantViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 
 // TODO refactor uiState Event UseCase
 
 @HiltViewModel
 class AddProductVariantViewModel
 @Inject
-constructor(override val variantRepository: ProductVariantRepositorySource) :
-    ModifyProductVariantViewModel() {
+constructor(
+    override val variantRepository: ProductVariantRepositorySource,
+    private val getProductEntityUseCase: GetProductEntityUseCase,
+    private val insertProductVariantEntityUseCase: InsertProductVariantEntityUseCase,
+) : ModifyProductVariantViewModel() {
+    private var mProduct: ProductEntity? = null
 
     init {
         screenState.isVariantGlobal.value = Field.Loaded(false)
     }
 
-    /**
-     * Tries to add a product variant to the repository
-     *
-     * @param productId: Id of the product that the variant is being created for, ignored if state
-     *   defines product as global
-     * @return resulting [InsertResult]
-     */
-    // suspend fun addVariant(productId: Long) =
-    //     viewModelScope
-    //         .async {
-    //             screenState.attemptedToSubmit.value = true
-    //
-    //             val productId =
-    //                 if (screenState.isVariantGlobal.value.data ?: false) {
-    //                     null
-    //                 } else productId
-    //
-    //             val result =
-    //                 variantRepository.insert(productId, screenState.name.value.data.orEmpty())
-    //
-    //             if (result.isError()) {
-    //                 when (result.error!!) {
-    //                     is InsertResult.InvalidName -> {
-    //                         screenState.name.apply {
-    //                             value = value.toError(FieldError.InvalidValueError)
-    //                         }
-    //                     }
-    //
-    //                     is InsertResult.DuplicateName -> {
-    //                         screenState.name.apply {
-    //                             value = value.toError(FieldError.DuplicateValueError)
-    //                         }
-    //                     }
-    //
-    //                     is InsertResult.InvalidProductId -> {
-    //                         Log.e(
-    //                             "InvalidId",
-    //                             "Tried to insert variant with invalid productId in
-    // AddVariantViewModel",
-    //                         )
-    //
-    //                         return@async InsertResult.Success(0)
-    //                     }
-    //                 }
-    //             }
-    //
-    //             return@async result
-    //         }
-    //         .await()
+    suspend fun checkExists(id: Long) =
+        viewModelScope
+            .async {
+                mProduct = getProductEntityUseCase(id).first()
+                return@async mProduct != null
+            }
+            .await()
+
+    suspend fun addVariant(): Long? {
+        return mProduct?.let { product ->
+            screenState.attemptedToSubmit.value = true
+            val isGlobal = screenState.isVariantGlobal.value.data ?: false
+
+            val result =
+                insertProductVariantEntityUseCase(
+                    name = screenState.name.value.data,
+                    productId = if (isGlobal) null else product.id,
+                )
+
+            return@let when (result) {
+                is InsertProductVariantEntityUseCaseResult.Error -> {
+                    result.errors.forEach {
+                        when (it) {
+                            InsertProductVariantEntityUseCaseResult.ProductIdInvalid -> {
+                                Log.e(
+                                    "ModifyProductVariant",
+                                    "Insert invalid product `${product.id}`",
+                                )
+                            }
+                            InsertProductVariantEntityUseCaseResult.NameDuplicateValue -> {
+                                screenState.name.apply {
+                                    value = value.toError(FieldError.DuplicateValueError)
+                                }
+                            }
+                            InsertProductVariantEntityUseCaseResult.NameNoValue -> {
+                                screenState.name.apply {
+                                    value = value.toError(FieldError.NoValueError)
+                                }
+                            }
+                        }
+                    }
+
+                    null
+                }
+                is InsertProductVariantEntityUseCaseResult.Success -> {
+                    result.id
+                }
+            }
+        }
+    }
 }

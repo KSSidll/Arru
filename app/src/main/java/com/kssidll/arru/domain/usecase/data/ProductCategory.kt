@@ -130,7 +130,8 @@ class UpdateProductCategoryEntityUseCase(
         }
 
         name?.let {
-            if (productCategoryRepository.byName(it).first() != null) {
+            val other = productCategoryRepository.byName(it).first()
+            if (other != null && other.id != id) {
                 errors.add(UpdateProductCategoryEntityUseCaseResult.NameDuplicateValue)
             }
         }

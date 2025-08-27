@@ -16,6 +16,7 @@ import com.kssidll.arru.domain.usecase.data.UpdateProductProducerEntityUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductProducerEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.productproducer.ModifyProductProducerViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 // TODO refactor uiState Event UseCase
 

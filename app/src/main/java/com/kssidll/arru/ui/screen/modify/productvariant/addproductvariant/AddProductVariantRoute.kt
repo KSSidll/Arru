@@ -2,6 +2,7 @@ package com.kssidll.arru.ui.screen.modify.productvariant.addproductvariant
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.kssidll.arru.domain.data.Field
@@ -19,7 +20,15 @@ fun AddProductVariantRoute(
 ) {
     val scope = rememberCoroutineScope()
     val navigateBackLock = remember { Mutex() }
-    // TODO check productId
+
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(productId) && !navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
+                navigateBack(null)
+            }
+        }
+    }
 
     LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 
@@ -33,11 +42,11 @@ fun AddProductVariantRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                // val result = viewModel.addVariant(productId)
-                // if (result.isNotError() && !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack(result.id)
-                // }
+                val id = viewModel.addVariant()
+                if (id != null && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(id)
+                }
             }
         },
     )

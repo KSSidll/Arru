@@ -4,6 +4,7 @@ import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.data.ProductVariantEntity
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -43,6 +44,12 @@ interface ItemRepositorySource {
      * @return list of all [ItemEntity] matching [ProductProducerEntity] id or null if none match
      */
     fun byProductProducer(id: Long): Flow<ImmutableList<ItemEntity>>
+
+    /**
+     * @param id id of the [ProductVariantEntity]
+     * @return list of all [ItemEntity] matching [ProductVariantEntity] id or null if none match
+     */
+    fun byProductVariant(id: Long): Flow<ImmutableList<ItemEntity>>
 
     /**
      * @param id id of the [ProductEntity]
