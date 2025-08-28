@@ -2,6 +2,7 @@ package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
 import com.kssidll.arru.data.data.IntermediateTransaction
+import com.kssidll.arru.data.data.ShopEntity
 import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import kotlinx.collections.immutable.ImmutableList
@@ -16,6 +17,8 @@ interface TransactionRepositorySource {
 
     suspend fun update(entity: TransactionEntity)
 
+    suspend fun update(entity: List<TransactionEntity>)
+
     // Delete
 
     suspend fun delete(entity: TransactionEntity)
@@ -29,6 +32,12 @@ interface TransactionRepositorySource {
      * @return [TransactionEntity] matching [id] id or null if none match
      */
     fun get(id: Long): Flow<TransactionEntity?>
+
+    /**
+     * @param id id of the [ShopEntity]
+     * @return list of all [TransactionEntity] matching [ShopEntity] id or null if none match
+     */
+    fun byShop(id: Long): Flow<ImmutableList<TransactionEntity>>
 
     /** @return float representing total spending */
     fun totalSpent(): Flow<Float?>

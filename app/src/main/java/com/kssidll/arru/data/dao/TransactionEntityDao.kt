@@ -22,6 +22,8 @@ interface TransactionEntityDao {
 
     @Update suspend fun update(entity: TransactionEntity)
 
+    @Update suspend fun update(entity: List<TransactionEntity>)
+
     // Delete
 
     @Delete suspend fun delete(entity: TransactionEntity)
@@ -32,6 +34,9 @@ interface TransactionEntityDao {
 
     @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :id")
     fun get(id: Long): Flow<TransactionEntity?>
+
+    @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.shopEntityId = :id")
+    fun byShop(id: Long): Flow<List<TransactionEntity>>
 
     @Query("SELECT SUM(TransactionEntity.totalCost) FROM TransactionEntity")
     fun totalSpent(): Flow<Long?>

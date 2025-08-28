@@ -5,6 +5,7 @@ import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
+import com.kssidll.arru.data.data.TransactionEntity
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -56,6 +57,12 @@ interface ItemRepositorySource {
      * @return [ItemEntity] with matching [ProductEntity] id or null if none match
      */
     fun byProduct(id: Long): Flow<ImmutableList<ItemEntity>>
+
+    /**
+     * @param id id of the [TransactionEntity]
+     * @return [ItemEntity] with matching [TransactionEntity] id or null if none match
+     */
+    fun byTransaction(id: Long): Flow<ImmutableList<ItemEntity>>
 
     /** @return newest [ItemEntity], null if none found */
     fun newest(): Flow<ItemEntity?>

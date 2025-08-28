@@ -42,26 +42,27 @@ fun EditShopRoute(
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                // if (viewModel.updateShop(shopId).isNotError() && !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack(shopId)
-                // }
+                if (viewModel.updateShop(shopId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(shopId)
+                }
             }
         },
         onDelete = {
             scope.launch {
-                // if (viewModel.deleteShop(shopId).isNotError() && !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack(null)
-                // }
+                if (viewModel.deleteShop(shopId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(null)
+                }
             }
         },
         onMerge = {
             scope.launch {
-                // if (viewModel.mergeWith(it).isNotError() && !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack(it.id)
-                // }
+                val new = viewModel.mergeWith(it)
+                if (!navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack(new?.id)
+                }
             }
         },
         mergeCandidates = viewModel.allMergeCandidates(shopId),

@@ -22,6 +22,8 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
 
     override suspend fun update(entity: TransactionEntity) = dao.update(entity)
 
+    override suspend fun update(entity: List<TransactionEntity>) = dao.update(entity)
+
     // Delete
 
     override suspend fun delete(entity: TransactionEntity) = dao.delete(entity)
@@ -31,6 +33,9 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
     // Read
 
     override fun get(id: Long): Flow<TransactionEntity?> = dao.get(id).cancellable()
+
+    override fun byShop(id: Long): Flow<ImmutableList<TransactionEntity>> =
+        dao.byShop(id).cancellable().map { it.toImmutableList() }
 
     override fun totalSpent(): Flow<Float?> =
         dao.totalSpent().cancellable().map { it?.toFloat()?.div(TransactionEntity.COST_DIVISOR) }

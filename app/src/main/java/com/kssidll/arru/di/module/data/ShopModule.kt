@@ -2,8 +2,11 @@ package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.dao.ShopEntityDao
 import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ItemRepositorySource
 import com.kssidll.arru.data.repository.ShopRepository
 import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.domain.usecase.data.DeleteShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForShopUseCase
@@ -13,6 +16,9 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForShopUseCase
+import com.kssidll.arru.domain.usecase.data.InsertShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.MergeShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateShopEntityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +42,41 @@ class ShopModule {
     }
 
     /** ENTITY */
+    @Provides
+    @Singleton
+    fun provideInsertShopEntityUseCase(
+        shopRepository: ShopRepositorySource
+    ): InsertShopEntityUseCase {
+        return InsertShopEntityUseCase(shopRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateShopEntityUseCase(
+        shopRepository: ShopRepositorySource
+    ): UpdateShopEntityUseCase {
+        return UpdateShopEntityUseCase(shopRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMergeShopEntityUseCase(
+        transactionRepository: TransactionRepositorySource,
+        shopRepository: ShopRepositorySource,
+    ): MergeShopEntityUseCase {
+        return MergeShopEntityUseCase(transactionRepository, shopRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteShopEntityUseCase(
+        transactionRepository: TransactionRepositorySource,
+        itemRepository: ItemRepositorySource,
+        shopRepository: ShopRepositorySource,
+    ): DeleteShopEntityUseCase {
+        return DeleteShopEntityUseCase(transactionRepository, itemRepository, shopRepository)
+    }
+
     @Provides
     @Singleton
     fun provideGetShopEntityUseCase(shopRepository: ShopRepositorySource): GetShopEntityUseCase {

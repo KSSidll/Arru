@@ -81,6 +81,9 @@ interface ItemEntityDao {
     @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.productEntityId = :id")
     fun byProduct(id: Long): Flow<List<ItemEntity>>
 
+    @Query("SELECT ItemEntity.* FROM ItemEntity WHERE ItemEntity.transactionEntityId = :id")
+    fun byTransaction(id: Long): Flow<List<ItemEntity>>
+
     @Query("SELECT ItemEntity.* FROM ItemEntity ORDER BY id DESC LIMIT 1")
     fun newest(): Flow<ItemEntity?>
 
