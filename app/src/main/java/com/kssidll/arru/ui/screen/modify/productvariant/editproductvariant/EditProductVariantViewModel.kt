@@ -13,7 +13,6 @@ import com.kssidll.arru.domain.usecase.data.UpdateProductVariantEntityUseCaseRes
 import com.kssidll.arru.ui.screen.modify.productvariant.ModifyProductVariantViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -29,12 +28,9 @@ constructor(
 ) : ModifyProductVariantViewModel() {
     private var mVariant: ProductVariantEntity? = null
 
-    suspend fun checkExists(id: Long) =
-        viewModelScope
-            .async {
-                return@async variantRepository.get(id).first() != null
-            }
-            .await()
+    suspend fun checkExists(id: Long): Boolean {
+        return variantRepository.get(id).first() != null
+    }
 
     fun updateState(variantId: Long) =
         viewModelScope.launch {

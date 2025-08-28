@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.productvariant.addproductvariant
 
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.data.Field
@@ -12,7 +11,6 @@ import com.kssidll.arru.domain.usecase.data.InsertProductVariantEntityUseCaseRes
 import com.kssidll.arru.ui.screen.modify.productvariant.ModifyProductVariantViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 
 // TODO refactor uiState Event UseCase
@@ -31,13 +29,10 @@ constructor(
         screenState.isVariantGlobal.value = Field.Loaded(false)
     }
 
-    suspend fun checkExists(id: Long) =
-        viewModelScope
-            .async {
-                mProduct = getProductEntityUseCase(id).first()
-                return@async mProduct != null
-            }
-            .await()
+    suspend fun checkExists(id: Long): Boolean {
+        mProduct = getProductEntityUseCase(id).first()
+        return mProduct != null
+    }
 
     suspend fun addVariant(): Long? {
         return mProduct?.let { product ->

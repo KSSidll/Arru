@@ -15,7 +15,6 @@ import com.kssidll.arru.domain.usecase.data.UpdateTransactionEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -32,12 +31,9 @@ constructor(
 ) : ModifyTransactionViewModel() {
     private var mTransaction: TransactionEntity? = null
 
-    suspend fun checkExists(id: Long) =
-        viewModelScope
-            .async {
-                return@async transactionRepository.get(id).first() != null
-            }
-            .await()
+    suspend fun checkExists(id: Long): Boolean {
+        return transactionRepository.get(id).first() != null
+    }
 
     fun updateState(transactionId: Long) =
         viewModelScope.launch {

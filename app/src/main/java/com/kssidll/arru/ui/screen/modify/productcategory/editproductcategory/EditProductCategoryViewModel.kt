@@ -19,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -45,12 +44,9 @@ constructor(
     val chosenMergeCandidate: MutableState<ProductCategoryEntity?> = mutableStateOf(null)
     val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
 
-    suspend fun checkExists(id: Long) =
-        viewModelScope
-            .async {
-                return@async categoryRepository.get(id).first() != null
-            }
-            .await()
+    suspend fun checkExists(id: Long): Boolean {
+        return categoryRepository.get(id).first() != null
+    }
 
     fun updateState(categoryId: Long) =
         viewModelScope.launch {

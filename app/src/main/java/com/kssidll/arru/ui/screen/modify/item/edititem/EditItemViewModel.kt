@@ -20,7 +20,6 @@ import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,12 +40,9 @@ constructor(
 ) : ModifyItemViewModel() {
     private var mItem: ItemEntity? = null
 
-    suspend fun checkExists(id: Long) =
-        viewModelScope
-            .async {
-                return@async getItemEntityUseCase(id).first() != null
-            }
-            .await()
+    suspend fun checkExists(id: Long): Boolean {
+        return getItemEntityUseCase(id).first() != null
+    }
 
     fun updateState(itemId: Long) =
         viewModelScope.launch {

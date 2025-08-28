@@ -1,7 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.item.additem
 
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityByProductUseCase
@@ -16,7 +15,6 @@ import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
@@ -35,13 +33,10 @@ constructor(
 ) : ModifyItemViewModel() {
     var transactionEntityId: Long? = null
 
-    suspend fun checkExists(id: Long) =
-        viewModelScope
-            .async {
-                transactionEntityId = getTransactionEntityUseCase(id).first()?.id
-                return@async transactionEntityId != null
-            }
-            .await()
+    suspend fun checkExists(id: Long): Boolean {
+        transactionEntityId = getTransactionEntityUseCase(id).first()?.id
+        return transactionEntityId != null
+    }
 
     init {
         init()
