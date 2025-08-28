@@ -2,8 +2,11 @@ package com.kssidll.arru.di.module.data
 
 import com.kssidll.arru.data.dao.TransactionEntityDao
 import com.kssidll.arru.data.database.AppDatabase
+import com.kssidll.arru.data.repository.ItemRepositorySource
+import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionRepository
 import com.kssidll.arru.data.repository.TransactionRepositorySource
+import com.kssidll.arru.domain.usecase.data.DeleteTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetAllTransactionsUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthUseCase
@@ -12,6 +15,8 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentUseCase
 import com.kssidll.arru.domain.usecase.data.GetTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTransactionUseCase
+import com.kssidll.arru.domain.usecase.data.InsertTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateTransactionEntityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,6 +40,33 @@ class TransactionModule {
     }
 
     /** ENTITY */
+    @Provides
+    @Singleton
+    fun provideInsertTransactionEntityUseCase(
+        shopRepository: ShopRepositorySource,
+        transactionRepository: TransactionRepositorySource,
+    ): InsertTransactionEntityUseCase {
+        return InsertTransactionEntityUseCase(shopRepository, transactionRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateTransactionEntityUseCase(
+        shopRepository: ShopRepositorySource,
+        transactionRepository: TransactionRepositorySource,
+    ): UpdateTransactionEntityUseCase {
+        return UpdateTransactionEntityUseCase(shopRepository, transactionRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteTransactionEntityUseCase(
+        itemRepository: ItemRepositorySource,
+        transactionRepository: TransactionRepositorySource,
+    ): DeleteTransactionEntityUseCase {
+        return DeleteTransactionEntityUseCase(itemRepository, transactionRepository)
+    }
+
     @Provides
     @Singleton
     fun provideGetTransactionEntityUseCase(

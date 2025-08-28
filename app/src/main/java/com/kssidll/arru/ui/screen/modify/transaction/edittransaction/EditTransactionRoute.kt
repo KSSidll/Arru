@@ -53,20 +53,18 @@ fun EditTransactionRoute(
         onNewShopSelected = { viewModel.onNewShopSelected(it) },
         onSubmit = {
             scope.launch {
-                // if (viewModel.updateTransaction(transactionId).isNotError() &&
-                // !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack()
-                // }
+                if (viewModel.updateTransaction(transactionId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack()
+                }
             }
         },
         onDelete = {
             scope.launch {
-                // if (viewModel.deleteTransaction(transactionId).isNotError() &&
-                // !navigateBackLock.isLocked) {
-                // navigateBackLock.tryLock()
-                //     navigateBack()
-                // }
+                if (viewModel.deleteTransaction(transactionId) && !navigateBackLock.isLocked) {
+                    navigateBackLock.tryLock()
+                    navigateBack()
+                }
             }
         },
         submitButtonText = stringResource(id = R.string.transaction_edit),

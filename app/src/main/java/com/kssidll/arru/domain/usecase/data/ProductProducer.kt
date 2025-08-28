@@ -17,10 +17,6 @@ sealed class InsertProductProducerEntityUseCaseResult {
 
     class Error(val errors: ImmutableList<Errors>) : InsertProductProducerEntityUseCaseResult()
 
-    fun isError(): Boolean = this is Error
-
-    fun isNotError(): Boolean = !isError()
-
     sealed class Errors
 
     data object NameNoValue : Errors()
@@ -32,10 +28,6 @@ sealed class UpdateProductProducerEntityUseCaseResult {
     object Success : UpdateProductProducerEntityUseCaseResult()
 
     class Error(val errors: ImmutableList<Errors>) : UpdateProductProducerEntityUseCaseResult()
-
-    fun isError(): Boolean = this is Error
-
-    fun isNotError(): Boolean = !isError()
 
     sealed class Errors
 
@@ -52,10 +44,6 @@ sealed class MergeProductProducerEntityUseCaseResult {
 
     class Error(val errors: ImmutableList<Errors>) : MergeProductProducerEntityUseCaseResult()
 
-    fun isError(): Boolean = this is Error
-
-    fun isNotError(): Boolean = !isError()
-
     sealed class Errors
 
     data object ProductProducerIdInvalid : Errors()
@@ -67,10 +55,6 @@ sealed class DeleteProductProducerEntityUseCaseResult {
     object Success : DeleteProductProducerEntityUseCaseResult()
 
     class Error(val errors: ImmutableList<Errors>) : DeleteProductProducerEntityUseCaseResult()
-
-    fun isError(): Boolean = this is Error
-
-    fun isNotError(): Boolean = !isError()
 
     sealed class Errors
 
