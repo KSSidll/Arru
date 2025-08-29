@@ -152,7 +152,7 @@ constructor(
                 if (state.selectedMergeCandidate == null) {
                     Log.e(
                         "ModifyProductCategory",
-                        "Tried to merge product categkry without merge being set",
+                        "Tried to merge product category without merge being set",
                     )
                     return ModifyProductCategoryEventResult.Failure
                 }

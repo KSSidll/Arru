@@ -52,7 +52,6 @@ import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.screen.modify.productproducer.ModifyProductProducerScreenState
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.disabledAlpha
 import java.text.SimpleDateFormat

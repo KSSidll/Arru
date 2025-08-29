@@ -22,6 +22,7 @@ import com.kssidll.arru.R
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArruTheme
+import kotlinx.collections.immutable.toImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
@@ -66,7 +67,10 @@ fun ModifyProductCategoryScreenImpl(
             stringResource(R.string.merge_action_message_template)
                 .replace("{value_1", uiState.selectedMergeCandidate?.name ?: "???")
                 .replace("{value_2", uiState.currentProductCategory?.name ?: "???"),
-        mergeCandidates = uiState.allProductCategories,
+        mergeCandidates =
+            uiState.allProductCategories
+                .filterNot { it.id == uiState.currentProductCategory?.id }
+                .toImmutableList(),
         onChosenMergeCandidateChange = {
             onEvent(ModifyProductCategoryEvent.SelectMergeCandidate(it))
         },
