@@ -217,6 +217,13 @@ class GetProductCategoryEntityUseCase(
         productCategoryRepository.get(id).flowOn(dispatcher)
 }
 
+class GetAllProductCategoryEntityUseCase(
+    private val productCategoryRepository: ProductCategoryRepositorySource
+) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        productCategoryRepository.all().flowOn(dispatcher)
+}
+
 /** DOMAIN */
 class GetTotalSpentForProductCategoryUseCase(
     private val productCategoryRepository: ProductCategoryRepositorySource

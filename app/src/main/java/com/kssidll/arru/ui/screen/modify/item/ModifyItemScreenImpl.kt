@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
@@ -49,15 +49,28 @@ fun ModifyItemScreenImpl(
     modifier: Modifier = Modifier,
     submitButtonText: String = stringResource(id = R.string.item_add),
 ) {
-    ModifyScreen<FuzzySearchSource>(
+    ModifyScreen(
         onBack = { onEvent(ModifyItemEvent.NavigateBack) },
         title = stringResource(id = R.string.item),
         onSubmit = { onEvent(ModifyItemEvent.Submit) },
-        onDelete =
-            if (uiState.isDeleteVisible) {
-                { onEvent(ModifyItemEvent.DeleteItem) }
-            } else null,
         submitButtonText = submitButtonText,
+        onDelete = { onEvent(ModifyItemEvent.DeleteItem) },
+        isDeleteVisible = uiState.isDeleteVisible,
+        isDeleteWarningMessageVisible = false,
+        onDeleteWarningMessageVisibleChange = {},
+        deleteWarningMessage = String(),
+        isDeleteWarningConfirmed = false,
+        onDeleteWarningConfirmedChange = {},
+        onMerge = {},
+        isMergeVisible = false,
+        isMergeSearchDialogVisible = false,
+        onMergeSearchDialogVisibleChange = {},
+        mergeSearchDialogCandidateTextTransformation = { String() },
+        isMergeConfirmVisible = false,
+        onMergeConfirmVisibleChange = {},
+        mergeConfirmMessage = String(),
+        mergeCandidates = emptyImmutableList(),
+        onChosenMergeCandidateChange = {},
         modifier = modifier,
     ) {
         if (uiState.isProductSearchDialogExpanded) {

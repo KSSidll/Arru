@@ -104,7 +104,7 @@ constructor(
                         updateResult.errors.forEach {
                             when (it) {
                                 UpdateItemEntityUseCaseResult.ItemIdInvalid -> {
-                                    Log.e("ModifyItem", "Insert invalid item `${mItem?.id}`")
+                                    Log.e("ModifyItem", "Update invalid item `${mItem?.id}`")
                                 }
                                 UpdateItemEntityUseCaseResult.PriceNoValue -> {
                                     _uiState.update { currentState ->
@@ -117,7 +117,7 @@ constructor(
                                 UpdateItemEntityUseCaseResult.PriceInvalid -> {
                                     Log.e(
                                         "ModifyItem",
-                                        "Insert invalid price `${state.price.data}`",
+                                        "Update invalid price `${state.price.data}`",
                                     )
                                     _uiState.update { currentState ->
                                         currentState.copy(
@@ -141,7 +141,7 @@ constructor(
                                 UpdateItemEntityUseCaseResult.ProductIdInvalid -> {
                                     Log.e(
                                         "ModifyItem",
-                                        "Insert invalid product `${state.selectedProduct.data?.id}`",
+                                        "Update invalid product `${state.selectedProduct.data?.id}`",
                                     )
                                     _uiState.update { currentState ->
                                         currentState.copy(
@@ -155,7 +155,7 @@ constructor(
                                 UpdateItemEntityUseCaseResult.ProductVariantIdInvalid -> {
                                     Log.e(
                                         "ModifyItem",
-                                        "Insert invalid product variant `${state.selectedProductVariant.data?.id}`",
+                                        "Update invalid product variant `${state.selectedProductVariant.data?.id}`",
                                     )
                                     _uiState.update { currentState ->
                                         currentState.copy(
@@ -179,7 +179,7 @@ constructor(
                                 UpdateItemEntityUseCaseResult.QuantityInvalid -> {
                                     Log.e(
                                         "ModifyItem",
-                                        "Insert invalid quantity `${state.quantity.data}`",
+                                        "Update invalid quantity `${state.quantity.data}`",
                                     )
                                     _uiState.update { currentState ->
                                         currentState.copy(
@@ -193,7 +193,7 @@ constructor(
                                 UpdateItemEntityUseCaseResult.TransactionIdInvalid -> {
                                     Log.e(
                                         "ModifyItem",
-                                        "Insert invalid transaction `${mItem?.transactionEntityId}`",
+                                        "Update invalid transaction `${mItem?.transactionEntityId}`",
                                     )
                                 }
                             }
@@ -213,7 +213,7 @@ constructor(
                         deleteResult.errors.forEach {
                             when (it) {
                                 DeleteItemEntityUseCaseResult.ItemIdInvalid -> {
-                                    Log.e("EditItem", "Delete invalid item id `${mItem?.id}`")
+                                    Log.e("ModifyItem", "Delete invalid item id `${mItem?.id}`")
                                 }
                             }
                         }

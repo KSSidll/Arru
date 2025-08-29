@@ -27,6 +27,7 @@ import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
@@ -61,16 +62,37 @@ fun ModifyProductVariantScreenImpl(
     val isGlobalVariantInteractionSource = remember { MutableInteractionSource() }
 
     ModifyScreen<FuzzySearchSource>(
-        onBack = onBack,
-        title = stringResource(id = R.string.item_product_variant_full),
-        onSubmit = onSubmit,
-        onDelete = onDelete,
-        submitButtonText = submitButtonText,
-        showDeleteWarning = state.showDeleteWarning,
-        deleteWarningConfirmed = state.deleteWarningConfirmed,
-        deleteWarningMessage =
-            stringResource(id = R.string.item_product_variant_delete_warning_text),
-        modifier = modifier,
+        // onBack = onBack,
+        // title = stringResource(id = R.string.item_product_variant_full),
+        // onSubmit = onSubmit,
+        // onDelete = onDelete,
+        // submitButtonText = submitButtonText,
+        // showDeleteWarning = state.showDeleteWarning,
+        // deleteWarningConfirmed = state.deleteWarningConfirmed,
+        // deleteWarningMessage =
+        //     stringResource(id = R.string.item_product_variant_delete_warning_text),
+        // modifier = modifier,
+        onBack = {},
+        title = "test",
+        onSubmit = {},
+        submitButtonText = "Submit it",
+        onDelete = {},
+        isDeleteVisible = true,
+        isDeleteWarningMessageVisible = false,
+        onDeleteWarningMessageVisibleChange = {},
+        deleteWarningMessage = String(),
+        isDeleteWarningConfirmed = false,
+        onDeleteWarningConfirmedChange = {},
+        onMerge = {},
+        isMergeVisible = true,
+        isMergeSearchDialogVisible = false,
+        onMergeSearchDialogVisibleChange = {},
+        mergeSearchDialogCandidateTextTransformation = { String() },
+        isMergeConfirmVisible = false,
+        onMergeConfirmVisibleChange = {},
+        mergeConfirmMessage = String(),
+        mergeCandidates = emptyImmutableList(),
+        onChosenMergeCandidateChange = {},
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -8,6 +8,7 @@ import com.kssidll.arru.data.repository.ProductProducerRepositorySource
 import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.usecase.data.DeleteProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductProducerEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductProducerUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductProducerEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductProducerUseCase
@@ -90,6 +91,14 @@ class ProductProducerModule {
         productProducerRepository: ProductProducerRepositorySource
     ): GetProductProducerEntityUseCase {
         return GetProductProducerEntityUseCase(productProducerRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllProductProducerEntityUseCase(
+        productProducerRepository: ProductProducerRepositorySource
+    ): GetAllProductProducerEntityUseCase {
+        return GetAllProductProducerEntityUseCase(productProducerRepository)
     }
 
     /** DOMAIN */

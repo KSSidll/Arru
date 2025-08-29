@@ -40,12 +40,12 @@ fun EditItemRoute(
 
     LaunchedEffect(itemId) { viewModel.updateState(itemId) }
 
-    LaunchedEffect(providedProductId, providedProductVariantId) {
-        providedProductId?.let { viewModel.handleEvent(ModifyItemEvent.SelectProduct(it)) }
+    LaunchedEffect(providedProductId) {
+        viewModel.handleEvent(ModifyItemEvent.SelectProduct(providedProductId))
+    }
 
-        providedProductVariantId?.let {
-            viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(it))
-        }
+    LaunchedEffect(providedProductVariantId) {
+        providedProductVariantId?.let { ModifyItemEvent.SelectProductVariant(it) }
     }
 
     ModifyItemScreenImpl(

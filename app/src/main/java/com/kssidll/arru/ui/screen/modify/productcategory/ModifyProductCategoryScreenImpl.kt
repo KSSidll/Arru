@@ -21,6 +21,7 @@ import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.data.ProductCategoryEntity
 import com.kssidll.arru.domain.data.Field
+import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArruTheme
@@ -72,24 +73,45 @@ fun ModifyProductCategoryScreenImpl(
     submitButtonText: String = stringResource(id = R.string.item_product_category_add),
 ) {
     ModifyScreen(
-        onBack = onBack,
-        title = stringResource(id = R.string.item_product_category),
-        onSubmit = onSubmit,
-        onDelete = onDelete,
-        onMerge = onMerge,
-        mergeCandidates = mergeCandidates,
-        mergeCandidatesTextTransformation = { it.name },
-        mergeConfirmMessageTemplate = mergeConfirmMessageTemplate,
-        chosenMergeCandidate = chosenMergeCandidate,
-        onChosenMergeCandidateChange = onChosenMergeCandidateChange,
-        showMergeConfirmDialog = showMergeConfirmDialog,
-        onShowMergeConfirmDialogChange = onShowMergeConfirmDialogChange,
-        submitButtonText = submitButtonText,
-        showDeleteWarning = state.showDeleteWarning,
-        deleteWarningConfirmed = state.deleteWarningConfirmed,
-        deleteWarningMessage =
-            stringResource(id = R.string.item_product_category_delete_warning_text),
-        modifier = modifier,
+        // onBack = onBack,
+        // title = stringResource(id = R.string.item_product_category),
+        // onSubmit = onSubmit,
+        // onDelete = onDelete,
+        // onMerge = onMerge,
+        // mergeCandidates = mergeCandidates,
+        // mergeCandidatesTextTransformation = { it.name },
+        // mergeConfirmMessageTemplate = mergeConfirmMessageTemplate,
+        // chosenMergeCandidate = chosenMergeCandidate,
+        // onChosenMergeCandidateChange = onChosenMergeCandidateChange,
+        // showMergeConfirmDialog = showMergeConfirmDialog,
+        // onShowMergeConfirmDialogChange = onShowMergeConfirmDialogChange,
+        // submitButtonText = submitButtonText,
+        // showDeleteWarning = state.showDeleteWarning,
+        // deleteWarningConfirmed = state.deleteWarningConfirmed,
+        // deleteWarningMessage =
+        //     stringResource(id = R.string.item_product_category_delete_warning_text),
+        // modifier = modifier,
+        onBack = {},
+        title = "test",
+        onSubmit = {},
+        submitButtonText = "Submit it",
+        onDelete = {},
+        isDeleteVisible = true,
+        isDeleteWarningMessageVisible = false,
+        onDeleteWarningMessageVisibleChange = {},
+        deleteWarningMessage = String(),
+        isDeleteWarningConfirmed = false,
+        onDeleteWarningConfirmedChange = {},
+        onMerge = {},
+        isMergeVisible = true,
+        isMergeSearchDialogVisible = false,
+        onMergeSearchDialogVisibleChange = {},
+        mergeSearchDialogCandidateTextTransformation = { String() },
+        isMergeConfirmVisible = false,
+        onMergeConfirmVisibleChange = {},
+        mergeConfirmMessage = String(),
+        mergeCandidates = emptyImmutableList(),
+        onChosenMergeCandidateChange = {},
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

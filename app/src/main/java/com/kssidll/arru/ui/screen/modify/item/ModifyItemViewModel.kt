@@ -47,7 +47,7 @@ sealed class ModifyItemEvent {
 
     data object DeleteItem : ModifyItemEvent()
 
-    data class SelectProduct(val productId: Long) : ModifyItemEvent()
+    data class SelectProduct(val productId: Long?) : ModifyItemEvent()
 
     data class SelectProductVariant(val productVariantId: Long?) : ModifyItemEvent()
 
@@ -238,10 +238,20 @@ abstract class ModifyItemViewModel : ViewModel() {
         return true
     }
 
-    protected fun handleSelectProduct(productId: Long) =
+    protected fun handleSelectProduct(productId: Long?) =
         viewModelScope.launch {
             cancelProductListener()
             cancelProductVariantListener()
+
+            if (productId == null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedProduct = Field.Loaded(),
+                        selectedProductVariant = Field.Loaded(),
+                    )
+                }
+                return@launch
+            }
 
             val productVariantId = _uiState.value.selectedProductVariant.data?.id
 

@@ -1,56 +1,49 @@
 package com.kssidll.arru.ui.screen.modify.product.editproduct
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductEntity
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
-import com.kssidll.arru.data.repository.ProductProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.domain.usecase.data.DeleteProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.DeleteProductEntityUseCaseResult
+import com.kssidll.arru.domain.usecase.data.GetAllProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductProducerEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeProductEntityUseCaseResult
 import com.kssidll.arru.domain.usecase.data.UpdateProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEvent
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEventResult
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-// TODO refactor uiState Event UseCase
 
 @HiltViewModel
 class EditProductViewModel
 @Inject
 constructor(
-    override val productRepository: ProductRepositorySource,
-    override val producerRepository: ProductProducerRepositorySource,
-    override val categoryRepository: ProductCategoryRepositorySource,
+    private val getProductEntityUseCase: GetProductEntityUseCase,
     private val updateProductEntityUseCase: UpdateProductEntityUseCase,
     private val deleteProductEntityUseCase: DeleteProductEntityUseCase,
     private val mergeProductEntityUseCase: MergeProductEntityUseCase,
+    override val getAllProductEntityUseCase: GetAllProductEntityUseCase,
+    override val getAllProductCategoryEntityUseCase: GetAllProductCategoryEntityUseCase,
+    override val getAllProductProducerEntityUseCase: GetAllProductProducerEntityUseCase,
+    override val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase,
+    override val getProductProducerEntityUseCase: GetProductProducerEntityUseCase,
 ) : ModifyProductViewModel() {
     private var mProduct: ProductEntity? = null
 
-    private val mMergeMessageProductName: MutableState<String> = mutableStateOf(String())
-    val mergeMessageProductName
-        get() = mMergeMessageProductName.value
-
-    val chosenMergeCandidate: MutableState<ProductEntity?> = mutableStateOf(null)
-    val showMergeConfirmDialog: MutableState<Boolean> = mutableStateOf(false)
-
     suspend fun checkExists(id: Long): Boolean {
-        return productRepository.get(id).first() != null
+        return getProductEntityUseCase(id).first() != null
     }
 
     fun updateState(productId: Long) =
@@ -58,145 +51,233 @@ constructor(
             // skip state update for repeating productId
             if (productId == mProduct?.id) return@launch
 
-            screenState.name.apply { value = value.toLoading() }
-            screenState.selectedProductProducer.apply { value = value.toLoading() }
-            screenState.selectedProductCategory.apply { value = value.toLoading() }
-
-            mProduct = productRepository.get(productId).first()
-            mMergeMessageProductName.value = mProduct?.name.orEmpty()
-
-            val producer: ProductProducerEntity? =
-                mProduct?.productProducerEntityId?.let { producerRepository.get(it).first() }
-            val category =
-                mProduct?.productCategoryEntityId?.let { categoryRepository.get(it).first() }
-
-            screenState.name.apply {
-                value = mProduct?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            _uiState.update { currentState ->
+                currentState.copy(
+                    name = currentState.name.toLoading(),
+                    selectedProductProducer = currentState.selectedProductProducer.toLoading(),
+                    selectedProductCategory = currentState.selectedProductCategory.toLoading(),
+                )
             }
 
-            screenState.selectedProductProducer.apply {
-                value = producer?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+            mProduct = getProductEntityUseCase(productId).first()
+
+            _uiState.update { currentState ->
+                currentState.copy(
+                    currentProduct = mProduct,
+                    name =
+                        mProduct?.name?.let { Field.Loaded(it) }
+                            ?: currentState.name.toLoadedOrError(),
+                )
             }
 
-            screenState.selectedProductCategory.apply {
-                value = category?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
-            }
+            setProductProducerListener(mProduct?.productProducerEntityId)
+            setProductCategoryListener(mProduct?.productCategoryEntityId)
         }
 
-    /** @return list of merge candidates as flow */
-    fun allMergeCandidates(productId: Long): Flow<ImmutableList<ProductEntity>> {
-        return productRepository.all().map {
-            it.filter { item -> item.id != productId }.toImmutableList()
-        }
-    }
+    init {
+        init()
 
-    suspend fun updateProduct(productId: Long): Boolean {
-        screenState.attemptedToSubmit.value = true
-
-        val result =
-            updateProductEntityUseCase(
-                id = productId,
-                name = screenState.name.value.data,
-                productProducerEntityId = screenState.selectedProductProducer.value.data?.id,
-                productCategoryEntityId = screenState.selectedProductCategory.value.data?.id,
-            )
-
-        return when (result) {
-            is UpdateProductEntityUseCaseResult.Error -> {
-                result.errors.forEach {
-                    when (it) {
-                        UpdateProductEntityUseCaseResult.ProductIdInvalid -> {
-                            Log.e("ModifyProduct", "Insert invalid product `${productId}`")
-                        }
-                        UpdateProductEntityUseCaseResult.NameDuplicateValue -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.DuplicateValueError)
-                            }
-                        }
-                        UpdateProductEntityUseCaseResult.NameNoValue -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.NoValueError)
-                            }
-                        }
-                        UpdateProductEntityUseCaseResult.ProductCategoryIdInvalid -> {
-                            screenState.selectedProductCategory.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-                        UpdateProductEntityUseCaseResult.ProductCategoryNoValue -> {
-                            screenState.selectedProductCategory.apply {
-                                value = value.toError(FieldError.NoValueError)
-                            }
-                        }
-                        UpdateProductEntityUseCaseResult.ProductProducerIdInvalid -> {
-                            screenState.selectedProductProducer.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-                    }
-                }
-
-                false
-            }
-            is UpdateProductEntityUseCaseResult.Success -> {
-                true
-            }
+        _uiState.update { currentState ->
+            currentState.copy(isDeleteVisible = true, isMergeVisible = true)
         }
     }
 
-    suspend fun deleteProduct(productId: Long): Boolean {
-        val result = deleteProductEntityUseCase(productId, screenState.deleteWarningConfirmed.value)
-
-        return when (result) {
-            is DeleteProductEntityUseCaseResult.Error -> {
-                result.errors.forEach {
-                    when (it) {
-                        DeleteProductEntityUseCaseResult.DangerousDelete -> {
-                            screenState.showDeleteWarning.value = true
-                        }
-                        DeleteProductEntityUseCaseResult.ProductIdInvalid -> {
-                            Log.e("ModifyProduct", "Tried to delete product with invalid id")
-                        }
-                    }
+    override suspend fun handleEvent(event: ModifyProductEvent): ModifyProductEventResult {
+        return when (event) {
+            is ModifyProductEvent.SetDangerousDeleteDialogVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(isDangerousDeleteDialogVisible = event.visible)
                 }
 
-                false
+                ModifyProductEventResult.Success
             }
-            is DeleteProductEntityUseCaseResult.Success -> {
-                true
-            }
-        }
-    }
-
-    suspend fun mergeWith(mergeCandidate: ProductEntity): ProductEntity? {
-        if (mProduct == null) {
-            Log.e("ModifyProduct", "Tried to merge product without being set")
-            return null
-        }
-
-        val result = mergeProductEntityUseCase(mProduct!!.id, mergeCandidate.id)
-
-        return when (result) {
-            is MergeProductEntityUseCaseResult.Error -> {
-                result.errors.forEach {
-                    when (it) {
-                        MergeProductEntityUseCaseResult.MergeIntoIdInvalid -> {
-                            Log.e(
-                                "ModifyProduct",
-                                "Tried to merge product but merge id was invalid",
-                            )
-                        }
-                        MergeProductEntityUseCaseResult.ProductIdInvalid -> {
-                            Log.e("ModifyProduct", "Tried to merge product but id was invalid")
-                        }
-                    }
+            is ModifyProductEvent.SetDangerousDeleteDialogConfirmation -> {
+                _uiState.update { currentState ->
+                    currentState.copy(isDangerousDeleteDialogConfirmed = event.confirmed)
                 }
 
-                null
+                ModifyProductEventResult.Success
             }
-            is MergeProductEntityUseCaseResult.Success -> {
-                result.mergedEntity
+            is ModifyProductEvent.SetMergeSearchDialogVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(isMergeSearchDialogVisible = event.visible)
+                }
+
+                ModifyProductEventResult.Success
             }
+            is ModifyProductEvent.SetMergeConfirmationDialogVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(isMergeConfirmationDialogVisible = event.visible)
+                }
+
+                ModifyProductEventResult.Success
+            }
+            is ModifyProductEvent.SelectMergeCandidate -> {
+                _uiState.update { currentState ->
+                    currentState.copy(selectedMergeCandidate = event.mergeInto)
+                }
+
+                ModifyProductEventResult.Success
+            }
+            is ModifyProductEvent.DeleteProduct -> {
+                val state = uiState.value
+                val result =
+                    mProduct?.let { product ->
+                        deleteProductEntityUseCase(
+                            id = product.id,
+                            state.isDangerousDeleteDialogConfirmed,
+                        )
+                    } ?: return ModifyProductEventResult.Success
+
+                when (result) {
+                    is DeleteProductEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                DeleteProductEntityUseCaseResult.ProductIdInvalid -> {
+                                    Log.e(
+                                        "ModifyProduct",
+                                        "Delete invalid product id `${mProduct?.id}`",
+                                    )
+                                }
+                                DeleteProductEntityUseCaseResult.DangerousDelete -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(isDangerousDeleteDialogVisible = true)
+                                    }
+                                }
+                            }
+                        }
+
+                        ModifyProductEventResult.Failure
+                    }
+                    is DeleteProductEntityUseCaseResult.Success -> {
+                        ModifyProductEventResult.Success
+                    }
+                }
+            }
+            is ModifyProductEvent.MergeProduct -> {
+                if (mProduct == null) {
+                    Log.e("ModifyProduct", "Tried to merge product without being set")
+                    return ModifyProductEventResult.Failure
+                }
+
+                val state = uiState.value
+
+                if (state.selectedMergeCandidate == null) {
+                    Log.e("ModifyProduct", "Tried to merge product without merge being set")
+                    return ModifyProductEventResult.Failure
+                }
+
+                val result =
+                    mergeProductEntityUseCase(mProduct!!.id, state.selectedMergeCandidate.id)
+
+                when (result) {
+                    is MergeProductEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                MergeProductEntityUseCaseResult.MergeIntoIdInvalid -> {
+                                    Log.e(
+                                        "ModifyProduct",
+                                        "Tried to merge product but merge id was invalid",
+                                    )
+                                }
+                                MergeProductEntityUseCaseResult.ProductIdInvalid -> {
+                                    Log.e(
+                                        "ModifyProduct",
+                                        "Tried to merge product but id was invalid",
+                                    )
+                                }
+                            }
+                        }
+
+                        ModifyProductEventResult.Failure
+                    }
+                    is MergeProductEntityUseCaseResult.Success -> {
+                        ModifyProductEventResult.SuccessMerge(result.mergedEntity.id)
+                    }
+                }
+            }
+            is ModifyProductEvent.Submit -> {
+                val state = uiState.value
+
+                val result =
+                    mProduct?.id?.let {
+                        updateProductEntityUseCase(
+                            id = it,
+                            name = state.name.data,
+                            productProducerEntityId = state.selectedProductProducer.data?.id,
+                            productCategoryEntityId = state.selectedProductCategory.data?.id,
+                        )
+                    } ?: return ModifyProductEventResult.Success
+
+                when (result) {
+                    is UpdateProductEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                UpdateProductEntityUseCaseResult.ProductIdInvalid -> {
+                                    Log.e(
+                                        "ModifyProduct",
+                                        "Update invalid product `${mProduct?.id}`",
+                                    )
+                                }
+                                UpdateProductEntityUseCaseResult.NameDuplicateValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            name =
+                                                currentState.name.toError(
+                                                    FieldError.DuplicateValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateProductEntityUseCaseResult.NameNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            name =
+                                                currentState.name.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
+                                UpdateProductEntityUseCaseResult.ProductCategoryIdInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductCategory =
+                                                currentState.selectedProductCategory.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateProductEntityUseCaseResult.ProductCategoryNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductCategory =
+                                                currentState.selectedProductCategory.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateProductEntityUseCaseResult.ProductProducerIdInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductProducer =
+                                                currentState.selectedProductProducer.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        ModifyProductEventResult.Failure
+                    }
+                    is UpdateProductEntityUseCaseResult.Success -> {
+                        ModifyProductEventResult.Success
+                    }
+                }
+            }
+            else -> super.handleEvent(event)
         }
     }
 }

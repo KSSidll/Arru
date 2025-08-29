@@ -1,111 +1,218 @@
 package com.kssidll.arru.ui.screen.modify.product
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
-import com.kssidll.arru.data.repository.ProductProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.usecase.data.GetAllProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductProducerEntityUseCase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// TODO refactor uiState Event UseCase
+@Immutable
+data class ModifyProductUiState(
+    val currentProduct: ProductEntity? = null,
+    val allProducts: ImmutableList<ProductEntity> = emptyImmutableList(),
+    val allProductCategories: ImmutableList<ProductCategoryEntity> = emptyImmutableList(),
+    val allProductProducers: ImmutableList<ProductProducerEntity> = emptyImmutableList(),
+    val name: Field<String> = Field.Loaded(),
+    val selectedProductCategory: Field<ProductCategoryEntity> = Field.Loaded(),
+    val selectedProductProducer: Field<ProductProducerEntity?> = Field.Loaded(),
+    val selectedMergeCandidate: ProductEntity? = null,
+    val isProductCategorySearchDialogExpanded: Boolean = false,
+    val isProductProducerSearchDialogExpanded: Boolean = false,
+    val isDeleteVisible: Boolean = false,
+    val isDangerousDeleteDialogVisible: Boolean = false,
+    val isDangerousDeleteDialogConfirmed: Boolean = false,
+    val isMergeVisible: Boolean = false,
+    val isMergeSearchDialogVisible: Boolean = false,
+    val isMergeConfirmationDialogVisible: Boolean = false,
+)
 
-/**
- * Base [ViewModel] class for Product modification view models
- *
- * @property screenState A [ModifyProductScreenState] instance to use as screen state representation
- */
-abstract class ModifyProductViewModel : ViewModel() {
-    protected abstract val productRepository: ProductRepositorySource
-    protected abstract val producerRepository: ProductProducerRepositorySource
-    protected abstract val categoryRepository: ProductCategoryRepositorySource
-    internal val screenState: ModifyProductScreenState = ModifyProductScreenState()
+@Immutable
+sealed class ModifyProductEvent {
+    data object NavigateBack : ModifyProductEvent()
 
-    private var mProducerListener: Job? = null
-    private var mCategoryListener: Job? = null
+    data object Submit : ModifyProductEvent()
 
-    suspend fun setSelectedProducer(providedProducerId: Long?) {
-        if (providedProducerId != null) {
-            screenState.selectedProductProducer.apply { value = value.toLoading() }
-            onNewProducerSelected(producerRepository.get(providedProducerId).first())
-        }
-    }
+    data object DeleteProduct : ModifyProductEvent()
 
-    suspend fun setSelectedCategory(providedCategoryId: Long?) {
-        if (providedCategoryId != null) {
-            screenState.selectedProductCategory.apply { value = value.toLoading() }
-            onNewCategorySelected(categoryRepository.get(providedCategoryId).first())
-        }
-    }
+    data class SetDangerousDeleteDialogVisibility(val visible: Boolean) : ModifyProductEvent()
 
-    fun onNewProducerSelected(producer: ProductProducerEntity?) {
-        // Don't do anything if the producer is the same as already selected
-        if (screenState.selectedProductProducer.value.data == producer) {
-            screenState.selectedProductProducer.apply { value = value.toLoaded() }
-            return
-        }
+    data class SetDangerousDeleteDialogConfirmation(val confirmed: Boolean) : ModifyProductEvent()
 
-        screenState.selectedProductProducer.value = Field.Loaded(producer)
+    data class SetName(val name: String?) : ModifyProductEvent()
 
-        mProducerListener?.cancel()
-        if (producer != null) {
-            mProducerListener =
-                viewModelScope.launch {
-                    producerRepository.get(producer.id).collectLatest {
-                        screenState.selectedProductProducer.value = Field.Loaded(it)
-                    }
-                }
-        }
-    }
+    data class SelectProductCategory(val productCategoryId: Long?) : ModifyProductEvent()
 
-    fun onNewCategorySelected(category: ProductCategoryEntity?) {
-        // Don't do anything if the producer is the same as already selected
-        if (screenState.selectedProductCategory.value.data == category) {
-            screenState.selectedProductCategory.apply { value = value.toLoaded() }
-            return
-        }
+    data class SelectProductProducer(val productProducerId: Long?) : ModifyProductEvent()
 
-        screenState.selectedProductCategory.value = Field.Loaded(category)
+    data class SetProductCategorySearchDialogVisibility(val visible: Boolean) :
+        ModifyProductEvent()
 
-        mCategoryListener?.cancel()
-        if (category != null) {
-            mCategoryListener =
-                viewModelScope.launch {
-                    categoryRepository.get(category.id).collectLatest {
-                        screenState.selectedProductCategory.value = Field.Loaded(it)
-                    }
-                }
-        }
-    }
+    data class SetProductProducerSearchDialogVisibility(val visible: Boolean) :
+        ModifyProductEvent()
 
-    /** @return List of all categories */
-    fun allCategories(): Flow<ImmutableList<ProductCategoryEntity>> {
-        return categoryRepository.all()
-    }
+    data class NavigateEditProductCategory(val productCategoryId: Long) : ModifyProductEvent()
 
-    /** @return List of all producers */
-    fun allProducers(): Flow<ImmutableList<ProductProducerEntity>> {
-        return producerRepository.all()
-    }
+    data class NavigateEditProductProducer(val productProducerId: Long) : ModifyProductEvent()
+
+    data class NavigateAddProductCategory(val name: String?) : ModifyProductEvent()
+
+    data class NavigateAddProductProducer(val name: String?) : ModifyProductEvent()
+
+    data class MergeProduct(val mergeInto: ProductEntity?) : ModifyProductEvent()
+
+    data class SetMergeConfirmationDialogVisibility(val visible: Boolean) : ModifyProductEvent()
+
+    data class SetMergeSearchDialogVisibility(val visible: Boolean) : ModifyProductEvent()
+
+    data class SelectMergeCandidate(val mergeInto: ProductEntity?) : ModifyProductEvent()
 }
 
-/** Data representing [ModifyProductScreenImpl] screen state */
-data class ModifyProductScreenState(
-    val selectedProductCategory: MutableState<Field<ProductCategoryEntity>> =
-        mutableStateOf(Field.Loaded()),
-    val selectedProductProducer: MutableState<Field<ProductProducerEntity?>> =
-        mutableStateOf(Field.Loaded()),
-    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-    val isCategorySearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    val isProducerSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-) : ModifyScreenState()
+sealed class ModifyProductEventResult {
+    data object Success : ModifyProductEventResult()
+
+    data object Failure : ModifyProductEventResult()
+
+    data class SuccessInsert(val id: Long) : ModifyProductEventResult()
+
+    data class SuccessMerge(val id: Long) : ModifyProductEventResult()
+}
+
+abstract class ModifyProductViewModel : ViewModel() {
+    @Suppress("PropertyName") protected val _uiState = MutableStateFlow(ModifyProductUiState())
+    val uiState = _uiState.asStateFlow()
+
+    protected abstract val getAllProductEntityUseCase: GetAllProductEntityUseCase
+    protected abstract val getAllProductCategoryEntityUseCase: GetAllProductCategoryEntityUseCase
+    protected abstract val getAllProductProducerEntityUseCase: GetAllProductProducerEntityUseCase
+    protected abstract val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase
+    protected abstract val getProductProducerEntityUseCase: GetProductProducerEntityUseCase
+
+    private var _productProducerListener: Job? = null
+    private var _productCategoryListener: Job? = null
+
+    fun init() {
+        viewModelScope.launch {
+            getAllProductEntityUseCase().collectLatest {
+                _uiState.update { currentState -> currentState.copy(allProducts = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            getAllProductCategoryEntityUseCase().collectLatest {
+                _uiState.update { currentState -> currentState.copy(allProductCategories = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            getAllProductProducerEntityUseCase().collectLatest {
+                _uiState.update { currentState -> currentState.copy(allProductProducers = it) }
+            }
+        }
+    }
+
+    open suspend fun handleEvent(event: ModifyProductEvent): ModifyProductEventResult {
+        when (event) {
+            is ModifyProductEvent.NavigateAddProductCategory -> {}
+            is ModifyProductEvent.NavigateAddProductProducer -> {}
+            is ModifyProductEvent.NavigateBack -> {}
+            is ModifyProductEvent.NavigateEditProductCategory -> {}
+            is ModifyProductEvent.NavigateEditProductProducer -> {}
+            is ModifyProductEvent.Submit -> {}
+            is ModifyProductEvent.DeleteProduct -> {}
+            is ModifyProductEvent.SetDangerousDeleteDialogVisibility -> {}
+            is ModifyProductEvent.SetDangerousDeleteDialogConfirmation -> {}
+            is ModifyProductEvent.MergeProduct -> {}
+            is ModifyProductEvent.SetMergeConfirmationDialogVisibility -> {}
+            is ModifyProductEvent.SetMergeSearchDialogVisibility -> {}
+            is ModifyProductEvent.SelectMergeCandidate -> {}
+            is ModifyProductEvent.SetProductCategorySearchDialogVisibility -> {
+                _uiState.update { currenState ->
+                    currenState.copy(isProductCategorySearchDialogExpanded = event.visible)
+                }
+            }
+            is ModifyProductEvent.SetProductProducerSearchDialogVisibility -> {
+                _uiState.update { currenState ->
+                    currenState.copy(isProductProducerSearchDialogExpanded = event.visible)
+                }
+            }
+            is ModifyProductEvent.SelectProductCategory ->
+                handleSelectProductCategory(event.productCategoryId)
+            is ModifyProductEvent.SelectProductProducer ->
+                handleSelectProductProducer(event.productProducerId)
+            is ModifyProductEvent.SetName -> {
+                _uiState.update { currenState -> currenState.copy(name = Field.Loaded(event.name)) }
+            }
+        }
+
+        return ModifyProductEventResult.Success
+    }
+
+    protected fun handleSelectProductCategory(productCategoryId: Long?) {
+        setProductCategoryListener(productCategoryId)
+    }
+
+    protected fun handleSelectProductProducer(productProducerId: Long?) {
+        setProductProducerListener(productProducerId)
+    }
+
+    protected fun cancelProductCategoryListener() {
+        _productCategoryListener?.cancel()
+    }
+
+    protected fun setProductCategoryListener(productCategoryId: Long?) {
+        cancelProductCategoryListener()
+        if (productCategoryId == null) {
+            _uiState.update { currentState ->
+                currentState.copy(selectedProductCategory = Field.Loaded())
+            }
+            return
+        }
+
+        _productCategoryListener =
+            viewModelScope.launch {
+                getProductCategoryEntityUseCase(productCategoryId).collectLatest {
+                    _uiState.update { currentState ->
+                        currentState.copy(selectedProductCategory = Field.Loaded(it))
+                    }
+                }
+            }
+    }
+
+    protected fun cancelProductProducerListener() {
+        _productProducerListener?.cancel()
+    }
+
+    protected fun setProductProducerListener(productProducerId: Long?) {
+        cancelProductProducerListener()
+        if (productProducerId == null) {
+            _uiState.update { currentState ->
+                currentState.copy(selectedProductProducer = Field.Loaded())
+            }
+            return
+        }
+
+        _productProducerListener =
+            viewModelScope.launch {
+                getProductProducerEntityUseCase(productProducerId).collectLatest {
+                    _uiState.update { currentState ->
+                        currentState.copy(selectedProductProducer = Field.Loaded(it))
+                    }
+                }
+            }
+    }
+}
