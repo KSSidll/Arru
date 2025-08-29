@@ -103,9 +103,8 @@ fun <E> List<E>.movingMedian(): List<Float> where E : SortSource, E : FloatSourc
  *
  * @return list representing the [FloatFloatPair] of index (x) and moving median (y)
  */
-fun <E> List<E>.movingMedianChartData(): List<FloatFloatPair> where
-E : SortSource,
-E : FloatSource {
+fun <E> List<E>.movingMedianChartData(): List<FloatFloatPair>
+    where E : SortSource, E : FloatSource {
     if (isEmpty()) return emptyList()
 
     return movingMedian().mapIndexed { index, median -> FloatFloatPair(index.toFloat(), median) }
