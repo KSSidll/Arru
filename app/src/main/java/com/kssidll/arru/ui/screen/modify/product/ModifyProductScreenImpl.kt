@@ -64,8 +64,8 @@ fun ModifyProductScreenImpl(
         },
         mergeConfirmMessage =
             stringResource(R.string.merge_action_message_template)
-                .replace("{value_2", uiState.selectedMergeCandidate?.name ?: "???")
-                .replace("{value_1", uiState.currentProduct?.name ?: "???"),
+                .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
+                .replace("{value_1}", uiState.currentProduct?.name ?: "???"),
         mergeCandidates =
             uiState.allProducts.filterNot { it.id == uiState.currentProduct?.id }.toImmutableList(),
         onChosenMergeCandidateChange = { onEvent(ModifyProductEvent.SelectMergeCandidate(it)) },

@@ -65,8 +65,8 @@ fun ModifyProductCategoryScreenImpl(
         },
         mergeConfirmMessage =
             stringResource(R.string.merge_action_message_template)
-                .replace("{value_2", uiState.selectedMergeCandidate?.name ?: "???")
-                .replace("{value_1", uiState.currentProductCategory?.name ?: "???"),
+                .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
+                .replace("{value_1}", uiState.currentProductCategory?.name ?: "???"),
         mergeCandidates =
             uiState.allProductCategories
                 .filterNot { it.id == uiState.currentProductCategory?.id }

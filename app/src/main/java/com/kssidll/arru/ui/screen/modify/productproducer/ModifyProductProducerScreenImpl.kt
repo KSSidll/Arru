@@ -65,8 +65,8 @@ fun ModifyProductProducerScreenImpl(
         },
         mergeConfirmMessage =
             stringResource(R.string.merge_action_message_template)
-                .replace("{value_2", uiState.selectedMergeCandidate?.name ?: "???")
-                .replace("{value_1", uiState.currentProductProducer?.name ?: "???"),
+                .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
+                .replace("{value_1}", uiState.currentProductProducer?.name ?: "???"),
         mergeCandidates =
             uiState.allProductProducers
                 .filterNot { it.id == uiState.currentProductProducer?.id }
