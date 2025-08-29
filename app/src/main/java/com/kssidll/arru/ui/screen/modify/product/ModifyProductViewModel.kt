@@ -89,6 +89,10 @@ sealed class ModifyProductEventResult {
 
     data class SuccessInsert(val id: Long) : ModifyProductEventResult()
 
+    data object SuccessUpdate : ModifyProductEventResult()
+
+    data object SuccessDelete : ModifyProductEventResult()
+
     data class SuccessMerge(val id: Long) : ModifyProductEventResult()
 }
 

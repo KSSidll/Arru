@@ -12,6 +12,7 @@ import com.kssidll.arru.domain.usecase.data.GetTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertItemEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertItemEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEventResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -42,12 +43,11 @@ constructor(
         init()
     }
 
-    /** @return true if handled without errors, false otherwise */
-    override suspend fun handleEvent(event: ModifyItemEvent): Boolean {
+    override suspend fun handleEvent(event: ModifyItemEvent): ModifyItemEventResult {
         when (event) {
             is ModifyItemEvent.Submit -> {
                 val state = uiState.value
-                val insertResult =
+                val result =
                     transactionEntityId?.let { transactionId ->
                         insertItemEntityUseCase(
                             transactionEntityId = transactionId,
@@ -56,11 +56,11 @@ constructor(
                             quantity = state.quantity.data,
                             price = state.price.data,
                         )
-                    } ?: return true
+                    } ?: return ModifyItemEventResult.Failure
 
-                return when (insertResult) {
+                return when (result) {
                     is InsertItemEntityUseCaseResult.Error -> {
-                        insertResult.errors.forEach {
+                        result.errors.forEach {
                             when (it) {
                                 InsertItemEntityUseCaseResult.PriceNoValue -> {
                                     _uiState.update { currentState ->
@@ -152,10 +152,11 @@ constructor(
                             }
                         }
 
-                        false
+                        ModifyItemEventResult.Failure
                     }
 
-                    is InsertItemEntityUseCaseResult.Success -> true
+                    is InsertItemEntityUseCaseResult.Success ->
+                        ModifyItemEventResult.SuccessInsert(result.id)
                 }
             }
             else -> return super.handleEvent(event)

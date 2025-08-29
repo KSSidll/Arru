@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kssidll.arru.data.data.ItemEntity
 import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 
 @Immutable
 data class ModifyItemUiState(
+    val currentItem: ItemEntity? = null,
     val allProducts: ImmutableList<ProductEntity> = emptyImmutableList(),
     val allProductVariants: ImmutableList<ProductVariantEntity> = emptyImmutableList(),
     val selectedProduct: Field<ProductEntity> = Field.Loaded(),
@@ -77,6 +79,18 @@ sealed class ModifyItemEvent {
         ModifyItemEvent()
 }
 
+sealed class ModifyItemEventResult {
+    data object Success : ModifyItemEventResult()
+
+    data object Failure : ModifyItemEventResult()
+
+    data class SuccessInsert(val id: Long) : ModifyItemEventResult()
+
+    data object SuccessUpdate : ModifyItemEventResult()
+
+    data object SuccessDelete : ModifyItemEventResult()
+}
+
 abstract class ModifyItemViewModel : ViewModel() {
     @Suppress("PropertyName") protected val _uiState = MutableStateFlow(ModifyItemUiState())
     val uiState = _uiState.asStateFlow()
@@ -104,7 +118,7 @@ abstract class ModifyItemViewModel : ViewModel() {
         }
     }
 
-    open suspend fun handleEvent(event: ModifyItemEvent): Boolean {
+    open suspend fun handleEvent(event: ModifyItemEvent): ModifyItemEventResult {
         when (event) {
             is ModifyItemEvent.NavigateBack -> {}
             is ModifyItemEvent.NavigateEditProduct -> {}
@@ -235,7 +249,7 @@ abstract class ModifyItemViewModel : ViewModel() {
             }
         }
 
-        return true
+        return ModifyItemEventResult.Success
     }
 
     protected fun handleSelectProduct(productId: Long?) =

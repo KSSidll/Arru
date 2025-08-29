@@ -1,50 +1,68 @@
 package com.kssidll.arru.ui.screen.modify.productcategory.addproductcategory
 
-import com.kssidll.arru.data.repository.ProductCategoryRepositorySource
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.GetAllProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductCategoryEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryEvent
+import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryEventResult
 import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-
-// TODO refactor uiState Event UseCase
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class AddProductCategoryViewModel
 @Inject
 constructor(
-    override val categoryRepository: ProductCategoryRepositorySource,
     private val insertProductCategoryEntityUseCase: InsertProductCategoryEntityUseCase,
+    override val getAllProductCategoryEntityUseCase: GetAllProductCategoryEntityUseCase,
 ) : ModifyProductCategoryViewModel() {
 
-    suspend fun addCategory(): Long? {
-        screenState.attemptedToSubmit.value = true
+    init {
+        init()
+    }
 
-        val result = insertProductCategoryEntityUseCase(name = screenState.name.value.data)
+    override suspend fun handleEvent(
+        event: ModifyProductCategoryEvent
+    ): ModifyProductCategoryEventResult {
+        return when (event) {
+            is ModifyProductCategoryEvent.Submit -> {
+                val state = uiState.value
+                val result = insertProductCategoryEntityUseCase(name = state.name.data)
 
-        return when (result) {
-            is InsertProductCategoryEntityUseCaseResult.Error -> {
-                result.errors.forEach {
-                    when (it) {
-                        InsertProductCategoryEntityUseCaseResult.NameDuplicateValue -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.DuplicateValueError)
+                when (result) {
+                    is InsertProductCategoryEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                InsertProductCategoryEntityUseCaseResult.NameDuplicateValue -> {
+                                    _uiState.update { currenState ->
+                                        currenState.copy(
+                                            name =
+                                                currenState.name.toError(
+                                                    FieldError.DuplicateValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertProductCategoryEntityUseCaseResult.NameNoValue -> {
+                                    _uiState.update { currenState ->
+                                        currenState.copy(
+                                            name = currenState.name.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
                             }
                         }
-                        InsertProductCategoryEntityUseCaseResult.NameNoValue -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.NoValueError)
-                            }
-                        }
+
+                        ModifyProductCategoryEventResult.Failure
+                    }
+                    is InsertProductCategoryEntityUseCaseResult.Success -> {
+                        ModifyProductCategoryEventResult.SuccessInsert(result.id)
                     }
                 }
-
-                null
             }
-            is InsertProductCategoryEntityUseCaseResult.Success -> {
-                result.id
-            }
+            else -> super.handleEvent(event)
         }
     }
 }

@@ -17,6 +17,7 @@ import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateItemEntityUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateItemEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEventResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -38,16 +39,16 @@ constructor(
     override val getProductVariantEntityUseCase: GetProductVariantEntityUseCase,
     override val getProductVariantEntityByProductUseCase: GetProductVariantEntityByProductUseCase,
 ) : ModifyItemViewModel() {
-    private var mItem: ItemEntity? = null
-
     suspend fun checkExists(id: Long): Boolean {
         return getItemEntityUseCase(id).first() != null
     }
 
     fun updateState(itemId: Long) =
         viewModelScope.launch {
+            val state = uiState.value
+
             // skip state update for repeating itemId
-            if (itemId == mItem?.id) return@launch
+            if (itemId == state.currentItem?.id) return@launch
 
             _uiState.update { currentState ->
                 currentState.copy(
@@ -58,9 +59,11 @@ constructor(
                 )
             }
 
-            mItem = getItemEntityUseCase(itemId).first()
+            val item = getItemEntityUseCase(itemId).first()
 
-            updateStateForItem(mItem)
+            _uiState.update { currentState -> currentState.copy(currentItem = item) }
+
+            updateStateForItem(item)
         }
 
     fun updateStateForItem(item: ItemEntity?) {
@@ -83,12 +86,12 @@ constructor(
         _uiState.update { currentState -> currentState.copy(isDeleteVisible = true) }
     }
 
-    override suspend fun handleEvent(event: ModifyItemEvent): Boolean {
+    override suspend fun handleEvent(event: ModifyItemEvent): ModifyItemEventResult {
         when (event) {
             is ModifyItemEvent.Submit -> {
                 val state = uiState.value
-                val updateResult =
-                    mItem?.let { item ->
+                val result =
+                    state.currentItem?.let { item ->
                         updateItemEntityUseCase(
                             id = item.id,
                             transactionEntityId = item.transactionEntityId,
@@ -97,14 +100,17 @@ constructor(
                             quantity = state.quantity.data,
                             price = state.price.data,
                         )
-                    } ?: return true
+                    } ?: return ModifyItemEventResult.Failure
 
-                return when (updateResult) {
+                return when (result) {
                     is UpdateItemEntityUseCaseResult.Error -> {
-                        updateResult.errors.forEach {
+                        result.errors.forEach {
                             when (it) {
                                 UpdateItemEntityUseCaseResult.ItemIdInvalid -> {
-                                    Log.e("ModifyItem", "Update invalid item `${mItem?.id}`")
+                                    Log.e(
+                                        "ModifyItem",
+                                        "Update invalid item `${state.currentItem.id}`",
+                                    )
                                 }
                                 UpdateItemEntityUseCaseResult.PriceNoValue -> {
                                     _uiState.update { currentState ->
@@ -193,35 +199,41 @@ constructor(
                                 UpdateItemEntityUseCaseResult.TransactionIdInvalid -> {
                                     Log.e(
                                         "ModifyItem",
-                                        "Update invalid transaction `${mItem?.transactionEntityId}`",
+                                        "Update invalid transaction `${state.currentItem.transactionEntityId}`",
                                     )
                                 }
                             }
                         }
 
-                        false
+                        ModifyItemEventResult.Failure
                     }
-                    is UpdateItemEntityUseCaseResult.Success -> true
+                    is UpdateItemEntityUseCaseResult.Success -> ModifyItemEventResult.SuccessUpdate
                 }
             }
             is ModifyItemEvent.DeleteItem -> {
-                val deleteResult =
-                    mItem?.let { item -> deleteItemEntityUseCase(id = item.id) } ?: return true
+                val state = uiState.value
 
-                return when (deleteResult) {
+                val result =
+                    state.currentItem?.let { item -> deleteItemEntityUseCase(id = item.id) }
+                        ?: return ModifyItemEventResult.SuccessDelete
+
+                return when (result) {
                     is DeleteItemEntityUseCaseResult.Error -> {
-                        deleteResult.errors.forEach {
+                        result.errors.forEach {
                             when (it) {
                                 DeleteItemEntityUseCaseResult.ItemIdInvalid -> {
-                                    Log.e("ModifyItem", "Delete invalid item id `${mItem?.id}`")
+                                    Log.e(
+                                        "ModifyItem",
+                                        "Delete invalid item id `${state.currentItem.id}`",
+                                    )
                                 }
                             }
                         }
 
-                        false
+                        ModifyItemEventResult.Failure
                     }
 
-                    is DeleteItemEntityUseCaseResult.Success -> true
+                    is DeleteItemEntityUseCaseResult.Success -> ModifyItemEventResult.SuccessDelete
                 }
             }
             else -> return super.handleEvent(event)

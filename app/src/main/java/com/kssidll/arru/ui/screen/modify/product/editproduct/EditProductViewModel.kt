@@ -2,7 +2,6 @@ package com.kssidll.arru.ui.screen.modify.product.editproduct
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.ProductEntity
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
 import com.kssidll.arru.domain.usecase.data.DeleteProductEntityUseCase
@@ -40,16 +39,15 @@ constructor(
     override val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase,
     override val getProductProducerEntityUseCase: GetProductProducerEntityUseCase,
 ) : ModifyProductViewModel() {
-    private var mProduct: ProductEntity? = null
-
     suspend fun checkExists(id: Long): Boolean {
         return getProductEntityUseCase(id).first() != null
     }
 
     fun updateState(productId: Long) =
         viewModelScope.launch {
+            val state = uiState.value
             // skip state update for repeating productId
-            if (productId == mProduct?.id) return@launch
+            if (productId == state.currentProduct?.id) return@launch
 
             _uiState.update { currentState ->
                 currentState.copy(
@@ -59,19 +57,19 @@ constructor(
                 )
             }
 
-            mProduct = getProductEntityUseCase(productId).first()
+            val product = getProductEntityUseCase(productId).first()
 
             _uiState.update { currentState ->
                 currentState.copy(
-                    currentProduct = mProduct,
+                    currentProduct = product,
                     name =
-                        mProduct?.name?.let { Field.Loaded(it) }
+                        product?.name?.let { Field.Loaded(it) }
                             ?: currentState.name.toLoadedOrError(),
                 )
             }
 
-            setProductProducerListener(mProduct?.productProducerEntityId)
-            setProductCategoryListener(mProduct?.productCategoryEntityId)
+            setProductProducerListener(product?.productProducerEntityId)
+            setProductCategoryListener(product?.productCategoryEntityId)
         }
 
     init {
@@ -122,12 +120,12 @@ constructor(
             is ModifyProductEvent.DeleteProduct -> {
                 val state = uiState.value
                 val result =
-                    mProduct?.let { product ->
+                    state.currentProduct?.let { product ->
                         deleteProductEntityUseCase(
                             id = product.id,
                             state.isDangerousDeleteDialogConfirmed,
                         )
-                    } ?: return ModifyProductEventResult.Success
+                    } ?: return ModifyProductEventResult.SuccessDelete
 
                 when (result) {
                     is DeleteProductEntityUseCaseResult.Error -> {
@@ -136,7 +134,7 @@ constructor(
                                 DeleteProductEntityUseCaseResult.ProductIdInvalid -> {
                                     Log.e(
                                         "ModifyProduct",
-                                        "Delete invalid product id `${mProduct?.id}`",
+                                        "Delete invalid product id `${state.currentProduct.id}`",
                                     )
                                 }
                                 DeleteProductEntityUseCaseResult.DangerousDelete -> {
@@ -150,17 +148,17 @@ constructor(
                         ModifyProductEventResult.Failure
                     }
                     is DeleteProductEntityUseCaseResult.Success -> {
-                        ModifyProductEventResult.Success
+                        ModifyProductEventResult.SuccessDelete
                     }
                 }
             }
             is ModifyProductEvent.MergeProduct -> {
-                if (mProduct == null) {
+                val state = uiState.value
+
+                if (state.currentProduct == null) {
                     Log.e("ModifyProduct", "Tried to merge product without being set")
                     return ModifyProductEventResult.Failure
                 }
-
-                val state = uiState.value
 
                 if (state.selectedMergeCandidate == null) {
                     Log.e("ModifyProduct", "Tried to merge product without merge being set")
@@ -168,7 +166,10 @@ constructor(
                 }
 
                 val result =
-                    mergeProductEntityUseCase(mProduct!!.id, state.selectedMergeCandidate.id)
+                    mergeProductEntityUseCase(
+                        state.currentProduct.id,
+                        state.selectedMergeCandidate.id,
+                    )
 
                 when (result) {
                     is MergeProductEntityUseCaseResult.Error -> {
@@ -200,14 +201,14 @@ constructor(
                 val state = uiState.value
 
                 val result =
-                    mProduct?.id?.let {
+                    state.currentProduct?.id?.let {
                         updateProductEntityUseCase(
                             id = it,
                             name = state.name.data,
                             productProducerEntityId = state.selectedProductProducer.data?.id,
                             productCategoryEntityId = state.selectedProductCategory.data?.id,
                         )
-                    } ?: return ModifyProductEventResult.Success
+                    } ?: return ModifyProductEventResult.SuccessUpdate
 
                 when (result) {
                     is UpdateProductEntityUseCaseResult.Error -> {
@@ -216,7 +217,7 @@ constructor(
                                 UpdateProductEntityUseCaseResult.ProductIdInvalid -> {
                                     Log.e(
                                         "ModifyProduct",
-                                        "Update invalid product `${mProduct?.id}`",
+                                        "Update invalid product `${state.currentProduct.id}`",
                                     )
                                 }
                                 UpdateProductEntityUseCaseResult.NameDuplicateValue -> {
@@ -273,7 +274,7 @@ constructor(
                         ModifyProductEventResult.Failure
                     }
                     is UpdateProductEntityUseCaseResult.Success -> {
-                        ModifyProductEventResult.Success
+                        ModifyProductEventResult.SuccessUpdate
                     }
                 }
             }

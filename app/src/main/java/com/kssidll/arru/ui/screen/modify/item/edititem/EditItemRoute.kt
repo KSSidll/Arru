@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEventResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -56,8 +57,11 @@ fun EditItemRoute(
                     is ModifyItemEvent.DecrementPrice -> viewModel.handleEvent(event)
                     is ModifyItemEvent.DecrementQuantity -> viewModel.handleEvent(event)
                     is ModifyItemEvent.DeleteItem -> {
-                        viewModel.handleEvent(event)
-                        if (!navigateBackLock.isLocked) {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyItemEventResult.SuccessDelete &&
+                                !navigateBackLock.isLocked
+                        ) {
                             navigateBackLock.tryLock()
                             navigateBack()
                         }
@@ -85,7 +89,11 @@ fun EditItemRoute(
                         viewModel.handleEvent(event)
                     is ModifyItemEvent.SetQuantity -> viewModel.handleEvent(event)
                     is ModifyItemEvent.Submit -> {
-                        if (viewModel.handleEvent(event) && !navigateBackLock.isLocked) {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyItemEventResult.SuccessUpdate &&
+                                !navigateBackLock.isLocked
+                        ) {
                             navigateBackLock.tryLock()
                             navigateBack()
                         }

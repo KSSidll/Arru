@@ -57,7 +57,8 @@ fun EditProductRoute(
                     is ModifyProductEvent.DeleteProduct -> {
                         val result = viewModel.handleEvent(event)
                         if (
-                            result is ModifyProductEventResult.Success && !navigateBackLock.isLocked
+                            result is ModifyProductEventResult.SuccessDelete &&
+                                !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
                             navigateBack(null)
@@ -69,10 +70,8 @@ fun EditProductRoute(
                             result is ModifyProductEventResult.SuccessMerge &&
                                 !navigateBackLock.isLocked
                         ) {
-                            if (!navigateBackLock.isLocked) {
-                                navigateBackLock.tryLock()
-                                navigateBack(result.id)
-                            }
+                            navigateBackLock.tryLock()
+                            navigateBack(result.id)
                         }
                     }
                     is ModifyProductEvent.NavigateAddProductCategory ->
@@ -106,15 +105,13 @@ fun EditProductRoute(
                     is ModifyProductEvent.SetProductProducerSearchDialogVisibility ->
                         viewModel.handleEvent(event)
                     is ModifyProductEvent.Submit -> {
-                        scope.launch {
-                            val result = viewModel.handleEvent(event)
-                            if (
-                                result is ModifyProductEventResult.Success &&
-                                    !navigateBackLock.isLocked
-                            ) {
-                                navigateBackLock.tryLock()
-                                navigateBack(productId)
-                            }
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyProductEventResult.SuccessUpdate &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(productId)
                         }
                     }
                 }

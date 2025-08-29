@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
+import com.kssidll.arru.ui.screen.modify.item.ModifyItemEventResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -52,7 +53,11 @@ fun AddItemRoute(
                     is ModifyItemEvent.DecrementPrice -> viewModel.handleEvent(event)
                     is ModifyItemEvent.DecrementQuantity -> viewModel.handleEvent(event)
                     is ModifyItemEvent.DeleteItem -> {
-                        if (viewModel.handleEvent(event) && !navigateBackLock.isLocked) {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyItemEventResult.SuccessDelete &&
+                                !navigateBackLock.isLocked
+                        ) {
                             navigateBackLock.tryLock()
                             navigateBack()
                         }
@@ -80,7 +85,11 @@ fun AddItemRoute(
                         viewModel.handleEvent(event)
                     is ModifyItemEvent.SetQuantity -> viewModel.handleEvent(event)
                     is ModifyItemEvent.Submit -> {
-                        if (viewModel.handleEvent(event) && !navigateBackLock.isLocked) {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyItemEventResult.SuccessInsert &&
+                                !navigateBackLock.isLocked
+                        ) {
                             navigateBackLock.lock()
                             navigateBack()
                         }
