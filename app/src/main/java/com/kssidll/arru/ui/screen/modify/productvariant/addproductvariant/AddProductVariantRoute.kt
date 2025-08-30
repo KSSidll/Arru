@@ -5,7 +5,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import com.kssidll.arru.domain.data.Field
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ui.screen.modify.productvariant.ModifyProductVariantEvent
+import com.kssidll.arru.ui.screen.modify.productvariant.ModifyProductVariantEventResult
 import com.kssidll.arru.ui.screen.modify.productvariant.ModifyProductVariantScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -23,29 +25,41 @@ fun AddProductVariantRoute(
 
     SideEffect {
         scope.launch {
-            if (!viewModel.checkExists(productId) && !navigateBackLock.isLocked) {
+            if (!viewModel.setAndCheckProduct(productId) && !navigateBackLock.isLocked) {
                 navigateBackLock.tryLock()
                 navigateBack(null)
             }
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
+    LaunchedEffect(Unit) { viewModel.handleEvent(ModifyProductVariantEvent.SetName(defaultName)) }
 
     ModifyProductVariantScreenImpl(
-        onBack = {
-            if (!navigateBackLock.isLocked) {
-                navigateBackLock.tryLock()
-                navigateBack(null)
-            }
-        },
-        state = viewModel.screenState,
-        onSubmit = {
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
             scope.launch {
-                val id = viewModel.addVariant()
-                if (id != null && !navigateBackLock.isLocked) {
-                    navigateBackLock.tryLock()
-                    navigateBack(id)
+                when (event) {
+                    is ModifyProductVariantEvent.NavigateBack -> {
+                        if (!navigateBackLock.isLocked) {
+                            navigateBackLock.tryLock()
+                            navigateBack(null)
+                        }
+                    }
+                    is ModifyProductVariantEvent.DeleteProductVariant -> {}
+                    is ModifyProductVariantEvent.MergeProductVariant -> {}
+                    is ModifyProductVariantEvent.SelectMergeCandidate -> {}
+                    is ModifyProductVariantEvent.SetDangerousDeleteDialogConfirmation -> {}
+                    is ModifyProductVariantEvent.SetDangerousDeleteDialogVisibility -> {}
+                    is ModifyProductVariantEvent.SetMergeConfirmationDialogVisibility -> {}
+                    is ModifyProductVariantEvent.SetMergeSearchDialogVisibility -> {}
+                    is ModifyProductVariantEvent.SetName -> viewModel.handleEvent(event)
+                    is ModifyProductVariantEvent.SetIsVariantGlobal -> viewModel.handleEvent(event)
+                    is ModifyProductVariantEvent.Submit -> {
+                        val result = viewModel.handleEvent(event)
+                        if (result is ModifyProductVariantEventResult.SuccessInsert) {
+                            navigateBack(result.id)
+                        }
+                    }
                 }
             }
         },

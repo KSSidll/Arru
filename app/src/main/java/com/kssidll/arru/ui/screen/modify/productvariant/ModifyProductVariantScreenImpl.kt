@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.productvariant
 
+import android.R.attr.data
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -25,93 +26,81 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductVariantEntity
-import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.domain.data.emptyImmutableList
-import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
 import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.optionalAlpha
+import kotlinx.collections.immutable.toImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
-/**
- * [ModifyScreen] implementation for [ProductVariantEntity]
- *
- * @param onBack Called to request a back navigation, isn't triggered by other events like
- *   submission or deletion
- * @param state [ModifyProductVariantScreenState] instance representing the screen state
- * @param onSubmit Callback called when the submit action is triggered
- * @param onDelete Callback called when the delete action is triggered, in case of very destructive
- *   actions, should check if delete warning is confirmed, and if not, trigger a delete warning
- *   dialog via showDeleteWarning parameter as none of those are handled internally by the
- *   component, setting to null removes the delete option
- * @param submitButtonText Text displayed in the submit button, defaults to variant add string
- *   resource
- */
 @Composable
 fun ModifyProductVariantScreenImpl(
-    onBack: () -> Unit,
-    state: ModifyProductVariantScreenState,
-    onSubmit: () -> Unit,
+    uiState: ModifyProductVariantUiState,
+    onEvent: (event: ModifyProductVariantEvent) -> Unit,
     modifier: Modifier = Modifier,
-    onDelete: (() -> Unit)? = null,
     submitButtonText: String = stringResource(id = R.string.item_product_variant_add),
 ) {
     val isGlobalVariantInteractionSource = remember { MutableInteractionSource() }
 
-    ModifyScreen<FuzzySearchSource>(
-        // onBack = onBack,
-        // title = stringResource(id = R.string.item_product_variant_full),
-        // onSubmit = onSubmit,
-        // onDelete = onDelete,
-        // submitButtonText = submitButtonText,
-        // showDeleteWarning = state.showDeleteWarning,
-        // deleteWarningConfirmed = state.deleteWarningConfirmed,
-        // deleteWarningMessage =
-        //     stringResource(id = R.string.item_product_variant_delete_warning_text),
-        // modifier = modifier,
-        onBack = {},
-        title = "test",
-        onSubmit = {},
-        submitButtonText = "Submit it",
-        onDelete = {},
-        isDeleteVisible = true,
-        isDeleteWarningMessageVisible = false,
-        onDeleteWarningMessageVisibleChange = {},
-        deleteWarningMessage = String(),
-        isDeleteWarningConfirmed = false,
-        onDeleteWarningConfirmedChange = {},
-        onMerge = {},
-        isMergeVisible = true,
-        isMergeSearchDialogVisible = false,
-        onMergeSearchDialogVisibleChange = {},
-        mergeSearchDialogCandidateTextTransformation = { String() },
-        isMergeConfirmVisible = false,
-        onMergeConfirmVisibleChange = {},
-        mergeConfirmMessage = String(),
-        mergeCandidates = emptyImmutableList(),
-        onChosenMergeCandidateChange = {},
+    ModifyScreen(
+        onBack = { onEvent(ModifyProductVariantEvent.NavigateBack) },
+        title = stringResource(id = R.string.item_product_variant),
+        onSubmit = { onEvent(ModifyProductVariantEvent.Submit) },
+        submitButtonText = submitButtonText,
+        onDelete = { onEvent(ModifyProductVariantEvent.DeleteProductVariant) },
+        isDeleteVisible = uiState.isDeleteVisible,
+        isDeleteWarningMessageVisible = uiState.isDangerousDeleteDialogVisible,
+        onDeleteWarningMessageVisibleChange = {
+            onEvent(ModifyProductVariantEvent.SetDangerousDeleteDialogVisibility(it))
+        },
+        deleteWarningMessage =
+            stringResource(id = R.string.item_product_variant_delete_warning_text),
+        isDeleteWarningConfirmed = uiState.isDangerousDeleteDialogConfirmed,
+        onDeleteWarningConfirmedChange = {
+            onEvent(ModifyProductVariantEvent.SetDangerousDeleteDialogConfirmation(it))
+        },
+        onMerge = {
+            onEvent(ModifyProductVariantEvent.MergeProductVariant(uiState.selectedMergeCandidate))
+        },
+        isMergeVisible = uiState.isMergeVisible,
+        isMergeSearchDialogVisible = uiState.isMergeSearchDialogVisible,
+        onMergeSearchDialogVisibleChange = {
+            onEvent(ModifyProductVariantEvent.SetMergeSearchDialogVisibility(it))
+        },
+        mergeSearchDialogCandidateTextTransformation = { it.name },
+        isMergeConfirmVisible = uiState.isMergeConfirmationDialogVisible,
+        onMergeConfirmVisibleChange = {
+            onEvent(ModifyProductVariantEvent.SetMergeConfirmationDialogVisibility(it))
+        },
+        mergeConfirmMessage =
+            stringResource(R.string.merge_action_message_template)
+                .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
+                .replace("{value_1}", uiState.currentProductVariant?.name ?: "???"),
+        mergeCandidates =
+            uiState.allProductVariants
+                .filterNot { it.id == uiState.currentProductVariant?.id }
+                .toImmutableList(),
+        onChosenMergeCandidateChange = {
+            onEvent(ModifyProductVariantEvent.SelectMergeCandidate(it))
+        },
+        modifier = modifier,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
-                enabled = state.name.value.isEnabled(),
+                enabled = uiState.name.isEnabled(),
                 singleLine = true,
-                value = state.name.value.data ?: String(),
-                onValueChange = { state.name.value = Field.Loaded(it) },
+                value = uiState.name.data ?: String(),
+                onValueChange = { onEvent(ModifyProductVariantEvent.SetName(it)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+                keyboardActions =
+                    KeyboardActions(onDone = { onEvent(ModifyProductVariantEvent.Submit) }),
                 label = { Text(text = stringResource(R.string.item_product_variant)) },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.name.value.error?.ErrorText()
-                    }
-                },
-                isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
+                supportingText = { uiState.name.error?.ErrorText() },
+                isError = uiState.name.isError(),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
             )
 
@@ -119,23 +108,19 @@ fun ModifyProductVariantScreenImpl(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
                     Modifier.fillMaxWidth().padding(16.dp).clickable(
-                        enabled =
-                            state.isVariantGlobal.value.isEnabled() &&
-                                state.isVariantGlobal.value.data != null,
+                        enabled = uiState.isVariantGlobalChangeEnabled,
                         indication = null,
                         interactionSource = isGlobalVariantInteractionSource,
                     ) {
-                        state.isVariantGlobal.value.data?.let {
-                            state.isVariantGlobal.value = Field.Loaded(!it)
+                        uiState.isVariantGlobal.data?.let {
+                            onEvent(ModifyProductVariantEvent.SetIsVariantGlobal(!it))
                         }
                     },
             ) {
                 Checkbox(
-                    enabled =
-                        state.isVariantGlobal.value.isEnabled() &&
-                            state.isVariantGlobal.value.data != null,
-                    checked = state.isVariantGlobal.value.data ?: false,
-                    onCheckedChange = { state.isVariantGlobal.value = Field.Loaded(it) },
+                    enabled = uiState.isVariantGlobalChangeEnabled,
+                    checked = uiState.isVariantGlobal.data ?: false,
+                    onCheckedChange = { onEvent(ModifyProductVariantEvent.SetIsVariantGlobal(it)) },
                     interactionSource = isGlobalVariantInteractionSource,
                 )
 
@@ -143,10 +128,7 @@ fun ModifyProductVariantScreenImpl(
                     text = stringResource(R.string.variant_use_as_global),
                     style = MaterialTheme.typography.bodyLarge,
                     color =
-                        if (
-                            state.isVariantGlobal.value.isEnabled() &&
-                                state.isVariantGlobal.value.data != null
-                        ) {
+                        if (uiState.isVariantGlobalChangeEnabled) {
                             MaterialTheme.colorScheme.onSurface
                         } else {
                             MaterialTheme.colorScheme.onSurface.copy(alpha = optionalAlpha)
@@ -163,11 +145,7 @@ fun ModifyProductVariantScreenImpl(
 private fun ModifyProductVariantScreenImplPreview() {
     ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            ModifyProductVariantScreenImpl(
-                onBack = {},
-                state = ModifyProductVariantScreenState(),
-                onSubmit = {},
-            )
+            ModifyProductVariantScreenImpl(uiState = ModifyProductVariantUiState(), onEvent = {})
         }
     }
 }

@@ -7,9 +7,11 @@ import com.kssidll.arru.data.repository.ProductRepositorySource
 import com.kssidll.arru.data.repository.ProductVariantRepository
 import com.kssidll.arru.data.repository.ProductVariantRepositorySource
 import com.kssidll.arru.domain.usecase.data.DeleteProductVariantEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllGlobalProductVariantEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityByProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductVariantEntityUseCase
+import com.kssidll.arru.domain.usecase.data.MergeProductVariantEntityUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductVariantEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -61,6 +63,15 @@ class ProductVariantModule {
 
     @Provides
     @Singleton
+    fun provideMergeProductVariantEntityUseCase(
+        itemRepository: ItemRepositorySource,
+        productVariantRepository: ProductVariantRepositorySource,
+    ): MergeProductVariantEntityUseCase {
+        return MergeProductVariantEntityUseCase(itemRepository, productVariantRepository)
+    }
+
+    @Provides
+    @Singleton
     fun provideDeleteProductVariantEntityUseCase(
         itemRepository: ItemRepositorySource,
         productVariantRepository: ProductVariantRepositorySource,
@@ -82,6 +93,14 @@ class ProductVariantModule {
         productVariantRepository: ProductVariantRepositorySource
     ): GetProductVariantEntityByProductUseCase {
         return GetProductVariantEntityByProductUseCase(productVariantRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllGlobalProductVariantEntityUseCase(
+        productVariantRepository: ProductVariantRepositorySource
+    ): GetAllGlobalProductVariantEntityUseCase {
+        return GetAllGlobalProductVariantEntityUseCase(productVariantRepository)
     }
 
     /** DOMAIN */

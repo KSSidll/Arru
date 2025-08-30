@@ -39,6 +39,23 @@ sealed class UpdateProductVariantEntityUseCaseResult {
     data object NameDuplicateValue : Errors()
 }
 
+sealed class MergeProductVariantEntityUseCaseResult {
+    class Success(val mergedEntity: ProductVariantEntity) :
+        MergeProductVariantEntityUseCaseResult()
+
+    class Error(val errors: ImmutableList<Errors>) : MergeProductVariantEntityUseCaseResult()
+
+    sealed class Errors
+
+    data object ProductVariantIdInvalid : Errors()
+
+    data object MergeIntoIdInvalid : Errors()
+
+    data object MergeGlobalIntoLocal : Errors()
+
+    data object MergeLocalIntoLocalDifferentProductId : Errors()
+}
+
 sealed class DeleteProductVariantEntityUseCaseResult {
     object Success : DeleteProductVariantEntityUseCaseResult()
 
@@ -182,6 +199,52 @@ class UpdateProductVariantEntityUseCase(
     }
 }
 
+class MergeProductVariantEntityUseCase(
+    private val itemRepository: ItemRepositorySource,
+    private val productVariantRepository: ProductVariantRepositorySource,
+) {
+    suspend operator fun invoke(
+        id: Long,
+        mergeIntoId: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ): MergeProductVariantEntityUseCaseResult {
+        val errors = mutableListOf<MergeProductVariantEntityUseCaseResult.Errors>()
+
+        val entity = productVariantRepository.get(id).first()
+        if (entity == null) {
+            errors.add(MergeProductVariantEntityUseCaseResult.ProductVariantIdInvalid)
+        }
+
+        val mergeInto = productVariantRepository.get(mergeIntoId).first()
+        if (mergeInto == null) {
+            errors.add(MergeProductVariantEntityUseCaseResult.MergeIntoIdInvalid)
+        }
+
+        if (entity != null && mergeInto != null) {
+            if (mergeInto.productEntityId != null && entity.productEntityId == null) {
+                errors.add(MergeProductVariantEntityUseCaseResult.MergeGlobalIntoLocal)
+            } else if (mergeInto.productEntityId != entity.productEntityId) {
+                errors.add(
+                    MergeProductVariantEntityUseCaseResult.MergeLocalIntoLocalDifferentProductId
+                )
+            }
+        }
+
+        if (errors.isNotEmpty()) {
+            return MergeProductVariantEntityUseCaseResult.Error(errors.toImmutableList())
+        }
+
+        val items = itemRepository.byProductVariant(entity!!.id).first()
+
+        val itemsToUpdate = items.map { it.copy(productVariantEntityId = mergeIntoId) }
+
+        itemRepository.update(itemsToUpdate)
+        productVariantRepository.delete(entity)
+
+        return MergeProductVariantEntityUseCaseResult.Success(mergeInto!!)
+    }
+}
+
 class DeleteProductVariantEntityUseCase(
     private val itemRepository: ItemRepositorySource,
     private val productVariantRepository: ProductVariantRepositorySource,
@@ -230,6 +293,13 @@ class GetProductVariantEntityByProductUseCase(
         showGlobal: Boolean = true,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) = productVariantRepository.byProduct(id, showGlobal).flowOn(dispatcher)
+}
+
+class GetAllGlobalProductVariantEntityUseCase(
+    private val productVariantRepository: ProductVariantRepositorySource
+) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        productVariantRepository.allGlobal().flowOn(dispatcher)
 }
 
 /** DOMAIN */
