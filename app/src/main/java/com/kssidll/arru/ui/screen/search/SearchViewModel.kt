@@ -1,13 +1,12 @@
 package com.kssidll.arru.ui.screen.search
 
-
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-@HiltViewModel
-class SearchViewModel @Inject constructor(
+// TODO refactor uiState Event UseCase
 
-): ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor() : ViewModel() {
     internal val screenState: SearchScreenState = SearchScreenState()
 }

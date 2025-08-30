@@ -9,12 +9,12 @@ object BetterNavigationSuiteScaffoldDefaults {
         return with(adaptiveInfo) {
             if (
                 windowPosture.isTabletop ||
-                windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+                    windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
             ) {
                 NavigationSuiteType.NavigationBar
             } else if (
                 windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED ||
-                windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.MEDIUM
+                    windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.MEDIUM
             ) {
                 NavigationSuiteType.NavigationRail
             } else {

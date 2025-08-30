@@ -1,45 +1,50 @@
 package com.kssidll.arru.ui.screen.modify.shop.addshop
 
-import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.ShopRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.InsertShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertShopEntityUseCaseResult
 import com.kssidll.arru.ui.screen.modify.shop.ModifyShopViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import javax.inject.Inject
 
-@HiltViewModel
-class AddShopViewModel @Inject constructor(
-    override val shopRepository: ShopRepositorySource,
-): ModifyShopViewModel() {
+// TODO refactor uiState Event UseCase
 
-    /**
-     * Tries to add a shop to the repository
-     * @return resulting [InsertResult]
-     */
-    suspend fun addShop() = viewModelScope.async {
+@HiltViewModel
+class AddShopViewModel
+@Inject
+constructor(
+    override val shopRepository: ShopRepositorySource,
+    private val insertShopEntityUseCase: InsertShopEntityUseCase,
+) : ModifyShopViewModel() {
+
+    suspend fun addShop(): Long? {
         screenState.attemptedToSubmit.value = true
 
-        val result = shopRepository.insert(screenState.name.value.data.orEmpty())
+        val result = insertShopEntityUseCase(name = screenState.name.value.data)
 
-        if (result.isError()) {
-            when (result.error!!) {
-                InsertResult.InvalidName -> {
-                    screenState.name.apply {
-                        value = value.toError(FieldError.InvalidValueError)
+        return when (result) {
+            is InsertShopEntityUseCaseResult.Error -> {
+                result.errors.forEach {
+                    when (it) {
+                        InsertShopEntityUseCaseResult.NameDuplicateValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.DuplicateValueError)
+                            }
+                        }
+                        InsertShopEntityUseCaseResult.NameNoValue -> {
+                            screenState.name.apply {
+                                value = value.toError(FieldError.NoValueError)
+                            }
+                        }
                     }
                 }
 
-                InsertResult.DuplicateName -> {
-                    screenState.name.apply {
-                        value = value.toError(FieldError.DuplicateValueError)
-                    }
-                }
+                null
+            }
+            is InsertShopEntityUseCaseResult.Success -> {
+                result.id
             }
         }
-
-        return@async result
     }
-        .await()
 }

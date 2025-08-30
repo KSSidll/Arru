@@ -15,44 +15,37 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BaseClickableListItem(
     text: String,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
     onLongClickLabel: String? = null,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .minimumInteractiveComponentSize()
-            .combinedClickable(
-                role = Role.Button,
-                onClick = {
-                    onClick?.invoke()
-                },
-                onClickLabel = onClickLabel,
-                onLongClick = {
-                    onLongClick?.invoke()
-                },
-                onLongClickLabel = onLongClickLabel,
-            )
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .minimumInteractiveComponentSize()
+                .combinedClickable(
+                    role = Role.Button,
+                    onClick = { onClick?.invoke() },
+                    onClickLabel = onClickLabel,
+                    onLongClick = { onLongClick?.invoke() },
+                    onLongClickLabel = onLongClickLabel,
+                )
     ) {
         Text(
             text = text,
             style = Typography.titleLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(
-                    vertical = 16.dp,
-                    horizontal = 4.dp
-                )
-                .align(Alignment.Center)
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 4.dp).align(Alignment.Center),
         )
     }
 }
@@ -60,11 +53,5 @@ fun BaseClickableListItem(
 @PreviewLightDark
 @Composable
 private fun BaseClickableListItemPreview() {
-    ArrugarqTheme {
-        Surface {
-            BaseClickableListItem(
-                text = "test"
-            )
-        }
-    }
+    ArruTheme { Surface { BaseClickableListItem(text = "test") } }
 }

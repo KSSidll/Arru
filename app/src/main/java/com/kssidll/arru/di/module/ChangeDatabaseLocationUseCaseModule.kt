@@ -14,7 +14,9 @@ import javax.inject.Singleton
 class ChangeDatabaseLocationUseCaseModule {
     @Provides
     @Singleton
-    fun provideChangeDatabaseLocationUseCase(@ApplicationContext context: Context): ChangeDatabaseLocationUseCase {
+    fun provideChangeDatabaseLocationUseCase(
+        @ApplicationContext context: Context
+    ): ChangeDatabaseLocationUseCase {
         return ChangeDatabaseLocationUseCase(context)
     }
 }

@@ -1,284 +1,104 @@
 package com.kssidll.arru.data.repository
 
 import androidx.paging.PagingData
-import com.kssidll.arru.data.data.FullItem
-import com.kssidll.arru.data.data.Item
-import com.kssidll.arru.data.data.ItemSpentByTime
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductAltName
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductPriceByShopByTime
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductWithAltNames
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
+import com.kssidll.arru.domain.data.data.ProductPriceByShopByVariantByProducerByTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepositorySource {
-    companion object {
-        sealed class InsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): InsertResult(id)
-            class Error(error: Errors): InsertResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-            data object InvalidCategoryId: Errors()
-            data object InvalidProducerId: Errors()
-        }
-
-        sealed class AltInsertResult(
-            val id: Long? = null,
-            val error: Errors? = null
-        ) {
-            class Success(id: Long): AltInsertResult(id)
-            class Error(error: Errors): AltInsertResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-        }
-
-        sealed class UpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: UpdateResult()
-            class Error(error: Errors): UpdateResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-            data object InvalidCategoryId: Errors()
-            data object InvalidProducerId: Errors()
-        }
-
-        sealed class AltUpdateResult(
-            val error: Errors? = null
-        ) {
-            data object Success: AltUpdateResult()
-            class Error(error: Errors): AltUpdateResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object InvalidProductId: Errors()
-            data object InvalidName: Errors()
-            data object DuplicateName: Errors()
-        }
-
-        sealed class MergeResult(
-            val error: Errors? = null
-        ) {
-            data object Success: MergeResult()
-            class Error(error: Errors): MergeResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidProduct: Errors()
-            data object InvalidMergingInto: Errors()
-        }
-
-        sealed class DeleteResult(
-            val error: Errors? = null
-        ) {
-            data object Success: DeleteResult()
-            class Error(error: Errors): DeleteResult(error = error)
-
-            fun isError(): Boolean = this is Error
-            fun isNotError(): Boolean = isError().not()
-
-            sealed class Errors
-            data object InvalidId: Errors()
-            data object DangerousDelete: Errors()
-        }
-    }
-
     // Create
 
-    /**
-     * Inserts [Product]
-     * @param name name of the [Product] to insert
-     * @param categoryId id of the [ProductCategory] of the [Product] to insert
-     * @param producerId id of the [ProductProducer] of the [Product] to insert
-     * @return [InsertResult] with id of the newly inserted [Product] or an error if any
-     */
-    suspend fun insert(
-        name: String,
-        categoryId: Long,
-        producerId: Long?
-    ): InsertResult
-
-    /**
-     * Inserts [ProductAltName]
-     * @param product [Product] to add the [alternativeName] to
-     * @param alternativeName alternative name to add to the [product]
-     * @return [AltInsertResult] with id of the newly inserted [Product] or an error if any
-     */
-    suspend fun insertAltName(
-        product: Product,
-        alternativeName: String
-    ): AltInsertResult
+    suspend fun insert(entity: ProductEntity): Long
 
     // Update
 
-    /**
-     * Updates [Product] with [productId] id to provided [name], [categoryId] and [producerId]
-     * @param productId id to match [Product]
-     * @param name name to update the matching [Product] to
-     * @param categoryId id of the [ProductCategory] to update the matching [Product] to
-     * @param producerId id of the [ProductProducer] to update the matching [Product] to
-     * @return [UpdateResult] with the result
-     */
-    suspend fun update(
-        productId: Long,
-        name: String,
-        categoryId: Long,
-        producerId: Long?
-    ): UpdateResult
+    suspend fun update(entity: ProductEntity)
 
-    /**
-     * Updates [ProductAltName] with [alternativeNameId] id to provided [productId] and [name]
-     * @param alternativeNameId id to match [ProductAltName]
-     * @param productId product id to update the matching [ProductAltName] to
-     * @param name name to update the matching [ProductAltName] to
-     * @return [UpdateResult] with the result
-     */
-    suspend fun updateAltName(
-        alternativeNameId: Long,
-        productId: Long,
-        name: String
-    ): AltUpdateResult
-
-    /**
-     * Merges [product] into [mergingInto]
-     * @param product [Product] to merge
-     * @param mergingInto [Product] to merge the [product] into
-     * @return [MergeResult] with the result
-     */
-    suspend fun merge(
-        product: Product,
-        mergingInto: Product,
-    ): MergeResult
+    suspend fun update(entity: List<ProductEntity>)
 
     // Delete
 
-    /**
-     * Deletes [Product] matching [productId]
-     * @param productId id of the [Product] to delete
-     * @param force whether to force delete on dangerous delete
-     * @return [DeleteResult] with the result
-     */
-    suspend fun delete(
-        productId: Long,
-        force: Boolean
-    ): DeleteResult
+    suspend fun delete(entity: ProductEntity)
 
-    /**
-     * Deletes [ProductAltName] matching [alternativeNameId]
-     * @param alternativeNameId id of the [ProductAltName] to delete
-     * @return [DeleteResult] with the result
-     */
-    suspend fun deleteAltName(alternativeNameId: Long): DeleteResult
+    suspend fun delete(entity: List<ProductEntity>)
 
     // Read
 
     /**
-     * @param productId id of the [Product]
-     * @return [Product] matching [productId] id or null if none match
+     * @param id id of the [ProductEntity]
+     * @return [ProductEntity] matching [id] id or null if none match
      */
-    suspend fun get(productId: Long): Product?
+    fun get(id: Long): Flow<ProductEntity?>
 
     /**
-     * @param productId id of the [Product]
-     * @return [Product] matching [productId] id or null if none match, as flow
+     * @param name name of the [ProductEntity]
+     * @return [ProductEntity] matching [name] name or null if none match
      */
-    fun getFlow(productId: Long): Flow<Data<Product?>>
+    fun byName(name: String): Flow<ProductEntity?>
 
     /**
-     * @param product [Product] to get the total spending from
-     * @return float representing total spending for the [product] as flow
+     * @param id id of the [ProductCategoryEntity]
+     * @return list of all [ProductEntity] matching [ProductCategoryEntity] id or null if none match
      */
-    fun totalSpentFlow(product: Product): Flow<Data<Float?>>
+    fun byProductCategory(id: Long): Flow<ImmutableList<ProductEntity>>
 
     /**
-     * @param product [Product] to get the total spending by day from
-     * @return list of [ItemSpentByTime] representing total spending groupped by day as flow
+     * @param id id of the [ProductProducerEntity]
+     * @return list of all [ProductEntity] matching [ProductProducerEntity] id or null if none match
      */
-    fun totalSpentByDayFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun byProductProducer(id: Long): Flow<ImmutableList<ProductEntity>>
+
+    /** @return list of all [ProductEntity] */
+    fun all(): Flow<ImmutableList<ProductEntity>>
 
     /**
-     * @param product [Product] to get the total spending by week from
-     * @return list of [ItemSpentByTime] representing total spending groupped by week as flow
+     * @param id id of the [ProductEntity]
+     * @return float representing total spending for [ProductEntity] matching [id] id or null if
+     *   none match
      */
-    fun totalSpentByWeekFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpent(id: Long): Flow<Float?>
 
     /**
-     * @param product [Product] to get the total spending by month from
-     * @return list of [ItemSpentByTime] representing total spending groupped by month as flow
+     * @param id id of the [ProductEntity]
+     * @return [PagingData] of [Item] that is of [ProductEntity] [id]
      */
-    fun totalSpentByMonthFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun itemsFor(id: Long): Flow<PagingData<Item>>
 
     /**
-     * @param product [Product] to get the total spending by year from
-     * @return list of [ItemSpentByTime] representing total spending groupped by year as flow
+     * @param id id of the [ProductEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by day
      */
-    fun totalSpentByYearFlow(product: Product): Flow<Data<ImmutableList<ItemSpentByTime>>>
+    fun totalSpentByDay(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
     /**
-     * @param product [Product] to match the items to
+     * @param id id of the [ProductEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by week
      */
-    fun fullItemsPagedFlow(product: Product): Flow<PagingData<FullItem>>
+    fun totalSpentByWeek(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
     /**
-     * @param product [Product] to match the [Item] with
-     * @return newest [Item] that matches [product], null if none match
+     * @param id id of the [ProductEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by month
      */
-    suspend fun newestItem(product: Product): Item?
+    fun totalSpentByMonth(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
     /**
-     * @return list of all [ProductWithAltNames] as flow
+     * @param id id of the [ProductEntity]
+     * @return List of [ItemSpentChartData] representing total spending partitioned by year
      */
-    fun allWithAltNamesFlow(): Flow<Data<ImmutableList<ProductWithAltNames>>>
+    fun totalSpentByYear(id: Long): Flow<ImmutableList<ItemSpentChartData>>
 
     /**
-     * @param product [Product] to match the data with
-     * @return list of [ProductPriceByShopByTime] representing the average price of [product] groupped by variant, shop and month as flow
+     * @param id id of the [ProductEntity]
+     * @return List of [ProductPriceByShopByVariantByProducerByTime] representing average spending
+     *   partitioned by shop, variant, producer and day
      */
-    fun averagePriceByVariantByShopByMonthFlow(product: Product): Flow<Data<ImmutableList<ProductPriceByShopByTime>>>
-
-    /**
-     * @return list of all [Product] as flow
-     */
-    fun allFlow(): Flow<Data<ImmutableList<Product>>>
-
-    /**
-     * @return total count of [Product]
-     */
-    suspend fun totalCount(): Int
-
-    /**
-     * @return list of at most [limit] products offset by [offset]
-     */
-    suspend fun getPagedList(
-        limit: Int,
-        offset: Int
-    ): ImmutableList<Product>
+    fun averagePriceByShopByVariantByProducerByDay(
+        id: Long
+    ): Flow<ImmutableList<ProductPriceByShopByVariantByProducerByTime>>
 }

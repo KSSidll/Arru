@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.home
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,17 +32,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.helper.BetterNavigationSuiteScaffoldDefaults
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisEvent
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisScreen
+import com.kssidll.arru.ui.screen.home.analysis.AnalysisUiState
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardEvent
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardScreen
+import com.kssidll.arru.ui.screen.home.dashboard.DashboardUiState
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsEvent
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsScreen
+import com.kssidll.arru.ui.screen.home.transactions.TransactionsUiState
 import com.kssidll.arru.ui.theme.Typography
 
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
+    dashboardUiState: DashboardUiState,
+    analysisUiState: AnalysisUiState,
+    transactionsUiState: TransactionsUiState,
     onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    dashboardOnEvent: (event: DashboardEvent) -> Unit,
+    analysisOnEvent: (event: AnalysisEvent) -> Unit,
+    transactionsOnEvent: (event: TransactionsEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val navSuiteType = BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
-        currentWindowAdaptiveInfo()
-    )
+    val navSuiteType =
+        BetterNavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
     NavigationSuiteScaffoldLayout(
         layoutType = navSuiteType,
@@ -49,41 +64,45 @@ fun HomeScreen(
             when (navSuiteType) {
                 NavigationSuiteType.NavigationBar -> {
                     NavigationBar {
-                        HomeDestinations.entries.forEach {
+                        HomeDestinations.entries.forEach { it ->
                             NavigationBarItem(
                                 icon = {
                                     Crossfade(
                                         targetState = it == uiState.currentDestination,
-                                        label = "home nav destination change (icon)"
+                                        label = "home nav destination change (icon)",
                                     ) { selected ->
                                         Icon(
-                                            imageVector = if (selected) it.enabledIcon else it.disabledIcon,
-                                            contentDescription = stringResource(it.contentDescription)
+                                            imageVector =
+                                                if (selected) it.enabledIcon else it.disabledIcon,
+                                            contentDescription =
+                                                stringResource(it.contentDescription),
                                         )
                                     }
                                 },
                                 label = {
-                                    Text(
-                                        text = stringResource(it.label),
-                                        style = Typography.labelMedium
-                                    )
+                                    @SuppressLint("UnusedCrossfadeTargetStateParameter")
+                                    Crossfade(
+                                        targetState = it == uiState.currentDestination,
+                                        label = "home nav destination change (label)",
+                                    ) { selected ->
+                                        Text(
+                                            text = stringResource(it.label),
+                                            style = Typography.labelMedium,
+                                        )
+                                    }
                                 },
                                 selected = it == uiState.currentDestination,
-                                onClick = {
-                                    onEvent(HomeEvent.ChangeScreenDestination(it))
-                                }
+                                onClick = { onEvent(HomeEvent.ChangeScreenDestination(it)) },
                             )
                         }
 
                         FloatingActionButton(
-                            onClick = {
-                                onEvent(HomeEvent.NavigateTransactionAdd)
-                            }
+                            onClick = { onEvent(HomeEvent.NavigateAddTransaction) }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = stringResource(R.string.transaction_add),
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(36.dp),
                             )
                         }
 
@@ -99,21 +118,20 @@ fun HomeScreen(
                                     Spacer(Modifier.height(8.dp))
 
                                     ExtendedFloatingActionButton(
-                                        onClick = {
-                                            onEvent(HomeEvent.NavigateTransactionAdd)
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
+                                        onClick = { onEvent(HomeEvent.NavigateAddTransaction) },
+                                        modifier = Modifier.fillMaxWidth(),
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(R.string.transaction_add_label),
+                                            contentDescription =
+                                                stringResource(R.string.transaction_add_label),
                                         )
 
                                         Spacer(Modifier.width(8.dp))
 
                                         Text(
                                             text = stringResource(R.string.transaction_add_label),
-                                            style = Typography.labelLarge
+                                            style = Typography.labelLarge,
                                         )
                                     }
 
@@ -124,25 +142,28 @@ fun HomeScreen(
                                             icon = {
                                                 Crossfade(
                                                     targetState = it == uiState.currentDestination,
-                                                    label = "home nav destination change (icon)"
+                                                    label = "home nav destination change (icon)",
                                                 ) { selected ->
                                                     Icon(
-                                                        imageVector = if (selected) it.enabledIcon else it.disabledIcon,
-                                                        contentDescription = stringResource(it.contentDescription)
+                                                        imageVector =
+                                                            if (selected) it.enabledIcon
+                                                            else it.disabledIcon,
+                                                        contentDescription =
+                                                            stringResource(it.contentDescription),
                                                     )
                                                 }
                                             },
                                             label = {
                                                 Text(
                                                     text = stringResource(it.label),
-                                                    style = Typography.labelLarge
+                                                    style = Typography.labelLarge,
                                                 )
                                             },
                                             selected = it == uiState.currentDestination,
                                             onClick = {
                                                 onEvent(HomeEvent.ChangeScreenDestination(it))
                                             },
-                                            modifier = Modifier
+                                            modifier = Modifier,
                                         )
                                     }
                                 }
@@ -151,8 +172,13 @@ fun HomeScreen(
                     ) {
                         HomeScreenContent(
                             uiState = uiState,
-                            onEvent = onEvent,
-                            modifier = modifier
+                            dashboardUiState = dashboardUiState,
+                            analysisUiState = analysisUiState,
+                            transactionsUiState = transactionsUiState,
+                            dashboardOnEvent = dashboardOnEvent,
+                            analysisOnEvent = analysisOnEvent,
+                            transactionsOnEvent = transactionsOnEvent,
+                            modifier = modifier,
                         )
                     }
                 }
@@ -161,14 +187,12 @@ fun HomeScreen(
                     NavigationRail(
                         header = {
                             FloatingActionButton(
-                                onClick = {
-                                    onEvent(HomeEvent.NavigateTransactionAdd)
-                                }
+                                onClick = { onEvent(HomeEvent.NavigateAddTransaction) }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = stringResource(R.string.transaction_add),
-                                    modifier = Modifier.size(36.dp)
+                                    modifier = Modifier.size(36.dp),
                                 )
                             }
                         }
@@ -178,70 +202,71 @@ fun HomeScreen(
                                 icon = {
                                     Crossfade(
                                         targetState = it == uiState.currentDestination,
-                                        label = "home nav destination change (icon)"
+                                        label = "home nav destination change (icon)",
                                     ) { selected ->
                                         Icon(
-                                            imageVector = if (selected) it.enabledIcon else it.disabledIcon,
-                                            contentDescription = stringResource(it.contentDescription)
+                                            imageVector =
+                                                if (selected) it.enabledIcon else it.disabledIcon,
+                                            contentDescription =
+                                                stringResource(it.contentDescription),
                                         )
                                     }
                                 },
                                 label = {
                                     Text(
                                         text = stringResource(it.label),
-                                        style = Typography.labelMedium
+                                        style = Typography.labelMedium,
                                     )
                                 },
                                 selected = it == uiState.currentDestination,
-                                onClick = {
-                                    onEvent(HomeEvent.ChangeScreenDestination(it))
-                                },
+                                onClick = { onEvent(HomeEvent.ChangeScreenDestination(it)) },
                             )
                         }
                     }
                 }
             }
-        }
+        },
     ) {
         HomeScreenContent(
             uiState = uiState,
-            onEvent = onEvent,
-            modifier = modifier
+            dashboardUiState = dashboardUiState,
+            analysisUiState = analysisUiState,
+            transactionsUiState = transactionsUiState,
+            dashboardOnEvent = dashboardOnEvent,
+            analysisOnEvent = analysisOnEvent,
+            transactionsOnEvent = transactionsOnEvent,
+            modifier = modifier,
         )
     }
 }
 
 @Composable
-internal fun HomeScreenContent(
+fun HomeScreenContent(
     uiState: HomeUiState,
-    onEvent: (event: HomeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    dashboardUiState: DashboardUiState,
+    analysisUiState: AnalysisUiState,
+    transactionsUiState: TransactionsUiState,
+    dashboardOnEvent: (event: DashboardEvent) -> Unit,
+    analysisOnEvent: (event: AnalysisEvent) -> Unit,
+    transactionsOnEvent: (event: TransactionsEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Crossfade(
         targetState = uiState.currentDestination,
         label = "home nav destination change (screen)",
-        modifier = modifier
+        modifier = modifier,
     ) {
         when (it) {
             HomeDestinations.DASHBOARD -> {
-                DashboardScreen(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                DashboardScreen(uiState = dashboardUiState, onEvent = dashboardOnEvent)
             }
 
             HomeDestinations.ANALYSIS -> {
-                AnalysisScreen(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                AnalysisScreen(uiState = analysisUiState, onEvent = analysisOnEvent)
             }
 
             HomeDestinations.TRANSACTIONS -> {
-                TransactionsScreen(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                TransactionsScreen(uiState = transactionsUiState, onEvent = transactionsOnEvent)
             }
         }
     }

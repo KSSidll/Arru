@@ -30,14 +30,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.disabledAlpha
 
 /**
  * @param message Message to show in the dialog
  * @param warningConfirmed Whether the warning has been confirmed
- * @param onWarningConfirmedChange Callback called when the [warningConfirmed] is to be changed. Provides new [warningConfirmed] state as parameter
+ * @param onWarningConfirmedChange Callback called when the [warningConfirmed] is to be changed.
+ *   Provides new [warningConfirmed] state as parameter
  * @param onCancel Callback called when the dialog is calcelled
  * @param onSubmit Callback called when the dialog is submitted
  */
@@ -49,12 +50,11 @@ fun DeleteWarningConfirmDialog(
     onWarningConfirmedChange: (newState: Boolean) -> Unit,
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     BasicAlertDialog(
         onDismissRequest = {},
-        modifier = Modifier
-            .width(360.dp)
-            .heightIn(min = 200.dp)
+        modifier = modifier.width(360.dp).heightIn(min = 200.dp),
     ) {
         Surface(
             shape = ShapeDefaults.ExtraLarge,
@@ -62,44 +62,32 @@ fun DeleteWarningConfirmDialog(
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 1.dp,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(IntrinsicSize.Min)
-            ) {
-                Text(
-                    text = message,
-                    style = Typography.bodyLarge,
-                    modifier = Modifier.weight(1F)
-                )
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp).height(IntrinsicSize.Min)) {
+                Text(text = message, style = Typography.bodyLarge, modifier = Modifier.weight(1F))
 
-                val warningConfirmationInteractionSource =
-                    remember { MutableInteractionSource() }
+                val warningConfirmationInteractionSource = remember { MutableInteractionSource() }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
-                        .fillMaxWidth()
-                        .clickable(
+                    modifier =
+                        Modifier.minimumInteractiveComponentSize().fillMaxWidth().clickable(
                             interactionSource = warningConfirmationInteractionSource,
-                            indication = null
+                            indication = null,
                         ) {
                             onWarningConfirmedChange(warningConfirmed.not())
-                        }
+                        },
                 ) {
                     Checkbox(
                         checked = warningConfirmed,
-                        onCheckedChange = {
-                            onWarningConfirmedChange(warningConfirmed.not())
-                        },
+                        onCheckedChange = { onWarningConfirmedChange(warningConfirmed.not()) },
                         interactionSource = warningConfirmationInteractionSource,
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
+                        modifier = Modifier.minimumInteractiveComponentSize(),
                     )
 
                     Text(
-                        text = stringResource(id = com.kssidll.arru.R.string.destructive_action_confirmation_text),
+                        text =
+                            stringResource(
+                                id = com.kssidll.arru.R.string.destructive_action_confirmation_text
+                            ),
                         style = Typography.bodyLarge,
                     )
                 }
@@ -107,16 +95,18 @@ fun DeleteWarningConfirmDialog(
                 Row {
                     Button(
                         onClick = onCancel,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                        ),
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
-                            .weight(1f)
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = MaterialTheme.colorScheme.tertiary,
+                            ),
+                        modifier = Modifier.minimumInteractiveComponentSize().weight(1f),
                     ) {
                         Text(
-                            text = stringResource(id = com.kssidll.arru.R.string.destructive_action_cancel),
+                            text =
+                                stringResource(
+                                    id = com.kssidll.arru.R.string.destructive_action_cancel
+                                ),
                             style = Typography.bodyLarge,
                         )
                     }
@@ -126,22 +116,22 @@ fun DeleteWarningConfirmDialog(
                     Button(
                         enabled = warningConfirmed,
                         onClick = onSubmit,
-                        colors = ButtonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            disabledContainerColor = MaterialTheme.colorScheme.errorContainer.copy(
-                                disabledAlpha
+                        colors =
+                            ButtonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                                disabledContainerColor =
+                                    MaterialTheme.colorScheme.errorContainer.copy(disabledAlpha),
+                                disabledContentColor =
+                                    MaterialTheme.colorScheme.onErrorContainer.copy(disabledAlpha),
                             ),
-                            disabledContentColor = MaterialTheme.colorScheme.onErrorContainer.copy(
-                                disabledAlpha
-                            ),
-                        ),
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
-                            .weight(1f)
+                        modifier = Modifier.minimumInteractiveComponentSize().weight(1f),
                     ) {
                         Text(
-                            text = stringResource(id = com.kssidll.arru.R.string.destructive_action_confirm),
+                            text =
+                                stringResource(
+                                    id = com.kssidll.arru.R.string.destructive_action_confirm
+                                ),
                             style = Typography.bodyLarge,
                         )
                     }
@@ -154,7 +144,7 @@ fun DeleteWarningConfirmDialog(
 @PreviewLightDark
 @Composable
 private fun DeleteWarningConfirmDialogPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         DeleteWarningConfirmDialog(
             message = "test",
             warningConfirmed = true,

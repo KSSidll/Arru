@@ -13,9 +13,7 @@ plugins {
 android {
     signingConfigs {
         create("devel") {
-            val properties = Properties().apply {
-                load(File("signing.properties").reader())
-            }
+            val properties = Properties().apply { load(File("signing.properties").reader()) }
 
             storeFile = File(properties.getProperty("storeFilePath"))
             storePassword = properties.getProperty("storePassword")
@@ -26,6 +24,8 @@ android {
 
     namespace = "com.kssidll.arru"
     compileSdk = 36
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "29.0.13846066 rc3"
 
     defaultConfig {
         applicationId = "com.kssidll.arru"
@@ -35,15 +35,10 @@ android {
         versionName = "2.5.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables { useSupportLibrary = true }
     }
 
-    androidResources {
-        @Suppress("UnstableApiUsage")
-        generateLocaleConfig = true
-    }
+    androidResources { generateLocaleConfig = true }
 
     buildTypes {
         release {
@@ -52,7 +47,7 @@ android {
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("devel")
         }
@@ -68,24 +63,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        jvmToolchain(17)
-    }
+    kotlin { jvmToolchain(17) }
 
     buildFeatures {
         compose = true
         buildConfig = true
     }
 
-    composeCompiler {
-        includeSourceInformation = true
-    }
+    composeCompiler { includeSourceInformation = true }
 
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+    packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
     dependenciesInfo {
         includeInApk = false
@@ -93,11 +80,7 @@ android {
     }
 }
 
-kotlin.sourceSets.main {
-    kotlin.srcDirs(
-        file("${projectDir}/generated/ksp/main/kotlin")
-    )
-}
+kotlin.sourceSets.main { kotlin.srcDirs(file("${projectDir}/generated/ksp/main/kotlin")) }
 
 dependencies {
     ksp(project(":processor"))
@@ -151,24 +134,19 @@ dependencies {
     // Chart
     implementation(libs.dev.chart.vico.compose)
     implementation(libs.dev.chart.vico.compose.m3)
+
+    // Testing
+    androidTestImplementation(libs.test.android.core)
+    androidTestImplementation(libs.test.android.rules)
+    androidTestImplementation(libs.test.android.junit)
+    androidTestImplementation(libs.test.android.coroutines)
 }
 
-ksp {
-    arg(
-        RoomSchemaArgProvider(
-            File(
-                projectDir,
-                "schemas"
-            )
-        )
-    )
-}
+ksp { arg(RoomSchemaArgProvider(File(projectDir, "schemas"))) }
 
 class RoomSchemaArgProvider(
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    val schemaDir: File
-): CommandLineArgumentProvider {
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE) val schemaDir: File
+) : CommandLineArgumentProvider {
     override fun asArguments(): Iterable<String> {
         return listOf("room.schemaLocation=${schemaDir.path}")
     }

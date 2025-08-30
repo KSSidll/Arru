@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.search.shared
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -36,17 +35,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductWithAltNames
-import com.kssidll.arru.domain.data.Data
-import com.kssidll.arru.domain.data.FuzzySearchSource
-import com.kssidll.arru.domain.data.NameSource
-import com.kssidll.arru.domain.data.loadedData
-import com.kssidll.arru.domain.data.loadedEmpty
-import com.kssidll.arru.domain.data.searchSort
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
+import com.kssidll.arru.domain.data.interfaces.NameSource
+import com.kssidll.arru.domain.data.interfaces.searchSort
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.component.field.styledTextFieldColorDefaults
 import com.kssidll.arru.ui.screen.search.component.SearchItem
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.arru.ui.theme.optionalAlpha
 import kotlinx.collections.immutable.ImmutableList
@@ -54,32 +51,32 @@ import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Fuzzy searchable list component
+ *
  * @param filter Filter by which to sort the [items]
- * @param onFilterChange Callback triggered when the input service updates the filter text. Provides new filter as parameter
+ * @param onFilterChange Callback triggered when the input service updates the filter text. Provides
+ *   new filter as parameter
  * @param items List of items to display
  * @param onItemClick Callback triggered when an item is clicked. Provides item as parameter
- * @param onItemLongClick Callback triggered when an item is long pressed/clicked. Provides item as parameter
+ * @param onItemLongClick Callback triggered when an item is long pressed/clicked. Provides item as
+ *   parameter
  */
 @Composable
 fun <T> SearchList(
     filter: String,
     onFilterChange: (String) -> Unit,
-    items: Data<ImmutableList<T>>,
+    items: ImmutableList<T>,
     onItemClick: (item: T) -> Unit,
     onItemLongClick: (item: T) -> Unit,
-    modifier: Modifier = Modifier
-) where T: FuzzySearchSource, T: NameSource {
+    modifier: Modifier = Modifier,
+) where T : FuzzySearchSource, T : NameSource {
     Box(modifier = modifier.fillMaxSize()) {
         AnimatedVisibility(
-            visible = items.loadedEmpty(),
+            visible = items.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut(),
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(id = R.string.no_data_to_display_text),
                     textAlign = TextAlign.Center,
@@ -88,102 +85,73 @@ fun <T> SearchList(
             }
         }
 
-        AnimatedVisibility(
-            visible = items.loadedData(),
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
+        AnimatedVisibility(visible = items.isNotEmpty(), enter = fadeIn(), exit = fadeOut()) {
             val displayItems: SnapshotStateList<T> = remember { mutableStateListOf() }
 
-            LaunchedEffect(
-                items,
-                filter
-            ) {
-                if (items is Data.Loaded) {
-                    val newItems = items.data.searchSort(filter)
+            LaunchedEffect(items, filter) {
+                val newItems = items.searchSort(filter)
 
-                    displayItems.clear()
-                    displayItems.addAll(newItems)
-                }
+                displayItems.clear()
+                displayItems.addAll(newItems)
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                AnimatedVisibility(
-                    visible = items.loadedData(),
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
-                    Scaffold(
-                        bottomBar = {
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                Column(
-                                    modifier = Modifier
-                                        .width(600.dp)
-                                        .align(Alignment.Center)
-                                ) {
-                                    HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer)
+                Scaffold(
+                    bottomBar = {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.width(600.dp).align(Alignment.Center)) {
+                                HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.primaryContainer
+                                )
 
-                                    StyledOutlinedTextField(
-                                        value = filter,
-                                        onValueChange = {
-                                            onFilterChange(it)
-                                        },
-                                        placeholder = {
-                                            Text(
-                                                text = stringResource(id = R.string.search),
-                                                style = Typography.bodyLarge,
-                                                color = MaterialTheme.colorScheme.primary.copy(
+                                StyledOutlinedTextField(
+                                    value = filter,
+                                    onValueChange = { onFilterChange(it) },
+                                    placeholder = {
+                                        Text(
+                                            text = stringResource(id = R.string.search),
+                                            style = Typography.bodyLarge,
+                                            color =
+                                                MaterialTheme.colorScheme.primary.copy(
                                                     optionalAlpha
                                                 ),
-                                            )
-                                        },
-                                        leadingIcon = {
-                                            Icon(
-                                                imageVector = Icons.Rounded.Search,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                        },
-                                        colors = styledTextFieldColorDefaults(
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Search,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                        )
+                                    },
+                                    colors =
+                                        styledTextFieldColorDefaults(
                                             disabledIndicator = Color.Transparent,
                                             unfocusedIndicator = Color.Transparent,
                                             focusedIndicator = Color.Transparent,
                                             errorIndicator = Color.Transparent,
                                         ),
-                                    )
-                                }
+                                )
                             }
                         }
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it)
-                                .consumeWindowInsets(it)
-                        ) {
-                            LazyColumn(
-                                reverseLayout = true,
-                                modifier = Modifier.weight(1f),
-                            ) {
-                                items(displayItems.toList()) { item ->
-                                    Box(modifier = Modifier.fillMaxWidth()) {
-                                        Column(
-                                            modifier = Modifier
-                                                .width(600.dp)
-                                                .align(Alignment.Center)
-                                        ) {
-                                            HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer)
+                    }
+                ) {
+                    Column(modifier = Modifier.fillMaxSize().padding(it).consumeWindowInsets(it)) {
+                        LazyColumn(reverseLayout = true, modifier = Modifier.weight(1f)) {
+                            items(displayItems.toList()) { item ->
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    Column(
+                                        modifier = Modifier.width(600.dp).align(Alignment.Center)
+                                    ) {
+                                        HorizontalDivider(
+                                            color = MaterialTheme.colorScheme.primaryContainer
+                                        )
 
-                                            SearchItem(
-                                                text = item.name(),
-                                                onItemClick = {
-                                                    onItemClick(item)
-                                                },
-                                                onItemLongClick = {
-                                                    onItemLongClick(item)
-                                                }
-                                            )
-                                        }
+                                        SearchItem(
+                                            text = item.name(),
+                                            onItemClick = { onItemClick(item) },
+                                            onItemLongClick = { onItemLongClick(item) },
+                                        )
                                     }
                                 }
                             }
@@ -198,12 +166,12 @@ fun <T> SearchList(
 @PreviewLightDark
 @Composable
 private fun ListScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = Data.Loaded(ProductWithAltNames.generateList().toImmutableList()),
+                items = ProductEntity.generateList().toImmutableList(),
                 onItemClick = {},
                 onItemLongClick = {},
             )
@@ -214,12 +182,12 @@ private fun ListScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun EmptyListScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             SearchList(
                 filter = String(),
                 onFilterChange = {},
-                items = Data.Loaded(emptyList<ProductWithAltNames>().toImmutableList()),
+                items = emptyImmutableList(),
                 onItemClick = {},
                 onItemLongClick = {},
             )

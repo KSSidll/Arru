@@ -12,24 +12,20 @@ import kotlinx.coroutines.launch
 fun AddShopRoute(
     defaultName: String?,
     navigateBack: (shopId: Long?) -> Unit,
+    viewModel: AddShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddShopViewModel = hiltViewModel()
 
-    LaunchedEffect(Unit) {
-        viewModel.screenState.name.value = Field.Loaded(defaultName)
-    }
+    LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
 
     ModifyShopScreenImpl(
-        onBack = {
-            navigateBack(null)
-        },
+        onBack = { navigateBack(null) },
         state = viewModel.screenState,
         onSubmit = {
             scope.launch {
-                val result = viewModel.addShop()
-                if (result.isNotError()) {
-                    navigateBack(result.id)
+                val id = viewModel.addShop()
+                if (id != null) {
+                    navigateBack(id)
                 }
             }
         },

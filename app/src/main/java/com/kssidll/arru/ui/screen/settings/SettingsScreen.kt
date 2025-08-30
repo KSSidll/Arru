@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.settings
 
-
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -65,87 +64,79 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastJoinToString
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.domain.data.Data
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.other.SecondaryAppBar
 import com.kssidll.arru.ui.screen.settings.component.LanguageExposedDropdown
 import com.kssidll.arru.ui.screen.settings.component.ThemeExposedDropdown
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import com.kssidll.compiled.CurrencyLocaleData
-import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.text.NumberFormat
 import java.util.Locale
+import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
     onEvent: (event: SettingsEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    var exportOptionsExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
+    var exportOptionsExpanded: Boolean by remember { mutableStateOf(false) }
 
-    var isCurrencyFormatSearchExpanded: Boolean by remember {
-        mutableStateOf(false)
-    }
+    var isCurrencyFormatSearchExpanded: Boolean by remember { mutableStateOf(false) }
 
     val layoutDirection = LocalLayoutDirection.current
 
-    val buttonStartPadding =
-        ButtonDefaults.ContentPadding.calculateStartPadding(layoutDirection)
-    val buttonEndPadding =
-        ButtonDefaults.ContentPadding.calculateEndPadding(layoutDirection)
+    val buttonStartPadding = ButtonDefaults.ContentPadding.calculateStartPadding(layoutDirection)
+    val buttonEndPadding = ButtonDefaults.ContentPadding.calculateEndPadding(layoutDirection)
 
     val buttonHorizontalPadding = buttonStartPadding + buttonEndPadding
 
-    AnimatedVisibility(visible = uiState.databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible) {
+    AnimatedVisibility(
+        visible = uiState.databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible
+    ) {
         BasicAlertDialog(
             onDismissRequest = {
-                onEvent(SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog)
+                onEvent(
+                    SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog
+                )
             }
         ) {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    )
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .width(280.dp)
-                        .height(160.dp)
-                        .padding(6.dp)
+                    modifier = Modifier.width(280.dp).height(160.dp).padding(6.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.database_location_change_extreme_danger_alert),
+                        text =
+                            stringResource(R.string.database_location_change_extreme_danger_alert),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
 
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier
-                        .padding(4.dp)
-                ) {
+                Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(4.dp)) {
                     Button(
                         onClick = {
-                            onEvent(SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog)
+                            onEvent(
+                                SettingsEvent
+                                    .CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog
+                            )
                         },
-                        shape = RoundedCornerShape(
-                            topStartPercent = 50,
-                            bottomStartPercent = 50
-                        ),
-                        modifier = Modifier.weight(1f)
+                        shape = RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
+                        modifier = Modifier.weight(1f),
                     ) {
                         Text(
                             text = stringResource(R.string.take_me_to_safety),
@@ -158,15 +149,13 @@ fun SettingsScreen(
                         onClick = {
                             onEvent(SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction)
                         },
-                        shape = RoundedCornerShape(
-                            topEndPercent = 50,
-                            bottomEndPercent = 50
-                        ),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError,
-                        ),
-                        modifier = Modifier.weight(1f)
+                        shape = RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError,
+                            ),
+                        modifier = Modifier.weight(1f),
                     ) {
                         Text(
                             text = stringResource(R.string.i_know_what_i_am_doing),
@@ -181,21 +170,18 @@ fun SettingsScreen(
 
     AnimatedVisibility(visible = uiState.databaseLocationChangeFailedError) {
         BasicAlertDialog(
-            onDismissRequest = {
-                onEvent(SettingsEvent.DismissDatabaseLocationChangeError)
-            }
+            onDismissRequest = { onEvent(SettingsEvent.DismissDatabaseLocationChangeError) }
         ) {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    )
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .width(280.dp)
-                        .height(160.dp)
+                    modifier = Modifier.width(280.dp).height(160.dp),
                 ) {
                     Text(
                         text = stringResource(R.string.database_location_change_failed_error),
@@ -219,90 +205,83 @@ fun SettingsScreen(
                 },
             )
         },
-        modifier = modifier.windowInsetsPadding(
-            WindowInsets.navigationBars
-                .only(
-                    WindowInsetsSides.Horizontal
-                )
-        )
+        modifier =
+            modifier.windowInsetsPadding(
+                WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+            ),
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .fillMaxWidth()
+            modifier =
+                Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxWidth()
         ) {
             if (isCurrencyFormatSearchExpanded) {
                 SearchableListDialog(
                     showAddButton = false,
-                    items = Data.Loaded(CurrencyLocaleData.items),
+                    items = CurrencyLocaleData.items,
                     itemText = {
                         buildString {
                             append(it.first)
                             append(" | ")
-                            append(it.second.map {
-                                NumberFormat.getCurrencyInstance(
-                                    Locale.forLanguageTag(
-                                        it
-                                    )
-                                ).currency?.symbol ?: String()
-                            }.distinct().fastJoinToString(" "))
+                            append(
+                                it.second
+                                    .map { tag ->
+                                        NumberFormat.getCurrencyInstance(Locale.forLanguageTag(tag))
+                                            .currency
+                                            ?.symbol ?: String()
+                                    }
+                                    .distinct()
+                                    .fastJoinToString(" ")
+                            )
                         }
                     },
-                    onDismissRequest = {
-                        isCurrencyFormatSearchExpanded = false
-                    },
+                    onDismissRequest = { isCurrencyFormatSearchExpanded = false },
                     calculateScore = { item, query ->
                         FuzzySearch.extractOne(
-                            query,
-                            item.second.map {
-                                NumberFormat.getCurrencyInstance(
-                                    Locale.forLanguageTag(
-                                        it
-                                    )
-                                ).currency?.symbol ?: String()
-                            } + item.first
-                        ).score
+                                query,
+                                item.second.map {
+                                    NumberFormat.getCurrencyInstance(Locale.forLanguageTag(it))
+                                        .currency
+                                        ?.symbol ?: String()
+                                } + item.first,
+                            )
+                            .score
                     },
                     showDefaultValueItem = true,
                     defaultItemText = stringResource(R.string.language),
                     onItemClick = {
-                        onEvent(SettingsEvent.SetCurrencyFormatLocale(it?.let { Locale.forLanguageTag(it.second.first()) }))
+                        onEvent(
+                            SettingsEvent.SetCurrencyFormatLocale(
+                                it?.let { Locale.forLanguageTag(it.second.first()) }
+                            )
+                        )
                         isCurrencyFormatSearchExpanded = false
-                    }
+                    },
                 )
             } else {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
+                    modifier =
+                        Modifier.align(Alignment.Center)
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()),
                 ) {
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Button(
-                        onClick = {
-                            onEvent(SettingsEvent.NavigateBackups)
-                        }
-                    ) {
+                    Button(onClick = { onEvent(SettingsEvent.NavigateBackups) }) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .width(TextFieldDefaults.MinWidth - buttonHorizontalPadding)
+                            modifier =
+                                Modifier.padding(vertical = 4.dp)
+                                    .width(TextFieldDefaults.MinWidth - buttonHorizontalPadding),
                         ) {
                             Text(
                                 text = stringResource(id = R.string.backups),
-                                style = Typography.titleMedium
+                                style = Typography.titleMedium,
                             )
 
                             Spacer(modifier = Modifier.width(10.dp))
 
-                            Icon(
-                                imageVector = Icons.Default.Backup,
-                                contentDescription = null,
-                            )
+                            Icon(imageVector = Icons.Default.Backup, contentDescription = null)
                         }
                     }
 
@@ -310,58 +289,52 @@ fun SettingsScreen(
 
                     Row {
                         Button(
-                            shape = RoundedCornerShape(
-                                topStartPercent = 50,
-                                bottomStartPercent = 50,
-                            ),
-                            onClick = {
-                                onEvent(SettingsEvent.ExportData)
-                            },
+                            shape =
+                                RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
+                            onClick = { onEvent(SettingsEvent.ExportData) },
                             contentPadding = PaddingValues(0.dp),
-                            modifier = Modifier
-                                .width(TextFieldDefaults.MinWidth - buttonStartPadding - 30.dp)
-                                .height(ButtonDefaults.MinHeight + 4.dp)
+                            modifier =
+                                Modifier.width(
+                                        TextFieldDefaults.MinWidth - buttonStartPadding - 30.dp
+                                    )
+                                    .height(ButtonDefaults.MinHeight + 4.dp),
                         ) {
                             Text(
                                 text = stringResource(id = R.string.export),
                                 style = Typography.titleMedium,
-                                modifier = Modifier.padding(start = buttonStartPadding + 30.dp)
+                                modifier = Modifier.padding(start = buttonStartPadding + 30.dp),
                             )
                         }
 
                         Button(
-                            shape = RoundedCornerShape(
-                                topEndPercent = 50,
-                                bottomEndPercent = 50,
-                            ),
-                            onClick = {
-                                exportOptionsExpanded = !exportOptionsExpanded
-                            },
+                            shape = RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50),
+                            onClick = { exportOptionsExpanded = !exportOptionsExpanded },
                             contentPadding = PaddingValues(0.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                            ),
-                            modifier = Modifier
-                                .width(30.dp + buttonStartPadding)
-                                .height(ButtonDefaults.MinHeight + 4.dp)
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                ),
+                            modifier =
+                                Modifier.width(30.dp + buttonStartPadding)
+                                    .height(ButtonDefaults.MinHeight + 4.dp),
                         ) {
                             Crossfade(
                                 targetState = exportOptionsExpanded,
                                 animationSpec = tween(200),
-                                label = "export options visibility toggle"
+                                label = "export options visibility toggle",
                             ) { expanded ->
                                 if (expanded) {
                                     Icon(
                                         imageVector = Icons.Default.ArrowUpward,
                                         contentDescription = null,
-                                        modifier = Modifier.padding(12.dp)
+                                        modifier = Modifier.padding(12.dp),
                                     )
                                 } else {
                                     Icon(
                                         imageVector = Icons.Default.ArrowDownward,
                                         contentDescription = null,
-                                        modifier = Modifier.padding(12.dp)
+                                        modifier = Modifier.padding(12.dp),
                                     )
                                 }
                             }
@@ -375,28 +348,31 @@ fun SettingsScreen(
                             Surface(
                                 shape = ShapeDefaults.Large,
                                 tonalElevation = 1.dp,
-                                modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
+                                modifier =
+                                    Modifier.width(
+                                        TextFieldDefaults.MinWidth + buttonHorizontalPadding
+                                    ),
                             ) {
                                 Column(modifier = Modifier.animateContentSize()) {
                                     AnimatedVisibility(visible = uiState.exportUriVisible) {
                                         Surface(
                                             shape = ShapeDefaults.Large,
                                             tonalElevation = 2.dp,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clickable {
+                                            modifier =
+                                                Modifier.fillMaxWidth().clickable {
                                                     onEvent(SettingsEvent.SetExportUri)
-                                                }
+                                                },
                                         ) {
                                             Column(modifier = Modifier.padding(24.dp)) {
                                                 Text(
-                                                    text = "${stringResource(id = R.string.export_location)}:",
-                                                    style = Typography.labelLarge
+                                                    text =
+                                                        "${stringResource(id = R.string.export_location)}:",
+                                                    style = Typography.labelLarge,
                                                 )
 
                                                 Text(
                                                     text = uiState.readableExportUriString,
-                                                    style = Typography.labelMedium
+                                                    style = Typography.labelMedium,
                                                 )
 
                                                 Spacer(modifier = Modifier.height(12.dp))
@@ -407,7 +383,7 @@ fun SettingsScreen(
                                     Column(modifier = Modifier.padding(24.dp)) {
                                         Text(
                                             text = "${stringResource(id = R.string.export_type)}:",
-                                            style = Typography.labelLarge
+                                            style = Typography.labelLarge,
                                         )
 
                                         AppPreferences.Export.Type.Values.entries.forEach {
@@ -416,18 +392,19 @@ fun SettingsScreen(
                                                 tonalElevation = 2.dp,
                                                 onClick = {
                                                     onEvent(SettingsEvent.SetExportType(it))
-                                                }
+                                                },
                                             ) {
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
-                                                    modifier = Modifier.padding(
-                                                        vertical = 8.dp,
-                                                        horizontal = 16.dp
-                                                    )
+                                                    modifier =
+                                                        Modifier.padding(
+                                                            vertical = 8.dp,
+                                                            horizontal = 16.dp,
+                                                        ),
                                                 ) {
                                                     Text(
                                                         text = it.getTranslation(),
-                                                        style = Typography.labelMedium
+                                                        style = Typography.labelMedium,
                                                     )
 
                                                     Spacer(modifier = Modifier.width(4.dp))
@@ -436,7 +413,7 @@ fun SettingsScreen(
                                                         Icon(
                                                             imageVector = Icons.Default.Check,
                                                             contentDescription = null,
-                                                            modifier = Modifier.size(24.dp)
+                                                            modifier = Modifier.size(24.dp),
                                                         )
                                                     } else {
                                                         Spacer(modifier = Modifier.width(24.dp))
@@ -450,23 +427,20 @@ fun SettingsScreen(
                         }
                     }
 
-
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row {
                         Button(
-                            onClick = {
-                                onEvent(SettingsEvent.ImportData)
-                            },
+                            onClick = { onEvent(SettingsEvent.ImportData) },
                             contentPadding = PaddingValues(0.dp),
-                            modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .width(TextFieldDefaults.MinWidth)
-                                .height(ButtonDefaults.MinHeight + 4.dp)
+                            modifier =
+                                Modifier.padding(vertical = 4.dp)
+                                    .width(TextFieldDefaults.MinWidth)
+                                    .height(ButtonDefaults.MinHeight + 4.dp),
                         ) {
                             Text(
                                 text = stringResource(id = R.string.import_),
-                                style = Typography.titleMedium
+                                style = Typography.titleMedium,
                             )
                         }
                     }
@@ -480,25 +454,22 @@ fun SettingsScreen(
                     SearchField(
                         showAddButton = false,
                         label = stringResource(R.string.settings_currency_format),
-                        value = 1.0f.formatToCurrency(uiState.currencyFormatLocale ?: Locale.getDefault()),
-                        onClick = {
-                            isCurrencyFormatSearchExpanded = true
-                        }
+                        value = 1.0f.formatToCurrency(uiState.currencyFormatLocale),
+                        onClick = { isCurrencyFormatSearchExpanded = true },
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     AnimatedVisibility(visible = uiState.theme != null) {
                         ThemeExposedDropdown(
-                            currentTheme = uiState.theme ?: AppPreferences.Theme.ColorScheme.DEFAULT,
-                            setTheme = { onEvent(SettingsEvent.SetTheme(it)) }
+                            currentTheme =
+                                uiState.theme ?: AppPreferences.Theme.ColorScheme.DEFAULT,
+                            setTheme = { onEvent(SettingsEvent.SetTheme(it)) },
                         )
                     }
 
                     if (Build.VERSION.SDK_INT >= 31) {
-                        val dynamicThemeInteractionSource = remember {
-                            MutableInteractionSource()
-                        }
+                        val dynamicThemeInteractionSource = remember { MutableInteractionSource() }
 
                         Surface(
                             shape = ShapeDefaults.Large,
@@ -507,27 +478,27 @@ fun SettingsScreen(
                             onClick = {
                                 onEvent(SettingsEvent.SetDynamicColor(!uiState.isInDynamicColor))
                             },
-                            modifier = Modifier
-                                .width(TextFieldDefaults.MinWidth)
+                            modifier = Modifier.width(TextFieldDefaults.MinWidth),
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             ) {
                                 Checkbox(
                                     checked = uiState.isInDynamicColor,
                                     interactionSource = dynamicThemeInteractionSource,
                                     onCheckedChange = {
-                                        onEvent(SettingsEvent.SetDynamicColor(!uiState.isInDynamicColor))
-                                    }
+                                        onEvent(
+                                            SettingsEvent.SetDynamicColor(!uiState.isInDynamicColor)
+                                        )
+                                    },
                                 )
 
                                 Spacer(modifier = Modifier.width(4.dp))
 
                                 Text(
                                     text = stringResource(R.string.settings_dynamic_theme),
-                                    style = Typography.labelMedium
+                                    style = Typography.labelMedium,
                                 )
                             }
                         }
@@ -544,20 +515,17 @@ fun SettingsScreen(
                             shape = ShapeDefaults.Large,
                             tonalElevation = 2.dp,
                             interactionSource = togglePersistentNotificationInteractionSource,
-                            onClick = {
-                                onEvent(SettingsEvent.TogglePersistentNotification)
-                            },
-                            modifier = Modifier
-                                .width(TextFieldDefaults.MinWidth)
+                            onClick = { onEvent(SettingsEvent.TogglePersistentNotification) },
+                            modifier = Modifier.width(TextFieldDefaults.MinWidth),
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             ) {
                                 Checkbox(
                                     checked = uiState.persistentNotificationEnabled,
-                                    interactionSource = togglePersistentNotificationInteractionSource,
+                                    interactionSource =
+                                        togglePersistentNotificationInteractionSource,
                                     onCheckedChange = {
                                         onEvent(SettingsEvent.TogglePersistentNotification)
                                     },
@@ -567,7 +535,7 @@ fun SettingsScreen(
 
                                 Text(
                                     text = stringResource(R.string.show_persistent_notification),
-                                    style = Typography.labelMedium
+                                    style = Typography.labelMedium,
                                 )
                             }
                         }
@@ -575,13 +543,14 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    AnimatedVisibility(
-                        visible = uiState.advancedSettingsVisible,
-                    ) {
+                    AnimatedVisibility(visible = uiState.advancedSettingsVisible) {
                         Column {
                             HorizontalDivider(
                                 color = MaterialTheme.colorScheme.errorContainer,
-                                modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
+                                modifier =
+                                    Modifier.width(
+                                        TextFieldDefaults.MinWidth + buttonHorizontalPadding
+                                    ),
                             )
 
                             Spacer(modifier = Modifier.height(2.dp))
@@ -599,50 +568,77 @@ fun SettingsScreen(
                                     Surface(
                                         shape = ShapeDefaults.Large,
                                         tonalElevation = 1.dp,
-                                        modifier = Modifier.width(TextFieldDefaults.MinWidth + buttonHorizontalPadding)
+                                        modifier =
+                                            Modifier.width(
+                                                TextFieldDefaults.MinWidth + buttonHorizontalPadding
+                                            ),
                                     ) {
                                         Column(modifier = Modifier.animateContentSize()) {
-                                            AnimatedVisibility(visible = uiState.databaseLocationChangeVisible) {
+                                            AnimatedVisibility(
+                                                visible = uiState.databaseLocationChangeVisible
+                                            ) {
                                                 Column(modifier = Modifier.padding(24.dp)) {
                                                     Text(
-                                                        text = "${stringResource(id = R.string.database_location)}:",
-                                                        style = Typography.labelLarge
+                                                        text =
+                                                            "${stringResource(id = R.string.database_location)}:",
+                                                        style = Typography.labelLarge,
                                                     )
 
-                                                    AppPreferences.Database.Location.Values.entries.forEach {
-                                                        Surface(
-                                                            shape = ShapeDefaults.Large,
-                                                            tonalElevation = 2.dp,
-                                                            onClick = {
-                                                                onEvent(SettingsEvent.SetDatabaseLocation(it))
-                                                            }
-                                                        ) {
-                                                            Row(
-                                                                verticalAlignment = Alignment.CenterVertically,
-                                                                modifier = Modifier.padding(
-                                                                    vertical = 8.dp,
-                                                                    horizontal = 16.dp
-                                                                )
-                                                            ) {
-                                                                Text(
-                                                                    text = it.getTranslation(),
-                                                                    style = Typography.labelMedium
-                                                                )
-
-                                                                Spacer(modifier = Modifier.width(4.dp))
-
-                                                                if (uiState.databaseLocation == it) {
-                                                                    Icon(
-                                                                        imageVector = Icons.Default.Check,
-                                                                        contentDescription = null,
-                                                                        modifier = Modifier.size(24.dp)
+                                                    AppPreferences.Database.Location.Values.entries
+                                                        .forEach {
+                                                            Surface(
+                                                                shape = ShapeDefaults.Large,
+                                                                tonalElevation = 2.dp,
+                                                                onClick = {
+                                                                    onEvent(
+                                                                        SettingsEvent
+                                                                            .SetDatabaseLocation(it)
                                                                     )
-                                                                } else {
-                                                                    Spacer(modifier = Modifier.width(24.dp))
+                                                                },
+                                                            ) {
+                                                                Row(
+                                                                    verticalAlignment =
+                                                                        Alignment.CenterVertically,
+                                                                    modifier =
+                                                                        Modifier.padding(
+                                                                            vertical = 8.dp,
+                                                                            horizontal = 16.dp,
+                                                                        ),
+                                                                ) {
+                                                                    Text(
+                                                                        text = it.getTranslation(),
+                                                                        style =
+                                                                            Typography.labelMedium,
+                                                                    )
+
+                                                                    Spacer(
+                                                                        modifier =
+                                                                            Modifier.width(4.dp)
+                                                                    )
+
+                                                                    if (
+                                                                        uiState.databaseLocation ==
+                                                                            it
+                                                                    ) {
+                                                                        Icon(
+                                                                            imageVector =
+                                                                                Icons.Default.Check,
+                                                                            contentDescription =
+                                                                                null,
+                                                                            modifier =
+                                                                                Modifier.size(24.dp),
+                                                                        )
+                                                                    } else {
+                                                                        Spacer(
+                                                                            modifier =
+                                                                                Modifier.width(
+                                                                                    24.dp
+                                                                                )
+                                                                        )
+                                                                    }
                                                                 }
                                                             }
                                                         }
-                                                    }
                                                 }
                                             }
                                         }
@@ -654,7 +650,8 @@ fun SettingsScreen(
                         }
                     }
 
-                    // TODO remove when there's more advanced settings, currently the only one is for api 30+
+                    // TODO remove when there's more advanced settings, currently the only one is
+                    // for api 30+
                     if (Build.VERSION.SDK_INT >= 30) {
                         val advancedSettingsToggleInteractionSource = remember {
                             MutableInteractionSource()
@@ -664,18 +661,14 @@ fun SettingsScreen(
                             shape = ShapeDefaults.Large,
                             tonalElevation = 2.dp,
                             interactionSource = advancedSettingsToggleInteractionSource,
-                            onClick = {
-                                onEvent(SettingsEvent.ToggleAdvancedSettingsVisibility)
-                            },
+                            onClick = { onEvent(SettingsEvent.ToggleAdvancedSettingsVisibility) },
                             color = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier
-                                .width(TextFieldDefaults.MinWidth)
+                            modifier = Modifier.width(TextFieldDefaults.MinWidth),
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             ) {
                                 Checkbox(
                                     checked = uiState.advancedSettingsVisible,
@@ -683,18 +676,22 @@ fun SettingsScreen(
                                     onCheckedChange = {
                                         onEvent(SettingsEvent.ToggleAdvancedSettingsVisibility)
                                     },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = MaterialTheme.colorScheme.onErrorContainer,
-                                        uncheckedColor = MaterialTheme.colorScheme.onErrorContainer,
-                                        checkmarkColor = MaterialTheme.colorScheme.errorContainer,
-                                    )
+                                    colors =
+                                        CheckboxDefaults.colors(
+                                            checkedColor =
+                                                MaterialTheme.colorScheme.onErrorContainer,
+                                            uncheckedColor =
+                                                MaterialTheme.colorScheme.onErrorContainer,
+                                            checkmarkColor =
+                                                MaterialTheme.colorScheme.errorContainer,
+                                        ),
                                 )
 
                                 Spacer(modifier = Modifier.width(4.dp))
 
                                 Text(
                                     text = stringResource(R.string.show_advanced_settings),
-                                    style = Typography.labelMedium
+                                    style = Typography.labelMedium,
                                 )
                             }
                         }
@@ -706,15 +703,12 @@ fun SettingsScreen(
 }
 
 @PreviewLightDark
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun SettingsScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            SettingsScreen(
-                uiState = SettingsUiState(),
-                onEvent = {}
-            )
+            SettingsScreen(uiState = SettingsUiState(), onEvent = {})
         }
     }
 }

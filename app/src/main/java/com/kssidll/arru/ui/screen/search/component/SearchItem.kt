@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.search.component
 
-
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -19,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 private val DefaultItemHeight: Dp = 80.dp
@@ -36,33 +35,25 @@ internal fun SearchItem(
         if (onItemLongClick == null)
             Modifier.clickable(
                 role = Role.Button,
-                onClickLabel = stringResource(id = R.string.select)
+                onClickLabel = stringResource(id = R.string.select),
             ) {
                 onItemClick()
             }
-        else Modifier
-            .combinedClickable(
+        else
+            Modifier.combinedClickable(
                 role = Role.Button,
-                onClick = {
-                    onItemClick()
-                },
+                onClick = { onItemClick() },
                 onClickLabel = stringResource(id = R.string.select),
-                onLongClick = {
-                    onItemLongClick()
-                },
-                onLongClickLabel = stringResource(id = R.string.edit)
+                onLongClick = { onItemLongClick() },
+                onLongClickLabel = stringResource(id = R.string.edit),
             )
 
-    Box(
-        modifier = containerModifier
-            .fillMaxWidth()
-            .height(itemHeight)
-    ) {
+    Box(modifier = containerModifier.fillMaxWidth().height(itemHeight)) {
         Text(
             text = text,
             style = Typography.titleLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }
@@ -70,13 +61,5 @@ internal fun SearchItem(
 @PreviewLightDark
 @Composable
 private fun SearchItemPreview() {
-    ArrugarqTheme {
-        Surface {
-            SearchItem(
-                text = "test",
-                onItemClick = {},
-                onItemLongClick = {},
-            )
-        }
-    }
+    ArruTheme { Surface { SearchItem(text = "test", onItemClick = {}, onItemLongClick = {}) } }
 }

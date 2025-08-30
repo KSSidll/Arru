@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.settings.component
 
-
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,13 +23,15 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.domain.AppLocale
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import java.util.Locale
 
 /**
  * Exposed dropdown to select locale
- * @param setLocale Callback to call to request locale change. Provides requested locale as parameter, provides null as System locale
+ *
+ * @param setLocale Callback to call to request locale change. Provides requested locale as
+ *   parameter, provides null as System locale
  * @param modifier Modifier to apply to the dropdown menu box
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,60 +44,47 @@ fun LanguageExposedDropdown(
 
     ExposedDropdownMenuBox(
         expanded = dropdownExpanded,
-        onExpandedChange = {
-            dropdownExpanded = !dropdownExpanded
-        },
-        modifier = modifier
+        onExpandedChange = { dropdownExpanded = !dropdownExpanded },
+        modifier = modifier,
     ) {
         // no support for multiple languages so we just check for first value
         val currentLocale = AppCompatDelegate.getApplicationLocales()[0]
 
         TextField(
             readOnly = true,
-            value = currentLocale?.displayLanguage?.replaceFirstChar { it.titlecase(currentLocale) }
-                ?: "System",
+            value =
+                currentLocale?.displayLanguage?.replaceFirstChar { it.titlecase(currentLocale) }
+                    ?: "System",
             textStyle = Typography.bodyMedium,
             onValueChange = {},
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
             },
             label = {
-                Text(
-                    text = stringResource(id = R.string.language),
-                    style = Typography.titleLarge
-                )
+                Text(text = stringResource(id = R.string.language), style = Typography.titleLarge)
             },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                focusedContainerColor = MaterialTheme.colorScheme.background,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                focusedIndicatorColor = MaterialTheme.colorScheme.background,
-            ),
-            modifier = Modifier.menuAnchor(
-                type = MenuAnchorType.PrimaryNotEditable
-            )
+            colors =
+                ExposedDropdownMenuDefaults.textFieldColors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.background,
+                ),
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
         )
 
         ExposedDropdownMenu(
             expanded = dropdownExpanded,
-            onDismissRequest = {
-                dropdownExpanded = false
-            },
-            modifier = Modifier
-                .background(
+            onDismissRequest = { dropdownExpanded = false },
+            modifier =
+                Modifier.background(
                     color = MaterialTheme.colorScheme.surfaceContainer,
-                    shape = RoundedCornerShape(
-                        bottomStart = 8.dp,
-                        bottomEnd = 8.dp
-                    ),
-                )
+                    shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                ),
         ) {
             DropdownMenuItem(
                 text = {
-                    Text(
-                        text = stringResource(id = R.string.system),
-                        style = Typography.bodyLarge,
-                    )
+                    Text(text = stringResource(id = R.string.system), style = Typography.bodyLarge)
                 },
                 onClick = {
                     setLocale(null)
@@ -110,15 +98,17 @@ fun LanguageExposedDropdown(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = locale.getDisplayName(locale)
-                                .replaceFirstChar { it.titlecase(locale) },
+                            text =
+                                locale.getDisplayName(locale).replaceFirstChar {
+                                    it.titlecase(locale)
+                                },
                             style = Typography.bodyLarge,
                         )
                     },
                     onClick = {
                         setLocale(appLocale)
                         dropdownExpanded = false
-                    }
+                    },
                 )
             }
         }
@@ -128,11 +118,5 @@ fun LanguageExposedDropdown(
 @PreviewLightDark
 @Composable
 private fun LanguageExposedDropdownPreview() {
-    ArrugarqTheme {
-        Surface {
-            LanguageExposedDropdown(
-                setLocale = {},
-            )
-        }
-    }
+    ArruTheme { Surface { LanguageExposedDropdown(setLocale = {}) } }
 }
