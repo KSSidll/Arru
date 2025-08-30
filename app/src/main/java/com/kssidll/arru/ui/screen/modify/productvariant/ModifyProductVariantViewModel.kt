@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 data class ModifyProductVariantUiState(
     val currentProductVariant: ProductVariantEntity? = null,
     val allProductVariants: ImmutableList<ProductVariantEntity> = emptyImmutableList(),
-    val name: Field<String> = Field.Loaded(),
+    val name: Field<String> = Field.Loaded(String()),
     val isVariantGlobal: Field<Boolean> = Field.Loaded(false),
     val isVariantGlobalChangeEnabled: Boolean = false,
     val selectedMergeCandidate: ProductVariantEntity? = null,
@@ -49,7 +49,7 @@ sealed class ModifyProductVariantEvent {
     data class SetDangerousDeleteDialogConfirmation(val confirmed: Boolean) :
         ModifyProductVariantEvent()
 
-    data class SetName(val name: String?) : ModifyProductVariantEvent()
+    data class SetName(val name: String) : ModifyProductVariantEvent()
 
     data class SetIsVariantGlobal(val isGlobal: Boolean) : ModifyProductVariantEvent()
 

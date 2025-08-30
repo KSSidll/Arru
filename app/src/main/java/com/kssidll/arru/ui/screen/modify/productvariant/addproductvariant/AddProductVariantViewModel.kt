@@ -36,7 +36,7 @@ constructor(
                 val state = uiState.value
                 val result =
                     insertProductVariantEntityUseCase(
-                        productId = if (state.isVariantGlobal.data == true) null else mProduct?.id,
+                        productId = if (state.isVariantGlobal.data) null else mProduct?.id,
                         name = state.name.data,
                     )
 

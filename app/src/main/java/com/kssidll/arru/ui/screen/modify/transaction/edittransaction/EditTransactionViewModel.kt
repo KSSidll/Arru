@@ -53,7 +53,7 @@ constructor(
         screenState.date.apply { value = Field.Loaded(transaction?.date) }
 
         screenState.totalCost.apply {
-            value = Field.Loaded(transaction?.actualTotalCost()?.toString())
+            value = Field.Loaded(transaction?.actualTotalCost()?.toString().orEmpty())
         }
 
         screenState.selectedShop.apply { value = Field.Loaded(shop) }

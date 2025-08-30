@@ -21,5 +21,5 @@ abstract class ModifyShopViewModel : ViewModel() {
 
 /** Data representing [ModifyShopScreenImpl] screen state */
 data class ModifyShopScreenState(
-    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded())
+    val name: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String()))
 ) : ModifyScreenState()

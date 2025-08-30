@@ -211,7 +211,7 @@ private fun ModifyTransactionScreenContent(
     ) {
         val date = state.date.value.data
         SearchField(
-            enabled = state.date.value.isEnabled(),
+            enabled = state.date.value.isLoading(),
             value =
                 if (date != null)
                     SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
@@ -235,8 +235,8 @@ private fun ModifyTransactionScreenContent(
         ) {
             StyledOutlinedTextField(
                 singleLine = true,
-                enabled = state.totalCost.value.isEnabled(),
-                value = state.totalCost.value.data ?: String(),
+                enabled = state.totalCost.value.isLoading(),
+                value = state.totalCost.value.data,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = { newValue ->
                     state.totalCost.apply {
@@ -260,13 +260,13 @@ private fun ModifyTransactionScreenContent(
 
             Column(modifier = Modifier.fillMaxHeight()) {
                 IconButton(
-                    enabled = state.totalCost.value.isEnabled(),
+                    enabled = state.totalCost.value.isLoading(),
                     onClick = {
-                        if (state.totalCost.value.data.isNullOrBlank()) {
+                        if (state.totalCost.value.data.isBlank()) {
                             state.totalCost.value = Field.Loaded("%.2f".format(0f))
                         } else {
                             val value =
-                                state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+                                state.totalCost.value.data.let { StringHelper.toDoubleOrNull(it) }
 
                             if (value != null) {
                                 state.totalCost.value =
@@ -290,13 +290,13 @@ private fun ModifyTransactionScreenContent(
                 }
 
                 IconButton(
-                    enabled = state.totalCost.value.isEnabled(),
+                    enabled = state.totalCost.value.isLoading(),
                     onClick = {
-                        if (state.totalCost.value.data.isNullOrBlank()) {
+                        if (state.totalCost.value.data.isBlank()) {
                             state.totalCost.value = Field.Loaded("%.2f".format(0f))
                         } else {
                             val value =
-                                state.totalCost.value.data!!.let { StringHelper.toDoubleOrNull(it) }
+                                state.totalCost.value.data.let { StringHelper.toDoubleOrNull(it) }
 
                             if (value != null) {
                                 state.totalCost.value =
@@ -335,7 +335,7 @@ private fun ModifyTransactionScreenContent(
 
         StyledOutlinedTextField(
             optional = state.note.value.data.isNullOrBlank(),
-            enabled = state.note.value.isEnabled(),
+            enabled = state.note.value.isLoading(),
             value = state.note.value.data.orEmpty(),
             onValueChange = { newValue ->
                 state.note.apply { value = Field.Loaded(newValue.trimStart()) }
@@ -347,7 +347,7 @@ private fun ModifyTransactionScreenContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         SearchField(
-            enabled = state.selectedShop.value.isEnabled(),
+            enabled = state.selectedShop.value.isLoading(),
             optional = true,
             value = state.selectedShop.value.data?.name ?: String(),
             onClick = {
@@ -382,7 +382,7 @@ private fun ExpandedModifyTransactionScreenContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             val date = state.date.value.data
             SearchField(
-                enabled = state.date.value.isEnabled(),
+                enabled = state.date.value.isLoading(),
                 value =
                     if (date != null)
                         SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
@@ -411,8 +411,8 @@ private fun ExpandedModifyTransactionScreenContent(
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
-                    enabled = state.totalCost.value.isEnabled(),
-                    value = state.totalCost.value.data ?: String(),
+                    enabled = state.totalCost.value.isLoading(),
+                    value = state.totalCost.value.data,
                     keyboardOptions =
                         KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     onValueChange = { newValue ->
@@ -438,13 +438,13 @@ private fun ExpandedModifyTransactionScreenContent(
 
                 Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
-                        enabled = state.totalCost.value.isEnabled(),
+                        enabled = state.totalCost.value.isLoading(),
                         onClick = {
-                            if (state.totalCost.value.data.isNullOrBlank()) {
+                            if (state.totalCost.value.data.isBlank()) {
                                 state.totalCost.value = Field.Loaded("%.2f".format(0f))
                             } else {
                                 val value =
-                                    state.totalCost.value.data!!.let {
+                                    state.totalCost.value.data.let {
                                         StringHelper.toDoubleOrNull(it)
                                     }
 
@@ -470,13 +470,13 @@ private fun ExpandedModifyTransactionScreenContent(
                     }
 
                     IconButton(
-                        enabled = state.totalCost.value.isEnabled(),
+                        enabled = state.totalCost.value.isLoading(),
                         onClick = {
-                            if (state.totalCost.value.data.isNullOrBlank()) {
+                            if (state.totalCost.value.data.isBlank()) {
                                 state.totalCost.value = Field.Loaded("%.2f".format(0f))
                             } else {
                                 val value =
-                                    state.totalCost.value.data!!.let {
+                                    state.totalCost.value.data.let {
                                         StringHelper.toDoubleOrNull(it)
                                     }
 
@@ -516,7 +516,7 @@ private fun ExpandedModifyTransactionScreenContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = state.selectedShop.value.isEnabled(),
+            enabled = state.selectedShop.value.isLoading(),
             optional = true,
             value = state.selectedShop.value.data?.name ?: String(),
             onClick = {

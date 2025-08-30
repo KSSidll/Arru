@@ -18,7 +18,9 @@ fun AddProductCategoryRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { viewModel.handleEvent(ModifyProductCategoryEvent.SetName(defaultName)) }
+    LaunchedEffect(Unit) {
+        viewModel.handleEvent(ModifyProductCategoryEvent.SetName(defaultName ?: String()))
+    }
 
     ModifyProductCategoryScreenImpl(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 data class ModifyProductProducerUiState(
     val currentProductProducer: ProductProducerEntity? = null,
     val allProductProducers: ImmutableList<ProductProducerEntity> = emptyImmutableList(),
-    val name: Field<String> = Field.Loaded(),
+    val name: Field<String> = Field.Loaded(String()),
     val selectedMergeCandidate: ProductProducerEntity? = null,
     val isDeleteEnabled: Boolean = false,
     val isDangerousDeleteDialogVisible: Boolean = false,
@@ -42,7 +42,7 @@ sealed class ModifyProductProducerEvent {
     data class SetDangerousDeleteDialogConfirmation(val confirmed: Boolean) :
         ModifyProductProducerEvent()
 
-    data class SetName(val name: String?) : ModifyProductProducerEvent()
+    data class SetName(val name: String) : ModifyProductProducerEvent()
 
     data class MergeProductProducer(val mergeInto: ProductProducerEntity?) :
         ModifyProductProducerEvent()

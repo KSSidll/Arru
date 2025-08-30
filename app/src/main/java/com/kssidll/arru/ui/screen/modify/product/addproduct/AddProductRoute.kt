@@ -24,7 +24,9 @@ fun AddProductRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { viewModel.handleEvent(ModifyProductEvent.SetName(defaultName)) }
+    LaunchedEffect(Unit) {
+        viewModel.handleEvent(ModifyProductEvent.SetName(defaultName ?: String()))
+    }
 
     LaunchedEffect(providedProducerId) {
         viewModel.handleEvent(ModifyProductEvent.SelectProductProducer(providedProducerId))

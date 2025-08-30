@@ -83,9 +83,9 @@ fun ModifyProductCategoryScreenImpl(
             modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
-                enabled = uiState.name.isEnabled(),
+                enabled = uiState.name.isLoading(),
                 singleLine = true,
-                value = uiState.name.data ?: String(),
+                value = uiState.name.data,
                 onValueChange = { onEvent(ModifyProductCategoryEvent.SetName(it)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions =

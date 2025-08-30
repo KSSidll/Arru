@@ -18,7 +18,9 @@ fun AddProductProducerRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { viewModel.handleEvent(ModifyProductProducerEvent.SetName(defaultName)) }
+    LaunchedEffect(Unit) {
+        viewModel.handleEvent(ModifyProductProducerEvent.SetName(defaultName ?: String()))
+    }
 
     ModifyProductProducerScreenImpl(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,

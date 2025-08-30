@@ -32,7 +32,9 @@ fun AddProductVariantRoute(
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.handleEvent(ModifyProductVariantEvent.SetName(defaultName)) }
+    LaunchedEffect(Unit) {
+        viewModel.handleEvent(ModifyProductVariantEvent.SetName(defaultName ?: String()))
+    }
 
     ModifyProductVariantScreenImpl(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,

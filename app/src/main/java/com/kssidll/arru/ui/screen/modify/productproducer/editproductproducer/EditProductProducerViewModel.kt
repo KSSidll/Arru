@@ -50,7 +50,7 @@ constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     currentProductProducer = productProducer,
-                    name = Field.Loaded(productProducer?.name),
+                    name = Field.Loaded(productProducer?.name ?: String()),
                 )
             }
         }

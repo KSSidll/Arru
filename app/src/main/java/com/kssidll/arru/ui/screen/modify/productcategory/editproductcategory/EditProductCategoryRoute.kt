@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryEvent
 import com.kssidll.arru.ui.screen.modify.productcategory.ModifyProductCategoryEventResult

@@ -67,10 +67,10 @@ constructor(
         }
 
     fun updateStateForItem(item: ItemEntity?) {
-        val productId: Long? = item?.productEntityId
-        val productVariantId: Long? = item?.productVariantEntityId
-        val price: String? = item?.actualPrice()?.toString()
-        val quantity: String? = item?.actualQuantity()?.toString()
+        val productId = item?.productEntityId
+        val productVariantId = item?.productVariantEntityId
+        val price = item?.actualPrice()?.toString().orEmpty()
+        val quantity = item?.actualQuantity()?.toString().orEmpty()
 
         productId?.let { setProductListener(it) }
         setProductVariantListener(productVariantId)

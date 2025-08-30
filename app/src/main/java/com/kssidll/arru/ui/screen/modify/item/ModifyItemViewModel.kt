@@ -31,10 +31,10 @@ data class ModifyItemUiState(
     val currentItem: ItemEntity? = null,
     val allProducts: ImmutableList<ProductEntity> = emptyImmutableList(),
     val allProductVariants: ImmutableList<ProductVariantEntity> = emptyImmutableList(),
-    val selectedProduct: Field<ProductEntity> = Field.Loaded(),
-    val selectedProductVariant: Field<ProductVariantEntity?> = Field.Loaded(),
-    val quantity: Field<String> = Field.Loaded(),
-    val price: Field<String> = Field.Loaded(),
+    val selectedProduct: Field<ProductEntity?> = Field.Loaded(null),
+    val selectedProductVariant: Field<ProductVariantEntity?> = Field.Loaded(null),
+    val quantity: Field<String> = Field.Loaded(String()),
+    val price: Field<String> = Field.Loaded(String()),
     val isDatePickerDialogExpanded: Boolean = false,
     val isProductSearchDialogExpanded: Boolean = false,
     val isProductVariantSearchDialogExpanded: Boolean = false,
@@ -156,7 +156,7 @@ abstract class ModifyItemViewModel : ViewModel() {
             is ModifyItemEvent.IncrementPrice -> {
                 manuallySetPrice = true
                 _uiState.update { currentState ->
-                    if (currentState.price.data.isNullOrBlank()) {
+                    if (currentState.price.data.isBlank()) {
                         currentState.copy(price = Field.Loaded("%.2f".format(0f)))
                     } else {
                         val value = currentState.price.data.let { StringHelper.toDoubleOrNull(it) }
@@ -170,7 +170,7 @@ abstract class ModifyItemViewModel : ViewModel() {
             is ModifyItemEvent.DecrementPrice -> {
                 manuallySetPrice = true
                 _uiState.update { currentState ->
-                    if (currentState.price.data.isNullOrBlank()) {
+                    if (currentState.price.data.isBlank()) {
                         currentState.copy(price = Field.Loaded("%.2f".format(0f)))
                     } else {
                         val value = currentState.price.data.let { StringHelper.toDoubleOrNull(it) }
@@ -207,7 +207,7 @@ abstract class ModifyItemViewModel : ViewModel() {
             is ModifyItemEvent.IncrementQuantity -> {
                 manuallySetQuantity = true
                 _uiState.update { currentState ->
-                    if (currentState.quantity.data.isNullOrBlank()) {
+                    if (currentState.quantity.data.isBlank()) {
                         currentState.copy(quantity = Field.Loaded("%.3f".format(0f)))
                     } else {
                         val value =
@@ -224,7 +224,7 @@ abstract class ModifyItemViewModel : ViewModel() {
             is ModifyItemEvent.DecrementQuantity -> {
                 manuallySetQuantity = true
                 _uiState.update { currentState ->
-                    if (currentState.quantity.data.isNullOrBlank()) {
+                    if (currentState.quantity.data.isBlank()) {
                         currentState.copy(quantity = Field.Loaded("%.3f".format(0f)))
                     } else {
                         val value =
@@ -260,8 +260,8 @@ abstract class ModifyItemViewModel : ViewModel() {
             if (productId == null) {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        selectedProduct = Field.Loaded(),
-                        selectedProductVariant = Field.Loaded(),
+                        selectedProduct = Field.Loaded(null),
+                        selectedProductVariant = Field.Loaded(null),
                     )
                 }
                 return@launch
@@ -298,15 +298,15 @@ abstract class ModifyItemViewModel : ViewModel() {
                 manuallySetProductVariant = false
                 _uiState.update { currentState ->
                     currentState.copy(
-                        selectedProduct = Field.Loaded(),
-                        selectedProductVariant = Field.Loaded(),
+                        selectedProduct = Field.Loaded(null),
+                        selectedProductVariant = Field.Loaded(null),
                     )
                 }
             } else if (manuallySetProductVariant && productVariantId == null) {
                 // if variant was manually set and is null we want to preserve it
                 setProductListener(productId)
                 _uiState.update { currentState ->
-                    currentState.copy(selectedProductVariant = Field.Loaded())
+                    currentState.copy(selectedProductVariant = Field.Loaded(null))
                 }
             } else if (manuallySetProductVariant && matchingByNameVariant != null) {
                 // if variant was manually set and name exists in new product we want to preserve it
@@ -321,7 +321,7 @@ abstract class ModifyItemViewModel : ViewModel() {
                 if (lastProductVariantId == null) {
                     setProductListener(productId)
                     _uiState.update { currentState ->
-                        currentState.copy(selectedProductVariant = Field.Loaded())
+                        currentState.copy(selectedProductVariant = Field.Loaded(null))
                     }
                 } else {
                     setProductListener(productId)
@@ -379,8 +379,8 @@ abstract class ModifyItemViewModel : ViewModel() {
             _uiState.update { currentState ->
                 cancelProductVariantListener()
                 currentState.copy(
-                    selectedProduct = Field.Loaded(),
-                    selectedProductVariant = Field.Loaded(),
+                    selectedProduct = Field.Loaded(null),
+                    selectedProductVariant = Field.Loaded(null),
                 )
             }
             return
@@ -404,8 +404,8 @@ abstract class ModifyItemViewModel : ViewModel() {
                                 // the variant too
                                 cancelProductVariantListener()
                                 currentState.copy(
-                                    selectedProduct = Field.Loaded(),
-                                    selectedProductVariant = Field.Loaded(),
+                                    selectedProduct = Field.Loaded(null),
+                                    selectedProductVariant = Field.Loaded(null),
                                 )
                             } else {
                                 currentState.copy(selectedProduct = Field.Loaded(it))
@@ -424,7 +424,7 @@ abstract class ModifyItemViewModel : ViewModel() {
         cancelProductVariantListener()
         if (productVariantId == null) {
             _uiState.update { currentState ->
-                currentState.copy(selectedProductVariant = Field.Loaded())
+                currentState.copy(selectedProductVariant = Field.Loaded(null))
             }
             return
         }

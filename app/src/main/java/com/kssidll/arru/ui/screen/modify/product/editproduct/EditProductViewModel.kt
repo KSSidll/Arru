@@ -62,9 +62,7 @@ constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     currentProduct = product,
-                    name =
-                        product?.name?.let { Field.Loaded(it) }
-                            ?: currentState.name.toLoadedOrError(),
+                    name = product?.name?.let { Field.Loaded(it) } ?: currentState.name.toLoaded(),
                 )
             }
 

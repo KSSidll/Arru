@@ -135,8 +135,8 @@ fun ModifyItemScreenImpl(
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
-                    enabled = uiState.price.isEnabled(),
-                    value = uiState.price.data ?: String(),
+                    enabled = uiState.price.isLoading(),
+                    value = uiState.price.data,
                     keyboardOptions =
                         KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     onValueChange = { onEvent(ModifyItemEvent.SetPrice(it)) },
@@ -148,7 +148,7 @@ fun ModifyItemScreenImpl(
 
                 Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
-                        enabled = uiState.price.isEnabled(),
+                        enabled = uiState.price.isLoading(),
                         onClick = { onEvent(ModifyItemEvent.IncrementPrice) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
@@ -166,7 +166,7 @@ fun ModifyItemScreenImpl(
                     }
 
                     IconButton(
-                        enabled = uiState.price.isEnabled(),
+                        enabled = uiState.price.isLoading(),
                         onClick = { onEvent(ModifyItemEvent.DecrementPrice) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
@@ -192,8 +192,8 @@ fun ModifyItemScreenImpl(
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
-                    enabled = uiState.quantity.isEnabled(),
-                    value = uiState.quantity.data ?: String(),
+                    enabled = uiState.quantity.isLoading(),
+                    value = uiState.quantity.data,
                     keyboardOptions =
                         KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     onValueChange = { onEvent(ModifyItemEvent.SetQuantity(it)) },
@@ -213,7 +213,7 @@ fun ModifyItemScreenImpl(
 
                 Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
-                        enabled = uiState.quantity.isEnabled(),
+                        enabled = uiState.quantity.isLoading(),
                         onClick = { onEvent(ModifyItemEvent.IncrementQuantity) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
@@ -231,7 +231,7 @@ fun ModifyItemScreenImpl(
                     }
 
                     IconButton(
-                        enabled = uiState.quantity.isEnabled(),
+                        enabled = uiState.quantity.isLoading(),
                         onClick = { onEvent(ModifyItemEvent.DecrementQuantity) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
@@ -254,7 +254,7 @@ fun ModifyItemScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                enabled = uiState.selectedProduct.isEnabled(),
+                enabled = uiState.selectedProduct.isLoading(),
                 value = uiState.selectedProduct.data?.name ?: String(),
                 onClick = {
                     if (uiState.allProducts.isNotEmpty()) {
@@ -281,7 +281,7 @@ fun ModifyItemScreenImpl(
             SearchField(
                 enabled =
                     uiState.selectedProduct.data != null &&
-                        uiState.selectedProductVariant.isEnabled(),
+                        uiState.selectedProductVariant.isLoading(),
                 value =
                     uiState.selectedProductVariant.data?.name
                         ?: stringResource(R.string.item_product_variant_default_value),

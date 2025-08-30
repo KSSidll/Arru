@@ -57,10 +57,10 @@ abstract class ModifyTransactionViewModel : ViewModel() {
 }
 
 data class ModifyTransactionScreenState(
-    val date: MutableState<Field<Long>> = mutableStateOf(Field.Loaded()),
-    val totalCost: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-    val selectedShop: MutableState<Field<ShopEntity?>> = mutableStateOf(Field.Loaded()),
-    val note: MutableState<Field<String?>> = mutableStateOf(Field.Loaded()),
+    val date: MutableState<Field<Long?>> = mutableStateOf(Field.Loaded(null)),
+    val totalCost: MutableState<Field<String>> = mutableStateOf(Field.Loaded(String())),
+    val selectedShop: MutableState<Field<ShopEntity?>> = mutableStateOf(Field.Loaded(null)),
+    val note: MutableState<Field<String?>> = mutableStateOf(Field.Loaded(null)),
     var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
     var isShopSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
 ) : ModifyScreenState() {

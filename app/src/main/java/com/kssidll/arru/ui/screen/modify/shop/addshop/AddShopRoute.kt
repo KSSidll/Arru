@@ -16,7 +16,9 @@ fun AddShopRoute(
 ) {
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { viewModel.screenState.name.value = Field.Loaded(defaultName) }
+    LaunchedEffect(Unit) {
+        viewModel.screenState.name.value = Field.Loaded(defaultName ?: String())
+    }
 
     ModifyShopScreenImpl(
         onBack = { navigateBack(null) },

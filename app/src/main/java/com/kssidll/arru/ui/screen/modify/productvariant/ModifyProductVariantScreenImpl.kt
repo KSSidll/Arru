@@ -92,9 +92,9 @@ fun ModifyProductVariantScreenImpl(
             modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
-                enabled = uiState.name.isEnabled(),
+                enabled = uiState.name.isLoading(),
                 singleLine = true,
-                value = uiState.name.data ?: String(),
+                value = uiState.name.data,
                 onValueChange = { onEvent(ModifyProductVariantEvent.SetName(it)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions =
@@ -113,14 +113,16 @@ fun ModifyProductVariantScreenImpl(
                         indication = null,
                         interactionSource = isGlobalVariantInteractionSource,
                     ) {
-                        uiState.isVariantGlobal.data?.let {
-                            onEvent(ModifyProductVariantEvent.SetIsVariantGlobal(!it))
-                        }
+                        onEvent(
+                            ModifyProductVariantEvent.SetIsVariantGlobal(
+                                !uiState.isVariantGlobal.data
+                            )
+                        )
                     },
             ) {
                 Checkbox(
                     enabled = uiState.isVariantGlobalChangeEnabled,
-                    checked = uiState.isVariantGlobal.data ?: false,
+                    checked = uiState.isVariantGlobal.data,
                     onCheckedChange = { onEvent(ModifyProductVariantEvent.SetIsVariantGlobal(it)) },
                     interactionSource = isGlobalVariantInteractionSource,
                 )

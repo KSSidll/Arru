@@ -10,36 +10,31 @@ import com.kssidll.arru.ui.theme.Typography
 
 /** Generic abstraction for data and its status */
 @Immutable
-sealed class Field<T>(val data: T? = null, val error: FieldError? = null) {
+sealed class Field<T>(val data: T, val error: FieldError? = null) {
     /** Field status signifying that it's loaded correctly and can display and use [data] */
-    class Loaded<T>(data: T? = null) : Field<T>(data)
+    class Loaded<T>(data: T) : Field<T>(data)
 
     /**
      * Field status signifying a loading process taking place, the field shouldn't be user
      * changeable in this status
      */
-    class Loading<T>(data: T? = null) : Field<T>(data)
+    class Loading<T>(data: T) : Field<T>(data)
 
     /**
      * Field status signifying an error
      *
      * @param error [FieldError] error to set the field to
      */
-    class Error<T>(error: FieldError? = null, data: T? = null) : Field<T>(data, error)
+    class Error<T>(error: FieldError, data: T) : Field<T>(data, error)
 
-    /** @return Whether the field should be user changeable */
-    fun isEnabled(): Boolean {
+    /** @return Whether the field is loading */
+    fun isLoading(): Boolean {
         return this !is Loading
     }
 
     /** @return Whether the field is in an error state */
     fun isError(): Boolean {
         return this is Error
-    }
-
-    /** @return Negation of [isError] */
-    fun isNotError(): Boolean {
-        return isError().not()
     }
 
     /**
@@ -52,22 +47,12 @@ sealed class Field<T>(val data: T? = null, val error: FieldError? = null) {
     }
 
     /**
-     * Tries to change this field status to [Loaded]
-     *
-     * @return This field as [Loaded] status or as [FieldError.NoValueError] [Error] if the data is
-     *   null
-     */
-    fun toLoadedOrError(): Field<T> {
-        return this.data?.let { Loaded(it) } ?: Error(FieldError.NoValueError)
-    }
-
-    /**
      * Changes this field status to [Loading]
      *
      * @return This field as [Loading]
      */
     fun toLoading(): Loading<T> {
-        return Loading(this.data)
+        return Loading(data)
     }
 
     /**
@@ -76,8 +61,8 @@ sealed class Field<T>(val data: T? = null, val error: FieldError? = null) {
      * @param error Error to set the field to
      * @return This field as [Error]
      */
-    fun toError(error: FieldError? = null): Error<T> {
-        return Error(error, this.data)
+    fun toError(error: FieldError): Error<T> {
+        return Error(error, data)
     }
 }
 

@@ -126,9 +126,9 @@ fun ModifyProductScreenImpl(
             modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
-                enabled = uiState.name.isEnabled(),
+                enabled = uiState.name.isLoading(),
                 singleLine = true,
-                value = uiState.name.data ?: String(),
+                value = uiState.name.data,
                 onValueChange = { onEvent(ModifyProductEvent.SetName(it)) },
                 label = { Text(text = stringResource(R.string.item_product)) },
                 supportingText = { uiState.name.error?.ErrorText() },
@@ -142,7 +142,7 @@ fun ModifyProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                enabled = uiState.selectedProductProducer.isEnabled(),
+                enabled = uiState.selectedProductProducer.isLoading(),
                 value = uiState.selectedProductProducer.data?.name ?: String(),
                 onClick = {
                     if (uiState.allProductProducers.isNotEmpty()) {
@@ -167,7 +167,7 @@ fun ModifyProductScreenImpl(
             Spacer(modifier = Modifier.height(12.dp))
 
             SearchField(
-                enabled = uiState.selectedProductCategory.isEnabled(),
+                enabled = uiState.selectedProductCategory.isLoading(),
                 value = uiState.selectedProductCategory.data?.name ?: String(),
                 onClick = {
                     if (uiState.allProductCategories.isNotEmpty()) {

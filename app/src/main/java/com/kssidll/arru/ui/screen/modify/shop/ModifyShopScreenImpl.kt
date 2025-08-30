@@ -116,9 +116,9 @@ fun ModifyShopScreenImpl(
             modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
-                enabled = state.name.value.isEnabled(),
+                enabled = state.name.value.isLoading(),
                 singleLine = true,
-                value = state.name.value.data ?: String(),
+                value = state.name.value.data,
                 onValueChange = { state.name.value = Field.Loaded(it) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSubmit() }),

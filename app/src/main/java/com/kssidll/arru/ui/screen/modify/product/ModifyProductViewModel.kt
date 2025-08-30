@@ -27,9 +27,9 @@ data class ModifyProductUiState(
     val allProducts: ImmutableList<ProductEntity> = emptyImmutableList(),
     val allProductCategories: ImmutableList<ProductCategoryEntity> = emptyImmutableList(),
     val allProductProducers: ImmutableList<ProductProducerEntity> = emptyImmutableList(),
-    val name: Field<String> = Field.Loaded(),
-    val selectedProductCategory: Field<ProductCategoryEntity> = Field.Loaded(),
-    val selectedProductProducer: Field<ProductProducerEntity?> = Field.Loaded(),
+    val name: Field<String> = Field.Loaded(String()),
+    val selectedProductCategory: Field<ProductCategoryEntity?> = Field.Loaded(null),
+    val selectedProductProducer: Field<ProductProducerEntity?> = Field.Loaded(null),
     val selectedMergeCandidate: ProductEntity? = null,
     val isProductCategorySearchDialogExpanded: Boolean = false,
     val isProductProducerSearchDialogExpanded: Boolean = false,
@@ -53,7 +53,7 @@ sealed class ModifyProductEvent {
 
     data class SetDangerousDeleteDialogConfirmation(val confirmed: Boolean) : ModifyProductEvent()
 
-    data class SetName(val name: String?) : ModifyProductEvent()
+    data class SetName(val name: String) : ModifyProductEvent()
 
     data class SelectProductCategory(val productCategoryId: Long?) : ModifyProductEvent()
 
@@ -182,7 +182,7 @@ abstract class ModifyProductViewModel : ViewModel() {
         cancelProductCategoryListener()
         if (productCategoryId == null) {
             _uiState.update { currentState ->
-                currentState.copy(selectedProductCategory = Field.Loaded())
+                currentState.copy(selectedProductCategory = Field.Loaded(null))
             }
             return
         }
@@ -205,7 +205,7 @@ abstract class ModifyProductViewModel : ViewModel() {
         cancelProductProducerListener()
         if (productProducerId == null) {
             _uiState.update { currentState ->
-                currentState.copy(selectedProductProducer = Field.Loaded())
+                currentState.copy(selectedProductProducer = Field.Loaded(null))
             }
             return
         }

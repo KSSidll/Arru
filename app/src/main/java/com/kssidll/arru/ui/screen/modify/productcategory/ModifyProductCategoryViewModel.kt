@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 data class ModifyProductCategoryUiState(
     val currentProductCategory: ProductCategoryEntity? = null,
     val allProductCategories: ImmutableList<ProductCategoryEntity> = emptyImmutableList(),
-    val name: Field<String> = Field.Loaded(),
+    val name: Field<String> = Field.Loaded(String()),
     val selectedMergeCandidate: ProductCategoryEntity? = null,
     val isDeleteEnabled: Boolean = false,
     val isDangerousDeleteDialogVisible: Boolean = false,
@@ -42,7 +42,7 @@ sealed class ModifyProductCategoryEvent {
     data class SetDangerousDeleteDialogConfirmation(val confirmed: Boolean) :
         ModifyProductCategoryEvent()
 
-    data class SetName(val name: String?) : ModifyProductCategoryEvent()
+    data class SetName(val name: String) : ModifyProductCategoryEvent()
 
     data class MergeProductCategory(val mergeInto: ProductCategoryEntity?) :
         ModifyProductCategoryEvent()

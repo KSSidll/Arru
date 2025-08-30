@@ -59,7 +59,7 @@ constructor(
             mMergeMessageShopName.value = mShop?.name.orEmpty()
 
             screenState.name.apply {
-                value = mShop?.name?.let { Field.Loaded(it) } ?: value.toLoadedOrError()
+                value = mShop?.name?.let { Field.Loaded(it) } ?: value.toLoaded()
             }
         }
 

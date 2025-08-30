@@ -57,9 +57,7 @@ constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     currentProductVariant = variant,
-                    name =
-                        variant?.name?.let { Field.Loaded(it) }
-                            ?: currentState.name.toLoadedOrError(),
+                    name = variant?.name?.let { Field.Loaded(it) } ?: currentState.name.toLoaded(),
                     isVariantGlobal = Field.Loaded(variant?.productEntityId == null),
                 )
             }
