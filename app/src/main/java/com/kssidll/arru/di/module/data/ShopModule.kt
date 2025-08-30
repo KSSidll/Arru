@@ -7,6 +7,7 @@ import com.kssidll.arru.data.repository.ShopRepository
 import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.usecase.data.DeleteShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetItemsForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForShopUseCase
@@ -81,6 +82,14 @@ class ShopModule {
     @Singleton
     fun provideGetShopEntityUseCase(shopRepository: ShopRepositorySource): GetShopEntityUseCase {
         return GetShopEntityUseCase(shopRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllShopEntityUseCase(
+        shopRepository: ShopRepositorySource
+    ): GetAllShopEntityUseCase {
+        return GetAllShopEntityUseCase(shopRepository)
     }
 
     /** DOMAIN */

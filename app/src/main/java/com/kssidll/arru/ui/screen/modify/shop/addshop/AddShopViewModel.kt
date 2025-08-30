@@ -1,50 +1,66 @@
 package com.kssidll.arru.ui.screen.modify.shop.addshop
 
-import com.kssidll.arru.data.repository.ShopRepositorySource
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.GetAllShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertShopEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.shop.ModifyShopEvent
+import com.kssidll.arru.ui.screen.modify.shop.ModifyShopEventResult
 import com.kssidll.arru.ui.screen.modify.shop.ModifyShopViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-
-// TODO refactor uiState Event UseCase
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class AddShopViewModel
 @Inject
 constructor(
-    override val shopRepository: ShopRepositorySource,
     private val insertShopEntityUseCase: InsertShopEntityUseCase,
+    override val getAllShopEntityUseCase: GetAllShopEntityUseCase,
 ) : ModifyShopViewModel() {
 
-    suspend fun addShop(): Long? {
-        screenState.attemptedToSubmit.value = true
+    init {
+        init()
+    }
 
-        val result = insertShopEntityUseCase(name = screenState.name.value.data)
+    override suspend fun handleEvent(event: ModifyShopEvent): ModifyShopEventResult {
+        return when (event) {
+            is ModifyShopEvent.Submit -> {
+                val state = uiState.value
+                val result = insertShopEntityUseCase(name = state.name.data)
 
-        return when (result) {
-            is InsertShopEntityUseCaseResult.Error -> {
-                result.errors.forEach {
-                    when (it) {
-                        InsertShopEntityUseCaseResult.NameDuplicateValue -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.DuplicateValueError)
+                when (result) {
+                    is InsertShopEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                InsertShopEntityUseCaseResult.NameDuplicateValue -> {
+                                    _uiState.update { currenState ->
+                                        currenState.copy(
+                                            name =
+                                                currenState.name.toError(
+                                                    FieldError.DuplicateValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertShopEntityUseCaseResult.NameNoValue -> {
+                                    _uiState.update { currenState ->
+                                        currenState.copy(
+                                            name = currenState.name.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
                             }
                         }
-                        InsertShopEntityUseCaseResult.NameNoValue -> {
-                            screenState.name.apply {
-                                value = value.toError(FieldError.NoValueError)
-                            }
-                        }
+
+                        ModifyShopEventResult.Failure
+                    }
+                    is InsertShopEntityUseCaseResult.Success -> {
+                        ModifyShopEventResult.SuccessInsert(result.id)
                     }
                 }
-
-                null
             }
-            is InsertShopEntityUseCaseResult.Success -> {
-                result.id
-            }
+            else -> super.handleEvent(event)
         }
     }
 }
