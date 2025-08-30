@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.productvariant
 
-import android.R.attr.data
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -43,13 +42,18 @@ fun ModifyProductVariantScreenImpl(
 ) {
     val isGlobalVariantInteractionSource = remember { MutableInteractionSource() }
 
+    val mergeCandidates =
+        uiState.allProductVariants
+            .filterNot { it.id == uiState.currentProductVariant?.id }
+            .toImmutableList()
+
     ModifyScreen(
         onBack = { onEvent(ModifyProductVariantEvent.NavigateBack) },
         title = stringResource(id = R.string.item_product_variant),
         onSubmit = { onEvent(ModifyProductVariantEvent.Submit) },
         submitButtonText = submitButtonText,
         onDelete = { onEvent(ModifyProductVariantEvent.DeleteProductVariant) },
-        isDeleteVisible = uiState.isDeleteVisible,
+        isDeleteVisible = uiState.isDeleteEnabled,
         isDeleteWarningMessageVisible = uiState.isDangerousDeleteDialogVisible,
         onDeleteWarningMessageVisibleChange = {
             onEvent(ModifyProductVariantEvent.SetDangerousDeleteDialogVisibility(it))
@@ -63,7 +67,7 @@ fun ModifyProductVariantScreenImpl(
         onMerge = {
             onEvent(ModifyProductVariantEvent.MergeProductVariant(uiState.selectedMergeCandidate))
         },
-        isMergeVisible = uiState.isMergeVisible,
+        isMergeVisible = uiState.isMergeEnabled && mergeCandidates.isNotEmpty(),
         isMergeSearchDialogVisible = uiState.isMergeSearchDialogVisible,
         onMergeSearchDialogVisibleChange = {
             onEvent(ModifyProductVariantEvent.SetMergeSearchDialogVisibility(it))
@@ -77,10 +81,7 @@ fun ModifyProductVariantScreenImpl(
             stringResource(R.string.merge_action_message_template)
                 .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
                 .replace("{value_1}", uiState.currentProductVariant?.name ?: "???"),
-        mergeCandidates =
-            uiState.allProductVariants
-                .filterNot { it.id == uiState.currentProductVariant?.id }
-                .toImmutableList(),
+        mergeCandidates = mergeCandidates,
         onChosenMergeCandidateChange = {
             onEvent(ModifyProductVariantEvent.SelectMergeCandidate(it))
         },

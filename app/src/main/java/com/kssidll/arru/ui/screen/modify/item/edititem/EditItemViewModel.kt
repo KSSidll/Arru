@@ -83,7 +83,7 @@ constructor(
     init {
         init()
 
-        _uiState.update { currentState -> currentState.copy(isDeleteVisible = true) }
+        _uiState.update { currentState -> currentState.copy(isDeleteEnabled = true) }
     }
 
     override suspend fun handleEvent(event: ModifyItemEvent): ModifyItemEventResult {

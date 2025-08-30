@@ -33,13 +33,18 @@ fun ModifyProductProducerScreenImpl(
     modifier: Modifier = Modifier,
     submitButtonText: String = stringResource(id = R.string.item_product_producer_add),
 ) {
+    val mergeCandidates =
+        uiState.allProductProducers
+            .filterNot { it.id == uiState.currentProductProducer?.id }
+            .toImmutableList()
+
     ModifyScreen(
         onBack = { onEvent(ModifyProductProducerEvent.NavigateBack) },
         title = stringResource(id = R.string.item_product_producer),
         onSubmit = { onEvent(ModifyProductProducerEvent.Submit) },
         submitButtonText = submitButtonText,
         onDelete = { onEvent(ModifyProductProducerEvent.DeleteProductProducer) },
-        isDeleteVisible = uiState.isDeleteVisible,
+        isDeleteVisible = uiState.isDeleteEnabled,
         isDeleteWarningMessageVisible = uiState.isDangerousDeleteDialogVisible,
         onDeleteWarningMessageVisibleChange = {
             onEvent(ModifyProductProducerEvent.SetDangerousDeleteDialogVisibility(it))
@@ -53,7 +58,7 @@ fun ModifyProductProducerScreenImpl(
         onMerge = {
             onEvent(ModifyProductProducerEvent.MergeProductProducer(uiState.selectedMergeCandidate))
         },
-        isMergeVisible = uiState.isMergeVisible,
+        isMergeVisible = uiState.isMergeEnabled && mergeCandidates.isNotEmpty(),
         isMergeSearchDialogVisible = uiState.isMergeSearchDialogVisible,
         onMergeSearchDialogVisibleChange = {
             onEvent(ModifyProductProducerEvent.SetMergeSearchDialogVisibility(it))
@@ -67,10 +72,7 @@ fun ModifyProductProducerScreenImpl(
             stringResource(R.string.merge_action_message_template)
                 .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
                 .replace("{value_1}", uiState.currentProductProducer?.name ?: "???"),
-        mergeCandidates =
-            uiState.allProductProducers
-                .filterNot { it.id == uiState.currentProductProducer?.id }
-                .toImmutableList(),
+        mergeCandidates = mergeCandidates,
         onChosenMergeCandidateChange = {
             onEvent(ModifyProductProducerEvent.SelectMergeCandidate(it))
         },

@@ -27,10 +27,10 @@ data class ModifyProductVariantUiState(
     val isVariantGlobal: Field<Boolean> = Field.Loaded(false),
     val isVariantGlobalChangeEnabled: Boolean = false,
     val selectedMergeCandidate: ProductVariantEntity? = null,
-    val isDeleteVisible: Boolean = false,
+    val isDeleteEnabled: Boolean = false,
     val isDangerousDeleteDialogVisible: Boolean = false,
     val isDangerousDeleteDialogConfirmed: Boolean = false,
-    val isMergeVisible: Boolean = false,
+    val isMergeEnabled: Boolean = false,
     val isMergeSearchDialogVisible: Boolean = false,
     val isMergeConfirmationDialogVisible: Boolean = false,
 )

@@ -35,13 +35,16 @@ fun ModifyProductScreenImpl(
     modifier: Modifier = Modifier,
     submitButtonText: String = stringResource(id = R.string.item_product_add),
 ) {
+    val mergeCandidates =
+        uiState.allProducts.filterNot { it.id == uiState.currentProduct?.id }.toImmutableList()
+
     ModifyScreen(
         onBack = { onEvent(ModifyProductEvent.NavigateBack) },
         title = stringResource(id = R.string.item_product),
         onSubmit = { onEvent(ModifyProductEvent.Submit) },
         submitButtonText = submitButtonText,
         onDelete = { onEvent(ModifyProductEvent.DeleteProduct) },
-        isDeleteVisible = uiState.isDeleteVisible,
+        isDeleteVisible = uiState.isDeleteEnabled,
         isDeleteWarningMessageVisible = uiState.isDangerousDeleteDialogVisible,
         onDeleteWarningMessageVisibleChange = {
             onEvent(ModifyProductEvent.SetDangerousDeleteDialogVisibility(it))
@@ -52,7 +55,7 @@ fun ModifyProductScreenImpl(
             onEvent(ModifyProductEvent.SetDangerousDeleteDialogConfirmation(it))
         },
         onMerge = { onEvent(ModifyProductEvent.MergeProduct(uiState.selectedMergeCandidate)) },
-        isMergeVisible = uiState.isMergeVisible,
+        isMergeVisible = uiState.isMergeEnabled && mergeCandidates.isNotEmpty(),
         isMergeSearchDialogVisible = uiState.isMergeSearchDialogVisible,
         onMergeSearchDialogVisibleChange = {
             onEvent(ModifyProductEvent.SetMergeSearchDialogVisibility(it))
@@ -66,8 +69,7 @@ fun ModifyProductScreenImpl(
             stringResource(R.string.merge_action_message_template)
                 .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
                 .replace("{value_1}", uiState.currentProduct?.name ?: "???"),
-        mergeCandidates =
-            uiState.allProducts.filterNot { it.id == uiState.currentProduct?.id }.toImmutableList(),
+        mergeCandidates = mergeCandidates,
         onChosenMergeCandidateChange = { onEvent(ModifyProductEvent.SelectMergeCandidate(it)) },
         modifier = modifier,
     ) {

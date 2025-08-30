@@ -59,7 +59,7 @@ constructor(
         init()
 
         _uiState.update { currentState ->
-            currentState.copy(isDeleteVisible = true, isMergeVisible = true)
+            currentState.copy(isDeleteEnabled = true, isMergeEnabled = true)
         }
     }
 

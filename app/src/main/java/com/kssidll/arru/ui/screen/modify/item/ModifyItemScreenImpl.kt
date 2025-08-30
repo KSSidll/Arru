@@ -55,7 +55,7 @@ fun ModifyItemScreenImpl(
         onSubmit = { onEvent(ModifyItemEvent.Submit) },
         submitButtonText = submitButtonText,
         onDelete = { onEvent(ModifyItemEvent.DeleteItem) },
-        isDeleteVisible = uiState.isDeleteVisible,
+        isDeleteVisible = uiState.isDeleteEnabled,
         isDeleteWarningMessageVisible = false,
         onDeleteWarningMessageVisibleChange = {},
         deleteWarningMessage = String(),

@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.productvariant.editproductvariant
 
-import android.R.attr.name
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.domain.data.Field
@@ -70,7 +69,7 @@ constructor(
 
     init {
         _uiState.update { currentState ->
-            currentState.copy(isDeleteVisible = true, isMergeVisible = true)
+            currentState.copy(isDeleteEnabled = true, isMergeEnabled = true)
         }
     }
 

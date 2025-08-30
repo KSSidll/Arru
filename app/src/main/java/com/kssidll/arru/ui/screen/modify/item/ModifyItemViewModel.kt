@@ -38,7 +38,7 @@ data class ModifyItemUiState(
     val isDatePickerDialogExpanded: Boolean = false,
     val isProductSearchDialogExpanded: Boolean = false,
     val isProductVariantSearchDialogExpanded: Boolean = false,
-    val isDeleteVisible: Boolean = false,
+    val isDeleteEnabled: Boolean = false,
 )
 
 @Immutable

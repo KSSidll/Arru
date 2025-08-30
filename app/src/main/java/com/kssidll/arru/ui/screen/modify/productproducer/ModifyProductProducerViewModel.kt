@@ -20,10 +20,10 @@ data class ModifyProductProducerUiState(
     val allProductProducers: ImmutableList<ProductProducerEntity> = emptyImmutableList(),
     val name: Field<String> = Field.Loaded(),
     val selectedMergeCandidate: ProductProducerEntity? = null,
-    val isDeleteVisible: Boolean = false,
+    val isDeleteEnabled: Boolean = false,
     val isDangerousDeleteDialogVisible: Boolean = false,
     val isDangerousDeleteDialogConfirmed: Boolean = false,
-    val isMergeVisible: Boolean = false,
+    val isMergeEnabled: Boolean = false,
     val isMergeSearchDialogVisible: Boolean = false,
     val isMergeConfirmationDialogVisible: Boolean = false,
 )
