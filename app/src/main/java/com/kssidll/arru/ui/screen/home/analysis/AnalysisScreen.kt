@@ -96,8 +96,6 @@ fun AnalysisScreenContent(
                 )
             }
         },
-        contentWindowInsets =
-            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
         modifier = modifier,
     ) { paddingValues ->
         Column(
