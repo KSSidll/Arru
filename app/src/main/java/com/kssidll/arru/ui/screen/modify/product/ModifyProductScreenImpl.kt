@@ -73,7 +73,7 @@ fun ModifyProductScreenImpl(
         onChosenMergeCandidateChange = { onEvent(ModifyProductEvent.SelectMergeCandidate(it)) },
         modifier = modifier,
     ) {
-        if (uiState.isProductProducerSearchDialogExpanded) {
+        if (uiState.isProductProducerSearchDialogVisible) {
             SearchableListDialog(
                 onDismissRequest = {
                     onEvent(ModifyProductEvent.SetProductProducerSearchDialogVisibility(false))
@@ -97,7 +97,7 @@ fun ModifyProductScreenImpl(
                 defaultItemText = stringResource(R.string.no_value),
                 calculateScore = { item, query -> item.fuzzyScore(query) },
             )
-        } else if (uiState.isProductCategorySearchDialogExpanded) {
+        } else if (uiState.isProductCategorySearchDialogVisible) {
             SearchableListDialog(
                 onDismissRequest = {
                     onEvent(ModifyProductEvent.SetProductCategorySearchDialogVisibility(false))

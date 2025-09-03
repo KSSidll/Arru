@@ -35,8 +35,8 @@ data class ModifyItemUiState(
     val selectedProductVariant: Field<ProductVariantEntity?> = Field.Loaded(null),
     val quantity: Field<String> = Field.Loaded(String()),
     val price: Field<String> = Field.Loaded(String()),
-    val isProductSearchDialogExpanded: Boolean = false,
-    val isProductVariantSearchDialogExpanded: Boolean = false,
+    val isProductSearchDialogVisible: Boolean = false,
+    val isProductVariantSearchDialogVisible: Boolean = false,
     val isDeleteEnabled: Boolean = false,
 )
 
@@ -131,12 +131,12 @@ abstract class ModifyItemViewModel : ViewModel() {
                 handleSelectProductVariant(event.productVariantId)
             is ModifyItemEvent.SetProductSearchDialogVisibility -> {
                 _uiState.update { currentState ->
-                    currentState.copy(isProductSearchDialogExpanded = event.visible)
+                    currentState.copy(isProductSearchDialogVisible = event.visible)
                 }
             }
             is ModifyItemEvent.SetProductVariantSearchDialogVisibility -> {
                 _uiState.update { currentState ->
-                    currentState.copy(isProductVariantSearchDialogExpanded = event.visible)
+                    currentState.copy(isProductVariantSearchDialogVisible = event.visible)
                 }
             }
 

@@ -73,7 +73,7 @@ fun ModifyItemScreenImpl(
         onChosenMergeCandidateChange = {},
         modifier = modifier,
     ) {
-        if (uiState.isProductSearchDialogExpanded) {
+        if (uiState.isProductSearchDialogVisible) {
             SearchableListDialog(
                 onDismissRequest = {
                     onEvent(ModifyItemEvent.SetProductSearchDialogVisibility(false))
@@ -94,7 +94,7 @@ fun ModifyItemScreenImpl(
                 addButtonDescription = stringResource(R.string.item_product_add_description),
                 calculateScore = { item, query -> item.fuzzyScore(query) },
             )
-        } else if (uiState.isProductVariantSearchDialogExpanded) {
+        } else if (uiState.isProductVariantSearchDialogVisible) {
             SearchableListDialog(
                 onDismissRequest = {
                     onEvent(ModifyItemEvent.SetProductVariantSearchDialogVisibility(false))

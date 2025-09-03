@@ -31,8 +31,8 @@ data class ModifyProductUiState(
     val selectedProductCategory: Field<ProductCategoryEntity?> = Field.Loaded(null),
     val selectedProductProducer: Field<ProductProducerEntity?> = Field.Loaded(null),
     val selectedMergeCandidate: ProductEntity? = null,
-    val isProductCategorySearchDialogExpanded: Boolean = false,
-    val isProductProducerSearchDialogExpanded: Boolean = false,
+    val isProductCategorySearchDialogVisible: Boolean = false,
+    val isProductProducerSearchDialogVisible: Boolean = false,
     val isDeleteEnabled: Boolean = false,
     val isDangerousDeleteDialogVisible: Boolean = false,
     val isDangerousDeleteDialogConfirmed: Boolean = false,
@@ -146,12 +146,12 @@ abstract class ModifyProductViewModel : ViewModel() {
             is ModifyProductEvent.SelectMergeCandidate -> {}
             is ModifyProductEvent.SetProductCategorySearchDialogVisibility -> {
                 _uiState.update { currenState ->
-                    currenState.copy(isProductCategorySearchDialogExpanded = event.visible)
+                    currenState.copy(isProductCategorySearchDialogVisible = event.visible)
                 }
             }
             is ModifyProductEvent.SetProductProducerSearchDialogVisibility -> {
                 _uiState.update { currenState ->
-                    currenState.copy(isProductProducerSearchDialogExpanded = event.visible)
+                    currenState.copy(isProductProducerSearchDialogVisible = event.visible)
                 }
             }
             is ModifyProductEvent.SelectProductCategory ->
