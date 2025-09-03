@@ -99,7 +99,7 @@ constructor(private val getTotalSpentByShopByMonthUseCase: GetTotalSpentByShopBy
                         getTotalSpentByShopByMonthUseCase(previousDateYear, previousDateMonth)
                             .collectLatest {
                                 _uiState.update { currentState ->
-                                    currentState.copy(currentSpent = it)
+                                    currentState.copy(previousSpent = it)
                                 }
                             }
                     }

@@ -104,7 +104,7 @@ constructor(
                             )
                             .collectLatest {
                                 _uiState.update { currentState ->
-                                    currentState.copy(currentSpent = it)
+                                    currentState.copy(previousSpent = it)
                                 }
                             }
                     }

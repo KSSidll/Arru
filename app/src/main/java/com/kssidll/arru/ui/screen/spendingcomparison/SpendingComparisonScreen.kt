@@ -1,6 +1,9 @@
 package com.kssidll.arru.ui.screen.spendingcomparison
 
+import android.R.attr.visible
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -37,6 +40,7 @@ import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import java.lang.System.exit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,11 +69,7 @@ fun <T> SpendingComparisonScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(it).consumeWindowInsets(it).fillMaxSize(),
         ) {
-            AnimatedVisibility(
-                visible = leftSideItems.isEmpty() && rightSideItems.isEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            if (leftSideItems.isEmpty() && rightSideItems.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.align(Alignment.Center)) {
                         Text(
@@ -81,11 +81,7 @@ fun <T> SpendingComparisonScreen(
                 }
             }
 
-            AnimatedVisibility(
-                visible = leftSideItems.isNotEmpty() || rightSideItems.isNotEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            if (leftSideItems.isNotEmpty() || rightSideItems.isNotEmpty()) {
                 Box(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
                     Column(modifier = Modifier.width(600.dp).align(Alignment.TopCenter)) {
                         Spacer(modifier = Modifier.height(24.dp))
