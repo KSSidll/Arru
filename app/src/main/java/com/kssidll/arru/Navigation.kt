@@ -666,8 +666,6 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                 EditProductRoute(
                     productId = screen.productId,
                     navigateBack = { productId ->
-                        // TODO if we navigate back after merge with a duplicate variant, it will
-                        // null display it in item modification
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProductId
