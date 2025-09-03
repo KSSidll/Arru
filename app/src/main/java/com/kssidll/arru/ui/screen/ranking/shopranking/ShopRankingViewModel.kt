@@ -1,21 +1,37 @@
 package com.kssidll.arru.ui.screen.ranking.shopranking
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.TotalSpentByShop
-import com.kssidll.arru.data.repository.ShopRepositorySource
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByShopUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-// TODO refactor uiState Event UseCase
+@Immutable
+data class ShopRankingUiState(
+    val totalSpentByShop: ImmutableList<TotalSpentByShop> = emptyImmutableList()
+)
 
 @HiltViewModel
-class ShopRankingViewModel @Inject constructor(private val shopRepository: ShopRepositorySource) :
-    ViewModel() {
+class ShopRankingViewModel
+@Inject
+constructor(private val getTotalSpentByShopUseCase: GetTotalSpentByShopUseCase) : ViewModel() {
+    private val _uiState = MutableStateFlow(ShopRankingUiState())
+    val uiState = _uiState.asStateFlow()
 
-    /** @return List of data points representing shop spending in time as flow */
-    fun shopTotalSpentFlow(): Flow<ImmutableList<TotalSpentByShop>> {
-        return shopRepository.totalSpentByShop()
+    init {
+        viewModelScope.launch {
+            getTotalSpentByShopUseCase().collectLatest {
+                _uiState.update { currentState -> currentState.copy(totalSpentByShop = it) }
+            }
+        }
     }
 }

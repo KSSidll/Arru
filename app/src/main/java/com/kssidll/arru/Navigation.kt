@@ -36,7 +36,7 @@ import com.kssidll.arru.ui.screen.modify.shop.addshop.AddShopRoute
 import com.kssidll.arru.ui.screen.modify.shop.editshop.EditShopRoute
 import com.kssidll.arru.ui.screen.modify.transaction.addtransaction.AddTransactionRoute
 import com.kssidll.arru.ui.screen.modify.transaction.edittransaction.EditTransactionRoute
-import com.kssidll.arru.ui.screen.ranking.categoryranking.CategoryRankingRoute
+import com.kssidll.arru.ui.screen.ranking.productcategory.ProductCategoryRankingRoute
 import com.kssidll.arru.ui.screen.ranking.shopranking.ShopRankingRoute
 import com.kssidll.arru.ui.screen.search.SearchRoute
 import com.kssidll.arru.ui.screen.settings.SettingsRoute
@@ -566,7 +566,7 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             }
 
             is Screen.CategoryRanking -> {
-                CategoryRankingRoute(
+                ProductCategoryRankingRoute(
                     navigateBack = navigateBack,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateEditProductCategory = navigateEditProductCategory,

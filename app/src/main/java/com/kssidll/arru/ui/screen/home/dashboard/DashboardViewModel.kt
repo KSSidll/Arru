@@ -85,7 +85,12 @@ constructor(
         viewModelScope.launch {
             getTotalSpentByProductCategoryUseCase().collectLatest {
                 _uiState.update { currentState ->
-                    currentState.copy(categorySpendingRankingData = it.take(6).toImmutableList())
+                    currentState.copy(
+                        categorySpendingRankingData =
+                            it.sortedByDescending { spending -> spending.sortValue() }
+                                .take(6)
+                                .toImmutableList()
+                    )
                 }
             }
         }
@@ -93,7 +98,12 @@ constructor(
         viewModelScope.launch {
             getTotalSpentByShopUseCase().collectLatest {
                 _uiState.update { currentState ->
-                    currentState.copy(shopSpendingRankingData = it.take(6).toImmutableList())
+                    currentState.copy(
+                        shopSpendingRankingData =
+                            it.sortedByDescending { spending -> spending.sortValue() }
+                                .take(6)
+                                .toImmutableList()
+                    )
                 }
             }
         }
