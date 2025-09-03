@@ -1,75 +1,93 @@
 package com.kssidll.arru.ui.screen.modify.shop.editshop
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
+import com.kssidll.arru.ui.screen.modify.shop.ModifyShopEvent
+import com.kssidll.arru.ui.screen.modify.shop.ModifyShopEventResult
 import com.kssidll.arru.ui.screen.modify.shop.ModifyShopScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 @Composable
 fun EditShopRoute(
     shopId: Long,
-    navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
+    navigateBack: (shopId: Long?) -> Unit,
+    viewModel: EditShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
+    val navigateBackLock = remember { Mutex() }
 
-    val viewModel: EditShopViewModel = hiltViewModel()
-
-    LaunchedEffect(shopId) {
-        if (!viewModel.updateState(shopId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(shopId) && !navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
+                navigateBack(null)
+            }
         }
     }
 
-    ModifyShopScreenImpl(
-        onBack = navigateBack,
-        state = viewModel.screenState,
-        onSubmit = {
-            scope.launch {
-                if (viewModel.updateShop(shopId)
-                        .isNotError()
-                ) {
-                    navigateBack()
-                }
-            }
-        },
-        onDelete = {
-            scope.launch {
-                if (viewModel.deleteShop(shopId)
-                        .isNotError()
-                ) {
-                    navigateBackDelete()
-                }
-            }
-        },
-        onMerge = {
-            scope.launch {
-                if (viewModel.mergeWith(it)
-                        .isNotError()
-                ) {
-                    navigateBackDelete()
-                }
-            }
-        },
-        mergeCandidates = viewModel.allMergeCandidates(shopId),
-        mergeConfirmMessageTemplate = stringResource(id = R.string.merge_action_message_template)
-            .replace(
-                "{value_1}",
-                viewModel.mergeMessageShopName
-            ),
+    LaunchedEffect(shopId) { viewModel.updateState(shopId) }
 
-        chosenMergeCandidate = viewModel.chosenMergeCandidate.value,
-        onChosenMergeCandidateChange = {
-            viewModel.chosenMergeCandidate.apply { value = it }
-        },
-        showMergeConfirmDialog = viewModel.showMergeConfirmDialog.value,
-        onShowMergeConfirmDialogChange = {
-            viewModel.showMergeConfirmDialog.apply { value = it }
+    ModifyShopScreenImpl(
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
+            scope.launch {
+                when (event) {
+                    is ModifyShopEvent.NavigateBack -> {
+                        if (!navigateBackLock.isLocked) {
+                            navigateBackLock.tryLock()
+                            navigateBack(shopId)
+                        }
+                    }
+                    is ModifyShopEvent.DeleteShop -> {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyShopEventResult.SuccessDelete &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(null)
+                        }
+                    }
+                    is ModifyShopEvent.MergeShop -> {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyShopEventResult.SuccessMerge &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(result.id)
+                        }
+                    }
+                    is ModifyShopEvent.SelectMergeCandidate -> viewModel.handleEvent(event)
+                    is ModifyShopEvent.SetDangerousDeleteDialogConfirmation ->
+                        viewModel.handleEvent(event)
+                    is ModifyShopEvent.SetDangerousDeleteDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyShopEvent.SetMergeConfirmationDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyShopEvent.SetMergeSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyShopEvent.SetName -> viewModel.handleEvent(event)
+                    is ModifyShopEvent.Submit -> {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyShopEventResult.SuccessUpdate &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(shopId)
+                        }
+                    }
+                }
+            }
         },
         submitButtonText = stringResource(id = R.string.item_shop_edit),
     )

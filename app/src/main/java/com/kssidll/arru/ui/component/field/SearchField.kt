@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.domain.data.FieldError
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -69,22 +69,7 @@ fun SearchField(
         lineColor =
             if (error) colors.errorIndicatorColor
             else if (!enabled) colors.disabledIndicatorColor
-            else if (optional) optionalUnfocusedIndicator
-            else colors.unfocusedIndicatorColor
-    }
-
-    // a hack to force the text field to lose focus every time it's focused
-    // setting canFocus to focusDisabled doesn't work so we make mutable modifier instead
-    // i have no idea if there's a better way to do this
-    // and i have no idea why we aren't just able to do that with compose api
-    // but this is the only solution i could come up with that actually works
-    var focusDisabled: Boolean by remember { mutableStateOf(false) }
-    var focusControllerModifier: Modifier by remember { mutableStateOf(Modifier) }
-    LaunchedEffect(focusDisabled) {
-        if (focusDisabled) {
-            focusControllerModifier = Modifier
-            focusDisabled = false
-        }
+            else if (optional) optionalUnfocusedIndicator else colors.unfocusedIndicatorColor
     }
 
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -97,16 +82,12 @@ fun SearchField(
 
             pressedJob?.cancel()
             pressedJob = launch {
-                delay(
-                    ViewConfiguration.getLongPressTimeout()
-                        .toLong()
-                )
+                delay(ViewConfiguration.getLongPressTimeout().toLong())
 
                 @Suppress("KotlinConstantConditions") // it is not always true kotlin, pls
                 if (isPressed) {
                     onLongClick?.invoke()
                     pressedLatch = false
-
                 }
             }
         } else if (pressedLatch) {
@@ -115,70 +96,52 @@ fun SearchField(
         }
     }
 
-    Modifier.pointerInput(Unit) {
-        detectTapGestures()
-    }
+    Modifier.pointerInput(Unit) { detectTapGestures() }
 
     Box(
-        modifier = modifier
-            .width(IntrinsicSize.Min)
-            .combinedClickable(
-                interactionSource = interactionSource,
-                indication = null,
-                role = Role.DropdownList,
-                onClick = {}
-            )
+        modifier =
+            modifier
+                .width(IntrinsicSize.Min)
+                .combinedClickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    role = Role.DropdownList,
+                    onClick = {},
+                )
     ) {
         StyledOutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusProperties { canFocus = false },
+            modifier = Modifier.fillMaxWidth().focusProperties { canFocus = false },
             enabled = enabled,
             optional = optional,
             readOnly = true,
             singleLine = singleLine,
             value = value,
             onValueChange = {},
-            textStyle = TextStyle.Default.copy(
-                fontSize = 16.sp
-            ),
-            label = {
-                Text(
-                    text = label,
-                    fontSize = 16.sp,
-                )
-            },
+            textStyle = TextStyle.Default.copy(fontSize = 16.sp),
+            label = { Text(text = label, fontSize = 16.sp) },
             supportingText = supportingText,
             isError = error,
             trailingIcon = {
                 if (showAddButton) {
                     Box(
-                        modifier = Modifier
-                            .height(height)
-                            .aspectRatio(1F)
-                            .clickable {
+                        modifier =
+                            Modifier.height(height).aspectRatio(1F).clickable {
                                 onAddButtonClick?.invoke()
                             },
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
                             drawLine(
                                 color = lineColor,
-                                start = Offset(
-                                    0F,
-                                    0F
-                                ),
-                                end = Offset(
-                                    0F,
-                                    size.height
-                                ),
-                                strokeWidth = Dp.Hairline.value
+                                start = Offset(0F, 0F),
+                                end = Offset(0F, size.height),
+                                strokeWidth = Dp.Hairline.value,
                             )
                         }
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = addButtonDescription,
-                            modifier = Modifier.fillMaxSize(0.75F)
+                            modifier = Modifier.fillMaxSize(0.75F),
                         )
                     }
                 }
@@ -191,32 +154,17 @@ fun SearchField(
 @PreviewLightDark
 @Composable
 private fun SearchFieldPreview() {
-    ArrugarqTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-        ) {
-            SearchField(
-                value = "Test"
-            )
-        }
+    ArruTheme {
+        Surface(modifier = Modifier.fillMaxWidth().height(60.dp)) { SearchField(value = "Test") }
     }
 }
 
 @PreviewLightDark
 @Composable
 private fun OptionalSearchFieldPreview() {
-    ArrugarqTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-        ) {
-            SearchField(
-                value = "Test",
-                optional = true,
-            )
+    ArruTheme {
+        Surface(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+            SearchField(value = "Test", optional = true)
         }
     }
 }
@@ -224,16 +172,9 @@ private fun OptionalSearchFieldPreview() {
 @PreviewLightDark
 @Composable
 private fun DisabledSearchFieldPreview() {
-    ArrugarqTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-        ) {
-            SearchField(
-                value = "Test",
-                enabled = false,
-            )
+    ArruTheme {
+        Surface(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+            SearchField(value = "Test", enabled = false)
         }
     }
 }
@@ -241,14 +182,12 @@ private fun DisabledSearchFieldPreview() {
 @PreviewLightDark
 @Composable
 private fun ErrorSearchFieldPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxWidth()) {
             SearchField(
                 value = "Test",
                 error = true,
-                supportingText = {
-                    FieldError.NoValueError.ErrorText()
-                },
+                supportingText = { FieldError.NoValueError.ErrorText() },
                 label = "test",
             )
         }

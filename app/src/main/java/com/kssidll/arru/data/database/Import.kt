@@ -7,28 +7,27 @@ import android.util.JsonReader
 import android.util.JsonToken
 import android.util.Log
 import androidx.core.provider.DocumentsContractCompat
-import com.kssidll.arru.data.data.Item
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.data.ProductVariantEntity
+import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.data.TransactionEntity
 import com.kssidll.arru.data.repository.ImportRepositorySource
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-data class DocumentInfo(
-    val documentId: String,
-    val displayName: String,
-    val mimeType: String?,
-)
+data class DocumentInfo(val documentId: String, val displayName: String, val mimeType: String?)
 
 sealed class ImportError() {
-    data class FailedToOpenFile(val fileName: String): ImportError()
-    data class FailedToDetermineVersion(val name: String): ImportError()
-    data class MissingFiles(val expectedFileGroups: List<List<String>>): ImportError()
-    data object ParseError: ImportError()
+    data class FailedToOpenFile(val fileName: String) : ImportError()
+
+    data class FailedToDetermineVersion(val name: String) : ImportError()
+
+    data class MissingFiles(val expectedFileGroups: List<List<String>>) : ImportError()
+
+    data object ParseError : ImportError()
 }
 
 suspend fun importDataFromUris(
@@ -40,55 +39,64 @@ suspend fun importDataFromUris(
     onFinished: () -> Unit,
     onError: (error: ImportError) -> Unit,
 ) {
-    val treeUri = DocumentsContractCompat.buildDocumentUriUsingTree(
-        uri,
-        DocumentsContractCompat.getTreeDocumentId(uri)!!
-    )!!
+    val treeUri =
+        DocumentsContractCompat.buildDocumentUriUsingTree(
+            uri,
+            DocumentsContractCompat.getTreeDocumentId(uri)!!,
+        )!!
 
-    val childrenUri = DocumentsContractCompat.buildChildDocumentsUriUsingTree(
-        treeUri,
-        DocumentsContractCompat.getTreeDocumentId(uri)!!
-    )!!
+    val childrenUri =
+        DocumentsContractCompat.buildChildDocumentsUriUsingTree(
+            treeUri,
+            DocumentsContractCompat.getTreeDocumentId(uri)!!,
+        )!!
 
     val documents = mutableListOf<DocumentInfo>()
 
-    context.contentResolver.query(
-        childrenUri,
-        arrayOf(
-            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-            DocumentsContract.Document.COLUMN_MIME_TYPE,
-        ),
-        null,
-        null,
-        null
-    )?.use { cursor ->
-        while (cursor.moveToNext()) {
-            val documentId: String
-            val displayName: String
+    context.contentResolver
+        .query(
+            childrenUri,
+            arrayOf(
+                DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_MIME_TYPE,
+            ),
+            null,
+            null,
+            null,
+        )
+        ?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val documentId: String
+                val displayName: String
 
-            try {
-                documentId = cursor.getString(0)
-                displayName = cursor.getString(1)
-            } catch (_: Exception) {
-                continue
+                try {
+                    documentId = cursor.getString(0)
+                    displayName = cursor.getString(1)
+                } catch (_: Exception) {
+                    continue
+                }
+
+                val mimeType: String? =
+                    try {
+                        cursor.getString(2)
+                    } catch (_: Exception) {
+                        null
+                    }
+
+                documents.add(DocumentInfo(documentId, displayName, mimeType))
             }
-
-            val mimeType: String? = try {
-                cursor.getString(2)
-            } catch (_: Exception) {
-                null
-            }
-
-            documents.add(DocumentInfo(documentId, displayName, mimeType))
         }
-    }
 
     val csvDocuments =
-        documents.filter { it.mimeType == "text/csv" || it.displayName.endsWith(".csv", ignoreCase = true) }
+        documents.filter {
+            it.mimeType == "text/csv" || it.displayName.endsWith(".csv", ignoreCase = true)
+        }
 
     val jsonDocuments =
-        documents.filter { it.mimeType == "application/json" || it.displayName.endsWith(".json", ignoreCase = true) }
+        documents.filter {
+            it.mimeType == "application/json" || it.displayName.endsWith(".json", ignoreCase = true)
+        }
 
     if (csvDocuments.isNotEmpty()) {
         handleCsvImport(
@@ -99,7 +107,7 @@ suspend fun importDataFromUris(
             onMaxProgressChange = onMaxProgressChange,
             onProgressChange = onProgressChange,
             onFinished = onFinished,
-            onError = onError
+            onError = onError,
         )
 
         // don't continue if a csv was found
@@ -115,23 +123,20 @@ suspend fun importDataFromUris(
             onMaxProgressChange = onMaxProgressChange,
             onProgressChange = onProgressChange,
             onFinished = onFinished,
-            onError = onError
+            onError = onError,
         )
 
         // don't continue if a json was found
         return
     }
 
-
     Log.e("Import", "failed to find expected files")
     onError(
         ImportError.MissingFiles(
             listOf(
+                listOf("arru-export.json"),
+                listOf("arru-export.csv"),
                 listOf(
-                    "arru-export.json"
-                ), listOf(
-                    "arru-export.csv"
-                ), listOf(
                     "arru-export-category.csv",
                     "arru-export-item.csv",
                     "arru-export-producer.csv",
@@ -139,7 +144,7 @@ suspend fun importDataFromUris(
                     "arru-export-shop.csv",
                     "arru-export-transaction.csv",
                     "arru-export-variant.csv",
-                )
+                ),
             )
         )
     )
@@ -167,7 +172,6 @@ suspend fun handleCsvImport(
     var variantDocument: DocumentInfo? = null
     var itemDocument: DocumentInfo? = null
 
-
     // @since 2.5.8
     // new naming schema for files
     documents.forEach { documentInfo ->
@@ -176,7 +180,8 @@ suspend fun handleCsvImport(
         if (documentInfo.displayName == "arru-export-shop.csv") shopDocument = documentInfo
         if (documentInfo.displayName == "arru-export-producer.csv") producerDocument = documentInfo
         if (documentInfo.displayName == "arru-export-category.csv") categoryDocument = documentInfo
-        if (documentInfo.displayName == "arru-export-transaction.csv") transactionDocument = documentInfo
+        if (documentInfo.displayName == "arru-export-transaction.csv")
+            transactionDocument = documentInfo
         if (documentInfo.displayName == "arru-export-product.csv") productDocument = documentInfo
         if (documentInfo.displayName == "arru-export-variant.csv") variantDocument = documentInfo
         if (documentInfo.displayName == "arru-export-item.csv") itemDocument = documentInfo
@@ -184,25 +189,33 @@ suspend fun handleCsvImport(
 
     // Fallback old naming schema, only read if no new detected
     documents.forEach { documentInfo ->
-        if (documentInfo.displayName == "export.csv" && exportDocument == null) exportDocument = documentInfo
+        if (documentInfo.displayName == "export.csv" && exportDocument == null)
+            exportDocument = documentInfo
 
-        if (documentInfo.displayName == "shop.csv" && shopDocument == null) shopDocument = documentInfo
-        if (documentInfo.displayName == "producer.csv" && producerDocument == null) producerDocument = documentInfo
-        if (documentInfo.displayName == "category.csv" && categoryDocument == null) categoryDocument = documentInfo
-        if (documentInfo.displayName == "transaction.csv" && transactionDocument == null) transactionDocument = documentInfo
-        if (documentInfo.displayName == "product.csv" && productDocument == null) productDocument = documentInfo
-        if (documentInfo.displayName == "variant.csv" && variantDocument == null) variantDocument = documentInfo
-        if (documentInfo.displayName == "item.csv" && itemDocument == null) itemDocument = documentInfo
+        if (documentInfo.displayName == "shop.csv" && shopDocument == null)
+            shopDocument = documentInfo
+        if (documentInfo.displayName == "producer.csv" && producerDocument == null)
+            producerDocument = documentInfo
+        if (documentInfo.displayName == "category.csv" && categoryDocument == null)
+            categoryDocument = documentInfo
+        if (documentInfo.displayName == "transaction.csv" && transactionDocument == null)
+            transactionDocument = documentInfo
+        if (documentInfo.displayName == "product.csv" && productDocument == null)
+            productDocument = documentInfo
+        if (documentInfo.displayName == "variant.csv" && variantDocument == null)
+            variantDocument = documentInfo
+        if (documentInfo.displayName == "item.csv" && itemDocument == null)
+            itemDocument = documentInfo
     }
 
     // Prepare data
-    val shopList = mutableListOf<Shop>()
-    val producerList = mutableListOf<ProductProducer>()
-    val categoryList = mutableListOf<ProductCategory>()
-    val transactionList = mutableListOf<TransactionBasket>()
-    val productList = mutableListOf<Product>()
-    val variantList = mutableListOf<ProductVariant>()
-    val itemList = mutableListOf<Item>()
+    val shopEntities = mutableListOf<ShopEntity>()
+    val productProducerEntities = mutableListOf<ProductProducerEntity>()
+    val productCategoryEntities = mutableListOf<ProductCategoryEntity>()
+    val transactionEntities = mutableListOf<TransactionEntity>()
+    val productEntities = mutableListOf<ProductEntity>()
+    val productVariantEntities = mutableListOf<ProductVariantEntity>()
+    val itemEntities = mutableListOf<ItemEntity>()
 
     // Process
 
@@ -210,7 +223,8 @@ suspend fun handleCsvImport(
     if (exportDocument != null) {
         onMaxProgressChange(3)
 
-        val csvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
+        val csvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (csvUri == null) {
             Log.e("ImportCompactCsv", "could not build export csv uri")
             onError(ImportError.FailedToOpenFile(exportDocument.displayName))
@@ -229,7 +243,7 @@ suspend fun handleCsvImport(
             val producer: String?,
             val price: Long?,
             val quantity: Long?,
-            val transactionNote: String?
+            val transactionNote: String?,
         )
 
         val compactCsvData = mutableListOf<CompactCsvRow>()
@@ -254,15 +268,28 @@ suspend fun handleCsvImport(
 
                                 val transactionId = text[0].toLong()
                                 val transactionDate = text[1].toLong()
-                                val transactionTotalPrice = text[2].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                val transactionTotalPrice =
+                                    text[2].split(".", ",").let {
+                                        it[0].plus(it[1].padEnd(2, '0')).toLong()
+                                    }
                                 val shop = if (text[3] != "null") text[3] else null
                                 val product = if (text[4] != "null") text[4] else null
                                 val variant = if (text[5] != "null") text[5] else null
                                 val variantGlobal = text[6] == "true"
                                 val category = if (text[7] != "null") text[7] else null
                                 val producer = if (text[8] != "null") text[8] else null
-                                val price = if (text[9] != "null") text[9].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
-                                val quantity = if (text[10] != "null") text[10].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
+                                val price =
+                                    if (text[9] != "null")
+                                        text[9].split(".", ",").let {
+                                            it[0].plus(it[1].padEnd(2, '0')).toLong()
+                                        }
+                                    else null
+                                val quantity =
+                                    if (text[10] != "null")
+                                        text[10].split(".", ",").let {
+                                            it[0].plus(it[1].padEnd(3, '0')).toLong()
+                                        }
+                                    else null
                                 val transactionNote = if (text[11] != "null") text[11] else null
 
                                 compactCsvData.add(
@@ -278,7 +305,7 @@ suspend fun handleCsvImport(
                                         producer = producer,
                                         price = price,
                                         quantity = quantity,
-                                        transactionNote = transactionNote
+                                        transactionNote = transactionNote,
                                     )
                                 )
                             }
@@ -292,27 +319,43 @@ suspend fun handleCsvImport(
                                 val text = line.split(";")
 
                                 val transactionDate = text[0].toLong()
-                                val transactionTotalPrice = text[1].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                val transactionTotalPrice =
+                                    text[1].split(".", ",").let {
+                                        it[0].plus(it[1].padEnd(2, '0')).toLong()
+                                    }
                                 val shop = if (text[2] != "null") text[2] else null
                                 val product = if (text[3] != "null") text[3] else null
                                 val variant = if (text[4] != "null") text[4] else null
                                 val category = if (text[5] != "null") text[5] else null
                                 val producer = if (text[6] != "null") text[6] else null
-                                val price = if (text[7] != "null") text[7].split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() } else null
-                                val quantity = if (text[8] != "null") text[8].split(".", ",").let { it[0].plus(it[1].padEnd(3, '0')).toLong() } else null
+                                val price =
+                                    if (text[7] != "null")
+                                        text[7].split(".", ",").let {
+                                            it[0].plus(it[1].padEnd(2, '0')).toLong()
+                                        }
+                                    else null
+                                val quantity =
+                                    if (text[8] != "null")
+                                        text[8].split(".", ",").let {
+                                            it[0].plus(it[1].padEnd(3, '0')).toLong()
+                                        }
+                                    else null
 
-                                val transactionId = if (compactCsvData.isEmpty()) {
-                                    0L
-                                } else {
-                                    val prev = compactCsvData.last()
-
-                                    if (prev.transactionDate != transactionDate || prev.transactionTotalPrice != transactionTotalPrice) {
-                                        compactCsvData.last().transactionId + 1
+                                val transactionId =
+                                    if (compactCsvData.isEmpty()) {
+                                        0L
                                     } else {
-                                        compactCsvData.last().transactionId
-                                    }
+                                        val prev = compactCsvData.last()
 
-                                }
+                                        if (
+                                            prev.transactionDate != transactionDate ||
+                                                prev.transactionTotalPrice != transactionTotalPrice
+                                        ) {
+                                            compactCsvData.last().transactionId + 1
+                                        } else {
+                                            compactCsvData.last().transactionId
+                                        }
+                                    }
 
                                 compactCsvData.add(
                                     CompactCsvRow(
@@ -327,7 +370,7 @@ suspend fun handleCsvImport(
                                         producer = producer,
                                         price = price,
                                         quantity = quantity,
-                                        transactionNote = null
+                                        transactionNote = null,
                                     )
                                 )
                             }
@@ -354,31 +397,33 @@ suspend fun handleCsvImport(
         val categories = mutableMapOf<String, Long>()
         val transactions = mutableMapOf<Long, Long>()
         val products = mutableMapOf<String, Long>()
-        val variants = mutableMapOf<Pair<String, Long?>, Long>() // variant is per name and product, product can be null if variant is global
+        val variants =
+            mutableMapOf<
+                Pair<String, Long?>,
+                Long,
+            >() // variant is per name and product, product can be null if variant is global
 
         compactCsvData.forEach { data ->
             // handle shops
             data.shop?.let { shop ->
                 if (shops[shop] == null) {
-                    shops.put(shop, shops.size.toLong() + 1) // id of 0 causes a foreign key constraint fail
-                    shopList.add(
-                        Shop(
-                            id = shops[shop]!!,
-                            name = shop
-                        )
-                    )
+                    shops.put(
+                        shop,
+                        shops.size.toLong() + 1,
+                    ) // id of 0 causes a foreign key constraint fail
+                    shopEntities.add(ShopEntity(id = shops[shop]!!, name = shop))
                 }
             }
 
             // handle producers
             data.producer?.let { producer ->
                 if (producers[producer] == null) {
-                    producers.put(producer, producers.size.toLong() + 1) // id of 0 causes a foreign key constraint fail
-                    producerList.add(
-                        ProductProducer(
-                            id = producers[producer]!!,
-                            name = producer
-                        )
+                    producers.put(
+                        producer,
+                        producers.size.toLong() + 1,
+                    ) // id of 0 causes a foreign key constraint fail
+                    productProducerEntities.add(
+                        ProductProducerEntity(id = producers[producer]!!, name = producer)
                     )
                 }
             }
@@ -388,13 +433,10 @@ suspend fun handleCsvImport(
                 if (categories[category] == null) {
                     categories.put(
                         category,
-                        categories.size.toLong() + 1
+                        categories.size.toLong() + 1,
                     ) // id of 0 causes a foreign key constraint fail
-                    categoryList.add(
-                        ProductCategory(
-                            id = categories[category]!!,
-                            name = category
-                        )
+                    productCategoryEntities.add(
+                        ProductCategoryEntity(id = categories[category]!!, name = category)
                     )
                 }
             }
@@ -403,15 +445,15 @@ suspend fun handleCsvImport(
             if (transactions[data.transactionId] == null) {
                 transactions.put(
                     data.transactionId,
-                    transactions.size.toLong() + 1 // id of 0 causes a foreign key constraint fail
+                    transactions.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
                 )
-                transactionList.add(
-                    TransactionBasket(
+                transactionEntities.add(
+                    TransactionEntity(
                         id = transactions[data.transactionId]!!,
                         date = data.transactionDate,
-                        shopId = data.shop?.let { shops[it] },
+                        shopEntityId = data.shop?.let { shops[it] },
                         totalCost = data.transactionTotalPrice,
-                        note = data.transactionNote
+                        note = data.transactionNote,
                     )
                 )
             }
@@ -419,12 +461,15 @@ suspend fun handleCsvImport(
             // handle products
             data.product?.let { product ->
                 if (products[product] == null) {
-                    products.put(product, products.size.toLong() + 1) // id of 0 causes a foreign key constraint fail
-                    productList.add(
-                        Product(
+                    products.put(
+                        product,
+                        products.size.toLong() + 1,
+                    ) // id of 0 causes a foreign key constraint fail
+                    productEntities.add(
+                        ProductEntity(
                             id = products[product]!!,
-                            categoryId = categories[data.category]!!,
-                            producerId = data.producer?.let { producers[it] },
+                            productCategoryEntityId = categories[data.category]!!,
+                            productProducerEntityId = data.producer?.let { producers[it] },
                             name = data.product,
                         )
                     )
@@ -437,26 +482,26 @@ suspend fun handleCsvImport(
                     if (variants[Pair(variant, null)] == null) {
                         variants.put(
                             Pair(variant, null),
-                            variants.size.toLong() + 1
+                            variants.size.toLong() + 1,
                         ) // id of 0 causes a foreign key constraint fail
-                        variantList.add(
-                            ProductVariant(
+                        productVariantEntities.add(
+                            ProductVariantEntity(
                                 id = variants[Pair(variant, null)]!!,
-                                productId = null,
-                                name = variant
+                                productEntityId = null,
+                                name = variant,
                             )
                         )
                     }
                 } else if (variants[Pair(variant, products[data.product]!!)] == null) {
                     variants.put(
                         Pair(variant, products[data.product]!!),
-                        variants.size.toLong() + 1
+                        variants.size.toLong() + 1,
                     ) // id of 0 causes a foreign key constraint fail
-                    variantList.add(
-                        ProductVariant(
+                    productVariantEntities.add(
+                        ProductVariantEntity(
                             id = variants[Pair(variant, products[data.product]!!)]!!,
-                            productId = products[data.product]!!,
-                            name = variant
+                            productEntityId = products[data.product]!!,
+                            name = variant,
                         )
                     )
                 }
@@ -465,18 +510,21 @@ suspend fun handleCsvImport(
             // handle items
             data.quantity?.let { quantity ->
                 data.price?.let { price ->
-                    itemList.add(
-                        Item(
-                            id = itemList.size.toLong() + 1, // id of 0 causes a foreign key constraint fail
-                            transactionBasketId = transactions[data.transactionId]!!,
-                            productId = products[data.product]!!,
-                            variantId = data.variant?.let {
-                                if (data.variantGlobal) {
-                                    variants[Pair(it, null)]
-                                } else variants[Pair(it, products[data.product]!!)]
-                            },
+                    itemEntities.add(
+                        ItemEntity(
+                            id =
+                                itemEntities.size.toLong() +
+                                    1, // id of 0 causes a foreign key constraint fail
+                            transactionEntityId = transactions[data.transactionId]!!,
+                            productEntityId = products[data.product]!!,
+                            productVariantEntityId =
+                                data.variant?.let {
+                                    if (data.variantGlobal) {
+                                        variants[Pair(it, null)]
+                                    } else variants[Pair(it, products[data.product]!!)]
+                                },
                             quantity = quantity,
-                            price = price
+                            price = price,
                         )
                     )
                 }
@@ -486,13 +534,13 @@ suspend fun handleCsvImport(
         onProgressChange(2)
 
         importRepository.insertAll(
-            shops = shopList,
-            producers = producerList,
-            categories = categoryList,
-            transactions = transactionList,
-            products = productList,
-            variants = variantList,
-            items = itemList
+            shopEntities = shopEntities,
+            productProducerEntities = productProducerEntities,
+            productCategoryEntities = productCategoryEntities,
+            transactionEntities = transactionEntities,
+            productEntities = productEntities,
+            productVariantEntities = productVariantEntities,
+            itemEntities = itemEntities,
         )
 
         onProgressChange(3)
@@ -506,33 +554,42 @@ suspend fun handleCsvImport(
     // From newest to oldest
     // Files version 1.0, @since v2.5.0
     if (
-        shopDocument != null
-        && producerDocument != null
-        && categoryDocument != null
-        && transactionDocument != null
-        && productDocument != null
-        && variantDocument != null
-        && itemDocument != null
+        shopDocument != null &&
+            producerDocument != null &&
+            categoryDocument != null &&
+            transactionDocument != null &&
+            productDocument != null &&
+            variantDocument != null &&
+            itemDocument != null
     ) {
         onMaxProgressChange(8)
 
-        val shopCsvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, shopDocument.documentId)
-        val producerCsvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, producerDocument.documentId)
-        val categoryCsvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, categoryDocument.documentId)
+        val shopCsvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, shopDocument.documentId)
+        val producerCsvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, producerDocument.documentId)
+        val categoryCsvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, categoryDocument.documentId)
         val transactionCsvUri =
-            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, transactionDocument.documentId)
-        val productCsvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, productDocument.documentId)
-        val variantCsvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, variantDocument.documentId)
-        val itemCsvUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, itemDocument.documentId)
+            DocumentsContractCompat.buildDocumentUriUsingTree(
+                treeUri,
+                transactionDocument.documentId,
+            )
+        val productCsvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, productDocument.documentId)
+        val variantCsvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, variantDocument.documentId)
+        val itemCsvUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, itemDocument.documentId)
 
         if (
-            shopCsvUri == null
-            || producerCsvUri == null
-            || categoryCsvUri == null
-            || transactionCsvUri == null
-            || productCsvUri == null
-            || variantCsvUri == null
-            || itemCsvUri == null
+            shopCsvUri == null ||
+                producerCsvUri == null ||
+                categoryCsvUri == null ||
+                transactionCsvUri == null ||
+                productCsvUri == null ||
+                variantCsvUri == null ||
+                itemCsvUri == null
         ) {
             Log.e("ImportRawCsv", "missing csv files")
             onError(
@@ -575,10 +632,12 @@ suspend fun handleCsvImport(
                             val id = text[0].toLong()
                             val name = text[1]
 
-                            shopList.add(
-                                Shop(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    name = name
+                            shopEntities.add(
+                                ShopEntity(
+                                    id =
+                                        id + 1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    name = name,
                                 )
                             )
                         }
@@ -616,10 +675,12 @@ suspend fun handleCsvImport(
                             val id = text[0].toLong()
                             val name = text[1]
 
-                            producerList.add(
-                                ProductProducer(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    name = name
+                            productProducerEntities.add(
+                                ProductProducerEntity(
+                                    id =
+                                        id + 1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    name = name,
                                 )
                             )
                         }
@@ -657,10 +718,12 @@ suspend fun handleCsvImport(
                             val id = text[0].toLong()
                             val name = text[1]
 
-                            categoryList.add(
-                                ProductCategory(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    name = name
+                            productCategoryEntities.add(
+                                ProductCategoryEntity(
+                                    id =
+                                        id + 1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    name = name,
                                 )
                             )
                         }
@@ -701,17 +764,24 @@ suspend fun handleCsvImport(
                                 val date = text[1].toLong()
                                 val shopId = if (text[2] != "null") text[2].toLong() else null
                                 val totalCost =
-                                    text[3].split(".", ",")
-                                        .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
+                                    text[3].split(".", ",").let {
+                                        (it[0].toLong() * transactionCostDivisor) +
+                                            it[1].padEnd(2, '0').toLong()
+                                    }
                                 val note = if (text[4] != "null") text[4] else null
 
-                                transactionList.add(
-                                    TransactionBasket(
-                                        id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                transactionEntities.add(
+                                    TransactionEntity(
+                                        id = id + 1, // id can be 0 but 0 causes a foreign key
+                                        // constraint fail
                                         date = date,
-                                        shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                        shopEntityId =
+                                            shopId?.plus(
+                                                1
+                                            ), // id can be 0 but 0 causes a foreign key constraint
+                                        // fail
                                         totalCost = totalCost,
-                                        note = note
+                                        note = note,
                                     )
                                 )
                             }
@@ -730,16 +800,23 @@ suspend fun handleCsvImport(
                                 val date = text[1].toLong()
                                 val shopId = if (text[2] != "null") text[2].toLong() else null
                                 val totalCost =
-                                    text[3].split(".", ",")
-                                        .let { (it[0].toLong() * transactionCostDivisor) + it[1].padEnd(2, '0').toLong() }
+                                    text[3].split(".", ",").let {
+                                        (it[0].toLong() * transactionCostDivisor) +
+                                            it[1].padEnd(2, '0').toLong()
+                                    }
 
-                                transactionList.add(
-                                    TransactionBasket(
-                                        id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
+                                transactionEntities.add(
+                                    TransactionEntity(
+                                        id = id + 1, // id can be 0 but 0 causes a foreign key
+                                        // constraint fail
                                         date = date,
-                                        shopId = shopId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                                        shopEntityId =
+                                            shopId?.plus(
+                                                1
+                                            ), // id can be 0 but 0 causes a foreign key constraint
+                                        // fail
                                         totalCost = totalCost,
-                                        note = null
+                                        note = null,
                                     )
                                 )
                             }
@@ -781,12 +858,20 @@ suspend fun handleCsvImport(
                             val producerId = if (text[2] != "null") text[2].toLong() else null
                             val name = text[3]
 
-                            productList.add(
-                                Product(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    categoryId = categoryId + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    producerId = producerId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
-                                    name = name
+                            productEntities.add(
+                                ProductEntity(
+                                    id =
+                                        id + 1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    productCategoryEntityId =
+                                        categoryId +
+                                            1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    productProducerEntityId =
+                                        producerId?.plus(
+                                            1
+                                        ), // id can be 0 but 0 causes a foreign key constraint fail
+                                    name = name,
                                 )
                             )
                         }
@@ -822,15 +907,19 @@ suspend fun handleCsvImport(
                         if (it.isNotBlank()) {
                             val text = it.split(";")
 
-                            val id = text[0].toLong() + 1 // id can be 0 but 0 causes a foreign key constraint fail
-                            val productId = if (text[1] != "null") text[1].toLong() + 1 else null // id can be 0 but 0 causes a foreign key constraint fail
+                            val id =
+                                text[0].toLong() +
+                                    1 // id can be 0 but 0 causes a foreign key constraint fail
+                            val productId =
+                                if (text[1] != "null") text[1].toLong() + 1
+                                else null // id can be 0 but 0 causes a foreign key constraint fail
                             val name = text[2]
 
-                            variantList.add(
-                                ProductVariant(
+                            productVariantEntities.add(
+                                ProductVariantEntity(
                                     id = id,
-                                    productId = productId,
-                                    name = name
+                                    productEntityId = productId,
+                                    name = name,
                                 )
                             )
                         }
@@ -873,18 +962,32 @@ suspend fun handleCsvImport(
                             val productId = text[2].toLong()
                             val variantId = if (text[3] != "null") text[3].toLong() else null
                             val quantity =
-                                text[4].split(".", ",")
-                                    .let { (it[0].toLong() * quantityDivisor) + it[1].padEnd(3, '0').toLong() }
+                                text[4].split(".", ",").let {
+                                    (it[0].toLong() * quantityDivisor) +
+                                        it[1].padEnd(3, '0').toLong()
+                                }
                             val price =
-                                text[5].split(".", ",")
-                                    .let { (it[0].toLong() * priceDivisor) + it[1].padEnd(2, '0').toLong() }
+                                text[5].split(".", ",").let {
+                                    (it[0].toLong() * priceDivisor) + it[1].padEnd(2, '0').toLong()
+                                }
 
-                            itemList.add(
-                                Item(
-                                    id = id + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    transactionBasketId = transactionBasketId + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    productId = productId + 1, // id can be 0 but 0 causes a foreign key constraint fail
-                                    variantId = variantId?.plus(1), // id can be 0 but 0 causes a foreign key constraint fail
+                            itemEntities.add(
+                                ItemEntity(
+                                    id =
+                                        id + 1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    transactionEntityId =
+                                        transactionBasketId +
+                                            1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    productEntityId =
+                                        productId +
+                                            1, // id can be 0 but 0 causes a foreign key constraint
+                                    // fail
+                                    productVariantEntityId =
+                                        variantId?.plus(
+                                            1
+                                        ), // id can be 0 but 0 causes a foreign key constraint fail
                                     quantity = quantity,
                                     price = price,
                                 )
@@ -903,13 +1006,13 @@ suspend fun handleCsvImport(
         onProgressChange(7)
 
         importRepository.insertAll(
-            shops = shopList,
-            producers = producerList,
-            categories = categoryList,
-            transactions = transactionList,
-            products = productList,
-            variants = variantList,
-            items = itemList
+            shopEntities = shopEntities,
+            productProducerEntities = productProducerEntities,
+            productCategoryEntities = productCategoryEntities,
+            transactionEntities = transactionEntities,
+            productEntities = productEntities,
+            productVariantEntities = productVariantEntities,
+            itemEntities = itemEntities,
         )
 
         onProgressChange(8)
@@ -925,9 +1028,7 @@ suspend fun handleCsvImport(
     onError(
         ImportError.MissingFiles(
             listOf(
-                listOf(
-                    "arru-export.csv"
-                ),
+                listOf("arru-export.csv"),
                 listOf(
                     "arru-export-category.csv",
                     "arru-export-item.csv",
@@ -936,7 +1037,7 @@ suspend fun handleCsvImport(
                     "arru-export-shop.csv",
                     "arru-export-transaction.csv",
                     "arru-export-variant.csv",
-                )
+                ),
             )
         )
     )
@@ -965,24 +1066,26 @@ suspend fun handleJsonImport(
 
     // Fallback old naming schema, only read if no new detected
     documents.forEach { documentInfo ->
-        if (documentInfo.displayName == "export.json" && exportDocument == null) exportDocument = documentInfo
+        if (documentInfo.displayName == "export.json" && exportDocument == null)
+            exportDocument = documentInfo
     }
 
     // Prepare data
-    val shopList = mutableListOf<Shop>()
-    val producerList = mutableListOf<ProductProducer>()
-    val categoryList = mutableListOf<ProductCategory>()
-    val transactionList = mutableListOf<TransactionBasket>()
-    val productList = mutableListOf<Product>()
-    val variantList = mutableListOf<ProductVariant>()
-    val itemList = mutableListOf<Item>()
+    val shopEntities = mutableListOf<ShopEntity>()
+    val productProducerEntities = mutableListOf<ProductProducerEntity>()
+    val productCategoryEntities = mutableListOf<ProductCategoryEntity>()
+    val transactionEntities = mutableListOf<TransactionEntity>()
+    val productEntities = mutableListOf<ProductEntity>()
+    val productVariantEntities = mutableListOf<ProductVariantEntity>()
+    val itemEntities = mutableListOf<ItemEntity>()
 
     // Process
 
     if (exportDocument != null) {
         onMaxProgressChange(2)
 
-        val jsonUri = DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
+        val jsonUri =
+            DocumentsContractCompat.buildDocumentUriUsingTree(treeUri, exportDocument.documentId)
         if (jsonUri == null) {
             Log.e("ImportJSON", "could not build export json uri")
             onError(ImportError.FailedToOpenFile("arru-export.json"))
@@ -1016,7 +1119,7 @@ suspend fun handleJsonImport(
                     var date: Long? = null
                     var cost: Long? = null
                     var transactionShopId: Long? = null
-                    val transactionItems = mutableListOf<Item>()
+                    val transactionItemEntities = mutableListOf<ItemEntity>()
                     var transactionNote: String? = null
 
                     while (reader.hasNext()) {
@@ -1030,7 +1133,10 @@ suspend fun handleJsonImport(
                                 date = reader.nextLong()
                             }
                             "cost" -> {
-                                cost = reader.nextString().split(".", ",").let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                cost =
+                                    reader.nextString().split(".", ",").let {
+                                        it[0].plus(it[1].padEnd(2, '0')).toLong()
+                                    }
                             }
                             "note" -> {
                                 if (reader.peek() == JsonToken.NULL) {
@@ -1053,7 +1159,10 @@ suspend fun handleJsonImport(
 
                                         when (shopValueName) {
                                             "id" -> {
-                                                transactionShopId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                transactionShopId =
+                                                    reader.nextLong() +
+                                                        1 // id of 0 causes a foreign key constraint
+                                                // fail
                                             }
 
                                             "name" -> {
@@ -1070,17 +1179,18 @@ suspend fun handleJsonImport(
                                     // File version 1.0, @since v2.5.0
                                     if (transactionShopId != null && shopName != null) {
                                         if (shops.add(transactionShopId)) {
-                                            shopList.add(
-                                                Shop(
-                                                    id = transactionShopId,
-                                                    name = shopName,
-                                                )
+                                            shopEntities.add(
+                                                ShopEntity(id = transactionShopId, name = shopName)
                                             )
                                         }
                                     } else {
                                         // Failed to determine file version
                                         Log.e("ImportJSON", "failed to determine shop data version")
-                                        onError(ImportError.FailedToDetermineVersion("arru-export.json -> shop"))
+                                        onError(
+                                            ImportError.FailedToDetermineVersion(
+                                                "arru-export.json -> shop"
+                                            )
+                                        )
                                         return
                                     }
 
@@ -1102,7 +1212,7 @@ suspend fun handleJsonImport(
                                         var itemProductId: Long? = null
                                         var itemVariantId: Long? = null
 
-                                        var itemVariant: ProductVariant? = null
+                                        var itemVariant: ProductVariantEntity? = null
 
                                         while (reader.hasNext()) {
                                             val itemValueName = reader.nextName()
@@ -1110,19 +1220,25 @@ suspend fun handleJsonImport(
                                             when (itemValueName) {
                                                 "id" -> {
                                                     itemId =
-                                                        reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                        reader.nextLong() +
+                                                            1 // id of 0 causes a foreign key
+                                                    // constraint fail
                                                 }
                                                 "price" -> {
                                                     itemPrice =
-                                                        reader.nextString()
-                                                            .split(".", ",")
-                                                            .let { it[0].plus(it[1].padEnd(2, '0')).toLong() }
+                                                        reader.nextString().split(".", ",").let {
+                                                            it[0]
+                                                                .plus(it[1].padEnd(2, '0'))
+                                                                .toLong()
+                                                        }
                                                 }
                                                 "quantity" -> {
                                                     itemQuantity =
-                                                        reader.nextString()
-                                                            .split(".", ",")
-                                                            .let { it[0].plus(it[1].padEnd(3, '0')).toLong() }
+                                                        reader.nextString().split(".", ",").let {
+                                                            it[0]
+                                                                .plus(it[1].padEnd(3, '0'))
+                                                                .toLong()
+                                                        }
                                                 }
                                                 "product" -> {
                                                     reader.beginObject()
@@ -1136,7 +1252,9 @@ suspend fun handleJsonImport(
 
                                                         if (productValueName == "id") {
                                                             itemProductId =
-                                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                reader.nextLong() +
+                                                                    1 // id of 0 causes a foreign
+                                                            // key constraint fail
                                                         } else if (productValueName == "name") {
                                                             productName = reader.nextString()
                                                         } else if (productValueName == "category") {
@@ -1145,16 +1263,21 @@ suspend fun handleJsonImport(
                                                             var categoryName: String? = null
 
                                                             while (reader.hasNext()) {
-                                                                val categoryValueName = reader.nextName()
+                                                                val categoryValueName =
+                                                                    reader.nextName()
 
                                                                 when (categoryValueName) {
                                                                     "id" -> {
                                                                         productCategoryId =
-                                                                            reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                            reader.nextLong() +
+                                                                                1 // id of 0 causes
+                                                                        // a foreign key
+                                                                        // constraint fail
                                                                     }
 
                                                                     "name" -> {
-                                                                        categoryName = reader.nextString()
+                                                                        categoryName =
+                                                                            reader.nextString()
                                                                     }
 
                                                                     else -> {
@@ -1165,10 +1288,17 @@ suspend fun handleJsonImport(
 
                                                             // From newest to oldest
                                                             // File version 1.0, @since v2.5.0
-                                                            if (productCategoryId != null && categoryName != null) {
-                                                                if (categories.add(productCategoryId)) {
-                                                                    categoryList.add(
-                                                                        ProductCategory(
+                                                            if (
+                                                                productCategoryId != null &&
+                                                                    categoryName != null
+                                                            ) {
+                                                                if (
+                                                                    categories.add(
+                                                                        productCategoryId
+                                                                    )
+                                                                ) {
+                                                                    productCategoryEntities.add(
+                                                                        ProductCategoryEntity(
                                                                             id = productCategoryId,
                                                                             name = categoryName,
                                                                         )
@@ -1176,8 +1306,16 @@ suspend fun handleJsonImport(
                                                                 }
                                                             } else {
                                                                 // Failed to determine file version
-                                                                Log.e("ImportJSON", "failed to determine category data version")
-                                                                onError(ImportError.FailedToDetermineVersion("arru-export.json -> category"))
+                                                                Log.e(
+                                                                    "ImportJSON",
+                                                                    "failed to determine category data version",
+                                                                )
+                                                                onError(
+                                                                    ImportError
+                                                                        .FailedToDetermineVersion(
+                                                                            "arru-export.json -> category"
+                                                                        )
+                                                                )
                                                                 return
                                                             }
 
@@ -1191,16 +1329,23 @@ suspend fun handleJsonImport(
                                                                 var producerName: String? = null
 
                                                                 while (reader.hasNext()) {
-                                                                    val producerValueName = reader.nextName()
+                                                                    val producerValueName =
+                                                                        reader.nextName()
 
                                                                     when (producerValueName) {
                                                                         "id" -> {
                                                                             productProducerId =
-                                                                                reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                                reader.nextLong() +
+                                                                                    1 // id of 0
+                                                                            // causes a
+                                                                            // foreign key
+                                                                            // constraint
+                                                                            // fail
                                                                         }
 
                                                                         "name" -> {
-                                                                            producerName = reader.nextString()
+                                                                            producerName =
+                                                                                reader.nextString()
                                                                         }
 
                                                                         else -> {
@@ -1211,19 +1356,36 @@ suspend fun handleJsonImport(
 
                                                                 // From newest to oldest
                                                                 // File version 1.0, @since v2.5.0
-                                                                if (productProducerId != null && producerName != null) {
-                                                                    if (producers.add(productProducerId)) {
-                                                                        producerList.add(
-                                                                            ProductProducer(
-                                                                                id = productProducerId,
+                                                                if (
+                                                                    productProducerId != null &&
+                                                                        producerName != null
+                                                                ) {
+                                                                    if (
+                                                                        producers.add(
+                                                                            productProducerId
+                                                                        )
+                                                                    ) {
+                                                                        productProducerEntities.add(
+                                                                            ProductProducerEntity(
+                                                                                id =
+                                                                                    productProducerId,
                                                                                 name = producerName,
                                                                             )
                                                                         )
                                                                     }
                                                                 } else {
-                                                                    // Failed to determine file version
-                                                                    Log.e("ImportJSON", "failed to determine producer data version")
-                                                                    onError(ImportError.FailedToDetermineVersion("arru-export.json -> producer"))
+                                                                    // Failed to determine file
+                                                                    // version
+                                                                    Log.e(
+                                                                        "ImportJSON",
+                                                                        "failed to determine producer data version",
+                                                                    )
+                                                                    onError(
+                                                                        ImportError
+                                                                            .FailedToDetermineVersion(
+                                                                                "arru-export.json -> producer"
+                                                                            )
+                                                                    )
                                                                     return
                                                                 }
 
@@ -1237,24 +1399,33 @@ suspend fun handleJsonImport(
                                                     // From newest to oldest
                                                     // File version 1.0, @since v2.5.0
                                                     if (
-                                                        itemProductId != null
-                                                        && productName != null
-                                                        && productCategoryId != null
+                                                        itemProductId != null &&
+                                                            productName != null &&
+                                                            productCategoryId != null
                                                     ) {
                                                         if (products.add(itemProductId)) {
-                                                            productList.add(
-                                                                Product(
+                                                            productEntities.add(
+                                                                ProductEntity(
                                                                     id = itemProductId,
                                                                     name = productName,
-                                                                    categoryId = productCategoryId,
-                                                                    producerId = productProducerId,
+                                                                    productCategoryEntityId =
+                                                                        productCategoryId,
+                                                                    productProducerEntityId =
+                                                                        productProducerId,
                                                                 )
                                                             )
                                                         }
                                                     } else {
                                                         // Failed to determine file version
-                                                        Log.e("ImportJSON", "failed to determine product data version")
-                                                        onError(ImportError.FailedToDetermineVersion("arru-export.json -> product"))
+                                                        Log.e(
+                                                            "ImportJSON",
+                                                            "failed to determine product data version",
+                                                        )
+                                                        onError(
+                                                            ImportError.FailedToDetermineVersion(
+                                                                "arru-export.json -> product"
+                                                            )
+                                                        )
                                                         return
                                                     }
 
@@ -1266,22 +1437,30 @@ suspend fun handleJsonImport(
                                                     } else {
                                                         reader.beginObject()
                                                         var variantName: String? = null
-                                                        var variantGlobal = false  // @since v2.5.7, global has null productId, default not global
+                                                        var variantGlobal =
+                                                            false // @since v2.5.7, global has null
+                                                        // productId, default not global
 
                                                         while (reader.hasNext()) {
                                                             val variantValueName = reader.nextName()
 
                                                             when (variantValueName) {
                                                                 "id" -> {
-                                                                    itemVariantId = reader.nextLong() + 1 // id of 0 causes a foreign key constraint fail
+                                                                    itemVariantId =
+                                                                        reader.nextLong() +
+                                                                            1 // id of 0 causes a
+                                                                    // foreign key
+                                                                    // constraint fail
                                                                 }
 
                                                                 "name" -> {
-                                                                    variantName = reader.nextString()
+                                                                    variantName =
+                                                                        reader.nextString()
                                                                 }
 
                                                                 "global" -> {
-                                                                    variantGlobal = reader.nextBoolean()
+                                                                    variantGlobal =
+                                                                        reader.nextBoolean()
                                                                 }
 
                                                                 else -> {
@@ -1293,24 +1472,39 @@ suspend fun handleJsonImport(
                                                         // From newest to oldest
                                                         // File version 1.0, @since v2.5.0
                                                         if (
-                                                            itemVariantId != null
-                                                            && variantName != null
+                                                            itemVariantId != null &&
+                                                                variantName != null
                                                         ) {
                                                             if (variants.add(itemVariantId)) {
-                                                                val productId = if (variantGlobal) {
-                                                                    null // global variants have no product id
-                                                                } else -1L  // temporarily assume -1 as product id could technically not be set
+                                                                val productId =
+                                                                    if (variantGlobal) {
+                                                                        null // global variants have
+                                                                        // no product id
+                                                                    } else
+                                                                        -1L // temporarily assume -1
+                                                                // as product id could
+                                                                // technically not be
+                                                                // set
 
-                                                                itemVariant = ProductVariant(
-                                                                    id = itemVariantId,
-                                                                    productId = productId,
-                                                                    name = variantName,
-                                                                )
+                                                                itemVariant =
+                                                                    ProductVariantEntity(
+                                                                        id = itemVariantId,
+                                                                        productEntityId = productId,
+                                                                        name = variantName,
+                                                                    )
                                                             }
                                                         } else {
                                                             // Failed to determine file version
-                                                            Log.e("ImportJSON", "failed to determine variant data version")
-                                                            onError(ImportError.FailedToDetermineVersion("arru-export.json -> variant"))
+                                                            Log.e(
+                                                                "ImportJSON",
+                                                                "failed to determine variant data version",
+                                                            )
+                                                            onError(
+                                                                ImportError
+                                                                    .FailedToDetermineVersion(
+                                                                        "arru-export.json -> variant"
+                                                                    )
+                                                            )
                                                             return
                                                         }
 
@@ -1323,39 +1517,55 @@ suspend fun handleJsonImport(
                                             }
                                         }
 
-
                                         // From newest to oldest
                                         // File version 1.0, @since v2.5.0
                                         if (
-                                            itemId != null
-                                            && itemPrice != null
-                                            && itemQuantity != null
-                                            && itemProductId != null
+                                            itemId != null &&
+                                                itemPrice != null &&
+                                                itemQuantity != null &&
+                                                itemProductId != null
                                         ) {
                                             if (items.add(itemId)) {
-                                                itemVariant?.let { // update id because now productId has to be set
-                                                    // only update id if not null, null means that the variant is global
-                                                    if (it.productId != null) {
-                                                        it.productId = itemProductId
-                                                    }
-                                                    variantList.add(it) // also add to list
+                                                itemVariant?.let {
+                                                    // update id because now productId has to be set
+                                                    // only update id
+                                                    // if not null, null means that the variant is
+                                                    // global
+                                                    val variant =
+                                                        if (it.productEntityId != null) {
+                                                            it.copy(productEntityId = itemProductId)
+                                                        } else it
+
+                                                    productVariantEntities.add(
+                                                        variant
+                                                    ) // then add to list
                                                 }
 
-                                                transactionItems.add(
-                                                    Item(
+                                                transactionItemEntities.add(
+                                                    ItemEntity(
                                                         id = itemId,
-                                                        transactionBasketId = -1, // temporarily assume -1 as transaction id could technically not be set
+                                                        transactionEntityId =
+                                                            -1, // temporarily assume -1 as
+                                                        // transaction id could technically
+                                                        // not be set
                                                         price = itemPrice,
                                                         quantity = itemQuantity,
-                                                        productId = itemProductId,
-                                                        variantId = itemVariantId
+                                                        productEntityId = itemProductId,
+                                                        productVariantEntityId = itemVariantId,
                                                     )
                                                 )
                                             }
                                         } else {
                                             // Failed to determine file version
-                                            Log.e("ImportJSON", "failed to determine transaction data version")
-                                            onError(ImportError.FailedToDetermineVersion("arru-export.json -> transaction"))
+                                            Log.e(
+                                                "ImportJSON",
+                                                "failed to determine transaction data version",
+                                            )
+                                            onError(
+                                                ImportError.FailedToDetermineVersion(
+                                                    "arru-export.json -> transaction"
+                                                )
+                                            )
                                             return
                                         }
 
@@ -1371,26 +1581,20 @@ suspend fun handleJsonImport(
                         }
                     }
 
-
-                    if (
-                        id != null
-                        && date != null
-                        && cost != null
-                    ) {
+                    if (id != null && date != null && cost != null) {
                         if (transactions.add(id)) {
-                            transactionItems.forEach {
-                                it.transactionBasketId = id
-                            }
+                            val items =
+                                transactionItemEntities.map { it.copy(transactionEntityId = id) }
 
-                            itemList.addAll(transactionItems)
+                            itemEntities.addAll(items)
 
-                            transactionList.add(
-                                TransactionBasket(
+                            transactionEntities.add(
+                                TransactionEntity(
                                     id = id,
                                     date = date,
-                                    shopId = transactionShopId,
+                                    shopEntityId = transactionShopId,
                                     totalCost = cost,
-                                    note = transactionNote
+                                    note = transactionNote,
                                 )
                             )
                         }
@@ -1404,13 +1608,13 @@ suspend fun handleJsonImport(
                 onProgressChange(1)
 
                 importRepository.insertAll(
-                    shops = shopList,
-                    producers = producerList,
-                    categories = categoryList,
-                    transactions = transactionList,
-                    products = productList,
-                    variants = variantList,
-                    items = itemList
+                    shopEntities = shopEntities,
+                    productProducerEntities = productProducerEntities,
+                    productCategoryEntities = productCategoryEntities,
+                    transactionEntities = transactionEntities,
+                    productEntities = productEntities,
+                    productVariantEntities = productVariantEntities,
+                    itemEntities = itemEntities,
                 )
 
                 onProgressChange(2)

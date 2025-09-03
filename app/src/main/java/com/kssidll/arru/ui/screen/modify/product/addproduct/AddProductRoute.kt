@@ -2,10 +2,10 @@ package com.kssidll.arru.ui.screen.modify.product.addproduct
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import com.kssidll.arru.domain.data.Data
-import com.kssidll.arru.domain.data.Field
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEvent
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEventResult
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
@@ -14,54 +14,64 @@ import kotlinx.coroutines.launch
 fun AddProductRoute(
     defaultName: String?,
     navigateBack: (productId: Long?) -> Unit,
-    navigateCategoryAdd: (query: String?) -> Unit,
-    navigateProducerAdd: (query: String?) -> Unit,
-    navigateCategoryEdit: (categoryId: Long) -> Unit,
-    navigateProducerEdit: (producerId: Long) -> Unit,
+    navigateAddProductCategory: (query: String?) -> Unit,
+    navigateAddProductProducer: (query: String?) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
+    viewModel: AddProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel: AddProductViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
-        viewModel.screenState.name.value = Field.Loaded(defaultName)
+        viewModel.handleEvent(ModifyProductEvent.SetName(defaultName ?: String()))
     }
 
     LaunchedEffect(providedProducerId) {
-        viewModel.setSelectedProducer(providedProducerId)
+        viewModel.handleEvent(ModifyProductEvent.SelectProductProducer(providedProducerId))
     }
 
     LaunchedEffect(providedCategoryId) {
-        viewModel.setSelectedCategory(providedCategoryId)
+        viewModel.handleEvent(ModifyProductEvent.SelectProductCategory(providedCategoryId))
     }
 
     ModifyProductScreenImpl(
-        onBack = {
-            navigateBack(null)
-        },
-        state = viewModel.screenState,
-        categories = viewModel.allCategories()
-            .collectAsState(initial = Data.Loading()).value,
-        producers = viewModel.allProducers()
-            .collectAsState(initial = Data.Loading()).value,
-        onNewProducerSelected = {
-            viewModel.onNewProducerSelected(it)
-        },
-        onNewCategorySelected = {
-            viewModel.onNewCategorySelected(it)
-        },
-        onSubmit = {
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
             scope.launch {
-                val result = viewModel.addProduct()
-                if (result.isNotError()) {
-                    navigateBack(result.id)
+                when (event) {
+                    is ModifyProductEvent.DeleteProduct -> {}
+                    is ModifyProductEvent.MergeProduct -> {}
+                    is ModifyProductEvent.NavigateAddProductCategory ->
+                        navigateAddProductCategory(event.name)
+                    is ModifyProductEvent.NavigateAddProductProducer ->
+                        navigateAddProductProducer(event.name)
+                    is ModifyProductEvent.NavigateBack -> navigateBack(null)
+                    is ModifyProductEvent.NavigateEditProductCategory ->
+                        navigateEditProductCategory(event.productCategoryId)
+                    is ModifyProductEvent.NavigateEditProductProducer ->
+                        navigateEditProductProducer(event.productProducerId)
+                    is ModifyProductEvent.SelectMergeCandidate -> {}
+                    is ModifyProductEvent.SelectProductCategory -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SelectProductProducer -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetDangerousDeleteDialogConfirmation -> {}
+                    is ModifyProductEvent.SetDangerousDeleteDialogVisibility -> {}
+                    is ModifyProductEvent.SetMergeConfirmationDialogVisibility -> {}
+                    is ModifyProductEvent.SetMergeSearchDialogVisibility -> {}
+                    is ModifyProductEvent.SetName -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetProductCategorySearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetProductProducerSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.Submit -> {
+                        val result = viewModel.handleEvent(event)
+                        if (result is ModifyProductEventResult.SuccessInsert) {
+                            navigateBack(result.id)
+                        }
+                    }
                 }
             }
         },
-        onCategoryAddButtonClick = navigateCategoryAdd,
-        onProducerAddButtonClick = navigateProducerAdd,
-        onItemCategoryLongClick = navigateCategoryEdit,
-        onItemProducerLongClick = navigateProducerEdit,
     )
 }

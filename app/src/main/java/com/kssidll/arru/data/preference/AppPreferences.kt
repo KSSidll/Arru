@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -21,52 +22,34 @@ import com.kssidll.arru.data.database.downloadsAppDirectory
 import com.kssidll.arru.data.database.downloadsDbFile
 import com.kssidll.arru.data.database.externalDbFile
 import com.kssidll.arru.di.module.getPreferencesDataStore
+import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.util.Locale
 
-/**
- * Data associated with datastore preferences
- */
+/** Data associated with datastore preferences */
 data object AppPreferences {
     const val DATASTORENAME: String = "settings"
 
-    /**
-     * Data associated with database datastore preferences
-     */
+    /** Data associated with database datastore preferences */
     data object Database {
-        /**
-         * Data associated with database location datastore preference
-         */
+        /** Data associated with database location datastore preference */
         data object Location {
-            /**
-             * Key for database location preference key-value pair
-             */
+            /** Key for database location preference key-value pair */
             val key: Preferences.Key<Int> = intPreferencesKey("databaselocation2")
 
-            /**
-             * Value for default location
-             */
+            /** Value for default location */
             val DEFAULT = Values.EXTERNAL
 
             enum class Values {
-                /**
-                 * Value for internal location
-                 */
+                /** Value for internal location */
                 INTERNAL,
 
-                /**
-                 * Value for external location
-                 */
+                /** Value for external location */
                 EXTERNAL,
 
-                /**
-                 * Value for downloads folder location
-                 */
-                DOWNLOADS,
-
-                ;
+                /** Value for downloads folder location */
+                DOWNLOADS;
 
                 @Composable
                 @ReadOnlyComposable
@@ -80,86 +63,58 @@ data object AppPreferences {
 
                 companion object {
                     private val idMap = Values.entries.associateBy { it.ordinal }
+
                     fun getByOrdinal(ordinal: Int) = idMap[ordinal]
                 }
             }
         }
     }
 
-    /**
-     * Data associated with transaction datastore preferences
-     */
+    /** Data associated with transaction datastore preferences */
     data object Transaction {
-        /**
-         * Data associated with transaction date datastore preference
-         */
+        /** Data associated with transaction date datastore preference */
         data object Date {
-            /**
-             * Key for transaction date preference key-value pair
-             */
+            /** Key for transaction date preference key-value pair */
             val key: Preferences.Key<Int> = intPreferencesKey("transactiondate")
 
-            /**
-             * Values for default date
-             */
+            /** Values for default date */
             val DEFAULT = Values.CURRENT
 
             enum class Values {
-                /**
-                 * Values for current date
-                 */
+                /** Values for current date */
                 CURRENT,
 
-                /**
-                 * Values for last transaction date
-                 */
-                LAST,
-
-                ;
+                /** Values for last transaction date */
+                LAST;
 
                 companion object {
                     private val idMap = Values.entries.associateBy { it.ordinal }
+
                     fun getByOrdinal(ordinal: Int) = idMap[ordinal]
                 }
             }
         }
     }
 
-    /**
-     * Data associated with export datastore preferences
-     */
+    /** Data associated with export datastore preferences */
     data object Export {
-        /**
-         * Data associated with export type datastore preference
-         */
+        /** Data associated with export type datastore preference */
         data object Type {
-            /**
-             * Key for export type preference key-value pair
-             */
+            /** Key for export type preference key-value pair */
             val key: Preferences.Key<Int> = intPreferencesKey("exporttype")
 
-            /**
-             * Values for default export type
-             */
+            /** Values for default export type */
             val DEFAULT = Values.RawCSV
 
             enum class Values {
-                /**
-                 * Values for compact csv export
-                 */
+                /** Values for compact csv export */
                 CompactCSV,
 
-                /**
-                 * Values for raw csv export
-                 */
+                /** Values for raw csv export */
                 RawCSV,
 
-                /**
-                 * Values for json export
-                 */
-                JSON,
-
-                ;
+                /** Values for json export */
+                JSON;
 
                 @Composable
                 @ReadOnlyComposable
@@ -173,58 +128,38 @@ data object AppPreferences {
 
                 companion object {
                     private val idMap = Values.entries.associateBy { it.ordinal }
+
                     fun getByOrdinal(ordinal: Int) = idMap[ordinal]
                 }
             }
         }
 
-        /**
-         * Data associated with export location datastore preference
-         */
+        /** Data associated with export location datastore preference */
         data object Location {
-            /**
-             * Key for export location preference key-value pair
-             */
+            /** Key for export location preference key-value pair */
             val key: Preferences.Key<String> = stringPreferencesKey("exportlocation")
         }
     }
 
-    /**
-     * Data associated with theme datastore preferences
-     */
+    /** Data associated with theme datastore preferences */
     data object Theme {
-        /**
-         * Data associated with theme color scheme datastore preference
-         */
+        /** Data associated with theme color scheme datastore preference */
         data object ColorScheme {
-            /**
-             * Key for theme color scheme preference key-value pair
-             */
+            /** Key for theme color scheme preference key-value pair */
             val key: Preferences.Key<Int> = intPreferencesKey("themecolorscheme")
 
-            /**
-             * Values for default color scheme
-             */
+            /** Values for default color scheme */
             val DEFAULT = Values.SYSTEM
 
-
             enum class Values {
-                /**
-                 * Values for system color scheme
-                 */
+                /** Values for system color scheme */
                 SYSTEM,
 
-                /**
-                 * Values for dark color scheme
-                 */
+                /** Values for dark color scheme */
                 DARK,
 
-                /**
-                 * Values for light color scheme
-                 */
-                LIGHT
-
-                ;
+                /** Values for light color scheme */
+                LIGHT;
 
                 @Composable
                 @ReadOnlyComposable
@@ -238,24 +173,19 @@ data object AppPreferences {
 
                 companion object {
                     private val idMap = Values.entries.associateBy { it.ordinal }
+
                     fun getByOrdinal(ordinal: Int) = idMap[ordinal]
                 }
             }
         }
 
-        /**
-         * Data associated with dynamic color datastore preference
-         */
+        /** Data associated with dynamic color datastore preference */
         data object DynamicColor {
-            /**
-             * Key for dynamic color preference key-value pair
-             */
+            /** Key for dynamic color preference key-value pair */
             @RequiresApi(Build.VERSION_CODES.S)
             val key: Preferences.Key<Boolean> = booleanPreferencesKey("themedynamiccolor")
 
-            /**
-             * Default value for dynamic color
-             */
+            /** Default value for dynamic color */
             val DEFAULT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         }
     }
@@ -271,7 +201,8 @@ data object AppPreferences {
     data object Notifications {
         data object Persistent {
             data object Enabled {
-                val key: Preferences.Key<Boolean> = booleanPreferencesKey("notificationspersistentenabled")
+                val key: Preferences.Key<Boolean> =
+                    booleanPreferencesKey("notificationspersistentenabled")
 
                 const val DEFAULT = false
             }
@@ -281,6 +212,7 @@ data object AppPreferences {
 
 /**
  * Resets the preferences that should be reset on startup
+ *
  * @param context App context
  */
 suspend fun AppPreferences.setResettableToDefault(context: Context) {
@@ -289,12 +221,13 @@ suspend fun AppPreferences.setResettableToDefault(context: Context) {
 
 /**
  * Sets the transaction date preference to a new value
+ *
  * @param context App context
  * @param newDatePreference Values to set the date preference to
  */
 suspend fun AppPreferences.setTransactionDate(
     context: Context,
-    newDatePreference: AppPreferences.Transaction.Date.Values
+    newDatePreference: AppPreferences.Transaction.Date.Values,
 ) {
     getPreferencesDataStore(context).edit {
         it[AppPreferences.Transaction.Date.key] = newDatePreference.ordinal
@@ -303,28 +236,29 @@ suspend fun AppPreferences.setTransactionDate(
 
 /**
  * Returns the transaction date preference value
+ *
  * @param context App context
  * @return The transaction date preference value
  */
-fun AppPreferences.getTransactionDate(context: Context): Flow<AppPreferences.Transaction.Date.Values> {
+fun AppPreferences.getTransactionDate(
+    context: Context
+): Flow<AppPreferences.Transaction.Date.Values> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Transaction.Date.key]?.let {
-            AppPreferences.Transaction.Date.Values.getByOrdinal(
-                it
-            )
-        }
-            ?: AppPreferences.Transaction.Date.DEFAULT
+            AppPreferences.Transaction.Date.Values.getByOrdinal(it)
+        } ?: AppPreferences.Transaction.Date.DEFAULT
     }
 }
 
 /**
  * Sets the export type preference to a new value
+ *
  * @param context App context
  * @param newExportType Values to set the export type preference to
  */
 suspend fun AppPreferences.setExportType(
     context: Context,
-    newExportType: AppPreferences.Export.Type.Values
+    newExportType: AppPreferences.Export.Type.Values,
 ) {
     getPreferencesDataStore(context).edit {
         it[AppPreferences.Export.Type.key] = newExportType.ordinal
@@ -333,29 +267,25 @@ suspend fun AppPreferences.setExportType(
 
 /**
  * Returns the export type preference value
+ *
  * @param context App context
  * @return The export type preference value
  */
 fun AppPreferences.getExportType(context: Context): Flow<AppPreferences.Export.Type.Values> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Export.Type.key]?.let {
-            AppPreferences.Export.Type.Values.getByOrdinal(
-                it
-            )
-        }
-            ?: AppPreferences.Export.Type.DEFAULT
+            AppPreferences.Export.Type.Values.getByOrdinal(it)
+        } ?: AppPreferences.Export.Type.DEFAULT
     }
 }
 
 /**
  * Sets the export location preference to a new value
+ *
  * @param context App context
  * @param newExportLocation Values to set the export location preference to
  */
-suspend fun AppPreferences.setExportLocation(
-    context: Context,
-    newExportLocation: Uri
-) {
+suspend fun AppPreferences.setExportLocation(context: Context, newExportLocation: Uri) {
     getPreferencesDataStore(context).edit {
         it[AppPreferences.Export.Location.key] = newExportLocation.toString()
     }
@@ -363,25 +293,25 @@ suspend fun AppPreferences.setExportLocation(
 
 /**
  * Returns the export location preference value if any
+ *
  * @param context App context
  * @return The export location preference value if any
  */
 fun AppPreferences.getExportLocation(context: Context): Flow<Uri?> {
     return getPreferencesDataStore(context).data.map { preferences ->
-        preferences[AppPreferences.Export.Location.key]?.let {
-            Uri.parse(it)
-        }
+        preferences[AppPreferences.Export.Location.key]?.toUri()
     }
 }
 
 /**
  * Sets the theme color scheme preference to a new value
+ *
  * @param context App context
  * @param newColorScheme Values to set the theme color scheme preference to
  */
 suspend fun AppPreferences.setThemeColorScheme(
     context: Context,
-    newColorScheme: AppPreferences.Theme.ColorScheme.Values
+    newColorScheme: AppPreferences.Theme.ColorScheme.Values,
 ) {
     getPreferencesDataStore(context).edit {
         it[AppPreferences.Theme.ColorScheme.key] = newColorScheme.ordinal
@@ -390,6 +320,7 @@ suspend fun AppPreferences.setThemeColorScheme(
 
 /**
  * Returns the theme color scheme preference value
+ *
  * @param context App context
  * @return The color scheme preference value
  */
@@ -397,15 +328,16 @@ fun AppPreferences.getColorScheme(context: Context): Flow<AppPreferences.Theme.C
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Theme.ColorScheme.key]?.let {
             AppPreferences.Theme.ColorScheme.Values.getByOrdinal(it)
-        }
-            ?: AppPreferences.Theme.ColorScheme.DEFAULT
+        } ?: AppPreferences.Theme.ColorScheme.DEFAULT
     }
 }
 
 fun AppPreferences.Theme.ColorScheme.Values.detectDarkMode(): (Resources) -> Boolean =
     { resources ->
         when (this) {
-            AppPreferences.Theme.ColorScheme.Values.SYSTEM -> (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            AppPreferences.Theme.ColorScheme.Values.SYSTEM ->
+                (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                    Configuration.UI_MODE_NIGHT_YES
             AppPreferences.Theme.ColorScheme.Values.DARK -> true
             AppPreferences.Theme.ColorScheme.Values.LIGHT -> false
         }
@@ -413,14 +345,12 @@ fun AppPreferences.Theme.ColorScheme.Values.detectDarkMode(): (Resources) -> Boo
 
 /**
  * Sets the theme dynamic color preference to a new value
+ *
  * @param context App context
  * @param isDynamicColor Values to set the theme dynamic color preference to
  */
 @RequiresApi(31)
-suspend fun AppPreferences.setThemeDynamicColor(
-    context: Context,
-    isDynamicColor: Boolean
-) {
+suspend fun AppPreferences.setThemeDynamicColor(context: Context, isDynamicColor: Boolean) {
     getPreferencesDataStore(context).edit {
         it[AppPreferences.Theme.DynamicColor.key] = isDynamicColor
     }
@@ -428,6 +358,7 @@ suspend fun AppPreferences.setThemeDynamicColor(
 
 /**
  * Returns the theme dynamic color preference value
+ *
  * @param context App context
  * @return The dynamic color preference value
  */
@@ -440,10 +371,7 @@ fun AppPreferences.getDynamicColor(context: Context): Flow<Boolean> {
     }
 }
 
-suspend fun AppPreferences.setCurrencyFormatLocale(
-    context: Context,
-    newCurrencyLocale: Locale?
-) {
+suspend fun AppPreferences.setCurrencyFormatLocale(context: Context, newCurrencyLocale: Locale?) {
     getPreferencesDataStore(context).edit {
         if (newCurrencyLocale == null) {
             it[AppPreferences.Locale.Currency.key] = AppPreferences.Locale.Currency.DEFAULT
@@ -453,23 +381,22 @@ suspend fun AppPreferences.setCurrencyFormatLocale(
     }
 }
 
-fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale> {
+fun AppPreferences.getCurrencyFormatLocale(context: Context): Flow<Locale?> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Locale.Currency.key]?.let {
             if (it == AppPreferences.Locale.Currency.DEFAULT) {
-                Locale.getDefault()
+                null
             } else {
                 Locale.forLanguageTag(it)
             }
         }
-            ?: Locale.getDefault()
     }
 }
 
 @RequiresApi(30)
 suspend fun AppPreferences.setDatabaseLocation(
     context: Context,
-    newDatabaseLocation: AppPreferences.Database.Location.Values
+    newDatabaseLocation: AppPreferences.Database.Location.Values,
 ): AppPreferences.Database.Location.Values {
     val oldValue = getDatabaseLocation(context).first()
 
@@ -480,29 +407,17 @@ suspend fun AppPreferences.setDatabaseLocation(
     // To internal
 
     val moveExternalToInternal = {
-        AppDatabase.move(
-            context,
-            context.externalDbFile(),
-            context.getDatabasePath(DATABASE_NAME)
-        )
+        AppDatabase.move(context, context.externalDbFile(), context.getDatabasePath(DATABASE_NAME))
     }
 
     val moveDownloadsToInternal = {
-        AppDatabase.move(
-            context,
-            context.downloadsDbFile(),
-            context.getDatabasePath(DATABASE_NAME)
-        )
+        AppDatabase.move(context, context.downloadsDbFile(), context.getDatabasePath(DATABASE_NAME))
     }
 
     // From internal
 
     val moveInternalToExternal = {
-        AppDatabase.move(
-            context,
-            context.getDatabasePath(DATABASE_NAME),
-            context.externalDbFile()
-        )
+        AppDatabase.move(context, context.getDatabasePath(DATABASE_NAME), context.externalDbFile())
     }
 
     val moveInternalToDownloads = {
@@ -511,11 +426,7 @@ suspend fun AppPreferences.setDatabaseLocation(
             context.downloadsAppDirectory().mkdir()
         }
 
-        AppDatabase.move(
-            context,
-            context.getDatabasePath(DATABASE_NAME),
-            context.downloadsDbFile()
-        )
+        AppDatabase.move(context, context.getDatabasePath(DATABASE_NAME), context.downloadsDbFile())
     }
 
     try {
@@ -549,7 +460,8 @@ suspend fun AppPreferences.setDatabaseLocation(
 
         getPreferencesDataStore(context).edit {
             // The database would be in internal right if we get an exception here
-            it[AppPreferences.Database.Location.key] = AppPreferences.Database.Location.Values.INTERNAL.ordinal
+            it[AppPreferences.Database.Location.key] =
+                AppPreferences.Database.Location.Values.INTERNAL.ordinal
         }
 
         return AppPreferences.Database.Location.Values.INTERNAL
@@ -558,23 +470,23 @@ suspend fun AppPreferences.setDatabaseLocation(
     return newDatabaseLocation
 }
 
-fun AppPreferences.getDatabaseLocation(context: Context): Flow<AppPreferences.Database.Location.Values> {
+fun AppPreferences.getDatabaseLocation(
+    context: Context
+): Flow<AppPreferences.Database.Location.Values> {
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Database.Location.key]?.let {
             when (it) {
-                AppPreferences.Database.Location.Values.INTERNAL.ordinal -> AppPreferences.Database.Location.Values.INTERNAL
-                AppPreferences.Database.Location.Values.DOWNLOADS.ordinal -> AppPreferences.Database.Location.Values.DOWNLOADS
+                AppPreferences.Database.Location.Values.INTERNAL.ordinal ->
+                    AppPreferences.Database.Location.Values.INTERNAL
+                AppPreferences.Database.Location.Values.DOWNLOADS.ordinal ->
+                    AppPreferences.Database.Location.Values.DOWNLOADS
                 else -> AppPreferences.Database.Location.DEFAULT
             }
-        }
-            ?: AppPreferences.Database.Location.DEFAULT
+        } ?: AppPreferences.Database.Location.DEFAULT
     }
 }
 
-suspend fun AppPreferences.setPersistentNotificationEnabled(
-    context: Context,
-    enabled: Boolean
-) {
+suspend fun AppPreferences.setPersistentNotificationEnabled(context: Context, enabled: Boolean) {
     getPreferencesDataStore(context).edit {
         it[AppPreferences.Notifications.Persistent.Enabled.key] = enabled
     }

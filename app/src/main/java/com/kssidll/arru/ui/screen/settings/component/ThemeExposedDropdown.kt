@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.settings.component
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
@@ -23,11 +22,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.data.preference.AppPreferences
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 import com.kssidll.arru.ui.theme.Typography
 
 /**
  * Exposed dropdown to select theme
+ *
  * @param currentTheme Currently selected theme
  * @param setTheme Callback to call to request theme change. Provides requested theme as parameter
  * @param modifier Modifier to apply to the dropdown menu box
@@ -43,10 +43,8 @@ fun ThemeExposedDropdown(
 
     ExposedDropdownMenuBox(
         expanded = dropdownExpanded,
-        onExpandedChange = {
-            dropdownExpanded = !dropdownExpanded
-        },
-        modifier = modifier
+        onExpandedChange = { dropdownExpanded = !dropdownExpanded },
+        modifier = modifier,
     ) {
         TextField(
             readOnly = true,
@@ -57,48 +55,34 @@ fun ThemeExposedDropdown(
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
             },
             label = {
-                Text(
-                    text = stringResource(id = R.string.theme),
-                    style = Typography.titleLarge
-                )
+                Text(text = stringResource(id = R.string.theme), style = Typography.titleLarge)
             },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                focusedContainerColor = MaterialTheme.colorScheme.background,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                focusedIndicatorColor = MaterialTheme.colorScheme.background,
-            ),
-            modifier = Modifier.menuAnchor(
-                type = MenuAnchorType.PrimaryNotEditable
-            )
+            colors =
+                ExposedDropdownMenuDefaults.textFieldColors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.background,
+                ),
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
         )
 
         ExposedDropdownMenu(
             expanded = dropdownExpanded,
-            onDismissRequest = {
-                dropdownExpanded = false
-            },
-            modifier = Modifier
-                .background(
+            onDismissRequest = { dropdownExpanded = false },
+            modifier =
+                Modifier.background(
                     color = MaterialTheme.colorScheme.surfaceContainer,
-                    shape = RoundedCornerShape(
-                        bottomStart = 8.dp,
-                        bottomEnd = 8.dp
-                    ),
-                )
+                    shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                ),
         ) {
             AppPreferences.Theme.ColorScheme.Values.entries.forEach { theme ->
                 DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = theme.getTranslation(),
-                            style = Typography.bodyLarge,
-                        )
-                    },
+                    text = { Text(text = theme.getTranslation(), style = Typography.bodyLarge) },
                     onClick = {
                         setTheme(theme)
                         dropdownExpanded = false
-                    }
+                    },
                 )
             }
         }
@@ -108,7 +92,7 @@ fun ThemeExposedDropdown(
 @PreviewLightDark
 @Composable
 private fun ThemeExposedDropdownPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface {
             ThemeExposedDropdown(
                 currentTheme = AppPreferences.Theme.ColorScheme.DEFAULT,

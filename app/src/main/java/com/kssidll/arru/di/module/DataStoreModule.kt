@@ -10,11 +10,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Singleton
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AppPreferences.DATASTORENAME)
+val Context.dataStore: DataStore<Preferences> by
+    preferencesDataStore(name = AppPreferences.DATASTORENAME)
 
 fun getPreferencesDataStore(context: Context): DataStore<Preferences> {
     return context.dataStore
@@ -42,10 +43,10 @@ class DataStoreModule {
     }
 
     @Provides
+    @Singleton
     fun providePreferences(@ApplicationContext context: Context): Preferences {
         return runBlocking {
             return@runBlocking getPreferences(context)
         }
     }
 }
-

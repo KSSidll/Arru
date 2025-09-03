@@ -1,226 +1,440 @@
 package com.kssidll.arru.ui.screen.modify.item
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import android.util.Log
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Item
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.ProductWithAltNames
-import com.kssidll.arru.data.repository.ItemRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.VariantRepositorySource
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductVariantEntity
 import com.kssidll.arru.domain.data.Field
-import com.kssidll.arru.ui.screen.modify.ModifyScreenState
+import com.kssidll.arru.domain.data.emptyImmutableList
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityByProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityByProductUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
+import com.kssidll.arru.helper.RegexHelper
+import com.kssidll.arru.helper.StringHelper
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Base [ViewModel] class for Item modification view models
- * @property loadLastItem Initializes start state, should be called as child in init of inheriting view model
- * @property screenState A [ModifyItemScreenState] instance to use as screen state representation
- */
-abstract class ModifyItemViewModel: ViewModel() {
-    private var mProductListener: Job? = null
-    private var mVariantListener: Job? = null
+@Immutable
+data class ModifyItemUiState(
+    val currentItem: ItemEntity? = null,
+    val allProducts: ImmutableList<ProductEntity> = emptyImmutableList(),
+    val allProductVariants: ImmutableList<ProductVariantEntity> = emptyImmutableList(),
+    val selectedProduct: Field<ProductEntity?> = Field.Loaded(null),
+    val selectedProductVariant: Field<ProductVariantEntity?> = Field.Loaded(null),
+    val quantity: Field<String> = Field.Loaded(String()),
+    val price: Field<String> = Field.Loaded(String()),
+    val isProductSearchDialogVisible: Boolean = false,
+    val isProductVariantSearchDialogVisible: Boolean = false,
+    val isDeleteEnabled: Boolean = false,
+)
 
-    protected abstract val itemRepository: ItemRepositorySource
-    protected abstract val productRepository: ProductRepositorySource
-    protected abstract val variantsRepository: VariantRepositorySource
+@Immutable
+sealed class ModifyItemEvent {
+    data object NavigateBack : ModifyItemEvent()
 
-    internal val screenState: ModifyItemScreenState = ModifyItemScreenState()
+    data object Submit : ModifyItemEvent()
 
-    suspend fun setSelectedProductToProvided(
-        providedProductId: Long?,
-        providedVariantId: Long?
-    ) {
-        if (providedProductId != null) {
-            screenState.selectedProduct.apply { value = value.toLoading() }
-            screenState.selectedVariant.apply { value = value.toLoading() }
+    data object DeleteItem : ModifyItemEvent()
 
-            val product: Product? = providedProductId.let { productRepository.get(it) }
-            val variant: ProductVariant? = providedVariantId?.let { variantsRepository.get(it) }
+    data class SelectProduct(val productId: Long?) : ModifyItemEvent()
 
-            // providedVariantId is null only when we create a new product
-            // doing this allows us to skip data re-update on variant change
-            // not doing this would wipe user input data to last item data on variant change
-            // which is an unexpected behavior
-            onNewProductSelected(
-                product,
-                providedVariantId == null
-            )
+    data class SelectProductVariant(val productVariantId: Long?) : ModifyItemEvent()
 
-            onNewVariantSelected(variant)
-        }
-    }
+    data class SetProductSearchDialogVisibility(val visible: Boolean) : ModifyItemEvent()
 
-    suspend fun onNewProductSelected(
-        product: Product?,
-        loadLastItemProductData: Boolean = true
-    ) {
-        // Don't do anything if the product is the same as already selected
-        if (screenState.selectedProduct.value.data == product) {
-            screenState.selectedProduct.apply { value = value.toLoaded() }
-            return
-        }
+    data class SetProductVariantSearchDialogVisibility(val visible: Boolean) : ModifyItemEvent()
 
-        screenState.selectedProduct.value = Field.Loaded(product)
-        updateProductVariants()
+    data class SetPrice(val price: String) : ModifyItemEvent()
 
-        setNewProductListener(product)
-        setNewVariantListener(null)
+    data object IncrementPrice : ModifyItemEvent()
 
-        if (loadLastItemProductData) {
-            loadLastItemDataForProduct(product)
-        }
-    }
+    data object DecrementPrice : ModifyItemEvent()
 
-    fun onNewVariantSelected(variant: ProductVariant?) {
-        // Don't do anything if the variant is the same as already selected
-        if (screenState.selectedVariant.value.data == variant) {
-            screenState.selectedVariant.apply { value = value.toLoaded() }
-            return
-        }
+    data class SetQuantity(val quantity: String) : ModifyItemEvent()
 
-        screenState.selectedVariant.value = Field.Loaded(variant)
-        setNewVariantListener(variant)
-    }
+    data object IncrementQuantity : ModifyItemEvent()
 
-    private fun setNewProductListener(product: Product?) {
-        mProductListener?.cancel()
-        if (product != null) {
-            mProductListener = viewModelScope.launch {
-                productRepository.getFlow(product.id)
-                    .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedProduct.value = Field.Loaded(it.data)
-                        }
-                    }
-            }
-        }
-    }
+    data object DecrementQuantity : ModifyItemEvent()
 
-    private fun setNewVariantListener(variant: ProductVariant?) {
-        mVariantListener?.cancel()
-        if (variant != null) {
-            mVariantListener = viewModelScope.launch {
-                variantsRepository.getFlow(variant.id)
-                    .collectLatest {
-                        if (it is Data.Loaded) {
-                            screenState.selectedVariant.value = Field.Loaded(it.data)
-                        }
-                    }
-            }
-        }
-    }
+    data class NavigateEditProduct(val productId: Long) : ModifyItemEvent()
 
-    private suspend fun loadLastItemDataForProduct(product: Product?) {
-        screenState.selectedVariant.apply { value = value.toLoading() }
-        screenState.price.apply { value = value.toLoading() }
-        screenState.quantity.apply { value = value.toLoading() }
+    data class NavigateEditProductVariant(val productVariantId: Long) : ModifyItemEvent()
 
-        val lastItem: Item? = product?.let {
-            productRepository.newestItem(it)
-        }
+    data class NavigateAddProduct(val name: String) : ModifyItemEvent()
 
-        val variant: ProductVariant? = lastItem?.variantId?.let { variantsRepository.get(it) }
-        val price: String? = lastItem?.actualPrice()
-            ?.toString()
-        val quantity: String? = lastItem?.actualQuantity()
-            ?.toString()
-
-        onNewVariantSelected(variant)
-
-        screenState.price.value = Field.Loaded(price)
-        screenState.quantity.value = Field.Loaded(quantity)
-    }
-
-    /**
-     * Fetches start data to state
-     */
-    protected fun loadLastItem() = viewModelScope.launch {
-        screenState.allToLoading()
-
-        val lastItem: Item? = itemRepository.newest()
-
-        updateStateForItem(lastItem)
-    }
-
-    /**
-     * @return List of all products
-     */
-    fun allProducts(): Flow<Data<ImmutableList<ProductWithAltNames>>> {
-        return productRepository.allWithAltNamesFlow()
-    }
-
-    private val mProductVariants: MutableState<Flow<Data<ImmutableList<ProductVariant>>>> =
-        mutableStateOf(emptyFlow())
-    val productVariants: Flow<Data<ImmutableList<ProductVariant>>> by mProductVariants
-    private var mUpdateProductVariantsJob: Job? = null
-
-    /**
-     * Updates [productVariants] to represent available variants for currently set product
-     */
-    private fun updateProductVariants() {
-        mUpdateProductVariantsJob?.cancel()
-        mUpdateProductVariantsJob = viewModelScope.launch {
-            mProductVariants.value =
-                screenState.selectedProduct.value.data?.let { variantsRepository.byProductFlow(it, true) }
-                    ?: emptyFlow()
-        }
-    }
-
-    /**
-     * Updates the state to represent [item], doesn't switch state to loading status as it should be done before fetching the item
-     */
-    protected suspend fun updateStateForItem(
-        item: Item?,
-    ) {
-        val product: Product? = item?.productId?.let { productRepository.get(it) }
-        val variant: ProductVariant? = item?.variantId?.let { variantsRepository.get(it) }
-        val price: String? = item?.actualPrice()
-            ?.toString()
-        val quantity: String? = item?.actualQuantity()
-            ?.toString()
-
-        onNewProductSelected(
-            product,
-            false
-        )
-        onNewVariantSelected(variant)
-        screenState.price.value = Field.Loaded(price)
-        screenState.quantity.value = Field.Loaded(quantity)
-    }
+    data class NavigateAddProductVariant(val productVariantId: Long, val name: String) :
+        ModifyItemEvent()
 }
 
-/**
- * Data representing [ModifyItemScreenImpl] screen state
- */
-data class ModifyItemScreenState(
-    val selectedProduct: MutableState<Field<Product>> = mutableStateOf(Field.Loaded()),
-    val selectedVariant: MutableState<Field<ProductVariant?>> = mutableStateOf(Field.Loaded()),
-    val quantity: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
-    val price: MutableState<Field<String>> = mutableStateOf(Field.Loaded()),
+sealed class ModifyItemEventResult {
+    data object Success : ModifyItemEventResult()
 
-    var isDatePickerDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    var isProductSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-    var isVariantSearchDialogExpanded: MutableState<Boolean> = mutableStateOf(false),
-): ModifyScreenState() {
+    data object Failure : ModifyItemEventResult()
 
-    /**
-     * Sets all fields to Loading status
-     */
-    fun allToLoading() {
-        price.apply { value = value.toLoading() }
-        quantity.apply { value = value.toLoading() }
-        selectedProduct.apply { value = value.toLoading() }
-        selectedVariant.apply { value = value.toLoading() }
+    data class SuccessInsert(val id: Long) : ModifyItemEventResult()
+
+    data object SuccessUpdate : ModifyItemEventResult()
+
+    data object SuccessDelete : ModifyItemEventResult()
+}
+
+abstract class ModifyItemViewModel : ViewModel() {
+    @Suppress("PropertyName") protected val _uiState = MutableStateFlow(ModifyItemUiState())
+    val uiState = _uiState.asStateFlow()
+
+    protected abstract val getNewestItemEntityUseCase: GetNewestItemEntityUseCase
+    protected abstract val getNewestItemEntityByProductUseCase: GetNewestItemEntityByProductUseCase
+    protected abstract val getProductEntityUseCase: GetProductEntityUseCase
+    protected abstract val getAllProductEntityUseCase: GetAllProductEntityUseCase
+    protected abstract val getProductVariantEntityUseCase: GetProductVariantEntityUseCase
+    protected abstract val getProductVariantEntityByProductUseCase:
+        GetProductVariantEntityByProductUseCase
+
+    protected var manuallySetProductVariant = false
+    protected var manuallySetPrice = false
+    protected var manuallySetQuantity = false
+
+    private var _productListener: Job? = null
+    private var _productVariantListener: Job? = null
+
+    fun init() {
+        viewModelScope.launch {
+            getAllProductEntityUseCase().collectLatest {
+                _uiState.update { currentState -> currentState.copy(allProducts = it) }
+            }
+        }
+    }
+
+    open suspend fun handleEvent(event: ModifyItemEvent): ModifyItemEventResult {
+        when (event) {
+            is ModifyItemEvent.NavigateBack -> {}
+            is ModifyItemEvent.NavigateEditProduct -> {}
+            is ModifyItemEvent.NavigateEditProductVariant -> {}
+            is ModifyItemEvent.NavigateAddProduct -> {}
+            is ModifyItemEvent.NavigateAddProductVariant -> {}
+            is ModifyItemEvent.Submit -> {}
+            is ModifyItemEvent.DeleteItem -> {}
+            is ModifyItemEvent.SelectProduct -> handleSelectProduct(event.productId)
+            is ModifyItemEvent.SelectProductVariant ->
+                handleSelectProductVariant(event.productVariantId)
+            is ModifyItemEvent.SetProductSearchDialogVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(isProductSearchDialogVisible = event.visible)
+                }
+            }
+            is ModifyItemEvent.SetProductVariantSearchDialogVisibility -> {
+                _uiState.update { currentState ->
+                    currentState.copy(isProductVariantSearchDialogVisible = event.visible)
+                }
+            }
+
+            is ModifyItemEvent.SetPrice -> {
+                manuallySetPrice = true
+                if (event.price.isBlank()) {
+                    _uiState.update { currentState ->
+                        currentState.copy(price = Field.Loaded(String()))
+                    }
+                } else if (RegexHelper.isFloat(event.price, 2)) {
+                    _uiState.update { currentState ->
+                        currentState.copy(price = Field.Loaded(event.price))
+                    }
+                }
+            }
+            is ModifyItemEvent.IncrementPrice -> {
+                manuallySetPrice = true
+                _uiState.update { currentState ->
+                    if (currentState.price.data.isBlank()) {
+                        currentState.copy(price = Field.Loaded("%.2f".format(0f)))
+                    } else {
+                        val value = currentState.price.data.let { StringHelper.toDoubleOrNull(it) }
+
+                        if (value != null) {
+                            currentState.copy(price = Field.Loaded("%.2f".format(value.plus(0.5f))))
+                        } else currentState
+                    }
+                }
+            }
+            is ModifyItemEvent.DecrementPrice -> {
+                manuallySetPrice = true
+                _uiState.update { currentState ->
+                    if (currentState.price.data.isBlank()) {
+                        currentState.copy(price = Field.Loaded("%.2f".format(0f)))
+                    } else {
+                        val value = currentState.price.data.let { StringHelper.toDoubleOrNull(it) }
+
+                        if (value != null) {
+                            currentState.copy(
+                                price =
+                                    Field.Loaded(
+                                        "%.2f"
+                                            .format(
+                                                if (value > 0.5f) value.minus(0.5f)
+                                                else {
+                                                    0f
+                                                }
+                                            )
+                                    )
+                            )
+                        } else currentState
+                    }
+                }
+            }
+            is ModifyItemEvent.SetQuantity -> {
+                manuallySetQuantity = true
+                if (event.quantity.isBlank()) {
+                    _uiState.update { currentState ->
+                        currentState.copy(quantity = Field.Loaded(String()))
+                    }
+                } else if (RegexHelper.isFloat(event.quantity, 3)) {
+                    _uiState.update { currentState ->
+                        currentState.copy(quantity = Field.Loaded(event.quantity))
+                    }
+                }
+            }
+            is ModifyItemEvent.IncrementQuantity -> {
+                manuallySetQuantity = true
+                _uiState.update { currentState ->
+                    if (currentState.quantity.data.isBlank()) {
+                        currentState.copy(quantity = Field.Loaded("%.3f".format(0f)))
+                    } else {
+                        val value =
+                            currentState.quantity.data.let { StringHelper.toDoubleOrNull(it) }
+
+                        if (value != null) {
+                            currentState.copy(
+                                quantity = Field.Loaded("%.3f".format(value.plus(0.5f)))
+                            )
+                        } else currentState
+                    }
+                }
+            }
+            is ModifyItemEvent.DecrementQuantity -> {
+                manuallySetQuantity = true
+                _uiState.update { currentState ->
+                    if (currentState.quantity.data.isBlank()) {
+                        currentState.copy(quantity = Field.Loaded("%.3f".format(0f)))
+                    } else {
+                        val value =
+                            currentState.quantity.data.let { StringHelper.toDoubleOrNull(it) }
+
+                        if (value != null) {
+                            currentState.copy(
+                                quantity =
+                                    Field.Loaded(
+                                        "%.3f"
+                                            .format(
+                                                if (value > 0.5f) value.minus(0.5f)
+                                                else {
+                                                    0f
+                                                }
+                                            )
+                                    )
+                            )
+                        } else currentState
+                    }
+                }
+            }
+        }
+
+        return ModifyItemEventResult.Success
+    }
+
+    protected fun handleSelectProduct(productId: Long?) =
+        viewModelScope.launch {
+            cancelProductListener()
+            cancelProductVariantListener()
+
+            if (productId == null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedProduct = Field.Loaded(null),
+                        selectedProductVariant = Field.Loaded(null),
+                    )
+                }
+                return@launch
+            }
+
+            val productVariantId = _uiState.value.selectedProductVariant.data?.id
+
+            // loading kinda not necessary here since it only makes a visual glitch, could be ok on
+            // extremely slow devices maybe?
+            // _uiState.update { currentState ->
+            //     currentState.copy(
+            //         selectedProduct = Field.Loading(),
+            //         selectedProductVariant = Field.Loading(),
+            //     )
+            // }
+
+            val newProduct = getProductEntityUseCase(productId).first()
+            val matchingByNameVariant =
+                if (manuallySetProductVariant && newProduct != null && productVariantId != null) {
+                    getProductVariantEntityUseCase(productVariantId).first()?.name?.let {
+                        variantName ->
+                        getProductVariantEntityByProductUseCase(newProduct.id).first().firstOrNull {
+                            it.name == variantName
+                        }
+                    }
+                } else {
+                    null
+                }
+
+            loadLastItemForProductDataIfNotManuallySet(productId)
+
+            if (newProduct == null) {
+                Log.e("ModifyItemViewModel", "Selected null product")
+                manuallySetProductVariant = false
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedProduct = Field.Loaded(null),
+                        selectedProductVariant = Field.Loaded(null),
+                    )
+                }
+            } else if (manuallySetProductVariant && productVariantId == null) {
+                // if variant was manually set and is null we want to preserve it
+                setProductListener(productId)
+                _uiState.update { currentState ->
+                    currentState.copy(selectedProductVariant = Field.Loaded(null))
+                }
+            } else if (manuallySetProductVariant && matchingByNameVariant != null) {
+                // if variant was manually set and name exists in new product we want to preserve it
+                setProductListener(productId)
+                setProductVariantListener(matchingByNameVariant.id)
+            } else {
+                // else change to last used variant for the product
+                manuallySetProductVariant = false
+                val lastProductVariantId =
+                    getNewestItemEntityByProductUseCase(productId).first()?.productVariantEntityId
+
+                if (lastProductVariantId == null) {
+                    setProductListener(productId)
+                    _uiState.update { currentState ->
+                        currentState.copy(selectedProductVariant = Field.Loaded(null))
+                    }
+                } else {
+                    setProductListener(productId)
+                    setProductVariantListener(lastProductVariantId)
+                }
+            }
+        }
+
+    protected fun handleSelectProductVariant(productVariantId: Long?) {
+        manuallySetProductVariant = true
+        setProductVariantListener(productVariantId)
+    }
+
+    protected suspend fun loadLastItemForProductDataIfNotManuallySet(productId: Long) {
+        if (manuallySetPrice && manuallySetQuantity) return
+
+        getNewestItemEntityByProductUseCase(productId).first()?.let { item ->
+            if (!manuallySetPrice && !manuallySetQuantity) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        price = Field.Loaded("%.2f".format(item.actualPrice())),
+                        quantity = Field.Loaded("%.3f".format(item.actualQuantity())),
+                    )
+                }
+                return@let
+            }
+
+            if (!manuallySetPrice) {
+                _uiState.update { currentState ->
+                    currentState.copy(price = Field.Loaded("%.2f".format(item.actualPrice())))
+                }
+                return@let
+            }
+
+            if (!manuallySetQuantity) {
+                _uiState.update { currentState ->
+                    currentState.copy(quantity = Field.Loaded("%.3f".format(item.actualQuantity())))
+                }
+
+                return@let
+            }
+        }
+    }
+
+    protected fun cancelProductListener() {
+        _productListener?.cancel()
+        _uiState.update { currentState ->
+            currentState.copy(allProductVariants = emptyImmutableList())
+        }
+    }
+
+    protected fun setProductListener(productId: Long?) {
+        cancelProductListener()
+        if (productId == null) {
+            _uiState.update { currentState ->
+                cancelProductVariantListener()
+                currentState.copy(
+                    selectedProduct = Field.Loaded(null),
+                    selectedProductVariant = Field.Loaded(null),
+                )
+            }
+            return
+        }
+
+        _productListener =
+            viewModelScope.launch {
+                viewModelScope.launch {
+                    getProductVariantEntityByProductUseCase(productId).collectLatest {
+                        _uiState.update { currentState ->
+                            currentState.copy(allProductVariants = it)
+                        }
+                    }
+                }
+
+                viewModelScope.launch {
+                    getProductEntityUseCase(productId).collectLatest {
+                        _uiState.update { currentState ->
+                            if (it == null) {
+                                // null product entity means it was deleted, so we want to remove
+                                // the variant too
+                                cancelProductVariantListener()
+                                currentState.copy(
+                                    selectedProduct = Field.Loaded(null),
+                                    selectedProductVariant = Field.Loaded(null),
+                                )
+                            } else {
+                                currentState.copy(selectedProduct = Field.Loaded(it))
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
+    protected fun cancelProductVariantListener() {
+        _productVariantListener?.cancel()
+    }
+
+    protected fun setProductVariantListener(productVariantId: Long?) {
+        cancelProductVariantListener()
+        if (productVariantId == null) {
+            _uiState.update { currentState ->
+                currentState.copy(selectedProductVariant = Field.Loaded(null))
+            }
+            return
+        }
+
+        _productVariantListener =
+            viewModelScope.launch {
+                getProductVariantEntityUseCase(productVariantId).collectLatest {
+                    _uiState.update { currentState ->
+                        currentState.copy(selectedProductVariant = Field.Loaded(it))
+                    }
+                }
+            }
     }
 }

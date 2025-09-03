@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.search.start
 
-
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Box
@@ -20,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.search.component.SearchItem
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 /**
  * @param onProductClick Callback called when product item is clicked
@@ -45,6 +44,7 @@ internal fun StartScreen(
 
 /**
  * [StartScreen] content
+ *
  * @param onProductClick Callback called when product item is clicked
  * @param onCategoryClick Callback called when category item is clicked
  * @param onShopClick Callback called when shop item is clicked
@@ -57,16 +57,8 @@ private fun StartScreenContent(
     onShopClick: () -> Unit,
     onProducerClick: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Column(
-            modifier = Modifier
-                .width(600.dp)
-                .align(Alignment.BottomCenter)
-        ) {
+    Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Column(modifier = Modifier.width(600.dp).align(Alignment.BottomCenter)) {
             SearchItem(
                 text = stringResource(id = R.string.item_product_producer),
                 onItemClick = onProducerClick,
@@ -74,10 +66,7 @@ private fun StartScreenContent(
 
             HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer)
 
-            SearchItem(
-                text = stringResource(id = R.string.item_shop),
-                onItemClick = onShopClick,
-            )
+            SearchItem(text = stringResource(id = R.string.item_shop), onItemClick = onShopClick)
 
             HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer)
 
@@ -96,21 +85,11 @@ private fun StartScreenContent(
     }
 }
 
-@Preview(
-    group = "StartScreen",
-    name = "Dark",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    group = "StartScreen",
-    name = "Light",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@Preview(group = "StartScreen", name = "Dark", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(group = "StartScreen", name = "Light", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 private fun StartScreenPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             StartScreenContent(
                 onProductClick = {},

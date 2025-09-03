@@ -2,150 +2,181 @@ package com.kssidll.arru.ui.screen.modify.transaction.edittransaction
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
-import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.DeleteResult
-import com.kssidll.arru.data.repository.TransactionBasketRepositorySource.Companion.UpdateResult
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.DeleteTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.DeleteTransactionEntityUseCaseResult
+import com.kssidll.arru.domain.usecase.data.GetAllShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.UpdateTransactionEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEvent
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEventResult
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @HiltViewModel
-class EditTransactionViewModel @Inject constructor(
-    private val transactionRepository: TransactionBasketRepositorySource,
-    override val shopRepository: ShopRepositorySource
-): ModifyTransactionViewModel() {
-    private var mTransaction: TransactionBasket? = null
-
-    /**
-     * Updates data in the screen state
-     * @return true if provided [transactionId] was valid, false otherwise
-     */
-    suspend fun updateState(transactionId: Long) = viewModelScope.async {
-        // skip state update for repeating transactionId
-        if (transactionId == mTransaction?.id) return@async true
-
-        screenState.allToLoading()
-
-        mTransaction = transactionRepository.get(transactionId)
-
-        updateStateForTransaction(mTransaction)
-
-        return@async mTransaction != null
-    }
-        .await()
-
-    private suspend fun updateStateForTransaction(
-        transaction: TransactionBasket?
-    ) {
-        val shop: Shop? = transaction?.shopId?.let { shopRepository.get(it) }
-
-        screenState.date.apply {
-            value = Field.Loaded(transaction?.date)
-        }
-
-        screenState.totalCost.apply {
-            value = Field.Loaded(
-                transaction?.actualTotalCost()
-                    ?.toString()
-            )
-        }
-
-        screenState.selectedShop.apply {
-            value = Field.Loaded(shop)
-        }
-
-        screenState.note.apply {
-            value = Field.Loaded(transaction?.note)
-        }
+class EditTransactionViewModel
+@Inject
+constructor(
+    private val getTransactionEntityUseCase: GetTransactionEntityUseCase,
+    private val updateTransactionEntityUseCase: UpdateTransactionEntityUseCase,
+    private val deleteTransactionEntityUseCase: DeleteTransactionEntityUseCase,
+    override val getAllShopEntityUseCase: GetAllShopEntityUseCase,
+    override val getShopEntityUseCase: GetShopEntityUseCase,
+) : ModifyTransactionViewModel() {
+    suspend fun checkExists(id: Long): Boolean {
+        return getTransactionEntityUseCase(id).first() != null
     }
 
-    /**
-     * Tries to update transaction with provided [transactionId] with current state data
-     * @return resulting [UpdateResult]
-     */
-    suspend fun updateTransaction(transactionId: Long) = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
+    fun updateState(transactionId: Long) =
+        viewModelScope.launch {
+            val state = uiState.value
+            // skip state update for repeating transactionId
+            if (transactionId == state.currentTransaction?.id) return@launch
 
-        val result = transactionRepository.update(
-            transactionId = transactionId,
-            date = screenState.date.value.data ?: TransactionBasket.INVALID_DATE,
-            totalCost = screenState.totalCost.value.data?.let {
-                TransactionBasket.totalCostFromString(
-                    it
+            _uiState.update { currentState ->
+                currentState.copy(
+                    date = currentState.date.toLoading(),
+                    totalCost = currentState.totalCost.toLoading(),
+                    note = currentState.note.toLoading(),
+                    selectedShop = currentState.selectedShop.toLoading(),
                 )
             }
-                ?: TransactionBasket.INVALID_TOTAL_COST,
-            shopId = screenState.selectedShop.value.data?.id,
-            note = screenState.note.value.data?.trim()
-        )
 
-        if (result.isError()) {
-            when (result.error!!) {
-                UpdateResult.InvalidId -> {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to update transaction with invalid transaction id in EditTransactionViewModel"
-                    )
-                    return@async UpdateResult.Success
-                }
+            val transaction = getTransactionEntityUseCase(transactionId).first()
+            val shop = transaction?.shopEntityId?.let { getShopEntityUseCase(it).first() }
 
-                UpdateResult.InvalidDate -> {
-                    screenState.date.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
-
-                UpdateResult.InvalidTotalCost -> {
-                    screenState.totalCost.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
-
-                UpdateResult.InvalidShopId -> {
-                    screenState.selectedShop.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    date = Field.Loaded(transaction?.date),
+                    totalCost = Field.Loaded(transaction?.actualTotalCost()?.toString().orEmpty()),
+                    note = Field.Loaded(transaction?.note),
+                    selectedShop = Field.Loaded(shop),
+                    currentTransaction = transaction,
+                )
             }
         }
 
-        return@async result
+    init {
+        init()
+        _uiState.update { currentState -> currentState.copy(isDeleteEnabled = true) }
     }
-        .await()
 
-    /**
-     * Tries to delete transaction with provided [transactionId]
-     * @return resulting [DeleteResult]
-     */
-    suspend fun deleteTransaction(transactionId: Long) = viewModelScope.async {
-        val result = transactionRepository.delete(
-            transactionId,
-            screenState.deleteWarningConfirmed.value
-        )
+    override suspend fun handleEvent(event: ModifyTransactionEvent): ModifyTransactionEventResult {
+        return when (event) {
+            is ModifyTransactionEvent.Submit -> {
+                val state = uiState.value
+                val result =
+                    state.currentTransaction?.let { transaction ->
+                        updateTransactionEntityUseCase(
+                            id = transaction.id,
+                            date = state.date.data,
+                            totalCost = state.totalCost.data,
+                            note = state.note.data,
+                            shopId = state.selectedShop.data?.id,
+                        )
+                    } ?: return ModifyTransactionEventResult.Failure
 
-        if (result.isError()) {
-            when (result.error!!) {
-                DeleteResult.InvalidId -> {
-                    Log.e(
-                        "InvalidId",
-                        "Tried to delete transaction with invalid transaction id in EditTransactionViewModel"
-                    )
-                    return@async DeleteResult.Success
-                }
+                when (result) {
+                    is UpdateTransactionEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                UpdateTransactionEntityUseCaseResult.TransactionIdInvalid -> {
+                                    Log.e(
+                                        "ModifyTransaction",
+                                        "Update invalid transaction `${state.currentTransaction.id}`",
+                                    )
+                                }
+                                UpdateTransactionEntityUseCaseResult.DateNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            date =
+                                                currentState.date.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
+                                UpdateTransactionEntityUseCaseResult.ShopIdInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedShop =
+                                                currentState.selectedShop.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateTransactionEntityUseCaseResult.TotalCostInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            totalCost =
+                                                currentState.totalCost.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                UpdateTransactionEntityUseCaseResult.TotalCostNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            totalCost =
+                                                currentState.totalCost.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        }
 
-                DeleteResult.DangerousDelete -> {
-                    screenState.showDeleteWarning.value = true
+                        ModifyTransactionEventResult.Failure
+                    }
+                    is UpdateTransactionEntityUseCaseResult.Success -> {
+                        ModifyTransactionEventResult.SuccessUpdate
+                    }
                 }
             }
-        }
+            is ModifyTransactionEvent.DeleteTransaction -> {
+                val state = uiState.value
+                val result =
+                    state.currentTransaction?.let { transaction ->
+                        deleteTransactionEntityUseCase(
+                            id = transaction.id,
+                            ignoreDangerous = state.isDangerousDeleteDialogConfirmed,
+                        )
+                    } ?: return ModifyTransactionEventResult.Failure
 
-        return@async result
+                when (result) {
+                    is DeleteTransactionEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                DeleteTransactionEntityUseCaseResult.TransactionIdInvalid -> {
+                                    Log.e(
+                                        "ModifyTransaction",
+                                        "Delete invalid transaction `${state.currentTransaction.id}`",
+                                    )
+                                }
+                                DeleteTransactionEntityUseCaseResult.DangerousDelete -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(isDangerousDeleteDialogVisible = true)
+                                    }
+                                }
+                            }
+                        }
+
+                        ModifyTransactionEventResult.Failure
+                    }
+                    is DeleteTransactionEntityUseCaseResult.Success -> {
+                        ModifyTransactionEventResult.SuccessDelete
+                    }
+                }
+            }
+            else -> super.handleEvent(event)
+        }
     }
-        .await()
 }

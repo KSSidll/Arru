@@ -1,106 +1,122 @@
 package com.kssidll.arru.ui.screen.modify.product.editproduct
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.Data
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEvent
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEventResult
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductScreenImpl
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 @Composable
 fun EditProductRoute(
     productId: Long,
-    navigateBack: () -> Unit,
-    navigateBackDelete: () -> Unit,
-    navigateCategoryAdd: (query: String?) -> Unit,
-    navigateProducerAdd: (query: String?) -> Unit,
-    navigateCategoryEdit: (categoryId: Long) -> Unit,
-    navigateProducerEdit: (producerId: Long) -> Unit,
+    navigateBack: (productId: Long?) -> Unit,
+    navigateAddProductCategory: (query: String?) -> Unit,
+    navigateAddProductProducer: (query: String?) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     providedProducerId: Long?,
     providedCategoryId: Long?,
+    viewModel: EditProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
+    val navigateBackLock = remember { Mutex() }
 
-    val viewModel: EditProductViewModel = hiltViewModel()
-
-    LaunchedEffect(productId) {
-        if (!viewModel.updateState(productId)) {
-            navigateBack()
+    SideEffect {
+        scope.launch {
+            if (!viewModel.checkExists(productId) && !navigateBackLock.isLocked) {
+                navigateBackLock.tryLock()
+                navigateBack(null)
+            }
         }
     }
 
+    LaunchedEffect(productId) { viewModel.updateState(productId) }
+
     LaunchedEffect(providedProducerId) {
-        viewModel.setSelectedProducer(providedProducerId)
+        viewModel.handleEvent(ModifyProductEvent.SelectProductProducer(providedProducerId))
     }
 
     LaunchedEffect(providedCategoryId) {
-        viewModel.setSelectedCategory(providedCategoryId)
+        viewModel.handleEvent(ModifyProductEvent.SelectProductCategory(providedCategoryId))
     }
 
     ModifyProductScreenImpl(
-        onBack = navigateBack,
-        state = viewModel.screenState,
-        categories = viewModel.allCategories()
-            .collectAsState(initial = Data.Loading()).value,
-        producers = viewModel.allProducers()
-            .collectAsState(initial = Data.Loading()).value,
-        onNewProducerSelected = {
-            viewModel.onNewProducerSelected(it)
-        },
-        onNewCategorySelected = {
-            viewModel.onNewCategorySelected(it)
-        },
-        onSubmit = {
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onEvent = { event ->
             scope.launch {
-                if (viewModel.updateProduct(productId)
-                        .isNotError()
-                ) {
-                    navigateBack()
+                when (event) {
+                    is ModifyProductEvent.DeleteProduct -> {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyProductEventResult.SuccessDelete &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(null)
+                        }
+                    }
+                    is ModifyProductEvent.MergeProduct -> {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyProductEventResult.SuccessMerge &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(result.id)
+                        }
+                    }
+                    is ModifyProductEvent.NavigateAddProductCategory ->
+                        navigateAddProductCategory(event.name)
+                    is ModifyProductEvent.NavigateAddProductProducer ->
+                        navigateAddProductProducer(event.name)
+                    is ModifyProductEvent.NavigateBack -> {
+                        if (!navigateBackLock.isLocked) {
+                            navigateBackLock.tryLock()
+                            navigateBack(productId)
+                        }
+                    }
+                    is ModifyProductEvent.NavigateEditProductCategory ->
+                        navigateEditProductCategory(event.productCategoryId)
+                    is ModifyProductEvent.NavigateEditProductProducer ->
+                        navigateEditProductProducer(event.productProducerId)
+                    is ModifyProductEvent.SelectMergeCandidate -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SelectProductCategory -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SelectProductProducer -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetDangerousDeleteDialogConfirmation ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetDangerousDeleteDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetMergeConfirmationDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetMergeSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetName -> viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetProductCategorySearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.SetProductProducerSearchDialogVisibility ->
+                        viewModel.handleEvent(event)
+                    is ModifyProductEvent.Submit -> {
+                        val result = viewModel.handleEvent(event)
+                        if (
+                            result is ModifyProductEventResult.SuccessUpdate &&
+                                !navigateBackLock.isLocked
+                        ) {
+                            navigateBackLock.tryLock()
+                            navigateBack(productId)
+                        }
+                    }
                 }
             }
-        },
-        onDelete = {
-            scope.launch {
-                if (viewModel.deleteProduct(productId)
-                        .isNotError()
-                ) {
-                    navigateBackDelete()
-                }
-            }
-        },
-        onMerge = {
-            scope.launch {
-                if (viewModel.mergeWith(it)
-                        .isNotError()
-                ) {
-                    navigateBackDelete()
-                }
-            }
-        },
-        mergeCandidates = viewModel.allMergeCandidates(productId),
-        mergeConfirmMessageTemplate = stringResource(id = R.string.merge_action_message_template)
-            .replace(
-                "{value_1}",
-                viewModel.mergeMessageProductName
-            ),
-
-        chosenMergeCandidate = viewModel.chosenMergeCandidate.value,
-        onChosenMergeCandidateChange = {
-            viewModel.chosenMergeCandidate.apply { value = it }
-        },
-        showMergeConfirmDialog = viewModel.showMergeConfirmDialog.value,
-        onShowMergeConfirmDialogChange = {
-            viewModel.showMergeConfirmDialog.apply { value = it }
         },
         submitButtonText = stringResource(id = R.string.item_product_edit),
-        onCategoryAddButtonClick = navigateCategoryAdd,
-        onProducerAddButtonClick = navigateProducerAdd,
-        onItemCategoryLongClick = navigateCategoryEdit,
-        onItemProducerLongClick = navigateProducerEdit,
     )
 }

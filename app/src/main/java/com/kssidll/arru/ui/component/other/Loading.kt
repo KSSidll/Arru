@@ -12,19 +12,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.ui.theme.ArrugarqTheme
+import com.kssidll.arru.ui.theme.ArruTheme
 
 @Composable
-fun Loading() {
+fun Loading(modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         CircularProgressIndicator(
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(150.dp),
-            strokeWidth = 12.dp
+            strokeWidth = 12.dp,
         )
     }
 }
@@ -32,9 +32,5 @@ fun Loading() {
 @PreviewLightDark
 @Composable
 private fun LoadingPreview() {
-    ArrugarqTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Loading()
-        }
-    }
+    ArruTheme { Surface(modifier = Modifier.fillMaxSize()) { Loading() } }
 }

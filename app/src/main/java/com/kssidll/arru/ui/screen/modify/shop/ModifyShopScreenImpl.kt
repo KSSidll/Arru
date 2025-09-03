@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.modify.shop
 
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,117 +17,87 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kssidll.arru.PreviewExpanded
+import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.domain.data.Data
-import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
 import com.kssidll.arru.ui.screen.modify.ModifyScreen
-import com.kssidll.arru.ui.theme.ArrugarqTheme
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.kssidll.arru.ui.theme.ArruTheme
+import kotlinx.collections.immutable.toImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
-/**
- * [ModifyScreen] implementation for [Shop]
- * @param onBack Called to request a back navigation, isn't triggered by other events like submission or deletion
- * @param state [ModifyShopScreenState] instance representing the screen state
- * @param onSubmit Callback called when the submit action is triggered
- * @param onDelete Callback called when the delete action is triggered, in case of very destructive actions, should check if delete warning is confirmed, and if not, trigger a delete warning dialog via showDeleteWarning parameter as none of those are handled internally by the component, setting to null removes the delete option
- * @param onMerge Callback called when the merge action is triggered. Provides merge candidate as parameter. Setting to null will hide merge action
- * @param mergeCandidates List of potential candidates for merge operation
- * @param mergeConfirmMessageTemplate Template of a message to show in merge operation confirmation dialog, {value_2} will be replaced with name of merge candidate
- * @param chosenMergeCandidate Currently chosen merge candidate if any
- * @param onChosenMergeCandidateChange Callback called when the [chosenMergeCandidate] should change. Provides candidate as Parameter
- * @param showMergeConfirmDialog Whether to show the merge confirmation dialog
- * @param onShowMergeConfirmDialogChange Callback called when the [showMergeConfirmDialog] flag should change. Provides new flag value as parameter
- * @param submitButtonText Text displayed in the submit button, defaults to shop add string resource
- */
 @Composable
 fun ModifyShopScreenImpl(
-    onBack: () -> Unit,
-    state: ModifyShopScreenState,
-    onSubmit: () -> Unit,
-    onDelete: (() -> Unit)? = null,
-    onMerge: ((candidate: Shop) -> Unit)? = null,
-    mergeCandidates: Flow<Data<ImmutableList<Shop>>> = flowOf(),
-    mergeConfirmMessageTemplate: String = String(),
-    chosenMergeCandidate: Shop? = null,
-    onChosenMergeCandidateChange: ((Shop?) -> Unit)? = null,
-    showMergeConfirmDialog: Boolean = false,
-    onShowMergeConfirmDialogChange: ((Boolean) -> Unit)? = null,
+    uiState: ModifyShopUiState,
+    onEvent: (event: ModifyShopEvent) -> Unit,
+    modifier: Modifier = Modifier,
     submitButtonText: String = stringResource(id = R.string.item_shop_add),
 ) {
+    val mergeCandidates =
+        uiState.allShops.filterNot { it.id == uiState.currentShop?.id }.toImmutableList()
+
     ModifyScreen(
-        onBack = onBack,
+        onBack = { onEvent(ModifyShopEvent.NavigateBack) },
         title = stringResource(id = R.string.item_shop),
-        onSubmit = onSubmit,
-        onDelete = onDelete,
-        onMerge = onMerge,
-        mergeCandidates = mergeCandidates,
-        mergeCandidatesTextTransformation = { it.name },
-        mergeConfirmMessageTemplate = mergeConfirmMessageTemplate,
-        chosenMergeCandidate = chosenMergeCandidate,
-        onChosenMergeCandidateChange = onChosenMergeCandidateChange,
-        showMergeConfirmDialog = showMergeConfirmDialog,
-        onShowMergeConfirmDialogChange = onShowMergeConfirmDialogChange,
+        onSubmit = { onEvent(ModifyShopEvent.Submit) },
         submitButtonText = submitButtonText,
-        showDeleteWarning = state.showDeleteWarning,
-        deleteWarningConfirmed = state.deleteWarningConfirmed,
-        deleteWarningMessage = stringResource(id = R.string.item_shop_delete_warning_text)
+        onDelete = { onEvent(ModifyShopEvent.DeleteShop) },
+        isDeleteVisible = uiState.isDeleteEnabled,
+        isDeleteWarningMessageVisible = uiState.isDangerousDeleteDialogVisible,
+        onDeleteWarningMessageVisibleChange = {
+            onEvent(ModifyShopEvent.SetDangerousDeleteDialogVisibility(it))
+        },
+        deleteWarningMessage = stringResource(id = R.string.item_shop_delete_warning_text),
+        isDeleteWarningConfirmed = uiState.isDangerousDeleteDialogConfirmed,
+        onDeleteWarningConfirmedChange = {
+            onEvent(ModifyShopEvent.SetDangerousDeleteDialogConfirmation(it))
+        },
+        onMerge = { onEvent(ModifyShopEvent.MergeShop(uiState.selectedMergeCandidate)) },
+        isMergeVisible = uiState.isMergeEnabled && mergeCandidates.isNotEmpty(),
+        isMergeSearchDialogVisible = uiState.isMergeSearchDialogVisible,
+        onMergeSearchDialogVisibleChange = {
+            onEvent(ModifyShopEvent.SetMergeSearchDialogVisibility(it))
+        },
+        mergeSearchDialogCandidateTextTransformation = { it.name },
+        isMergeConfirmVisible = uiState.isMergeConfirmationDialogVisible,
+        onMergeConfirmVisibleChange = {
+            onEvent(ModifyShopEvent.SetMergeConfirmationDialogVisibility(it))
+        },
+        mergeConfirmMessage =
+            stringResource(R.string.merge_action_message_template)
+                .replace("{value_2}", uiState.selectedMergeCandidate?.name ?: "???")
+                .replace("{value_1}", uiState.currentShop?.name ?: "???"),
+        mergeCandidates = mergeCandidates,
+        onChosenMergeCandidateChange = { onEvent(ModifyShopEvent.SelectMergeCandidate(it)) },
+        modifier = modifier,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.widthIn(max = 500.dp)
+            modifier = Modifier.widthIn(max = 500.dp),
         ) {
             StyledOutlinedTextField(
-                enabled = state.name.value.isEnabled(),
+                enabled = uiState.name.isLoading(),
                 singleLine = true,
-                value = state.name.value.data ?: String(),
-                onValueChange = {
-                    state.name.value = Field.Loaded(it)
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        onSubmit()
-                    }
-                ),
-                label = {
-                    Text(
-                        text = stringResource(R.string.item_shop),
-                    )
-                },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.name.value.error?.ErrorText()
-                    }
-                },
-                isError = if (state.attemptedToSubmit.value) state.name.value.isError() else false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = ItemHorizontalPadding)
+                value = uiState.name.data,
+                onValueChange = { onEvent(ModifyShopEvent.SetName(it)) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onEvent(ModifyShopEvent.Submit) }),
+                label = { Text(text = stringResource(R.string.item_shop)) },
+                supportingText = { uiState.name.error?.ErrorText() },
+                isError = uiState.name.isError(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
             )
         }
     }
 }
 
 @PreviewLightDark
-@PreviewExpanded
+@ExpandedPreviews
 @Composable
 private fun ModifyShopScreenImplPreview() {
-    ArrugarqTheme {
+    ArruTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            ModifyShopScreenImpl(
-                onBack = {},
-                state = ModifyShopScreenState(),
-                onSubmit = {},
-            )
+            ModifyShopScreenImpl(uiState = ModifyShopUiState(), onEvent = {})
         }
     }
 }

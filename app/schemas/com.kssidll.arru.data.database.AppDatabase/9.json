@@ -1,0 +1,458 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 9,
+    "identityHash": "baa35614d39fe3416a4d2e04eae243ee",
+    "entities": [
+      {
+        "tableName": "TransactionEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `shopEntityId` INTEGER, `totalCost` INTEGER NOT NULL, `note` TEXT, FOREIGN KEY(`shopEntityId`) REFERENCES `ShopEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shopEntityId",
+            "columnName": "shopEntityId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "totalCost",
+            "columnName": "totalCost",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TransactionEntity_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionEntity_date` ON `${TABLE_NAME}` (`date`)"
+          },
+          {
+            "name": "index_TransactionEntity_shopEntityId",
+            "unique": false,
+            "columnNames": [
+              "shopEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionEntity_shopEntityId` ON `${TABLE_NAME}` (`shopEntityId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ShopEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "shopEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ItemEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transactionEntityId` INTEGER NOT NULL, `productEntityId` INTEGER NOT NULL, `productVariantEntityId` INTEGER, `quantity` INTEGER NOT NULL, `price` INTEGER NOT NULL, FOREIGN KEY(`transactionEntityId`) REFERENCES `TransactionEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`productEntityId`) REFERENCES `ProductEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`productVariantEntityId`) REFERENCES `ProductVariantEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transactionEntityId",
+            "columnName": "transactionEntityId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productEntityId",
+            "columnName": "productEntityId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productVariantEntityId",
+            "columnName": "productVariantEntityId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ItemEntity_transactionEntityId",
+            "unique": false,
+            "columnNames": [
+              "transactionEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemEntity_transactionEntityId` ON `${TABLE_NAME}` (`transactionEntityId`)"
+          },
+          {
+            "name": "index_ItemEntity_productEntityId",
+            "unique": false,
+            "columnNames": [
+              "productEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemEntity_productEntityId` ON `${TABLE_NAME}` (`productEntityId`)"
+          },
+          {
+            "name": "index_ItemEntity_productVariantEntityId",
+            "unique": false,
+            "columnNames": [
+              "productVariantEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemEntity_productVariantEntityId` ON `${TABLE_NAME}` (`productVariantEntityId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TransactionEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "transactionEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "ProductEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "productEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "ProductVariantEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "productVariantEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ProductEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productCategoryEntityId` INTEGER NOT NULL, `productProducerEntityId` INTEGER, `name` TEXT NOT NULL, FOREIGN KEY(`productCategoryEntityId`) REFERENCES `ProductCategoryEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , FOREIGN KEY(`productProducerEntityId`) REFERENCES `ProductProducerEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productCategoryEntityId",
+            "columnName": "productCategoryEntityId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productProducerEntityId",
+            "columnName": "productProducerEntityId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProductEntity_productCategoryEntityId",
+            "unique": false,
+            "columnNames": [
+              "productCategoryEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductEntity_productCategoryEntityId` ON `${TABLE_NAME}` (`productCategoryEntityId`)"
+          },
+          {
+            "name": "index_ProductEntity_productProducerEntityId",
+            "unique": false,
+            "columnNames": [
+              "productProducerEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductEntity_productProducerEntityId` ON `${TABLE_NAME}` (`productProducerEntityId`)"
+          },
+          {
+            "name": "index_ProductEntity_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductEntity_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ProductCategoryEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "productCategoryEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "ProductProducerEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "productProducerEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ProductVariantEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productEntityId` INTEGER, `name` TEXT NOT NULL, FOREIGN KEY(`productEntityId`) REFERENCES `ProductEntity`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productEntityId",
+            "columnName": "productEntityId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProductVariantEntity_productEntityId",
+            "unique": false,
+            "columnNames": [
+              "productEntityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductVariantEntity_productEntityId` ON `${TABLE_NAME}` (`productEntityId`)"
+          },
+          {
+            "name": "index_ProductVariantEntity_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductVariantEntity_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ProductEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "productEntityId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ProductCategoryEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProductCategoryEntity_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductCategoryEntity_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ]
+      },
+      {
+        "tableName": "ShopEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ShopEntity_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ShopEntity_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ]
+      },
+      {
+        "tableName": "ProductProducerEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProductProducerEntity_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductProducerEntity_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ]
+      }
+    ],
+    "views": [
+      {
+        "viewName": "ItemView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    ItemEntity.id               AS id,\n    ProductEntity.id            AS productId,\n    productCategoryEntity.id    AS productCategoryId,\n    productProducerEntity.id    AS productProducerId,\n    productVariantEntity.id     AS productVariantId,\n    TransactionEntity.id        AS transactionId,\n    ShopEntity.id               AS shopId,\n    ItemEntity.quantity         AS quantity,\n    ItemEntity.price            AS price,\n    TransactionEntity.date      AS date,\n    ProductEntity.name          AS productName,\n    ProductVariantEntity.name   AS productVariantName,\n    ProductCategoryEntity.name  AS productCategoryName,\n    ProductProducerEntity.name  AS productProducerName,\n    ShopEntity.name             AS shopName\nFROM ItemEntity\nLEFT JOIN ProductEntity         ON ProductEntity.id         = ItemEntity.productEntityId\nLEFT JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId\nLEFT JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId\nLEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId\nLEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId \nLEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId\nORDER BY id DESC"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'baa35614d39fe3416a4d2e04eae243ee')"
+    ]
+  }
+}

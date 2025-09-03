@@ -5,95 +5,81 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.kssidll.arru.data.data.Item
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.data.ProductCategory
-import com.kssidll.arru.data.data.ProductProducer
-import com.kssidll.arru.data.data.ProductVariant
-import com.kssidll.arru.data.data.Shop
-import com.kssidll.arru.data.data.TransactionBasket
+import com.kssidll.arru.data.data.ItemEntity
+import com.kssidll.arru.data.data.ProductCategoryEntity
+import com.kssidll.arru.data.data.ProductEntity
+import com.kssidll.arru.data.data.ProductProducerEntity
+import com.kssidll.arru.data.data.ProductVariantEntity
+import com.kssidll.arru.data.data.ShopEntity
+import com.kssidll.arru.data.data.TransactionEntity
 
 @Dao
 interface ImportDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertShops(entities: List<Shop>)
+    suspend fun insertShopEntities(entities: List<ShopEntity>)
 
-    @Query("DELETE FROM Shop")
-    suspend fun deleteShops()
-
+    @Query("DELETE FROM ShopEntity") suspend fun deleteShopEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProducers(entities: List<ProductProducer>)
+    suspend fun insertProducerEntities(entities: List<ProductProducerEntity>)
 
-    @Query("DELETE FROM ProductProducer")
-    suspend fun deleteProducers()
-
+    @Query("DELETE FROM ProductProducerEntity") suspend fun deleteProducerEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCategories(entities: List<ProductCategory>)
+    suspend fun insertCategoryEntities(entities: List<ProductCategoryEntity>)
 
-    @Query("DELETE FROM ProductCategory")
-    suspend fun deleteCategories()
-
+    @Query("DELETE FROM ProductCategoryEntity") suspend fun deleteCategoryEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransactions(entities: List<TransactionBasket>)
+    suspend fun insertTransactionEntities(entities: List<TransactionEntity>)
 
-    @Query("DELETE FROM TransactionBasket")
-    suspend fun deleteTransactions()
-
+    @Query("DELETE FROM TransactionEntity") suspend fun deleteTransactionEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProducts(entities: List<Product>)
+    suspend fun insertProductEntities(entities: List<ProductEntity>)
 
-    @Query("DELETE FROM Product")
-    suspend fun deleteProducts()
-
+    @Query("DELETE FROM ProductEntity") suspend fun deleteProductEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertVariants(entities: List<ProductVariant>)
+    suspend fun insertVariantEntities(entities: List<ProductVariantEntity>)
 
-    @Query("DELETE FROM ProductVariant")
-    suspend fun deleteVariants()
-
+    @Query("DELETE FROM ProductVariantEntity") suspend fun deleteVariantEntities()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItems(entities: List<Item>)
+    suspend fun insertItemEntities(entities: List<ItemEntity>)
 
-    @Query("DELETE FROM Item")
-    suspend fun deleteItems()
-
+    @Query("DELETE FROM ItemEntity") suspend fun deleteItemEntities()
 
     @Transaction
     suspend fun deleteAll() {
-        deleteItems()
-        deleteVariants()
-        deleteProducts()
-        deleteTransactions()
-        deleteCategories()
-        deleteProducers()
-        deleteShops()
+        deleteItemEntities()
+        deleteVariantEntities()
+        deleteProductEntities()
+        deleteTransactionEntities()
+        deleteCategoryEntities()
+        deleteProducerEntities()
+        deleteShopEntities()
     }
 
     @Transaction
     suspend fun insertAll(
-        shops: List<Shop>,
-        producers: List<ProductProducer>,
-        categories: List<ProductCategory>,
-        transactions: List<TransactionBasket>,
-        products: List<Product>,
-        variants: List<ProductVariant>,
-        items: List<Item>
+        shopEntities: List<ShopEntity>,
+        producers: List<ProductProducerEntity>,
+        categories: List<ProductCategoryEntity>,
+        transactionEntities: List<TransactionEntity>,
+        productEntities: List<ProductEntity>,
+        variantEntities: List<ProductVariantEntity>,
+        itemEntities: List<ItemEntity>,
     ) {
         deleteAll()
 
-        insertShops(shops)
-        insertProducers(producers)
-        insertCategories(categories)
-        insertTransactions(transactions)
-        insertProducts(products)
-        insertVariants(variants)
-        insertItems(items)
+        insertShopEntities(shopEntities)
+        insertProducerEntities(producers)
+        insertCategoryEntities(categories)
+        insertTransactionEntities(transactionEntities)
+        insertProductEntities(productEntities)
+        insertVariantEntities(variantEntities)
+        insertItemEntities(itemEntities)
     }
 }

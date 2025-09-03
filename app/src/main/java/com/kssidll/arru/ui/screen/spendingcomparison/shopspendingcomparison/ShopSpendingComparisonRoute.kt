@@ -1,52 +1,32 @@
 package com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.spendingcomparison.SpendingComparisonScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun ShopSpendingComparisonRoute(
     navigateBack: () -> Unit,
     year: Int,
     month: Int,
+    viewModel: ShopSpendingComparisonViewModel = hiltViewModel(),
 ) {
-    val viewModel: ShopSpendingComparisonViewModel = hiltViewModel()
+    LaunchedEffect(year) { viewModel.handleEvent(ShopSpendingComparisonEvent.SetYear(year)) }
 
-    val calendar = Calendar.getInstance()
-    calendar.clear()
-    calendar.set(
-        Calendar.MONTH,
-        month - 1
-    ) // calendar has 0 - 11 month indexes
+    LaunchedEffect(month) { viewModel.handleEvent(ShopSpendingComparisonEvent.SetMonth(month)) }
 
-    val formatter = SimpleDateFormat(
-        "LLLL",
-        Locale.getDefault()
-    )
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     SpendingComparisonScreen(
         onBack = navigateBack,
-        title = "${
-            formatter.format(calendar.time)
-                .replaceFirstChar { it.titlecase() }
-        } $year",
-        leftSideItems = viewModel.shopTotalSpentPreviousMonth(
-            year,
-            month
-        )
-            .collectAsState(initial = emptyList()).value,
+        title = uiState.title,
+        leftSideItems = uiState.previousSpent,
         leftSideHeader = stringResource(id = R.string.previous),
-        rightSideItems = viewModel.shopTotalSpentCurrentMonth(
-            year,
-            month
-        )
-            .collectAsState(initial = emptyList()).value,
+        rightSideItems = uiState.currentSpent,
         rightSideHeader = stringResource(id = R.string.current),
     )
 }

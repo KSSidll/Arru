@@ -1,34 +1,28 @@
 package com.kssidll.arru.ui.screen.ranking.shopranking
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.TransactionTotalSpentByShop
 import com.kssidll.arru.ui.screen.ranking.RankingScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ShopRankingRoute(
     navigateBack: () -> Unit,
-    navigateShop: (shopId: Long) -> Unit,
-    navigateShopEdit: (shopId: Long) -> Unit,
+    navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
+    viewModel: ShopRankingViewModel = hiltViewModel(),
 ) {
-    val viewModel: ShopRankingViewModel = hiltViewModel()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     RankingScreen(
         onBack = navigateBack,
         title = stringResource(R.string.shops),
-        data = viewModel.shopTotalSpentFlow()
-            .collectAsState(emptyList<TransactionTotalSpentByShop>().toImmutableList()).value,
-        onItemClick = {
-            navigateShop(it.shop.id)
-        },
+        data = uiState.totalSpentByShop,
+        onItemClick = { navigateDisplayShop(it.shop.id) },
         onItemClickLabel = stringResource(id = R.string.select),
-        onItemLongClick = {
-            navigateShopEdit(it.shop.id)
-        },
+        onItemLongClick = { navigateEditShop(it.shop.id) },
         onItemLongClickLabel = stringResource(id = R.string.edit),
     )
 }

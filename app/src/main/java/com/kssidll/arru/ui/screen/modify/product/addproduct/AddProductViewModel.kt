@@ -1,67 +1,111 @@
 package com.kssidll.arru.ui.screen.modify.product.addproduct
 
-import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.Product
-import com.kssidll.arru.data.repository.CategoryRepositorySource
-import com.kssidll.arru.data.repository.ProducerRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource
-import com.kssidll.arru.data.repository.ProductRepositorySource.Companion.InsertResult
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.GetAllProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetAllProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.InsertProductEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEvent
+import com.kssidll.arru.ui.screen.modify.product.ModifyProductEventResult
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import javax.inject.Inject
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
-class AddProductViewModel @Inject constructor(
-    override val productRepository: ProductRepositorySource,
-    override val categoryRepository: CategoryRepositorySource,
-    override val producerRepository: ProducerRepositorySource,
-): ModifyProductViewModel() {
+class AddProductViewModel
+@Inject
+constructor(
+    private val insertProductEntityUseCase: InsertProductEntityUseCase,
+    override val getAllProductEntityUseCase: GetAllProductEntityUseCase,
+    override val getAllProductCategoryEntityUseCase: GetAllProductCategoryEntityUseCase,
+    override val getAllProductProducerEntityUseCase: GetAllProductProducerEntityUseCase,
+    override val getProductCategoryEntityUseCase: GetProductCategoryEntityUseCase,
+    override val getProductProducerEntityUseCase: GetProductProducerEntityUseCase,
+) : ModifyProductViewModel() {
 
-    /**
-     * Tries to add a product to the repository
-     * @return resulting [InsertResult]
-     */
-    suspend fun addProduct() = viewModelScope.async {
-        screenState.attemptedToSubmit.value = true
+    init {
+        init()
+    }
 
-        val result = productRepository.insert(
-            name = screenState.name.value.data.orEmpty(),
-            categoryId = screenState.selectedProductCategory.value.data?.id
-                ?: Product.INVALID_CATEGORY_ID,
-            producerId = screenState.selectedProductProducer.value.data?.id
-        )
+    override suspend fun handleEvent(event: ModifyProductEvent): ModifyProductEventResult {
+        return when (event) {
+            is ModifyProductEvent.Submit -> {
+                val state = uiState.value
 
-        if (result.isError()) {
-            when (result.error!!) {
-                InsertResult.InvalidName -> {
-                    screenState.name.apply {
-                        value = value.toError(FieldError.InvalidValueError)
+                val result =
+                    insertProductEntityUseCase(
+                        name = state.name.data,
+                        productProducerEntityId = state.selectedProductProducer.data?.id,
+                        productCategoryEntityId = state.selectedProductCategory.data?.id,
+                    )
+
+                when (result) {
+                    is InsertProductEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                InsertProductEntityUseCaseResult.NameDuplicateValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            name =
+                                                currentState.name.toError(
+                                                    FieldError.DuplicateValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertProductEntityUseCaseResult.NameNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            name =
+                                                currentState.name.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
+                                InsertProductEntityUseCaseResult.ProductCategoryIdInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductCategory =
+                                                currentState.selectedProductCategory.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertProductEntityUseCaseResult.ProductCategoryNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductCategory =
+                                                currentState.selectedProductCategory.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertProductEntityUseCaseResult.ProductProducerIdInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedProductProducer =
+                                                currentState.selectedProductProducer.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        ModifyProductEventResult.Failure
                     }
-                }
-
-                InsertResult.DuplicateName -> {
-                    screenState.name.apply {
-                        value = value.toError(FieldError.DuplicateValueError)
-                    }
-                }
-
-                InsertResult.InvalidCategoryId -> {
-                    screenState.selectedProductCategory.apply {
-                        value = value.toError(FieldError.InvalidValueError)
-                    }
-                }
-
-                InsertResult.InvalidProducerId -> {
-                    screenState.selectedProductProducer.apply {
-                        value = value.toError(FieldError.InvalidValueError)
+                    is InsertProductEntityUseCaseResult.Success -> {
+                        ModifyProductEventResult.SuccessInsert(result.id)
                     }
                 }
             }
+            else -> super.handleEvent(event)
         }
-
-        return@async result
     }
-        .await()
 }

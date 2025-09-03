@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.screen.settings
 
-
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -35,24 +34,23 @@ import com.kssidll.arru.helper.getReadablePathFromUri
 import com.kssidll.arru.service.PersistentNotificationService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Locale
-import javax.inject.Inject
 
 data class SettingsUiState(
     val exportType: AppPreferences.Export.Type.Values? = null,
     val exportUri: Uri? = null,
     val theme: AppPreferences.Theme.ColorScheme.Values? = null,
     val isInDynamicColor: Boolean = false,
-    val currencyFormatLocale: Locale? = null,
+    val currencyFormatLocale: Locale = Locale.getDefault(),
+    val currencyFormatLocaleSetToDefault: Boolean = true,
     val databaseLocation: AppPreferences.Database.Location.Values? = null,
-
     val persistentNotificationEnabled: Boolean = false,
-
     val databaseLocationChangeFailedError: Boolean = false,
     val databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible: Boolean = false,
     val databaseLocationChangeShowExtremeDangerActionConfirmed: Boolean = false,
@@ -65,78 +63,77 @@ data class SettingsUiState(
 }
 
 sealed class SettingsEvent {
-    data object NavigateBack: SettingsEvent()
-    data object NavigateBackups: SettingsEvent()
-    data object ExportData: SettingsEvent()
-    data object ImportData: SettingsEvent()
-    data class SetExportType(val newExportType: AppPreferences.Export.Type.Values): SettingsEvent()
-    data object SetExportUri: SettingsEvent()
-    data class SetTheme(val newTheme: AppPreferences.Theme.ColorScheme.Values): SettingsEvent()
+    data object NavigateBack : SettingsEvent()
 
-    @RequiresApi(31)
-    data class SetDynamicColor(val newDynamicColor: Boolean): SettingsEvent()
-    data class SetCurrencyFormatLocale(val newCurrencyFormatLocale: Locale?): SettingsEvent()
-    data class SetLocale(val newLocale: AppLocale?): SettingsEvent()
+    data object NavigateBackups : SettingsEvent()
+
+    data object ExportData : SettingsEvent()
+
+    data object ImportData : SettingsEvent()
+
+    data class SetExportType(val newExportType: AppPreferences.Export.Type.Values) :
+        SettingsEvent()
+
+    data object SetExportUri : SettingsEvent()
+
+    data class SetTheme(val newTheme: AppPreferences.Theme.ColorScheme.Values) : SettingsEvent()
+
+    @RequiresApi(31) data class SetDynamicColor(val newDynamicColor: Boolean) : SettingsEvent()
+
+    data class SetCurrencyFormatLocale(val newCurrencyFormatLocale: Locale?) : SettingsEvent()
+
+    data class SetLocale(val newLocale: AppLocale?) : SettingsEvent()
 
     @RequiresApi(30)
-    data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values): SettingsEvent()
-    data object DismissDatabaseLocationChangeError: SettingsEvent()
-    data object CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog: SettingsEvent()
-    data object ConfirmDatabaseLocationChangeExtremeDangerAction: SettingsEvent()
+    data class SetDatabaseLocation(val newLocation: AppPreferences.Database.Location.Values) :
+        SettingsEvent()
 
-    data object TogglePersistentNotification: SettingsEvent()
-    data object ToggleAdvancedSettingsVisibility: SettingsEvent()
+    data object DismissDatabaseLocationChangeError : SettingsEvent()
+
+    data object CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog : SettingsEvent()
+
+    data object ConfirmDatabaseLocationChangeExtremeDangerAction : SettingsEvent()
+
+    data object TogglePersistentNotification : SettingsEvent()
+
+    data object ToggleAdvancedSettingsVisibility : SettingsEvent()
 }
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
+class SettingsViewModel
+@Inject
+constructor(
     @param:ApplicationContext private val appContext: Context,
     private val exportDataWithServiceUseCase: ExportDataWithServiceUseCase,
     private val exportDataUIBlockingUseCase: ExportDataUIBlockingUseCase,
     private val importDataUIBlockingUseCase: ImportDataUIBlockingUseCase,
     private val changeDatabaseLocationUseCase: ChangeDatabaseLocationUseCase,
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
             AppPreferences.getExportType(appContext).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        exportType = it
-                    )
-                }
+                _uiState.update { currentState -> currentState.copy(exportType = it) }
             }
         }
 
         viewModelScope.launch {
             AppPreferences.getExportLocation(appContext).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        exportUri = it
-                    )
-                }
+                _uiState.update { currentState -> currentState.copy(exportUri = it) }
             }
         }
 
         viewModelScope.launch {
             AppPreferences.getColorScheme(appContext).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        theme = it
-                    )
-                }
+                _uiState.update { currentState -> currentState.copy(theme = it) }
             }
         }
 
         viewModelScope.launch {
             AppPreferences.getDynamicColor(appContext).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isInDynamicColor = it
-                    )
-                }
+                _uiState.update { currentState -> currentState.copy(isInDynamicColor = it) }
             }
         }
 
@@ -144,7 +141,8 @@ class SettingsViewModel @Inject constructor(
             AppPreferences.getCurrencyFormatLocale(appContext).collect {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        currencyFormatLocale = it
+                        currencyFormatLocale = it ?: Locale.getDefault(),
+                        currencyFormatLocaleSetToDefault = it == null,
                     )
                 }
             }
@@ -152,20 +150,14 @@ class SettingsViewModel @Inject constructor(
 
         viewModelScope.launch {
             AppPreferences.getDatabaseLocation(appContext).collect {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        databaseLocation = it
-                    )
-                }
+                _uiState.update { currentState -> currentState.copy(databaseLocation = it) }
             }
         }
 
         viewModelScope.launch {
             AppPreferences.getPersistentNotificationsEnabled(appContext).collect {
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        persistentNotificationEnabled = it
-                    )
+                    currentState.copy(persistentNotificationEnabled = it)
                 }
             }
         }
@@ -187,15 +179,14 @@ class SettingsViewModel @Inject constructor(
 
             is SettingsEvent.SetTheme -> setTheme(event.newTheme)
             is SettingsEvent.SetDynamicColor -> setDynamicColor(event.newDynamicColor)
-            is SettingsEvent.SetCurrencyFormatLocale -> setCurrencyFormatLocale(event.newCurrencyFormatLocale)
+            is SettingsEvent.SetCurrencyFormatLocale ->
+                setCurrencyFormatLocale(event.newCurrencyFormatLocale)
             is SettingsEvent.SetLocale -> setLocale(event.newLocale)
             is SettingsEvent.SetDatabaseLocation -> setDatabaseLocation(event.newLocation)
 
             is SettingsEvent.DismissDatabaseLocationChangeError -> {
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        databaseLocationChangeFailedError = false
-                    )
+                    currentState.copy(databaseLocationChangeFailedError = false)
                 }
             }
 
@@ -222,8 +213,9 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.CloseDatabaseLocationChangeExtremeDangerActionConfirmationDialog -> {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible = false,
-                        databaseLocationChangeShowExtremeDangerActionConfirmed = false
+                        databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible =
+                            false,
+                        databaseLocationChangeShowExtremeDangerActionConfirmed = false,
                     )
                 }
             }
@@ -231,8 +223,9 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.ConfirmDatabaseLocationChangeExtremeDangerAction -> {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible = false,
-                        databaseLocationChangeShowExtremeDangerActionConfirmed = true
+                        databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible =
+                            false,
+                        databaseLocationChangeShowExtremeDangerActionConfirmed = true,
                     )
                 }
             }
@@ -244,101 +237,110 @@ class SettingsViewModel @Inject constructor(
         onMaxProgressChange: (newMaxProgress: Int) -> Unit,
         onProgressChange: (newProgress: Int) -> Unit,
         onFinished: () -> Unit,
-        onError: (error: ImportError) -> Unit
-    ) = viewModelScope.launch {
-        importDataUIBlockingUseCase(
-            uri = uri,
-            onMaxProgressChange = onMaxProgressChange,
-            onProgressChange = onProgressChange,
-            onFinished = onFinished,
-            onError = onError
-        )
-    }
-
-    private fun setExportType(newType: AppPreferences.Export.Type.Values) = viewModelScope.launch {
-        AppPreferences.setExportType(
-            appContext,
-            newType
-        )
-    }
-
-    private fun setTheme(newTheme: AppPreferences.Theme.ColorScheme.Values) = viewModelScope.launch {
-        AppPreferences.setThemeColorScheme(
-            appContext,
-            newTheme
-        )
-    }
-
-    private fun setDynamicColor(newDynamicColor: Boolean) = viewModelScope.launch {
-        if (Build.VERSION.SDK_INT >= 31) {
-            AppPreferences.setThemeDynamicColor(
-                appContext,
-                newDynamicColor
+        onError: (error: ImportError) -> Unit,
+    ) =
+        viewModelScope.launch {
+            importDataUIBlockingUseCase(
+                uri = uri,
+                onMaxProgressChange = onMaxProgressChange,
+                onProgressChange = onProgressChange,
+                onFinished = onFinished,
+                onError = onError,
             )
-        } else {
-            Log.e("SettingsViewModel", "Attempted to dynamic color on API ${Build.VERSION.SDK_INT}")
         }
-    }
 
-    private fun setCurrencyFormatLocale(newCurrencyFormatLocale: Locale?) = viewModelScope.launch {
-        AppPreferences.setCurrencyFormatLocale(
-            appContext,
-            newCurrencyFormatLocale
-        )
-    }
+    private fun setExportType(newType: AppPreferences.Export.Type.Values) =
+        viewModelScope.launch { AppPreferences.setExportType(appContext, newType) }
+
+    private fun setTheme(newTheme: AppPreferences.Theme.ColorScheme.Values) =
+        viewModelScope.launch { AppPreferences.setThemeColorScheme(appContext, newTheme) }
+
+    private fun setDynamicColor(newDynamicColor: Boolean) =
+        viewModelScope.launch {
+            if (Build.VERSION.SDK_INT >= 31) {
+                AppPreferences.setThemeDynamicColor(appContext, newDynamicColor)
+            } else {
+                Log.e(
+                    "SettingsViewModel",
+                    "Attempted to dynamic color on API ${Build.VERSION.SDK_INT}",
+                )
+            }
+        }
+
+    private fun setCurrencyFormatLocale(newCurrencyFormatLocale: Locale?) =
+        viewModelScope.launch {
+            AppPreferences.setCurrencyFormatLocale(appContext, newCurrencyFormatLocale)
+        }
 
     /**
      * Sets application locale to [locale]
-     * @param locale [AppLocale] to set the application to, if null, sets application to system default
+     *
+     * @param locale [AppLocale] to set the application to, if null, sets application to system
+     *   default
      */
     @MainThread
     private fun setLocale(locale: AppLocale?) {
-        val localeList = if (locale != null) {
-            LocaleListCompat.forLanguageTags(locale.tag)
-        } else LocaleListCompat.getEmptyLocaleList()
+        val localeList =
+            if (locale != null) {
+                LocaleListCompat.forLanguageTags(locale.tag)
+            } else LocaleListCompat.getEmptyLocaleList()
+
+        localeList.get(0)?.let {
+            _uiState.update { currentState ->
+                if (currentState.currencyFormatLocaleSetToDefault) {
+                    currentState.copy(currencyFormatLocale = it)
+                } else currentState
+            }
+        }
 
         setApplicationLocales(localeList)
     }
 
-    private fun setDatabaseLocation(newLocation: AppPreferences.Database.Location.Values) = viewModelScope.launch {
-        if (Build.VERSION.SDK_INT >= 30) {
-            val state = _uiState.value
-            val result = changeDatabaseLocationUseCase(newLocation, state.databaseLocationChangeShowExtremeDangerActionConfirmed)
+    private fun setDatabaseLocation(newLocation: AppPreferences.Database.Location.Values) =
+        viewModelScope.launch {
+            if (Build.VERSION.SDK_INT >= 30) {
+                val state = _uiState.value
+                val result =
+                    changeDatabaseLocationUseCase(
+                        newLocation,
+                        state.databaseLocationChangeShowExtremeDangerActionConfirmed,
+                    )
 
-            when (result) {
-                DatabaseMoveResult.SUCCESS -> {}
+                when (result) {
+                    DatabaseMoveResult.SUCCESS -> {}
 
-                DatabaseMoveResult.FAILED -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            databaseLocationChangeFailedError = true
-                        )
+                    DatabaseMoveResult.FAILED -> {
+                        _uiState.update { currentState ->
+                            currentState.copy(databaseLocationChangeFailedError = true)
+                        }
+                    }
+
+                    DatabaseMoveResult.REQUEST_CONFIRMATION -> {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible =
+                                    true
+                            )
+                        }
                     }
                 }
-
-                DatabaseMoveResult.REQUEST_CONFIRMATION -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible = true
-                        )
-                    }
-                }
+            } else {
+                Log.e(
+                    "SettingsViewModel",
+                    "Attempted to change database location on API ${Build.VERSION.SDK_INT}",
+                )
             }
-        } else {
-            Log.e("SettingsViewModel", "Attempted to change database location on API ${Build.VERSION.SDK_INT}")
         }
-    }
 
-    fun exportWithService(uri: Uri) = viewModelScope.launch {
-        exportDataWithServiceUseCase(uri)
-    }
+    fun exportWithService(uri: Uri) = viewModelScope.launch { exportDataWithServiceUseCase(uri) }
 
     fun exportUIBlocking(
         uri: Uri,
         onMaxProgressChange: (newMaxProgress: Int) -> Unit,
         onProgressChange: (newProgress: Int) -> Unit,
         onFinished: () -> Unit,
-    ) = viewModelScope.launch {
-        exportDataUIBlockingUseCase(uri, onMaxProgressChange, onProgressChange, onFinished)
-    }
+    ) =
+        viewModelScope.launch {
+            exportDataUIBlockingUseCase(uri, onMaxProgressChange, onProgressChange, onFinished)
+        }
 }
