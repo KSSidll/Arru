@@ -34,6 +34,12 @@ interface TransactionRepositorySource {
     fun get(id: Long): Flow<TransactionEntity?>
 
     /**
+     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none
+     *   exist
+     */
+    fun newest(): Flow<TransactionEntity?>
+
+    /**
      * @param id id of the [ShopEntity]
      * @return list of all [TransactionEntity] matching [ShopEntity] id or null if none match
      */
@@ -70,10 +76,4 @@ interface TransactionRepositorySource {
      * @return List of [TransactionSpentChartData] representing total spending partitioned by year
      */
     fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>>
-
-    /**
-     * @return newest [TransactionEntity] (by time added, not transaction date) or null if none
-     *   exist
-     */
-    fun newest(): Flow<TransactionEntity?>
 }

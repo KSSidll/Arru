@@ -91,7 +91,7 @@ class InsertTransactionEntityUseCase(
             }
         }
 
-        val entityNote = if (note.isNullOrBlank()) null else note
+        val entityNote = if (note.isNullOrBlank()) null else note.trim()
 
         shopId?.let {
             if (shopRepository.get(it).first() == null) {
@@ -152,7 +152,7 @@ class UpdateTransactionEntityUseCase(
             }
         }
 
-        val entityNote = if (note.isNullOrBlank()) null else note
+        val entityNote = if (note.isNullOrBlank()) null else note.trim()
 
         shopId?.let {
             if (shopRepository.get(it).first() == null) {
@@ -215,6 +215,13 @@ class DeleteTransactionEntityUseCase(
 class GetTransactionEntityUseCase(private val transactionRepository: TransactionRepositorySource) {
     operator fun invoke(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         transactionRepository.get(id).flowOn(dispatcher)
+}
+
+class GetNewestTransactionEntityUseCase(
+    private val transactionRepository: TransactionRepositorySource
+) {
+    operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        transactionRepository.newest().flowOn(dispatcher)
 }
 
 /** DOMAIN */

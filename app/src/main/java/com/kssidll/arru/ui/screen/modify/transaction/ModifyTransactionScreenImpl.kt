@@ -41,13 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kssidll.arru.ExpandedPreviews
 import com.kssidll.arru.R
-import com.kssidll.arru.data.data.ProductProducerEntity
-import com.kssidll.arru.data.data.ShopEntity
-import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.emptyImmutableList
-import com.kssidll.arru.domain.data.interfaces.FuzzySearchSource
-import com.kssidll.arru.helper.RegexHelper
-import com.kssidll.arru.helper.StringHelper
 import com.kssidll.arru.ui.component.dialog.SearchableListDialog
 import com.kssidll.arru.ui.component.field.SearchField
 import com.kssidll.arru.ui.component.field.StyledOutlinedTextField
@@ -57,71 +51,38 @@ import com.kssidll.arru.ui.theme.disabledAlpha
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import kotlinx.collections.immutable.ImmutableList
 
 private val ItemHorizontalPadding: Dp = 20.dp
 
-/**
- * [ModifyScreen] implementation for [ProductProducerEntity]
- *
- * @param onBack Called to request a back navigation, isn't triggered by other events like
- *   submission or deletion
- * @param state [ModifyProductProducerScreenState] instance representing the screen state
- * @param shops Shops that can be set for the transaction
- * @param onNewShopSelected Callback called when a new shop is selected. Provides newly selected
- *   shop as parameter
- * @param onSubmit Callback called when the submit action is triggered
- * @param onDelete Callback called when the delete action is triggered, in case of very destructive
- *   actions, should check if delete warning is confirmed, and if not, trigger a delete warning
- *   dialog via showDeleteWarning parameter as none of those are handled internally by the
- *   component, setting to null removes the delete option
- * @param submitButtonText Text displayed in the submit button, defaults to transaction add string
- *   resource
- * @param onShopAddButtonClick Callback called when the shop add button is clicked. Provides a
- *   search value, if any, as parameter
- * @param onTransactionShopLongClick Callback called when the transaction shop is long
- *   clicked/pressed. Provides shop id as parameter
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModifyTransactionScreenImpl(
     isExpandedScreen: Boolean,
-    onBack: () -> Unit,
-    state: ModifyTransactionScreenState,
-    shops: ImmutableList<ShopEntity>,
-    onNewShopSelected: (shop: ShopEntity?) -> Unit,
-    onSubmit: () -> Unit,
-    onShopAddButtonClick: (query: String?) -> Unit,
+    uiState: ModifyTransactionUiState,
+    onEvent: (event: ModifyTransactionEvent) -> Unit,
     modifier: Modifier = Modifier,
-    onDelete: (() -> Unit)? = null,
-    submitButtonText: String = stringResource(id = R.string.transaction_add),
-    onTransactionShopLongClick: (shopId: Long) -> Unit,
+    submitButtonText: String = stringResource(id = R.string.item_add),
 ) {
     val datePickerState = rememberDatePickerState()
 
-    ModifyScreen<FuzzySearchSource>(
-        // onBack = onBack,
-        // title = stringResource(id = R.string.transaction),
-        // onSubmit = onSubmit,
-        // onDelete = onDelete,
-        // submitButtonText = submitButtonText,
-        // showDeleteWarning = state.showDeleteWarning,
-        // deleteWarningConfirmed = state.deleteWarningConfirmed,
-        // deleteWarningMessage = stringResource(id = R.string.transaction_delete_warning_text),
-        // modifier = modifier,
-        onBack = {},
-        title = "test",
-        onSubmit = {},
-        submitButtonText = "Submit it",
-        onDelete = {},
-        isDeleteVisible = true,
-        isDeleteWarningMessageVisible = false,
-        onDeleteWarningMessageVisibleChange = {},
-        deleteWarningMessage = String(),
-        isDeleteWarningConfirmed = false,
-        onDeleteWarningConfirmedChange = {},
+    ModifyScreen(
+        onBack = { onEvent(ModifyTransactionEvent.NavigateBack) },
+        title = stringResource(id = R.string.transaction),
+        onSubmit = { onEvent(ModifyTransactionEvent.Submit) },
+        submitButtonText = submitButtonText,
+        onDelete = { onEvent(ModifyTransactionEvent.DeleteTransaction) },
+        isDeleteVisible = uiState.isDeleteEnabled,
+        isDeleteWarningMessageVisible = uiState.isDangerousDeleteDialogVisible,
+        onDeleteWarningMessageVisibleChange = {
+            onEvent(ModifyTransactionEvent.SetDangerousDeleteDialogVisibility(it))
+        },
+        deleteWarningMessage = stringResource(id = R.string.transaction_delete_warning_text),
+        isDeleteWarningConfirmed = uiState.isDangerousDeleteDialogConfirmed,
+        onDeleteWarningConfirmedChange = {
+            onEvent(ModifyTransactionEvent.SetDangerousDeleteDialogConfirmation(it))
+        },
         onMerge = {},
-        isMergeVisible = true,
+        isMergeVisible = false,
         isMergeSearchDialogVisible = false,
         onMergeSearchDialogVisibleChange = {},
         mergeSearchDialogCandidateTextTransformation = { String() },
@@ -130,15 +91,20 @@ fun ModifyTransactionScreenImpl(
         mergeConfirmMessage = String(),
         mergeCandidates = emptyImmutableList(),
         onChosenMergeCandidateChange = {},
+        modifier = modifier,
     ) {
-        if (state.isDatePickerDialogExpanded.value) {
+        if (uiState.isDatePickerDialogVisible) {
             DatePickerDialog(
-                onDismissRequest = { state.isDatePickerDialogExpanded.value = false },
+                onDismissRequest = {
+                    onEvent(ModifyTransactionEvent.SetDatePickerDialogVisibility(false))
+                },
                 confirmButton = {
                     Button(
                         onClick = {
-                            state.isDatePickerDialogExpanded.value = false
-                            state.date.value = Field.Loaded(datePickerState.selectedDateMillis)
+                            onEvent(ModifyTransactionEvent.SetDatePickerDialogVisibility(false))
+                            onEvent(
+                                ModifyTransactionEvent.SetDate(datePickerState.selectedDateMillis)
+                            )
                         },
                         colors =
                             ButtonDefaults.buttonColors(
@@ -156,22 +122,24 @@ fun ModifyTransactionScreenImpl(
             ) {
                 DatePicker(state = datePickerState)
             }
-        } else if (state.isShopSearchDialogExpanded.value) {
+        } else if (uiState.isShopSearchDialogVisible) {
             SearchableListDialog(
-                onDismissRequest = { state.isShopSearchDialogExpanded.value = false },
-                items = shops,
+                onDismissRequest = {
+                    onEvent(ModifyTransactionEvent.SetShopSearchDialogVisibility(false))
+                },
+                items = uiState.allShops,
                 itemText = { it.name },
                 onItemClick = {
-                    state.isShopSearchDialogExpanded.value = false
-                    onNewShopSelected(it)
+                    onEvent(ModifyTransactionEvent.SetShopSearchDialogVisibility(false))
+                    onEvent(ModifyTransactionEvent.SelectShop(it?.id))
                 },
                 onItemClickLabel = stringResource(id = R.string.select),
                 onItemLongClick = {
-                    state.isShopSearchDialogExpanded.value = false
-                    onTransactionShopLongClick(it.id)
+                    onEvent(ModifyTransactionEvent.SetShopSearchDialogVisibility(false))
+                    onEvent(ModifyTransactionEvent.NavigateEditShop(it.id))
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
-                onAddButtonClick = onShopAddButtonClick,
+                onAddButtonClick = { onEvent(ModifyTransactionEvent.NavigateAddShop(it)) },
                 addButtonDescription = stringResource(R.string.item_shop_add_description),
                 showDefaultValueItem = true,
                 defaultItemText = stringResource(R.string.no_value),
@@ -180,19 +148,9 @@ fun ModifyTransactionScreenImpl(
         }
 
         if (isExpandedScreen) {
-            ExpandedModifyTransactionScreenContent(
-                state = state,
-                shops = shops,
-                onShopAddButtonClick = onShopAddButtonClick,
-                onTransactionShopLongClick = onTransactionShopLongClick,
-            )
+            ExpandedModifyTransactionScreenContent(uiState = uiState, onEvent = onEvent)
         } else {
-            ModifyTransactionScreenContent(
-                state = state,
-                shops = shops,
-                onShopAddButtonClick = onShopAddButtonClick,
-                onTransactionShopLongClick = onTransactionShopLongClick,
-            )
+            ModifyTransactionScreenContent(uiState = uiState, onEvent = onEvent)
         }
     }
 }
@@ -200,18 +158,17 @@ fun ModifyTransactionScreenImpl(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ModifyTransactionScreenContent(
-    state: ModifyTransactionScreenState,
-    shops: ImmutableList<ShopEntity>,
-    onShopAddButtonClick: (query: String?) -> Unit,
-    onTransactionShopLongClick: (shopId: Long) -> Unit,
+    uiState: ModifyTransactionUiState,
+    onEvent: (event: ModifyTransactionEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.widthIn(max = 650.dp),
+        modifier = modifier.widthIn(max = 650.dp),
     ) {
-        val date = state.date.value.data
+        val date = uiState.date.data
         SearchField(
-            enabled = state.date.value.isLoading(),
+            enabled = uiState.date.isLoading(),
             value =
                 if (date != null)
                     SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
@@ -219,13 +176,9 @@ private fun ModifyTransactionScreenContent(
                 else String(),
             showAddButton = false,
             label = stringResource(R.string.item_date),
-            onClick = { state.isDatePickerDialogExpanded.value = true },
-            supportingText = {
-                if (state.attemptedToSubmit.value) {
-                    state.date.value.error?.ErrorText()
-                }
-            },
-            error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
+            onClick = { onEvent(ModifyTransactionEvent.SetDatePickerDialogVisibility(true)) },
+            supportingText = { uiState.date.error?.ErrorText() },
+            error = uiState.date.isError(),
             modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding.times(2)),
         )
 
@@ -235,45 +188,22 @@ private fun ModifyTransactionScreenContent(
         ) {
             StyledOutlinedTextField(
                 singleLine = true,
-                enabled = state.totalCost.value.isLoading(),
-                value = state.totalCost.value.data,
+                enabled = uiState.totalCost.isLoading(),
+                value = uiState.totalCost.data,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = { newValue ->
-                    state.totalCost.apply {
-                        if (newValue.isBlank()) {
-                            value = Field.Loaded(String())
-                        } else if (RegexHelper.isFloat(newValue, 2)) {
-                            value = Field.Loaded(newValue)
-                        }
-                    }
+                    onEvent(ModifyTransactionEvent.SetTotalCost(newValue))
                 },
                 label = { Text(text = stringResource(R.string.item_price), fontSize = 16.sp) },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.totalCost.value.error?.ErrorText()
-                    }
-                },
-                isError =
-                    if (state.attemptedToSubmit.value) state.totalCost.value.isError() else false,
+                supportingText = { uiState.totalCost.error?.ErrorText() },
+                isError = uiState.totalCost.isError(),
                 modifier = Modifier.weight(1f),
             )
 
             Column(modifier = Modifier.fillMaxHeight()) {
                 IconButton(
-                    enabled = state.totalCost.value.isLoading(),
-                    onClick = {
-                        if (state.totalCost.value.data.isBlank()) {
-                            state.totalCost.value = Field.Loaded("%.2f".format(0f))
-                        } else {
-                            val value =
-                                state.totalCost.value.data.let { StringHelper.toDoubleOrNull(it) }
-
-                            if (value != null) {
-                                state.totalCost.value =
-                                    Field.Loaded("%.2f".format(value.plus(0.5f)))
-                            }
-                        }
-                    },
+                    enabled = uiState.totalCost.isLoading(),
+                    onClick = { onEvent(ModifyTransactionEvent.IncrementTotalCost) },
                     colors =
                         IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
@@ -290,28 +220,8 @@ private fun ModifyTransactionScreenContent(
                 }
 
                 IconButton(
-                    enabled = state.totalCost.value.isLoading(),
-                    onClick = {
-                        if (state.totalCost.value.data.isBlank()) {
-                            state.totalCost.value = Field.Loaded("%.2f".format(0f))
-                        } else {
-                            val value =
-                                state.totalCost.value.data.let { StringHelper.toDoubleOrNull(it) }
-
-                            if (value != null) {
-                                state.totalCost.value =
-                                    Field.Loaded(
-                                        "%.2f"
-                                            .format(
-                                                if (value > 0.5f) value.minus(0.5f)
-                                                else {
-                                                    0f
-                                                }
-                                            )
-                                    )
-                            }
-                        }
-                    },
+                    enabled = uiState.totalCost.isLoading(),
+                    onClick = { onEvent(ModifyTransactionEvent.DecrementTotalCost) },
                     colors =
                         IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
@@ -334,12 +244,10 @@ private fun ModifyTransactionScreenContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         StyledOutlinedTextField(
-            optional = state.note.value.data.isNullOrBlank(),
-            enabled = state.note.value.isLoading(),
-            value = state.note.value.data.orEmpty(),
-            onValueChange = { newValue ->
-                state.note.apply { value = Field.Loaded(newValue.trimStart()) }
-            },
+            optional = uiState.note.data.isNullOrBlank(),
+            enabled = uiState.note.isLoading(),
+            value = uiState.note.data.orEmpty(),
+            onValueChange = { newValue -> onEvent(ModifyTransactionEvent.SetNote(newValue)) },
             label = { Text(text = stringResource(R.string.transaction_note), fontSize = 16.sp) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding.times(2)),
         )
@@ -347,21 +255,23 @@ private fun ModifyTransactionScreenContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         SearchField(
-            enabled = state.selectedShop.value.isLoading(),
+            enabled = uiState.selectedShop.isLoading(),
             optional = true,
-            value = state.selectedShop.value.data?.name ?: String(),
+            value = uiState.selectedShop.data?.name ?: String(),
             onClick = {
-                if (shops.isNotEmpty()) {
-                    state.isShopSearchDialogExpanded.value = true
+                if (uiState.allShops.isNotEmpty()) {
+                    onEvent(ModifyTransactionEvent.SetShopSearchDialogVisibility(true))
                 } else {
-                    onShopAddButtonClick(null)
+                    onEvent(ModifyTransactionEvent.NavigateAddShop(null))
                 }
             },
             onLongClick = {
-                state.selectedShop.value.data?.let { onTransactionShopLongClick(it.id) }
+                uiState.selectedShop.data?.let {
+                    onEvent(ModifyTransactionEvent.NavigateEditShop(it.id))
+                }
             },
             label = stringResource(R.string.item_shop),
-            onAddButtonClick = { onShopAddButtonClick(null) },
+            onAddButtonClick = { onEvent(ModifyTransactionEvent.NavigateAddShop(null)) },
             addButtonDescription = stringResource(R.string.item_shop_add_description),
             modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
         )
@@ -370,19 +280,18 @@ private fun ModifyTransactionScreenContent(
 
 @Composable
 private fun ExpandedModifyTransactionScreenContent(
-    state: ModifyTransactionScreenState,
-    shops: ImmutableList<ShopEntity>,
-    onShopAddButtonClick: (query: String?) -> Unit,
-    onTransactionShopLongClick: (shopId: Long) -> Unit,
+    uiState: ModifyTransactionUiState,
+    onEvent: (event: ModifyTransactionEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.widthIn(max = 650.dp),
+        modifier = modifier.widthIn(max = 650.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            val date = state.date.value.data
+            val date = uiState.date.data
             SearchField(
-                enabled = state.date.value.isLoading(),
+                enabled = uiState.date.isLoading(),
                 value =
                     if (date != null)
                         SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
@@ -390,13 +299,9 @@ private fun ExpandedModifyTransactionScreenContent(
                     else String(),
                 showAddButton = false,
                 label = stringResource(R.string.item_date),
-                onClick = { state.isDatePickerDialogExpanded.value = true },
-                supportingText = {
-                    if (state.attemptedToSubmit.value) {
-                        state.date.value.error?.ErrorText()
-                    }
-                },
-                error = if (state.attemptedToSubmit.value) state.date.value.isError() else false,
+                onClick = { onEvent(ModifyTransactionEvent.SetDatePickerDialogVisibility(true)) },
+                supportingText = { uiState.date.error?.ErrorText() },
+                error = uiState.date.isError(),
                 modifier =
                     Modifier.weight(1f)
                         .padding(
@@ -411,49 +316,23 @@ private fun ExpandedModifyTransactionScreenContent(
             ) {
                 StyledOutlinedTextField(
                     singleLine = true,
-                    enabled = state.totalCost.value.isLoading(),
-                    value = state.totalCost.value.data,
+                    enabled = uiState.totalCost.isLoading(),
+                    value = uiState.totalCost.data,
                     keyboardOptions =
                         KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     onValueChange = { newValue ->
-                        state.totalCost.apply {
-                            if (newValue.isBlank()) {
-                                value = Field.Loaded(String())
-                            } else if (RegexHelper.isFloat(newValue, 2)) {
-                                value = Field.Loaded(newValue)
-                            }
-                        }
+                        onEvent(ModifyTransactionEvent.SetTotalCost(newValue))
                     },
                     label = { Text(text = stringResource(R.string.item_price), fontSize = 16.sp) },
-                    supportingText = {
-                        if (state.attemptedToSubmit.value) {
-                            state.totalCost.value.error?.ErrorText()
-                        }
-                    },
-                    isError =
-                        if (state.attemptedToSubmit.value) state.totalCost.value.isError()
-                        else false,
+                    supportingText = { uiState.totalCost.error?.ErrorText() },
+                    isError = uiState.totalCost.isError(),
                     modifier = Modifier.weight(1f),
                 )
 
                 Column(modifier = Modifier.fillMaxHeight()) {
                     IconButton(
-                        enabled = state.totalCost.value.isLoading(),
-                        onClick = {
-                            if (state.totalCost.value.data.isBlank()) {
-                                state.totalCost.value = Field.Loaded("%.2f".format(0f))
-                            } else {
-                                val value =
-                                    state.totalCost.value.data.let {
-                                        StringHelper.toDoubleOrNull(it)
-                                    }
-
-                                if (value != null) {
-                                    state.totalCost.value =
-                                        Field.Loaded("%.2f".format(value.plus(0.5f)))
-                                }
-                            }
-                        },
+                        enabled = uiState.totalCost.isLoading(),
+                        onClick = { onEvent(ModifyTransactionEvent.IncrementTotalCost) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -470,30 +349,8 @@ private fun ExpandedModifyTransactionScreenContent(
                     }
 
                     IconButton(
-                        enabled = state.totalCost.value.isLoading(),
-                        onClick = {
-                            if (state.totalCost.value.data.isBlank()) {
-                                state.totalCost.value = Field.Loaded("%.2f".format(0f))
-                            } else {
-                                val value =
-                                    state.totalCost.value.data.let {
-                                        StringHelper.toDoubleOrNull(it)
-                                    }
-
-                                if (value != null) {
-                                    state.totalCost.value =
-                                        Field.Loaded(
-                                            "%.2f"
-                                                .format(
-                                                    if (value > 0.5f) value.minus(0.5f)
-                                                    else {
-                                                        0f
-                                                    }
-                                                )
-                                        )
-                                }
-                            }
-                        },
+                        enabled = uiState.totalCost.isLoading(),
+                        onClick = { onEvent(ModifyTransactionEvent.DecrementTotalCost) },
                         colors =
                             IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -516,21 +373,23 @@ private fun ExpandedModifyTransactionScreenContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         SearchField(
-            enabled = state.selectedShop.value.isLoading(),
+            enabled = uiState.selectedShop.isLoading(),
             optional = true,
-            value = state.selectedShop.value.data?.name ?: String(),
+            value = uiState.selectedShop.data?.name ?: String(),
             onClick = {
-                if (shops.isNotEmpty()) {
-                    state.isShopSearchDialogExpanded.value = true
+                if (uiState.allShops.isNotEmpty()) {
+                    onEvent(ModifyTransactionEvent.SetShopSearchDialogVisibility(true))
                 } else {
-                    onShopAddButtonClick(null)
+                    onEvent(ModifyTransactionEvent.NavigateAddShop(null))
                 }
             },
             onLongClick = {
-                state.selectedShop.value.data?.let { onTransactionShopLongClick(it.id) }
+                uiState.selectedShop.data?.let {
+                    onEvent(ModifyTransactionEvent.NavigateEditShop(it.id))
+                }
             },
             label = stringResource(R.string.item_shop),
-            onAddButtonClick = { onShopAddButtonClick(null) },
+            onAddButtonClick = { onEvent(ModifyTransactionEvent.NavigateAddShop(null)) },
             addButtonDescription = stringResource(R.string.item_shop_add_description),
             modifier = Modifier.fillMaxWidth().padding(horizontal = ItemHorizontalPadding),
         )
@@ -544,13 +403,8 @@ private fun ModifyTransactionScreenImplPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(
                 isExpandedScreen = false,
-                onBack = {},
-                state = ModifyTransactionScreenState(),
-                shops = emptyImmutableList(),
-                onNewShopSelected = {},
-                onSubmit = {},
-                onShopAddButtonClick = {},
-                onTransactionShopLongClick = {},
+                uiState = ModifyTransactionUiState(isDeleteEnabled = true),
+                onEvent = {},
             )
         }
     }
@@ -563,13 +417,8 @@ private fun ExpandedModifyTransactionScreenImplPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             ModifyTransactionScreenImpl(
                 isExpandedScreen = true,
-                onBack = {},
-                state = ModifyTransactionScreenState(),
-                shops = emptyImmutableList(),
-                onNewShopSelected = {},
-                onSubmit = {},
-                onShopAddButtonClick = {},
-                onTransactionShopLongClick = {},
+                uiState = ModifyTransactionUiState(isDeleteEnabled = true),
+                onEvent = {},
             )
         }
     }

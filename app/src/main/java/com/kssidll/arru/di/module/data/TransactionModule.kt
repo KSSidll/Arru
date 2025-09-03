@@ -8,6 +8,7 @@ import com.kssidll.arru.data.repository.TransactionRepository
 import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.usecase.data.DeleteTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetAllTransactionsUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByWeekUseCase
@@ -73,6 +74,14 @@ class TransactionModule {
         transactionRepository: TransactionRepositorySource
     ): GetTransactionEntityUseCase {
         return GetTransactionEntityUseCase(transactionRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetNewestTransactionEntityUseCase(
+        transactionRepository: TransactionRepositorySource
+    ): GetNewestTransactionEntityUseCase {
+        return GetNewestTransactionEntityUseCase(transactionRepository)
     }
 
     /** DOMAIN */

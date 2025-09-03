@@ -35,7 +35,6 @@ data class ModifyItemUiState(
     val selectedProductVariant: Field<ProductVariantEntity?> = Field.Loaded(null),
     val quantity: Field<String> = Field.Loaded(String()),
     val price: Field<String> = Field.Loaded(String()),
-    val isDatePickerDialogExpanded: Boolean = false,
     val isProductSearchDialogExpanded: Boolean = false,
     val isProductVariantSearchDialogExpanded: Boolean = false,
     val isDeleteEnabled: Boolean = false,

@@ -4,110 +4,143 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.preference.AppPreferences
 import com.kssidll.arru.data.preference.getTransactionDate
-import com.kssidll.arru.data.repository.ShopRepositorySource
-import com.kssidll.arru.data.repository.TransactionRepositorySource
 import com.kssidll.arru.domain.data.Field
 import com.kssidll.arru.domain.data.FieldError
+import com.kssidll.arru.domain.usecase.data.GetAllShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetNewestTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.GetShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertTransactionEntityUseCaseResult
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEvent
+import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEventResult
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-// TODO refactor uiState Event UseCase
 
 @HiltViewModel
 class AddTransactionViewModel
 @Inject
 constructor(
     @param:ApplicationContext private val appContext: Context,
-    private val transactionRepository: TransactionRepositorySource,
-    override val shopRepository: ShopRepositorySource,
     private val insertTransactionEntityUseCase: InsertTransactionEntityUseCase,
+    private val getNewestTransactionEntityUseCase: GetNewestTransactionEntityUseCase,
+    override val getAllShopEntityUseCase: GetAllShopEntityUseCase,
+    override val getShopEntityUseCase: GetShopEntityUseCase,
 ) : ModifyTransactionViewModel() {
 
     init {
-        loadLastest()
+        init()
+        loadNewest()
     }
 
-    /** Loads data from latest transaction */
-    private fun loadLastest() =
+    private fun loadNewest() =
         viewModelScope.launch {
-            screenState.selectedShop.apply { value = value.toLoading() }
-            screenState.date.apply { value = value.toLoading() }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    selectedShop = currentState.selectedShop.toLoading(),
+                    date = currentState.date.toLoading(),
+                )
+            }
 
-            val latest = transactionRepository.newest().first()
+            val newest = getNewestTransactionEntityUseCase().first()
 
-            if (latest != null) {
-                val shop = latest.shopEntityId?.let { shopRepository.get(it).first() }
+            if (newest != null) {
+                val shop = newest.shopEntityId?.let { getShopEntityUseCase(it).first() }
 
-                screenState.selectedShop.value = Field.Loaded(shop)
-
-                screenState.date.apply {
-                    value =
-                        when (AppPreferences.getTransactionDate(appContext).first()) {
-                            AppPreferences.Transaction.Date.Values.CURRENT -> {
-                                Field.Loaded(Calendar.getInstance().timeInMillis)
-                            }
-
-                            AppPreferences.Transaction.Date.Values.LAST -> {
-                                Field.Loaded(latest.date)
-                            }
+                val date =
+                    when (AppPreferences.getTransactionDate(appContext).first()) {
+                        AppPreferences.Transaction.Date.Values.CURRENT -> {
+                            Calendar.getInstance().timeInMillis
                         }
+
+                        AppPreferences.Transaction.Date.Values.LAST -> {
+                            newest.date
+                        }
+                    }
+
+                _uiState.update { currentState ->
+                    currentState.copy(selectedShop = Field.Loaded(shop), date = Field.Loaded(date))
                 }
             } else {
-                screenState.selectedShop.apply { value = value.toLoaded() }
-                screenState.date.apply { value = Field.Loaded(Calendar.getInstance().timeInMillis) }
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedShop = currentState.selectedShop.toLoaded(),
+                        date = Field.Loaded(Calendar.getInstance().timeInMillis),
+                    )
+                }
             }
         }
 
-    suspend fun addTransaction(): Long? {
-        screenState.attemptedToSubmit.value = true
+    override suspend fun handleEvent(event: ModifyTransactionEvent): ModifyTransactionEventResult {
+        return when (event) {
+            is ModifyTransactionEvent.Submit -> {
+                val state = uiState.value
+                val result =
+                    insertTransactionEntityUseCase(
+                        date = state.date.data,
+                        totalCost = state.totalCost.data,
+                        note = state.note.data,
+                        shopId = state.selectedShop.data?.id,
+                    )
 
-        val result =
-            insertTransactionEntityUseCase(
-                date = screenState.date.value.data,
-                totalCost = screenState.totalCost.value.data,
-                note = screenState.note.value.data,
-                shopId = screenState.selectedShop.value.data?.id,
-            )
+                when (result) {
+                    is InsertTransactionEntityUseCaseResult.Error -> {
+                        result.errors.forEach {
+                            when (it) {
+                                InsertTransactionEntityUseCaseResult.DateNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            date =
+                                                currentState.date.toError(FieldError.NoValueError)
+                                        )
+                                    }
+                                }
+                                InsertTransactionEntityUseCaseResult.ShopIdInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            selectedShop =
+                                                currentState.selectedShop.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertTransactionEntityUseCaseResult.TotalCostInvalid -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            totalCost =
+                                                currentState.totalCost.toError(
+                                                    FieldError.InvalidValueError
+                                                )
+                                        )
+                                    }
+                                }
+                                InsertTransactionEntityUseCaseResult.TotalCostNoValue -> {
+                                    _uiState.update { currentState ->
+                                        currentState.copy(
+                                            totalCost =
+                                                currentState.totalCost.toError(
+                                                    FieldError.NoValueError
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        }
 
-        return when (result) {
-            is InsertTransactionEntityUseCaseResult.Error -> {
-                result.errors.forEach {
-                    when (it) {
-                        InsertTransactionEntityUseCaseResult.DateNoValue -> {
-                            screenState.date.apply {
-                                value = value.toError(FieldError.NoValueError)
-                            }
-                        }
-                        InsertTransactionEntityUseCaseResult.ShopIdInvalid -> {
-                            screenState.selectedShop.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-                        InsertTransactionEntityUseCaseResult.TotalCostInvalid -> {
-                            screenState.totalCost.apply {
-                                value = value.toError(FieldError.InvalidValueError)
-                            }
-                        }
-                        InsertTransactionEntityUseCaseResult.TotalCostNoValue -> {
-                            screenState.totalCost.apply {
-                                value = value.toError(FieldError.NoValueError)
-                            }
-                        }
+                        ModifyTransactionEventResult.Failure
+                    }
+                    is InsertTransactionEntityUseCaseResult.Success -> {
+                        ModifyTransactionEventResult.SuccessInsert(result.id)
                     }
                 }
-
-                null
             }
-            is InsertTransactionEntityUseCaseResult.Success -> {
-                result.id
-            }
+            else -> super.handleEvent(event)
         }
     }
 }

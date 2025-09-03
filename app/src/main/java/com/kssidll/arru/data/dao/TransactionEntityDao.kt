@@ -35,6 +35,9 @@ interface TransactionEntityDao {
     @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.id = :id")
     fun get(id: Long): Flow<TransactionEntity?>
 
+    @Query("SELECT * FROM TransactionEntity ORDER BY id DESC LIMIT 1")
+    fun newest(): Flow<TransactionEntity?>
+
     @Query("SELECT * FROM TransactionEntity WHERE TransactionEntity.shopEntityId = :id")
     fun byShop(id: Long): Flow<List<TransactionEntity>>
 
@@ -190,7 +193,4 @@ interface TransactionEntityDao {
     """
     )
     fun totalSpentByYear(): Flow<List<TransactionSpentChartData>>
-
-    @Query("SELECT * FROM TransactionEntity ORDER BY id DESC LIMIT 1")
-    fun newest(): Flow<TransactionEntity?>
 }

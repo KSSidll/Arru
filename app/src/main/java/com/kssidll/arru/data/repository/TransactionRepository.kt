@@ -34,6 +34,8 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
 
     override fun get(id: Long): Flow<TransactionEntity?> = dao.get(id).cancellable()
 
+    override fun newest(): Flow<TransactionEntity?> = dao.newest().cancellable()
+
     override fun byShop(id: Long): Flow<ImmutableList<TransactionEntity>> =
         dao.byShop(id).cancellable().map { it.toImmutableList() }
 
@@ -62,6 +64,4 @@ class TransactionRepository(private val dao: TransactionEntityDao) : Transaction
 
     override fun totalSpentByYear(): Flow<ImmutableList<TransactionSpentChartData>> =
         dao.totalSpentByYear().cancellable().map { it.toImmutableList() }
-
-    override fun newest(): Flow<TransactionEntity?> = dao.newest().cancellable()
 }
