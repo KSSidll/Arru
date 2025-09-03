@@ -1,4 +1,4 @@
-package com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison
+package com.kssidll.arru.ui.screen.spendingcomparison.productcategoryspendingcomparison
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,15 +9,19 @@ import com.kssidll.arru.ui.screen.spendingcomparison.SpendingComparisonScreen
 import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
 
 @Composable
-fun ShopSpendingComparisonRoute(
+fun ProductCategorySpendingComparisonRoute(
     navigateBack: () -> Unit,
     year: Int,
     month: Int,
-    viewModel: ShopSpendingComparisonViewModel = hiltViewModel(),
+    viewModel: ProductCategorySpendingComparisonViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(year) { viewModel.handleEvent(ShopSpendingComparisonEvent.SetYear(year)) }
+    LaunchedEffect(year) {
+        viewModel.handleEvent(ProductCategorySpendingComparisonEvent.SetYear(year))
+    }
 
-    LaunchedEffect(month) { viewModel.handleEvent(ShopSpendingComparisonEvent.SetMonth(month)) }
+    LaunchedEffect(month) {
+        viewModel.handleEvent(ProductCategorySpendingComparisonEvent.SetMonth(month))
+    }
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 

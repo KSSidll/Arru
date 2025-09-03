@@ -40,7 +40,7 @@ import com.kssidll.arru.ui.screen.ranking.productcategory.ProductCategoryRanking
 import com.kssidll.arru.ui.screen.ranking.shopranking.ShopRankingRoute
 import com.kssidll.arru.ui.screen.search.SearchRoute
 import com.kssidll.arru.ui.screen.settings.SettingsRoute
-import com.kssidll.arru.ui.screen.spendingcomparison.categoryspendingcomparison.CategorySpendingComparisonRoute
+import com.kssidll.arru.ui.screen.spendingcomparison.productcategoryspendingcomparison.ProductCategorySpendingComparisonRoute
 import com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison.ShopSpendingComparisonRoute
 import dev.olshevski.navigation.reimagined.AnimatedNavHost
 import dev.olshevski.navigation.reimagined.NavAction
@@ -747,7 +747,7 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             }
 
             is Screen.CategorySpendingComparison -> {
-                CategorySpendingComparisonRoute(
+                ProductCategorySpendingComparisonRoute(
                     navigateBack = navigateBack,
                     year = screen.year,
                     month = screen.month,

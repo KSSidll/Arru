@@ -1,11 +1,11 @@
-package com.kssidll.arru.ui.screen.spendingcomparison.shopspendingcomparison
+package com.kssidll.arru.ui.screen.spendingcomparison.productcategoryspendingcomparison
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kssidll.arru.data.data.TotalSpentByShop
+import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.domain.data.emptyImmutableList
-import com.kssidll.arru.domain.usecase.data.GetTotalSpentByShopByMonthUseCase
+import com.kssidll.arru.domain.usecase.data.GetTotalSpentByProductCategoryByMonthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -20,25 +20,27 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @Immutable
-data class ShopSpendingComparisonUiState(
-    val currentSpent: ImmutableList<TotalSpentByShop> = emptyImmutableList(),
-    val previousSpent: ImmutableList<TotalSpentByShop> = emptyImmutableList(),
+data class ProductCategorySpendingComparisonUiState(
+    val currentSpent: ImmutableList<TotalSpentByCategory> = emptyImmutableList(),
+    val previousSpent: ImmutableList<TotalSpentByCategory> = emptyImmutableList(),
     val title: String = String(),
 )
 
 @Immutable
-sealed class ShopSpendingComparisonEvent {
-    data class SetYear(val year: Int) : ShopSpendingComparisonEvent()
+sealed class ProductCategorySpendingComparisonEvent {
+    data class SetYear(val year: Int) : ProductCategorySpendingComparisonEvent()
 
-    data class SetMonth(val month: Int) : ShopSpendingComparisonEvent()
+    data class SetMonth(val month: Int) : ProductCategorySpendingComparisonEvent()
 }
 
 @HiltViewModel
-class ShopSpendingComparisonViewModel
+class ProductCategorySpendingComparisonViewModel
 @Inject
-constructor(private val getTotalSpentByShopByMonthUseCase: GetTotalSpentByShopByMonthUseCase) :
-    ViewModel() {
-    private val _uiState = MutableStateFlow(ShopSpendingComparisonUiState())
+constructor(
+    private val getTotalSpentByProductCategoryByMonthUseCase:
+        GetTotalSpentByProductCategoryByMonthUseCase
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(ProductCategorySpendingComparisonUiState())
     val uiState = _uiState.asStateFlow()
 
     private var year: Int? = null
@@ -47,13 +49,13 @@ constructor(private val getTotalSpentByShopByMonthUseCase: GetTotalSpentByShopBy
     private var _currentSpentJob: Job? = null
     private var _previousSpentJob: Job? = null
 
-    fun handleEvent(event: ShopSpendingComparisonEvent) {
+    fun handleEvent(event: ProductCategorySpendingComparisonEvent) {
         when (event) {
-            is ShopSpendingComparisonEvent.SetMonth -> {
+            is ProductCategorySpendingComparisonEvent.SetMonth -> {
                 month = event.month
                 updateData()
             }
-            is ShopSpendingComparisonEvent.SetYear -> {
+            is ProductCategorySpendingComparisonEvent.SetYear -> {
                 year = event.year
                 updateData()
             }
@@ -72,7 +74,7 @@ constructor(private val getTotalSpentByShopByMonthUseCase: GetTotalSpentByShopBy
             month?.let { month ->
                 _currentSpentJob =
                     viewModelScope.launch {
-                        getTotalSpentByShopByMonthUseCase(year, month).collectLatest {
+                        getTotalSpentByProductCategoryByMonthUseCase(year, month).collectLatest {
                             _uiState.update { currentState -> currentState.copy(currentSpent = it) }
                         }
                     }
@@ -96,7 +98,10 @@ constructor(private val getTotalSpentByShopByMonthUseCase: GetTotalSpentByShopBy
                             previousDateMonth -= 1
                         }
 
-                        getTotalSpentByShopByMonthUseCase(previousDateYear, previousDateMonth)
+                        getTotalSpentByProductCategoryByMonthUseCase(
+                                previousDateYear,
+                                previousDateMonth,
+                            )
                             .collectLatest {
                                 _uiState.update { currentState ->
                                     currentState.copy(currentSpent = it)
