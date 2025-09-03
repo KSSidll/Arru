@@ -1,7 +1,25 @@
 package com.kssidll.arru.ui.screen.search
 
+import android.os.Parcelable
 import androidx.compose.runtime.Composable
-import dev.olshevski.navigation.reimagined.hilt.hiltViewModel
+import androidx.compose.runtime.saveable.rememberSaveable
+import dev.olshevski.navigation.reimagined.NavController
+import dev.olshevski.navigation.reimagined.navController
+import kotlinx.parcelize.Parcelize
+
+/** Possible internal navigation destinations for [SearchScreen] */
+@Parcelize
+sealed class SearchDestinations : Parcelable {
+    data object Start : SearchDestinations()
+
+    data object ProductList : SearchDestinations()
+
+    data object CategoryList : SearchDestinations()
+
+    data object ShopList : SearchDestinations()
+
+    data object ProducerList : SearchDestinations()
+}
 
 @Composable
 fun SearchRoute(
@@ -14,12 +32,12 @@ fun SearchRoute(
     navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateEditProductProducer: (producerId: Long) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
-    viewModel: SearchViewModel = hiltViewModel(),
+    navController: NavController<SearchDestinations> = rememberSaveable {
+        navController(startDestination = SearchDestinations.Start)
+    },
 ) {
-
     SearchScreen(
         onBack = navigateBack,
-        state = viewModel.screenState,
         onProductClick = navigateDisplayProduct,
         onCategoryClick = navigateDisplayProductCategory,
         onProducerClick = navigateDisplayProductProducer,
@@ -28,5 +46,6 @@ fun SearchRoute(
         onCategoryLongClick = navigateEditProductCategory,
         onProducerLongClick = navigateEditProductProducer,
         onShopLongClick = navigateEditShop,
+        navController = navController,
     )
 }
