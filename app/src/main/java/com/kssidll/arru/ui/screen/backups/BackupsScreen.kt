@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.outlined.Payment
 import androidx.compose.material.icons.outlined.ShoppingBasket
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -84,7 +86,7 @@ fun BackupsScreen(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(id = R.string.backup_create),
-                    modifier = Modifier.size(36.dp),
+                    modifier = Modifier.size(FloatingActionButtonDefaults.LargeIconSize),
                 )
             }
         },
@@ -307,7 +309,12 @@ fun BackupsScreen(
                             }
                         }
                     }
+
+                    item {
+                        Box(Modifier.height(FloatingActionButtonDefaults.LargeIconSize + 32.dp))
+                    }
                 }
+
             }
         }
     }
