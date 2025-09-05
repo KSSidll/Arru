@@ -314,7 +314,6 @@ fun BackupsScreen(
                         Box(Modifier.height(FloatingActionButtonDefaults.LargeIconSize + 32.dp))
                     }
                 }
-
             }
         }
     }
