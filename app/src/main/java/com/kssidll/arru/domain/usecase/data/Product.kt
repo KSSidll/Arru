@@ -193,6 +193,7 @@ class MergeProductEntityUseCase(
     private val productRepository: ProductRepositorySource,
     private val productVariantRepository: ProductVariantRepositorySource,
     private val itemRepository: ItemRepositorySource,
+    private val performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
 ) {
     suspend operator fun invoke(
         id: Long,
@@ -214,6 +215,8 @@ class MergeProductEntityUseCase(
         if (errors.isNotEmpty()) {
             return MergeProductEntityUseCaseResult.Error(errors.toImmutableList())
         }
+
+        performAutomaticBackupIfEnabledUseCase()
 
         val productVariants = productVariantRepository.byProduct(id, false).first()
         val items = itemRepository.byProduct(id).first()
@@ -265,6 +268,7 @@ class DeleteProductEntityUseCase(
     private val productRepository: ProductRepositorySource,
     private val productVariantRepository: ProductVariantRepositorySource,
     private val itemRepository: ItemRepositorySource,
+    private val performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
 ) {
     suspend operator fun invoke(
         id: Long,
@@ -287,6 +291,8 @@ class DeleteProductEntityUseCase(
         if (errors.isNotEmpty()) {
             return DeleteProductEntityUseCaseResult.Error(errors.toImmutableList())
         }
+
+        performAutomaticBackupIfEnabledUseCase()
 
         itemRepository.delete(items)
         productVariantRepository.delete(productVariants)

@@ -12,6 +12,7 @@ import com.kssidll.arru.domain.usecase.data.GetItemEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityByProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetNewestItemEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertItemEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateItemEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -71,9 +72,10 @@ class ItemModule {
     @Provides
     @Singleton
     fun provideDeleteItemEntityUseCase(
-        itemRepository: ItemRepositorySource
+        itemRepository: ItemRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteItemEntityUseCase {
-        return DeleteItemEntityUseCase(itemRepository)
+        return DeleteItemEntityUseCase(itemRepository, performAutomaticBackupIfEnabledUseCase)
     }
 
     @Provides

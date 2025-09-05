@@ -227,7 +227,10 @@ class UpdateItemEntityUseCase(
     }
 }
 
-class DeleteItemEntityUseCase(private val itemRepository: ItemRepositorySource) {
+class DeleteItemEntityUseCase(
+    private val itemRepository: ItemRepositorySource,
+    private val performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
+) {
     suspend operator fun invoke(
         id: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -243,6 +246,8 @@ class DeleteItemEntityUseCase(private val itemRepository: ItemRepositorySource) 
         if (errors.isNotEmpty()) {
             return DeleteItemEntityUseCaseResult.Error(errors.toImmutableList())
         }
+
+        performAutomaticBackupIfEnabledUseCase()
 
         itemRepository.delete(entity!!)
 

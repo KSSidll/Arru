@@ -9,6 +9,7 @@ import com.kssidll.arru.domain.usecase.data.CreateBackupUseCase
 import com.kssidll.arru.domain.usecase.data.DeleteBackupUseCase
 import com.kssidll.arru.domain.usecase.data.GetBackupsUseCase
 import com.kssidll.arru.domain.usecase.data.LoadBackupUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.ToggleBackupLockUseCase
 import dagger.Module
 import dagger.Provides
@@ -63,5 +64,21 @@ class BackupModule {
     @Singleton
     fun provideLoadBackupUseCase(@ApplicationContext context: Context): LoadBackupUseCase {
         return LoadBackupUseCase(context)
+    }
+
+    @Provides
+    @Singleton
+    fun providePerformAutomaticBackupIfEnabledUseCaseUseCase(
+        @ApplicationContext context: Context,
+        getBackupsUseCase: GetBackupsUseCase,
+        createBackupUseCase: CreateBackupUseCase,
+        deleteBackupUseCase: DeleteBackupUseCase,
+    ): PerformAutomaticBackupIfEnabledUseCase {
+        return PerformAutomaticBackupIfEnabledUseCase(
+            context,
+            getBackupsUseCase,
+            createBackupUseCase,
+            deleteBackupUseCase,
+        )
     }
 }

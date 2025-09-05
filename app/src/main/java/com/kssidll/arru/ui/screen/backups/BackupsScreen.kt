@@ -135,7 +135,9 @@ fun BackupsScreen(
                                                         .format(
                                                             (currentDate * 86400000) -
                                                                 TimeZone.getDefault()
-                                                                    .getOffset(currentDate * 86400000)
+                                                                    .getOffset(
+                                                                        currentDate * 86400000
+                                                                    )
                                                         ),
                                                 style = Typography.headlineMedium,
                                             )

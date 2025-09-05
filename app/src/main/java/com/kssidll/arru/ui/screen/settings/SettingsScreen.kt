@@ -305,8 +305,7 @@ fun SettingsScreen(
                             ) {
                                 Checkbox(
                                     checked = uiState.backupOnDangerousActionEnabled,
-                                    interactionSource =
-                                        backupOnDangerousActionInteractionSource,
+                                    interactionSource = backupOnDangerousActionInteractionSource,
                                     onCheckedChange = {
                                         onEvent(SettingsEvent.ToggleBackupOnDangerousAction)
                                     },

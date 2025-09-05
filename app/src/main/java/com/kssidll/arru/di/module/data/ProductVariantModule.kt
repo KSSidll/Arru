@@ -12,6 +12,7 @@ import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityByProductUseC
 import com.kssidll.arru.domain.usecase.data.GetProductVariantEntityUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductVariantEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeProductVariantEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductVariantEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -66,8 +67,13 @@ class ProductVariantModule {
     fun provideMergeProductVariantEntityUseCase(
         itemRepository: ItemRepositorySource,
         productVariantRepository: ProductVariantRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): MergeProductVariantEntityUseCase {
-        return MergeProductVariantEntityUseCase(itemRepository, productVariantRepository)
+        return MergeProductVariantEntityUseCase(
+            itemRepository,
+            productVariantRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides
@@ -75,8 +81,13 @@ class ProductVariantModule {
     fun provideDeleteProductVariantEntityUseCase(
         itemRepository: ItemRepositorySource,
         productVariantRepository: ProductVariantRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteProductVariantEntityUseCase {
-        return DeleteProductVariantEntityUseCase(itemRepository, productVariantRepository)
+        return DeleteProductVariantEntityUseCase(
+            itemRepository,
+            productVariantRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides

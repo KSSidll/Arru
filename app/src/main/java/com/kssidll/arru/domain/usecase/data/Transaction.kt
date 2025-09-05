@@ -182,6 +182,7 @@ class UpdateTransactionEntityUseCase(
 class DeleteTransactionEntityUseCase(
     private val itemRepository: ItemRepositorySource,
     private val transactionRepository: TransactionRepositorySource,
+    private val performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
 ) {
     suspend operator fun invoke(
         id: Long,
@@ -204,6 +205,8 @@ class DeleteTransactionEntityUseCase(
         if (errors.isNotEmpty()) {
             return DeleteTransactionEntityUseCaseResult.Error(errors.toImmutableList())
         }
+
+        performAutomaticBackupIfEnabledUseCase()
 
         itemRepository.delete(items)
         transactionRepository.delete(entity!!)

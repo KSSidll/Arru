@@ -19,6 +19,7 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForShopUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForShopUseCase
 import com.kssidll.arru.domain.usecase.data.InsertShopEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeShopEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateShopEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -64,8 +65,13 @@ class ShopModule {
     fun provideMergeShopEntityUseCase(
         transactionRepository: TransactionRepositorySource,
         shopRepository: ShopRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): MergeShopEntityUseCase {
-        return MergeShopEntityUseCase(transactionRepository, shopRepository)
+        return MergeShopEntityUseCase(
+            transactionRepository,
+            shopRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides
@@ -74,8 +80,14 @@ class ShopModule {
         transactionRepository: TransactionRepositorySource,
         itemRepository: ItemRepositorySource,
         shopRepository: ShopRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteShopEntityUseCase {
-        return DeleteShopEntityUseCase(transactionRepository, itemRepository, shopRepository)
+        return DeleteShopEntityUseCase(
+            transactionRepository,
+            itemRepository,
+            shopRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides

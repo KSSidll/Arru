@@ -18,6 +18,7 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductProduce
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductProducerUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductProducerEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeProductProducerEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductProducerEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -65,8 +66,13 @@ class ProductProducerModule {
     fun provideMergeProductProducerEntityUseCase(
         productRepository: ProductRepositorySource,
         productProducerRepository: ProductProducerRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): MergeProductProducerEntityUseCase {
-        return MergeProductProducerEntityUseCase(productRepository, productProducerRepository)
+        return MergeProductProducerEntityUseCase(
+            productRepository,
+            productProducerRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides
@@ -76,12 +82,14 @@ class ProductProducerModule {
         productVariantRepository: ProductVariantRepositorySource,
         itemRepository: ItemRepositorySource,
         productProducerRepository: ProductProducerRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteProductProducerEntityUseCase {
         return DeleteProductProducerEntityUseCase(
             productRepository,
             productVariantRepository,
             itemRepository,
             productProducerRepository,
+            performAutomaticBackupIfEnabledUseCase,
         )
     }
 

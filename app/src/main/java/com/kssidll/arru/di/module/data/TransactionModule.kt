@@ -17,6 +17,7 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentUseCase
 import com.kssidll.arru.domain.usecase.data.GetTransactionEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTransactionUseCase
 import com.kssidll.arru.domain.usecase.data.InsertTransactionEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateTransactionEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -64,8 +65,13 @@ class TransactionModule {
     fun provideDeleteTransactionEntityUseCase(
         itemRepository: ItemRepositorySource,
         transactionRepository: TransactionRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteTransactionEntityUseCase {
-        return DeleteTransactionEntityUseCase(itemRepository, transactionRepository)
+        return DeleteTransactionEntityUseCase(
+            itemRepository,
+            transactionRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides

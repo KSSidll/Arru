@@ -20,6 +20,7 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductCategor
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeProductCategoryEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductCategoryEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -67,8 +68,13 @@ class ProductCategoryModule {
     fun provideMergeProductCategoryEntityUseCase(
         productRepository: ProductRepositorySource,
         productCategoryRepository: ProductCategoryRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): MergeProductCategoryEntityUseCase {
-        return MergeProductCategoryEntityUseCase(productRepository, productCategoryRepository)
+        return MergeProductCategoryEntityUseCase(
+            productRepository,
+            productCategoryRepository,
+            performAutomaticBackupIfEnabledUseCase,
+        )
     }
 
     @Provides
@@ -78,12 +84,14 @@ class ProductCategoryModule {
         productVariantRepository: ProductVariantRepositorySource,
         itemRepository: ItemRepositorySource,
         productCategoryRepository: ProductCategoryRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteProductCategoryEntityUseCase {
         return DeleteProductCategoryEntityUseCase(
             productRepository,
             productVariantRepository,
             itemRepository,
             productCategoryRepository,
+            performAutomaticBackupIfEnabledUseCase,
         )
     }
 

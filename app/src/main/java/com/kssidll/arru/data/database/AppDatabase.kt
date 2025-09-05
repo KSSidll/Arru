@@ -725,351 +725,349 @@ class MIGRATION_8_9(private val context: Context) : Migration(8, 9) {
             runBlocking {
                 val backups = AppDatabase.availableBackups(context)
 
-                backups.forEach { backup ->
-                    AppDatabase.lockDbBackup(backup)
-                }
+                backups.forEach { backup -> AppDatabase.lockDbBackup(backup) }
             }
         } catch (_: Exception) {}
 
         // Remove deprecated tables
         db.execSQL(
             """
-                    DROP TABLE ProductAltName
-                """
+                DROP TABLE ProductAltName
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE ProductCategoryAltName
-                """
+                DROP TABLE ProductCategoryAltName
+            """
                 .trimIndent()
         )
 
         // Rename Shop
         db.execSQL(
             """
-                    CREATE TABLE ShopEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        name TEXT NOT NULL
-                    )
-                """
+                CREATE TABLE ShopEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    name TEXT NOT NULL
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO ShopEntity (id, name)
-                    SELECT id, name
-                    FROM Shop
-                """
+                INSERT INTO ShopEntity (id, name)
+                SELECT id, name
+                FROM Shop
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE Shop
-                """
+                DROP TABLE Shop
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ShopEntity_name ON ShopEntity(name)
-                """
+                CREATE INDEX IF NOT EXISTS index_ShopEntity_name ON ShopEntity(name)
+            """
                 .trimIndent()
         )
 
         // Rename TransactionBasket
         db.execSQL(
             """
-                    CREATE TABLE TransactionEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        date INTEGER NOT NULL,
-                        shopEntityId INTEGER,
-                        totalCost INTEGER NOT NULL,
-                        note TEXT,
-                        FOREIGN KEY(shopEntityId) REFERENCES ShopEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
-                    )
-                """
+                CREATE TABLE TransactionEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    date INTEGER NOT NULL,
+                    shopEntityId INTEGER,
+                    totalCost INTEGER NOT NULL,
+                    note TEXT,
+                    FOREIGN KEY(shopEntityId) REFERENCES ShopEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO TransactionEntity (id, date, shopEntityId, totalCost, note)
-                    SELECT id, date, shopId, totalCost, note
-                    FROM TransactionBasket
-                """
+                INSERT INTO TransactionEntity (id, date, shopEntityId, totalCost, note)
+                SELECT id, date, shopId, totalCost, note
+                FROM TransactionBasket
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE TransactionBasket
-                """
+                DROP TABLE TransactionBasket
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_TransactionEntity_date ON TransactionEntity(date)
-                """
+                CREATE INDEX IF NOT EXISTS index_TransactionEntity_date ON TransactionEntity(date)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_TransactionEntity_shopEntityId ON TransactionEntity(shopEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_TransactionEntity_shopEntityId ON TransactionEntity(shopEntityId)
+            """
                 .trimIndent()
         )
 
         // Rename ProductProducer
         db.execSQL(
             """
-                    CREATE TABLE ProductProducerEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        name TEXT NOT NULL
-                    )
-                """
+                CREATE TABLE ProductProducerEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    name TEXT NOT NULL
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO ProductProducerEntity (id, name)
-                    SELECT id, name
-                    FROM ProductProducer
-                """
+                INSERT INTO ProductProducerEntity (id, name)
+                SELECT id, name
+                FROM ProductProducer
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE ProductProducer
-                """
+                DROP TABLE ProductProducer
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductProducerEntity_name ON ProductProducerEntity(name)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductProducerEntity_name ON ProductProducerEntity(name)
+            """
                 .trimIndent()
         )
 
         // Rename ProductCategory
         db.execSQL(
             """
-                    CREATE TABLE ProductCategoryEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        name TEXT NOT NULL
-                    )
-                """
+                CREATE TABLE ProductCategoryEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    name TEXT NOT NULL
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO ProductCategoryEntity (id, name)
-                    SELECT id, name
-                    FROM ProductCategory
-                """
+                INSERT INTO ProductCategoryEntity (id, name)
+                SELECT id, name
+                FROM ProductCategory
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE ProductCategory
-                """
+                DROP TABLE ProductCategory
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductCategoryEntity_name ON ProductCategoryEntity(name)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductCategoryEntity_name ON ProductCategoryEntity(name)
+            """
                 .trimIndent()
         )
 
         // Rename Product
         db.execSQL(
             """
-                    CREATE TABLE ProductEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        productCategoryEntityId INTEGER NOT NULL,
-                        productProducerEntityId INTEGER,
-                        name TEXT NOT NULL,
-                        FOREIGN KEY(productCategoryEntityId) REFERENCES ProductCategoryEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-                        FOREIGN KEY(productProducerEntityId) REFERENCES ProductProducerEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
-                    )
-                """
+                CREATE TABLE ProductEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    productCategoryEntityId INTEGER NOT NULL,
+                    productProducerEntityId INTEGER,
+                    name TEXT NOT NULL,
+                    FOREIGN KEY(productCategoryEntityId) REFERENCES ProductCategoryEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+                    FOREIGN KEY(productProducerEntityId) REFERENCES ProductProducerEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO ProductEntity (id, productCategoryEntityId, productProducerEntityId, name)
-                    SELECT id, categoryId, producerId, name
-                    FROM Product
-                """
+                INSERT INTO ProductEntity (id, productCategoryEntityId, productProducerEntityId, name)
+                SELECT id, categoryId, producerId, name
+                FROM Product
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE Product
-                """
+                DROP TABLE Product
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductEntity_productCategoryEntityId ON ProductEntity(productCategoryEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductEntity_productCategoryEntityId ON ProductEntity(productCategoryEntityId)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductEntity_productProducerEntityId ON ProductEntity(productProducerEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductEntity_productProducerEntityId ON ProductEntity(productProducerEntityId)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductEntity_name ON ProductEntity(name)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductEntity_name ON ProductEntity(name)
+            """
                 .trimIndent()
         )
 
         // Rename ProductVariant
         db.execSQL(
             """
-                    CREATE TABLE ProductVariantEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        productEntityId INTEGER,
-                        name TEXT NOT NULL,
-                        FOREIGN KEY(productEntityId) REFERENCES ProductEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
-                    )
-                """
+                CREATE TABLE ProductVariantEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    productEntityId INTEGER,
+                    name TEXT NOT NULL,
+                    FOREIGN KEY(productEntityId) REFERENCES ProductEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO ProductVariantEntity (id, productEntityId, name)
-                    SELECT id, productId, name
-                    FROM ProductVariant
-                """
+                INSERT INTO ProductVariantEntity (id, productEntityId, name)
+                SELECT id, productId, name
+                FROM ProductVariant
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE ProductVariant
-                """
+                DROP TABLE ProductVariant
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductVariantEntity_productEntityId ON ProductVariantEntity(productEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductVariantEntity_productEntityId ON ProductVariantEntity(productEntityId)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ProductVariantEntity_name ON ProductVariantEntity(name)
-                """
+                CREATE INDEX IF NOT EXISTS index_ProductVariantEntity_name ON ProductVariantEntity(name)
+            """
                 .trimIndent()
         )
 
         // Rename Item
         db.execSQL(
             """
-                    CREATE TABLE ItemEntity (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        transactionEntityId INTEGER NOT NULL,
-                        productEntityId INTEGER NOT NULL,
-                        productVariantEntityId INTEGER,
-                        quantity INTEGER NOT NULL,
-                        price INTEGER NOT NULL,
-                        FOREIGN KEY(transactionEntityId) REFERENCES TransactionEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-                        FOREIGN KEY(productEntityId) REFERENCES ProductEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-                        FOREIGN KEY(productVariantEntityId) REFERENCES ProductVariantEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
-                    )
-                """
+                CREATE TABLE ItemEntity (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    transactionEntityId INTEGER NOT NULL,
+                    productEntityId INTEGER NOT NULL,
+                    productVariantEntityId INTEGER,
+                    quantity INTEGER NOT NULL,
+                    price INTEGER NOT NULL,
+                    FOREIGN KEY(transactionEntityId) REFERENCES TransactionEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+                    FOREIGN KEY(productEntityId) REFERENCES ProductEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+                    FOREIGN KEY(productVariantEntityId) REFERENCES ProductVariantEntity(id) ON UPDATE RESTRICT ON DELETE RESTRICT
+                )
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    INSERT INTO ItemEntity (id, transactionEntityId, productEntityId, productVariantEntityId, quantity, price)
-                    SELECT id, transactionBasketId, productId, variantId, quantity, price
-                    FROM Item
-                """
+                INSERT INTO ItemEntity (id, transactionEntityId, productEntityId, productVariantEntityId, quantity, price)
+                SELECT id, transactionBasketId, productId, variantId, quantity, price
+                FROM Item
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    DROP TABLE Item
-                """
+                DROP TABLE Item
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ItemEntity_transactionEntityId ON ItemEntity(transactionEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_ItemEntity_transactionEntityId ON ItemEntity(transactionEntityId)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ItemEntity_productEntityId ON ItemEntity(productEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_ItemEntity_productEntityId ON ItemEntity(productEntityId)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE INDEX IF NOT EXISTS index_ItemEntity_productVariantEntityId ON ItemEntity(productVariantEntityId)
-                """
+                CREATE INDEX IF NOT EXISTS index_ItemEntity_productVariantEntityId ON ItemEntity(productVariantEntityId)
+            """
                 .trimIndent()
         )
 
         db.execSQL(
             """
-                    CREATE VIEW `ItemView` AS SELECT
-                        ItemEntity.id               AS id,
-                        ProductEntity.id            AS productId,
-                        productCategoryEntity.id    AS productCategoryId,
-                        productProducerEntity.id    AS productProducerId,
-                        productVariantEntity.id     AS productVariantId,
-                        TransactionEntity.id        AS transactionId,
-                        ShopEntity.id               AS shopId,
-                        ItemEntity.quantity         AS quantity,
-                        ItemEntity.price            AS price,
-                        TransactionEntity.date      AS date,
-                        ProductEntity.name          AS productName,
-                        ProductVariantEntity.name   AS productVariantName,
-                        ProductCategoryEntity.name  AS productCategoryName,
-                        ProductProducerEntity.name  AS productProducerName,
-                        ShopEntity.name             AS shopName
-                    FROM ItemEntity
-                    LEFT JOIN ProductEntity         ON ProductEntity.id         = ItemEntity.productEntityId
-                    LEFT JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
-                    LEFT JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId
-                    LEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId
-                    LEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId 
-                    LEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId
-                    ORDER BY id DESC
-                """
+                CREATE VIEW `ItemView` AS SELECT
+                    ItemEntity.id               AS id,
+                    ProductEntity.id            AS productId,
+                    productCategoryEntity.id    AS productCategoryId,
+                    productProducerEntity.id    AS productProducerId,
+                    productVariantEntity.id     AS productVariantId,
+                    TransactionEntity.id        AS transactionId,
+                    ShopEntity.id               AS shopId,
+                    ItemEntity.quantity         AS quantity,
+                    ItemEntity.price            AS price,
+                    TransactionEntity.date      AS date,
+                    ProductEntity.name          AS productName,
+                    ProductVariantEntity.name   AS productVariantName,
+                    ProductCategoryEntity.name  AS productCategoryName,
+                    ProductProducerEntity.name  AS productProducerName,
+                    ShopEntity.name             AS shopName
+                FROM ItemEntity
+                LEFT JOIN ProductEntity         ON ProductEntity.id         = ItemEntity.productEntityId
+                LEFT JOIN ProductCategoryEntity ON ProductCategoryEntity.id = ProductEntity.productCategoryEntityId
+                LEFT JOIN ProductProducerEntity ON ProductProducerEntity.id = ProductEntity.productProducerEntityId
+                LEFT JOIN ProductVariantEntity  ON ProductVariantEntity.id  = ItemEntity.productVariantEntityId
+                LEFT JOIN TransactionEntity     ON TransactionEntity.id     = ItemEntity.transactionEntityId 
+                LEFT JOIN ShopEntity            ON ShopEntity.id            = TransactionEntity.shopEntityId
+                ORDER BY id DESC
+            """
                 .trimIndent()
         )
     }

@@ -20,6 +20,7 @@ import com.kssidll.arru.domain.usecase.data.GetTotalSpentByYearForProductUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentForProductUseCase
 import com.kssidll.arru.domain.usecase.data.InsertProductEntityUseCase
 import com.kssidll.arru.domain.usecase.data.MergeProductEntityUseCase
+import com.kssidll.arru.domain.usecase.data.PerformAutomaticBackupIfEnabledUseCase
 import com.kssidll.arru.domain.usecase.data.UpdateProductEntityUseCase
 import dagger.Module
 import dagger.Provides
@@ -78,11 +79,13 @@ class ProductModule {
         productRepository: ProductRepositorySource,
         productVariantRepository: ProductVariantRepositorySource,
         itemRepository: ItemRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): MergeProductEntityUseCase {
         return MergeProductEntityUseCase(
             productRepository,
             productVariantRepository,
             itemRepository,
+            performAutomaticBackupIfEnabledUseCase,
         )
     }
 
@@ -92,11 +95,13 @@ class ProductModule {
         productRepository: ProductRepositorySource,
         productVariantRepository: ProductVariantRepositorySource,
         itemRepository: ItemRepositorySource,
+        performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
     ): DeleteProductEntityUseCase {
         return DeleteProductEntityUseCase(
             productRepository,
             productVariantRepository,
             itemRepository,
+            performAutomaticBackupIfEnabledUseCase,
         )
     }
 

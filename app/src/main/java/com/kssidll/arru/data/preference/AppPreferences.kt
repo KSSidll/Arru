@@ -72,7 +72,8 @@ data object AppPreferences {
         /** Data associated with database backups datastore preference */
         data object Backup {
             data object AutomaticOnDangerousAction {
-                val key: Preferences.Key<Boolean> = booleanPreferencesKey("databaebackupautomaticondangerousaction")
+                val key: Preferences.Key<Boolean> =
+                    booleanPreferencesKey("databaebackupautomaticondangerousaction")
 
                 const val DEFAULT = true
             }

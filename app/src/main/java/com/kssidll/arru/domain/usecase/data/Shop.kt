@@ -129,6 +129,7 @@ class UpdateShopEntityUseCase(private val shopRepository: ShopRepositorySource) 
 class MergeShopEntityUseCase(
     private val transactionRepository: TransactionRepositorySource,
     private val shopRepository: ShopRepositorySource,
+    private val performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
 ) {
     suspend operator fun invoke(
         id: Long,
@@ -151,6 +152,8 @@ class MergeShopEntityUseCase(
             return MergeShopEntityUseCaseResult.Error(errors.toImmutableList())
         }
 
+        performAutomaticBackupIfEnabledUseCase()
+
         val transactions = transactionRepository.byShop(id).first()
 
         val transactionsToUpdate = transactions.map { it.copy(shopEntityId = mergeIntoId) }
@@ -166,6 +169,7 @@ class DeleteShopEntityUseCase(
     private val transactionRepository: TransactionRepositorySource,
     private val itemRepository: ItemRepositorySource,
     private val shopRepository: ShopRepositorySource,
+    private val performAutomaticBackupIfEnabledUseCase: PerformAutomaticBackupIfEnabledUseCase,
 ) {
     suspend operator fun invoke(
         id: Long,
@@ -188,6 +192,8 @@ class DeleteShopEntityUseCase(
         if (errors.isNotEmpty()) {
             return DeleteShopEntityUseCaseResult.Error(errors.toImmutableList())
         }
+
+        performAutomaticBackupIfEnabledUseCase()
 
         transactions.forEach {
             val items = itemRepository.byTransaction(it.id).first()
