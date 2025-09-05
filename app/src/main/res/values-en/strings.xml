@@ -131,4 +131,5 @@
   <string name="service_persistent_notification_description" comment="Displayed in OS app settings as notification type description">Persistent Notification</string>
   <string name="show_persistent_notification" comment="Displayed in app settings as label for a toggle">Show persistent notification</string>
   <string name="persistent_notification_add_transaction" comment="Displayed in the persistent notification title">Add transaction</string>
+  <string name="backup_on_dangerous_action" comment="Label for option to toggle backups on dangerous action (e.g. delete, merge)">Backup on dangerous action</string>
 </resources>
