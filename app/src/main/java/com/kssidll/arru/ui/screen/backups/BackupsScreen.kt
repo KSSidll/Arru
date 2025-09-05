@@ -107,7 +107,7 @@ fun BackupsScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     var lastDate: Long? = null
                     uiState.backups.forEach {
-                        val currentDate = it.time
+                        val currentDate = it.time / 86400000
 
                         if (lastDate == null || currentDate != lastDate) {
                             stickyHeader {
@@ -133,9 +133,9 @@ fun BackupsScreen(
                                                             Locale.getDefault(),
                                                         )
                                                         .format(
-                                                            currentDate -
+                                                            (currentDate * 86400000) -
                                                                 TimeZone.getDefault()
-                                                                    .getOffset(currentDate)
+                                                                    .getOffset(currentDate * 86400000)
                                                         ),
                                                 style = Typography.headlineMedium,
                                             )
