@@ -68,6 +68,15 @@ data object AppPreferences {
                 }
             }
         }
+
+        /** Data associated with database backups datastore preference */
+        data object Backup {
+            data object AutomaticOnDangerousAction {
+                val key: Preferences.Key<Boolean> = booleanPreferencesKey("databaebackupautomaticondangerousaction")
+
+                const val DEFAULT = true
+            }
+        }
     }
 
     /** Data associated with transaction datastore preferences */
@@ -497,5 +506,19 @@ fun AppPreferences.getPersistentNotificationsEnabled(context: Context): Flow<Boo
     return getPreferencesDataStore(context).data.map { preferences ->
         preferences[AppPreferences.Notifications.Persistent.Enabled.key]
             ?: AppPreferences.Notifications.Persistent.Enabled.DEFAULT
+    }
+}
+
+suspend fun AppPreferences.setBackupOnDangerousActionEnabled(context: Context, enabled: Boolean) {
+    getPreferencesDataStore(context).edit {
+        it[AppPreferences.Database.Backup.AutomaticOnDangerousAction.key] = enabled
+    }
+}
+
+@Suppress("KotlinConstantConditions")
+fun AppPreferences.getBackupOnDangerousActionEnabled(context: Context): Flow<Boolean> {
+    return getPreferencesDataStore(context).data.map { preferences ->
+        preferences[AppPreferences.Database.Backup.AutomaticOnDangerousAction.key]
+            ?: AppPreferences.Database.Backup.AutomaticOnDangerousAction.DEFAULT
     }
 }

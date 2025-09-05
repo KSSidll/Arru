@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.settings
 
+import android.R.attr.enabled
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.database.ImportError
 import com.kssidll.arru.data.preference.AppPreferences
+import com.kssidll.arru.data.preference.getBackupOnDangerousActionEnabled
 import com.kssidll.arru.data.preference.getColorScheme
 import com.kssidll.arru.data.preference.getCurrencyFormatLocale
 import com.kssidll.arru.data.preference.getDatabaseLocation
@@ -19,6 +21,7 @@ import com.kssidll.arru.data.preference.getDynamicColor
 import com.kssidll.arru.data.preference.getExportLocation
 import com.kssidll.arru.data.preference.getExportType
 import com.kssidll.arru.data.preference.getPersistentNotificationsEnabled
+import com.kssidll.arru.data.preference.setBackupOnDangerousActionEnabled
 import com.kssidll.arru.data.preference.setCurrencyFormatLocale
 import com.kssidll.arru.data.preference.setExportType
 import com.kssidll.arru.data.preference.setPersistentNotificationEnabled
@@ -50,6 +53,7 @@ data class SettingsUiState(
     val currencyFormatLocale: Locale = Locale.getDefault(),
     val currencyFormatLocaleSetToDefault: Boolean = true,
     val databaseLocation: AppPreferences.Database.Location.Values? = null,
+    val backupOnDangerousActionEnabled: Boolean = true,
     val persistentNotificationEnabled: Boolean = false,
     val databaseLocationChangeFailedError: Boolean = false,
     val databaseLocationChangeShowExtremeDangerActionConfirmationDialogVisible: Boolean = false,
@@ -95,6 +99,8 @@ sealed class SettingsEvent {
     data object ConfirmDatabaseLocationChangeExtremeDangerAction : SettingsEvent()
 
     data object TogglePersistentNotification : SettingsEvent()
+
+    data object ToggleBackupOnDangerousAction : SettingsEvent()
 
     data object ToggleAdvancedSettingsVisibility : SettingsEvent()
 }
@@ -161,6 +167,14 @@ constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            AppPreferences.getBackupOnDangerousActionEnabled(appContext).collect {
+                _uiState.update { currentState ->
+                    currentState.copy(backupOnDangerousActionEnabled = it)
+                }
+            }
+        }
     }
 
     fun handleEvent(event: SettingsEvent) {
@@ -199,6 +213,13 @@ constructor(
                     } else {
                         PersistentNotificationService.stop(appContext)
                     }
+                }
+            }
+
+            is SettingsEvent.ToggleBackupOnDangerousAction -> {
+                val enabled = !uiState.value.backupOnDangerousActionEnabled
+                viewModelScope.launch {
+                    AppPreferences.setBackupOnDangerousActionEnabled(appContext, enabled)
                 }
             }
 

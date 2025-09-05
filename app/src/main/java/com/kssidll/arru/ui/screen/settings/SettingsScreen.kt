@@ -285,6 +285,43 @@ fun SettingsScreen(
                         }
                     }
 
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box {
+                        val backupOnDangerousActionInteractionSource = remember {
+                            MutableInteractionSource()
+                        }
+
+                        Surface(
+                            shape = ShapeDefaults.Large,
+                            tonalElevation = 2.dp,
+                            interactionSource = backupOnDangerousActionInteractionSource,
+                            onClick = { onEvent(SettingsEvent.ToggleBackupOnDangerousAction) },
+                            modifier = Modifier.width(TextFieldDefaults.MinWidth),
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                            ) {
+                                Checkbox(
+                                    checked = uiState.backupOnDangerousActionEnabled,
+                                    interactionSource =
+                                        backupOnDangerousActionInteractionSource,
+                                    onCheckedChange = {
+                                        onEvent(SettingsEvent.ToggleBackupOnDangerousAction)
+                                    },
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(
+                                    text = stringResource(R.string.backup_on_dangerous_action),
+                                    style = Typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Row {

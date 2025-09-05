@@ -270,6 +270,7 @@ fun SettingsRoute(
                 when (event) {
                     is SettingsEvent.NavigateBack -> navigateBack()
                     is SettingsEvent.NavigateBackups -> navigateBackups()
+                    is SettingsEvent.ToggleBackupOnDangerousAction -> viewModel.handleEvent(event)
 
                     is SettingsEvent.ExportData -> {
                         scope.launch {
