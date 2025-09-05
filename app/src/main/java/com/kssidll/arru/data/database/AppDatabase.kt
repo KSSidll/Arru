@@ -355,6 +355,7 @@ abstract class AppDatabase : RoomDatabase() {
             context: Context,
             totalTransactions: Long,
             totalSpending: Long,
+            locked: Boolean,
             time: Long = Calendar.getInstance().timeInMillis,
         ): File {
             val backupDir = context.currentDbBackupDirectory()
@@ -367,7 +368,7 @@ abstract class AppDatabase : RoomDatabase() {
                             time,
                             totalTransactions,
                             totalSpending,
-                            false,
+                            locked,
                         )
                     }.db"
                     )

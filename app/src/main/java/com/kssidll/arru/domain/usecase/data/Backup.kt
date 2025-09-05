@@ -17,12 +17,16 @@ class CreateBackupUseCase(
     private val context: Context,
     private val backupRepository: BackupRepositorySource,
 ) {
-    suspend operator fun invoke(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+    suspend operator fun invoke(
+        locked: Boolean,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) =
         withContext(dispatcher) {
             AppDatabase.saveDbBackup(
                 context = context,
                 totalTransactions = backupRepository.transactionCount(),
                 totalSpending = backupRepository.transactionTotalSpent(),
+                locked = locked
             )
         }
 }

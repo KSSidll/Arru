@@ -58,7 +58,7 @@ constructor(
         viewModelScope.launch {
             when (event) {
                 is BackupsEvent.NavigateBack -> {}
-                is BackupsEvent.CreateBackup -> createBackupUseCase()
+                is BackupsEvent.CreateBackup -> createBackupUseCase(true)
                 is BackupsEvent.DeleteBackup -> deleteBackupUseCase(event.backup)
                 is BackupsEvent.ToggleBackupLock -> toggleBackupLockUseCase(event.backup)
                 is BackupsEvent.LoadBackup -> loadBackupUseCase(event.backup)
