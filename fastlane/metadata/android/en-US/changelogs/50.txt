@@ -1,3 +1,4 @@
 - Fix crash on empty chart
+- Add opt-out automatic backup on dangerous actions with limit of 20 unlocked backups
 - Improve app reactivity
 - Rendering optimisations
