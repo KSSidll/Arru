@@ -84,6 +84,7 @@ fun DisplayTransactionScreen(
         ) {
             if (uiState.transaction != null) {
                 LazyColumn(
+                    state = uiState.listState,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier =
                         Modifier.fillMaxWidth()

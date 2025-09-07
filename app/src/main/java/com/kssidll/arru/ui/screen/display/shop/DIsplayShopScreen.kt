@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Edit
@@ -146,8 +145,9 @@ private fun DisplayShopScreenContent(
 ) {
     val scope = rememberCoroutineScope()
 
-    val listState = rememberLazyListState()
-    val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+    val firstVisibleItemIndex by remember {
+        derivedStateOf { uiState.listState.firstVisibleItemIndex }
+    }
 
     var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
 
@@ -185,7 +185,7 @@ private fun DisplayShopScreenContent(
                     ),
             ) {
                 FloatingActionButton(
-                    onClick = { scope.launch { listState.animateScrollToItem(0) } },
+                    onClick = { scope.launch { uiState.listState.animateScrollToItem(0) } },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier =
@@ -201,7 +201,7 @@ private fun DisplayShopScreenContent(
             ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal),
     ) { paddingValues ->
         LazyColumn(
-            state = listState,
+            state = uiState.listState,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier =
                 Modifier.fillMaxWidth().padding(paddingValues).consumeWindowInsets(paddingValues),

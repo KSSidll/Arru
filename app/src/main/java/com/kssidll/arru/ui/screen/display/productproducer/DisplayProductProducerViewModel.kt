@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.display.productproducer
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 
 @Immutable
 data class DisplayProductProducerUiState(
+    val listState: LazyListState = LazyListState(),
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
     val spentByTime: ImmutableList<ChartSource> = emptyImmutableList(),
     val spentByTimePeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
@@ -98,7 +100,7 @@ constructor(
 
     fun updateState(productProducerId: Long?) =
         viewModelScope.launch {
-            if (productProducerId == null) return@launch
+            if (productProducerId == null || _productProducerId == productProducerId) return@launch
             val productProducer =
                 getProductProducerEntityUseCase(productProducerId).first() ?: return@launch
             _productProducerId = productProducer.id

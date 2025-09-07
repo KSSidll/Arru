@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.display.transaction
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@Immutable data class DisplayTransactionUiState(val transaction: Transaction? = null)
+@Immutable
+data class DisplayTransactionUiState(
+    val listState: LazyListState = LazyListState(),
+    val transaction: Transaction? = null,
+)
 
 @Immutable
 sealed class DisplayTransactionEvent {
@@ -69,6 +74,7 @@ constructor(
 
     fun updateState(transactionId: Long) =
         viewModelScope.launch {
+            if (_transactionId == transactionId) return@launch
             val transaction = getTransactionEntityUseCase(transactionId).first() ?: return@launch
             _transactionId = transaction.id
 
