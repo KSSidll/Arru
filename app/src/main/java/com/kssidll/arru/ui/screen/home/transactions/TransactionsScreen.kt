@@ -323,14 +323,19 @@ fun TransactionScreenContent(
                             onEvent(TransactionsEvent.NavigateDisplayProduct(it.productId))
                         },
                         onItemLongClick = { onEvent(TransactionsEvent.NavigateEditItem(it.id)) },
-                        onItemCategoryClick = {
+                        onCategoryClick = {
                             onEvent(
                                 TransactionsEvent.NavigateDisplayProductCategory(
                                     it.productCategoryId
                                 )
                             )
                         },
-                        onItemProducerClick = {
+                        onCategoryLongClick = {
+                            onEvent(
+                                TransactionsEvent.NavigateEditProductCategory(it.productCategoryId)
+                            )
+                        },
+                        onProducerClick = {
                             it.productProducerId?.let { productProducerId ->
                                 onEvent(
                                     TransactionsEvent.NavigateDisplayProductProducer(
@@ -339,9 +344,21 @@ fun TransactionScreenContent(
                                 )
                             }
                         },
-                        onItemShopClick = {
+                        onProducerLongClick = {
+                            it.productProducerId?.let { productProducerId ->
+                                onEvent(
+                                    TransactionsEvent.NavigateEditProductProducer(productProducerId)
+                                )
+                            }
+                        },
+                        onShopClick = {
                             transaction.shopId?.let { shopId ->
                                 onEvent(TransactionsEvent.NavigateDisplayShop(shopId))
+                            }
+                        },
+                        onShopLongClick = {
+                            transaction.shopId?.let { shopId ->
+                                onEvent(TransactionsEvent.NavigateEditShop(shopId))
                             }
                         },
                         headerColor = headerColor,

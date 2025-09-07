@@ -14,7 +14,9 @@ fun DisplayProductProducerRoute(
     navigateBack: () -> Unit,
     navigateDisplayProduct: (productId: Long) -> Unit,
     navigateDisplayProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     navigateEditItem: (itemId: Long) -> Unit,
     navigateEditProductProducer: () -> Unit,
     viewModel: DisplayProductProducerViewModel = hiltViewModel(),
@@ -40,8 +42,11 @@ fun DisplayProductProducerRoute(
                     navigateDisplayProduct(event.productId)
                 is DisplayProductProducerEvent.NavigateDisplayProductCategory ->
                     navigateDisplayProductCategory(event.productCategoryId)
+                is DisplayProductProducerEvent.NavigateEditProductCategory ->
+                    navigateEditProductCategory(event.productCategoryId)
                 is DisplayProductProducerEvent.NavigateDisplayShop ->
                     navigateDisplayShop(event.shopId)
+                is DisplayProductProducerEvent.NavigateEditShop -> navigateEditShop(event.shopId)
                 is DisplayProductProducerEvent.NavigateEditItem -> navigateEditItem(event.itemId)
                 is DisplayProductProducerEvent.NavigateEditProductProducer ->
                     navigateEditProductProducer()

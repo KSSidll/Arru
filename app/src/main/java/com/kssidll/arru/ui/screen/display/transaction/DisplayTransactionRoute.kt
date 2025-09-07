@@ -17,8 +17,11 @@ fun DisplayTransactionRoute(
     navigateDisplayProduct: (productId: Long) -> Unit,
     navigateEditItem: (itemId: Long) -> Unit,
     navigateDisplayProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateDisplayProductProducer: (producerId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     viewModel: DisplayTransactionViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -33,8 +36,10 @@ fun DisplayTransactionRoute(
 
     LaunchedEffect(transactionId) { viewModel.updateState(transactionId) }
 
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
     DisplayTransactionScreen(
-        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        uiState = uiState,
         onEvent = { event ->
             when (event) {
                 is DisplayTransactionEvent.NavigateBack -> navigateBack()
@@ -42,10 +47,16 @@ fun DisplayTransactionRoute(
                     navigateDisplayProduct(event.productId)
                 is DisplayTransactionEvent.NavigateDisplayProductCategory ->
                     navigateDisplayProductCategory(event.productCategoryId)
+                is DisplayTransactionEvent.NavigateEditProductCategory ->
+                    navigateEditProductCategory(event.productCategoryId)
                 is DisplayTransactionEvent.NavigateDisplayProductProducer ->
                     navigateDisplayProductProducer(event.productProducerId)
+                is DisplayTransactionEvent.NavigateEditProductProducer ->
+                    navigateEditProductProducer(event.productProducerId)
                 is DisplayTransactionEvent.NavigateDisplayShop ->
-                    navigateDisplayShop(viewModel.uiState.value.transaction?.shopId!!)
+                    navigateDisplayShop(uiState.transaction?.shopId!!)
+                is DisplayTransactionEvent.NavigateEditShop ->
+                    navigateEditShop(uiState.transaction?.shopId!!)
                 is DisplayTransactionEvent.NavigateEditItem -> navigateEditItem(event.itemId)
                 is DisplayTransactionEvent.NavigateEditTransaction -> navigateEditTransaction()
                 is DisplayTransactionEvent.NavigateAddItem -> navigateAddItem()

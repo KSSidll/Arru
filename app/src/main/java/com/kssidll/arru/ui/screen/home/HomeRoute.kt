@@ -61,8 +61,11 @@ fun HomeRoute(
     navigateSearch: () -> Unit,
     navigateDisplayProduct: (productId: Long) -> Unit,
     navigateDisplayProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateDisplayProductProducer: (producerId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     navigateAddTransaction: () -> Unit,
     navigateEditTransaction: (transactionId: Long) -> Unit,
     navigateAddItem: (transactionId: Long) -> Unit,
@@ -114,9 +117,14 @@ fun HomeRoute(
                     navigateDisplayProduct(event.productId)
                 is TransactionsEvent.NavigateDisplayProductCategory ->
                     navigateDisplayProductCategory(event.productCategoryId)
+                is TransactionsEvent.NavigateEditProductCategory ->
+                    navigateEditProductCategory(event.productCategoryId)
                 is TransactionsEvent.NavigateDisplayProductProducer ->
                     navigateDisplayProductProducer(event.productProducerId)
+                is TransactionsEvent.NavigateEditProductProducer ->
+                    navigateEditProductProducer(event.productProducerId)
                 is TransactionsEvent.NavigateDisplayShop -> navigateDisplayShop(event.shopId)
+                is TransactionsEvent.NavigateEditShop -> navigateEditShop(event.shopId)
                 is TransactionsEvent.NavigateEditItem -> navigateEditItem(event.itemId)
                 is TransactionsEvent.NavigateEditTransaction ->
                     navigateEditTransaction(event.transactionId)

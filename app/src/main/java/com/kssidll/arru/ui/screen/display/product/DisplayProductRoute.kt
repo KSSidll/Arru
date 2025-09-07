@@ -13,8 +13,11 @@ fun DisplayProductRoute(
     productId: Long?,
     navigateBack: () -> Unit,
     navigateDisplayProductCategory: (categoryId: Long) -> Unit,
+    navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateDisplayProductProducer: (producerId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     navigateEditItem: (itemId: Long) -> Unit,
     navigateEditProduct: () -> Unit,
     viewModel: DisplayProductViewModel = hiltViewModel(),
@@ -38,9 +41,14 @@ fun DisplayProductRoute(
                 is DisplayProductEvent.NavigateBack -> navigateBack()
                 is DisplayProductEvent.NavigateDisplayProductCategory ->
                     navigateDisplayProductCategory(event.productCategoryId)
+                is DisplayProductEvent.NavigateEditProductCategory ->
+                    navigateEditProductCategory(event.productCategoryId)
                 is DisplayProductEvent.NavigateDisplayProductProducer ->
                     navigateDisplayProductProducer(event.productProducerId)
+                is DisplayProductEvent.NavigateEditProductProducer ->
+                    navigateEditProductProducer(event.productProducerId)
                 is DisplayProductEvent.NavigateDisplayShop -> navigateDisplayShop(event.shopId)
+                is DisplayProductEvent.NavigateEditShop -> navigateEditShop(event.shopId)
                 is DisplayProductEvent.NavigateEditItem -> navigateEditItem(event.itemId)
                 is DisplayProductEvent.NavigateEditProduct -> navigateEditProduct()
                 is DisplayProductEvent.SetSpentByTimePeriod -> viewModel.handleEvent(event)

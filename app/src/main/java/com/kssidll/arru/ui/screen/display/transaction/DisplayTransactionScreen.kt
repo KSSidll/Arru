@@ -100,14 +100,21 @@ fun DisplayTransactionScreen(
                         onItemLongClick = {
                             onEvent(DisplayTransactionEvent.NavigateEditItem(it.id))
                         },
-                        onItemCategoryClick = {
+                        onCategoryClick = {
                             onEvent(
                                 DisplayTransactionEvent.NavigateDisplayProductCategory(
                                     it.productCategoryId
                                 )
                             )
                         },
-                        onItemProducerClick = {
+                        onCategoryLongClick = {
+                            onEvent(
+                                DisplayTransactionEvent.NavigateEditProductCategory(
+                                    it.productCategoryId
+                                )
+                            )
+                        },
+                        onProducerClick = {
                             it.productProducerId?.let { productProducerId ->
                                 onEvent(
                                     DisplayTransactionEvent.NavigateDisplayProductProducer(
@@ -116,7 +123,17 @@ fun DisplayTransactionScreen(
                                 )
                             }
                         },
-                        onItemShopClick = { onEvent(DisplayTransactionEvent.NavigateDisplayShop) },
+                        onProducerLongClick = {
+                            it.productProducerId?.let { productProducerId ->
+                                onEvent(
+                                    DisplayTransactionEvent.NavigateEditProductProducer(
+                                        productProducerId
+                                    )
+                                )
+                            }
+                        },
+                        onShopClick = { onEvent(DisplayTransactionEvent.NavigateDisplayShop) },
+                        onShopLongClick = { onEvent(DisplayTransactionEvent.NavigateEditShop) },
                         headerColor = headerColor,
                         currencyLocale = currencyLocale,
                         modifier = Modifier.width(600.dp),

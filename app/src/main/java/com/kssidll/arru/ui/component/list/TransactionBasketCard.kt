@@ -5,11 +5,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Payment
 import androidx.compose.material.icons.rounded.Store
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +31,6 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,9 +60,12 @@ fun LazyListScope.transactionBasketCard(
     onItemAddClick: () -> Unit,
     onItemClick: (item: Item) -> Unit,
     onItemLongClick: (item: Item) -> Unit,
-    onItemCategoryClick: (item: Item) -> Unit,
-    onItemProducerClick: (item: Item) -> Unit,
-    onItemShopClick: () -> Unit,
+    onCategoryClick: (item: Item) -> Unit,
+    onCategoryLongClick: (item: Item) -> Unit,
+    onProducerClick: (item: Item) -> Unit,
+    onProducerLongClick: (item: Item) -> Unit,
+    onShopClick: () -> Unit,
+    onShopLongClick: () -> Unit,
     headerColor: Color,
     currencyLocale: Locale,
 ) {
@@ -74,7 +76,8 @@ fun LazyListScope.transactionBasketCard(
         onTransactionClick = onTransactionClick,
         onTransactionLongClick = onTransactionLongClick,
         onItemAddClick = onItemAddClick,
-        onItemShopClick = onItemShopClick,
+        onShopClick = onShopClick,
+        onShopLongClick = onShopLongClick,
         headerColor = headerColor,
         currencyLocale = currencyLocale,
     )
@@ -95,23 +98,14 @@ fun LazyListScope.transactionBasketCard(
             ) {
                 Column {
                     transaction.items.forEach { item ->
-                        // micro optimisation to reduce recomposition, not exactly sure as to why
-                        // this is needed
-                        // might be because of how we layout the paging data (iterating the entire
-                        // list)
-                        val onItemClick = remember(item.productId) { onItemClick }
-                        val onItemLongClick = remember(item.id) { onItemLongClick }
-                        val onItemCategoryClick =
-                            remember(item.productCategoryId) { onItemCategoryClick }
-                        val onItemProducerClick =
-                            remember(item.productProducerId) { onItemProducerClick }
-
                         ItemCard(
                             item = item,
                             onItemClick = onItemClick,
                             onItemLongClick = onItemLongClick,
-                            onCategoryClick = onItemCategoryClick,
-                            onProducerClick = onItemProducerClick,
+                            onCategoryClick = onCategoryClick,
+                            onCategoryLongClick = onCategoryLongClick,
+                            onProducerClick = onProducerClick,
+                            onProducerLongClick = onProducerLongClick,
                         )
                     }
                 }
@@ -128,7 +122,8 @@ fun LazyListScope.transactionBasketCardHeader(
     onTransactionClick: (() -> Unit)? = null,
     onTransactionLongClick: (() -> Unit)? = null,
     onItemAddClick: () -> Unit,
-    onItemShopClick: () -> Unit,
+    onShopClick: () -> Unit,
+    onShopLongClick: () -> Unit,
     headerColor: Color,
     currencyLocale: Locale,
 ) {
@@ -171,32 +166,37 @@ fun LazyListScope.transactionBasketCardHeader(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(start = 8.dp, end = 20.dp),
                         ) {
-                            // micro optimisation to reduce recomposition, not exactly sure as to
-                            // why this is needed
-                            // might be because of how we layout the paging data (iterating the
-                            // entire list)
-                            val onItemShopClick = remember(transaction.shopId) { onItemShopClick }
                             if (transaction.shopId != null) {
-                                Button(
-                                    onClick = onItemShopClick,
-                                    contentPadding =
-                                        PaddingValues(vertical = 0.dp, horizontal = 12.dp),
-                                    colors =
-                                        ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.primary,
-                                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                                        ),
+                                Surface(
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    shape = RoundedCornerShape(100),
                                 ) {
-                                    Text(
-                                        text = transaction.shopName.orEmpty(),
-                                        textAlign = TextAlign.Center,
-                                        style = Typography.labelMedium,
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Rounded.Store,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(17.dp),
-                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier =
+                                            Modifier.combinedClickable(
+                                                    onClick = onShopClick,
+                                                    onLongClick = onShopLongClick,
+                                                )
+                                                .defaultMinSize(
+                                                    minWidth = ButtonDefaults.MinWidth,
+                                                    minHeight = ButtonDefaults.MinHeight,
+                                                )
+                                                .padding(vertical = 0.dp, horizontal = 12.dp),
+                                    ) {
+                                        Text(
+                                            text = transaction.shopName.orEmpty(),
+                                            textAlign = TextAlign.Center,
+                                            style = Typography.labelMedium,
+                                        )
+                                        Icon(
+                                            imageVector = Icons.Rounded.Store,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(17.dp),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -245,11 +245,6 @@ fun LazyListScope.transactionBasketCardHeader(
                             }
                         }
 
-                        // micro optimisation to reduce recomposition, not exactly sure as to why
-                        // this is needed
-                        // might be because of how we layout the paging data (iterating the entire
-                        // list)
-                        val onItemAddClick = remember(transaction.id) { onItemAddClick }
                         OutlinedIconButton(
                             onClick = onItemAddClick,
                             shape = ShapeDefaults.Medium,
@@ -290,9 +285,12 @@ private fun TransactionBasketCardPreview() {
                     onItemAddClick = {},
                     onItemClick = {},
                     onItemLongClick = {},
-                    onItemCategoryClick = {},
-                    onItemProducerClick = {},
-                    onItemShopClick = {},
+                    onCategoryClick = {},
+                    onCategoryLongClick = {},
+                    onProducerClick = {},
+                    onProducerLongClick = {},
+                    onShopClick = {},
+                    onShopLongClick = {},
                     headerColor = color,
                     currencyLocale = Locale.getDefault(),
                 )
@@ -312,7 +310,8 @@ private fun TransactionBasketCardHeaderPlaceholderSizePreview() {
                     transaction = Transaction.generate(),
                     itemsVisible = false,
                     onItemAddClick = {},
-                    onItemShopClick = {},
+                    onShopClick = {},
+                    onShopLongClick = {},
                     headerColor = color,
                     currencyLocale = Locale.getDefault(),
                     modifier = Modifier.height(HEADER_HEIGHT),

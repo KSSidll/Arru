@@ -239,9 +239,17 @@ private fun DisplayShopScreenContent(
                 onCategoryClick = {
                     onEvent(DisplayShopEvent.NavigateDisplayProductCategory(it.productCategoryId))
                 },
+                onCategoryLongClick = {
+                    onEvent(DisplayShopEvent.NavigateEditProductCategory(it.productCategoryId))
+                },
                 onProducerClick = {
                     it.productProducerId?.let { productProducerId ->
                         onEvent(DisplayShopEvent.NavigateDisplayProductProducer(productProducerId))
+                    }
+                },
+                onProducerLongClick = {
+                    it.productProducerId?.let { productProducerId ->
+                        onEvent(DisplayShopEvent.NavigateEditProductProducer(productProducerId))
                     }
                 },
                 modifier = Modifier.width(600.dp),

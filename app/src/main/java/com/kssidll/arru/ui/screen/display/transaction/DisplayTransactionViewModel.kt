@@ -28,10 +28,16 @@ sealed class DisplayTransactionEvent {
     data class NavigateDisplayProductCategory(val productCategoryId: Long) :
         DisplayTransactionEvent()
 
+    data class NavigateEditProductCategory(val productCategoryId: Long) : DisplayTransactionEvent()
+
     data class NavigateDisplayProductProducer(val productProducerId: Long) :
         DisplayTransactionEvent()
 
+    data class NavigateEditProductProducer(val productProducerId: Long) : DisplayTransactionEvent()
+
     data object NavigateDisplayShop : DisplayTransactionEvent()
+
+    data object NavigateEditShop : DisplayTransactionEvent()
 
     data object NavigateAddItem : DisplayTransactionEvent()
 

@@ -36,8 +36,11 @@ fun LazyListScope.itemList(
     onItemClick: ((item: Item) -> Unit)? = null,
     onItemLongClick: ((item: Item) -> Unit)? = null,
     onCategoryClick: ((item: Item) -> Unit)? = null,
+    onCategoryLongClick: ((item: Item) -> Unit)? = null,
     onProducerClick: ((item: Item) -> Unit)? = null,
+    onProducerLongClick: ((item: Item) -> Unit)? = null,
     onShopClick: ((item: Item) -> Unit)? = null,
+    onShopLongClick: ((item: Item) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val itemCount = transactionItems.itemCount
@@ -93,8 +96,11 @@ fun LazyListScope.itemList(
                             onItemClick = onItemClick,
                             onItemLongClick = onItemLongClick,
                             onCategoryClick = onCategoryClick,
+                            onCategoryLongClick = onCategoryLongClick,
                             onProducerClick = onProducerClick,
+                            onProducerLongClick = onProducerLongClick,
                             onShopClick = onShopClick,
+                            onShopLongClick = onShopLongClick,
                         )
                     }
                 }

@@ -453,8 +453,11 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateSearch = navigateSearch,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateEditProductCategory = navigateEditProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
+                    navigateEditShop = navigateEditShop,
                     navigateAddTransaction = navigateAddTransaction,
                     navigateEditTransaction = navigateEditTransaction,
                     navigateAddItem = {
@@ -587,7 +590,9 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
+                    navigateEditShop = navigateEditShop,
                     navigateEditItem = navigateEditItem,
                     navigateEditProductCategory = {
                         navigateEditProductCategory(screen.providedCategoryId.value)
@@ -601,7 +606,9 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateEditProductCategory = navigateEditProductCategory,
                     navigateDisplayShop = navigateDisplayShop,
+                    navigateEditShop = navigateEditShop,
                     navigateEditItem = navigateEditItem,
                     navigateEditProductProducer = {
                         navigateEditProductProducer(screen.providedProducerId.value)
@@ -614,8 +621,11 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     productId = screen.providedProductId.value,
                     navigateBack = navigateBack,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateEditProductCategory = navigateEditProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
+                    navigateEditShop = navigateEditShop,
                     navigateEditItem = navigateEditItem,
                     navigateEditProduct = { navigateEditProduct(screen.providedProductId.value) },
                 )
@@ -627,7 +637,9 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateEditProductCategory = navigateEditProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     navigateEditItem = navigateEditItem,
                     navigateEditShop = { navigateEditShop(screen.providedShopId.value) },
                 )
@@ -791,8 +803,11 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateEditItem = navigateEditItem,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
+                    navigateEditProductCategory = navigateEditProductCategory,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
+                    navigateEditProductProducer = navigateEditProductProducer,
                     navigateDisplayShop = navigateDisplayShop,
+                    navigateEditShop = navigateEditShop,
                 )
             }
 

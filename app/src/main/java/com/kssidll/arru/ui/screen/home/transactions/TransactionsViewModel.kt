@@ -34,9 +34,15 @@ sealed class TransactionsEvent {
 
     data class NavigateDisplayProductCategory(val productCategoryId: Long) : TransactionsEvent()
 
+    data class NavigateEditProductCategory(val productCategoryId: Long) : TransactionsEvent()
+
     data class NavigateDisplayProductProducer(val productProducerId: Long) : TransactionsEvent()
 
+    data class NavigateEditProductProducer(val productProducerId: Long) : TransactionsEvent()
+
     data class NavigateDisplayShop(val shopId: Long) : TransactionsEvent()
+
+    data class NavigateEditShop(val shopId: Long) : TransactionsEvent()
 
     data class NavigateEditTransaction(val transactionId: Long) : TransactionsEvent()
 
@@ -65,8 +71,11 @@ constructor(private val getAllTransactionsUseCase: GetAllTransactionsUseCase) : 
             is TransactionsEvent.NavigateAddItem -> {}
             is TransactionsEvent.NavigateDisplayProduct -> {}
             is TransactionsEvent.NavigateDisplayProductCategory -> {}
+            is TransactionsEvent.NavigateEditProductCategory -> {}
             is TransactionsEvent.NavigateDisplayProductProducer -> {}
+            is TransactionsEvent.NavigateEditProductProducer -> {}
             is TransactionsEvent.NavigateDisplayShop -> {}
+            is TransactionsEvent.NavigateEditShop -> {}
             is TransactionsEvent.NavigateEditItem -> {}
             is TransactionsEvent.NavigateEditTransaction -> {}
             is TransactionsEvent.NavigateSearch -> {}

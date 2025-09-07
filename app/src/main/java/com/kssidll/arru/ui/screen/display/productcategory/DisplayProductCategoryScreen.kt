@@ -250,9 +250,19 @@ private fun DisplayProductCategoryScreenContent(
                         )
                     }
                 },
+                onProducerLongClick = {
+                    it.productProducerId?.let { producerId ->
+                        onEvent(DisplayProductCategoryEvent.NavigateEditProductProducer(producerId))
+                    }
+                },
                 onShopClick = {
                     it.shopId?.let { shopId ->
                         onEvent(DisplayProductCategoryEvent.NavigateDisplayShop(shopId))
+                    }
+                },
+                onShopLongClick = {
+                    it.shopId?.let { shopId ->
+                        onEvent(DisplayProductCategoryEvent.NavigateEditShop(shopId))
                     }
                 },
             )

@@ -54,7 +54,12 @@ sealed class DisplayProductCategoryEvent {
     data class NavigateDisplayProductProducer(val productProducerId: Long) :
         DisplayProductCategoryEvent()
 
+    data class NavigateEditProductProducer(val productProducerId: Long) :
+        DisplayProductCategoryEvent()
+
     data class NavigateDisplayShop(val shopId: Long) : DisplayProductCategoryEvent()
+
+    data class NavigateEditShop(val shopId: Long) : DisplayProductCategoryEvent()
 
     data class SetSpentByTimePeriod(val newPeriod: SpendingSummaryPeriod) :
         DisplayProductCategoryEvent()
@@ -128,7 +133,9 @@ constructor(
             is DisplayProductCategoryEvent.NavigateDisplayProduct -> {}
             is DisplayProductCategoryEvent.NavigateEditItem -> {}
             is DisplayProductCategoryEvent.NavigateDisplayProductProducer -> {}
+            is DisplayProductCategoryEvent.NavigateEditProductProducer -> {}
             is DisplayProductCategoryEvent.NavigateDisplayShop -> {}
+            is DisplayProductCategoryEvent.NavigateEditShop -> {}
             is DisplayProductCategoryEvent.SetSpentByTimePeriod ->
                 setSpentByTimePeriod(event.newPeriod)
         }

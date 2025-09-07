@@ -16,7 +16,9 @@ fun DisplayProductCategoryRoute(
     navigateDisplayProduct: (productId: Long) -> Unit,
     navigateEditItem: (itemId: Long) -> Unit,
     navigateDisplayProductProducer: (producerId: Long) -> Unit,
+    navigateEditProductProducer: (producerId: Long) -> Unit,
     navigateDisplayShop: (shopId: Long) -> Unit,
+    navigateEditShop: (shopId: Long) -> Unit,
     viewModel: DisplayProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -43,8 +45,11 @@ fun DisplayProductCategoryRoute(
                 is DisplayProductCategoryEvent.NavigateEditItem -> navigateEditItem(event.itemId)
                 is DisplayProductCategoryEvent.NavigateDisplayProductProducer ->
                     navigateDisplayProductProducer(event.productProducerId)
+                is DisplayProductCategoryEvent.NavigateEditProductProducer ->
+                    navigateEditProductProducer(event.productProducerId)
                 is DisplayProductCategoryEvent.NavigateDisplayShop ->
                     navigateDisplayShop(event.shopId)
+                is DisplayProductCategoryEvent.NavigateEditShop -> navigateEditShop(event.shopId)
                 is DisplayProductCategoryEvent.SetSpentByTimePeriod -> viewModel.handleEvent(event)
             }
         },
