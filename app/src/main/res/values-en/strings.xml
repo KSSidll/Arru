@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
   <string name="navigate_to_previous_screen">Return to previous screen</string>
   <string name="dashboard_nav_label">Dashboard</string>
   <string name="navigate_to_dashboard_description">Navigate to the dashboard</string>
@@ -106,7 +106,7 @@
   <string name="merge_action_confirm">Confirm</string>
   <string name="merge_action_cancel">Cancel</string>
   <string name="merge_action">Merge</string>
-  <string name="merge_action_message_template" tools:ignore="Typos">This action will merge all {value_1} into {value_2}\nAs a result, all transactions under {value_1} will be under {value_2}\nAre you sure you want to continue?</string>
+  <string name="merge_action_message_template">This action will merge all {value_1} into {value_2}\nAs a result, all transactions under {value_1} will be under {value_2}\nAre you sure you want to continue?</string>
   <string name="merge_action_chose_candidate">Choose this as the candidate for merge operation</string>
   <string name="no_data_to_display_text">There is nothing to display yet :(</string>
   <string name="no_data_to_display_add_transaction_hint">Try adding a transaction</string>
