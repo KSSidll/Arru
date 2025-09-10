@@ -1,5 +1,6 @@
 package com.kssidll.arru.ui.screen.modify.productvariant.editproductvariant
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -23,6 +24,13 @@ fun EditProductVariantRoute(
 ) {
     val scope = rememberCoroutineScope()
     val navigateBackLock = remember { Mutex() }
+
+    BackHandler {
+        if (!navigateBackLock.isLocked) {
+            navigateBackLock.tryLock()
+            navigateBack(variantId)
+        }
+    }
 
     SideEffect {
         scope.launch {
