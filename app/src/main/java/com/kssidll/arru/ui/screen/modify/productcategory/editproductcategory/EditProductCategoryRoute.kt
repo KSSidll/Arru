@@ -19,7 +19,8 @@ import kotlinx.coroutines.sync.Mutex
 @Composable
 fun EditProductCategoryRoute(
     categoryId: Long,
-    navigateBack: (categoryId: Long?) -> Unit,
+    provideBack: (categoryId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: EditProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -28,7 +29,8 @@ fun EditProductCategoryRoute(
     BackHandler {
         if (!navigateBackLock.isLocked) {
             navigateBackLock.tryLock()
-            navigateBack(categoryId)
+            provideBack(categoryId)
+            navigateBack()
         }
     }
 
@@ -36,7 +38,8 @@ fun EditProductCategoryRoute(
         scope.launch {
             if (!viewModel.checkExists(categoryId) && !navigateBackLock.isLocked) {
                 navigateBackLock.tryLock()
-                navigateBack(null)
+                provideBack(null)
+                navigateBack()
             }
         }
     }
@@ -51,7 +54,8 @@ fun EditProductCategoryRoute(
                     is ModifyProductCategoryEvent.NavigateBack -> {
                         if (!navigateBackLock.isLocked) {
                             navigateBackLock.tryLock()
-                            navigateBack(categoryId)
+                            provideBack(categoryId)
+                            navigateBack()
                         }
                     }
                     is ModifyProductCategoryEvent.DeleteProductCategory -> {
@@ -61,7 +65,8 @@ fun EditProductCategoryRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(null)
+                            provideBack(null)
+                            navigateBack()
                         }
                     }
                     is ModifyProductCategoryEvent.MergeProductCategory -> {
@@ -71,7 +76,8 @@ fun EditProductCategoryRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                     is ModifyProductCategoryEvent.SelectMergeCandidate ->
@@ -92,7 +98,8 @@ fun EditProductCategoryRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(categoryId)
+                            provideBack(categoryId)
+                            navigateBack()
                         }
                     }
                 }

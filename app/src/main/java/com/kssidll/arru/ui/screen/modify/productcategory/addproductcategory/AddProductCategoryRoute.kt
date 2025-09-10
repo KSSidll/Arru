@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddProductCategoryRoute(
     defaultName: String?,
-    navigateBack: (productCategoryId: Long?) -> Unit,
+    provideBack: (productCategoryId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: AddProductCategoryViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -27,7 +28,7 @@ fun AddProductCategoryRoute(
         onEvent = { event ->
             scope.launch {
                 when (event) {
-                    is ModifyProductCategoryEvent.NavigateBack -> navigateBack(null)
+                    is ModifyProductCategoryEvent.NavigateBack -> navigateBack()
                     is ModifyProductCategoryEvent.DeleteProductCategory -> {}
                     is ModifyProductCategoryEvent.MergeProductCategory -> {}
                     is ModifyProductCategoryEvent.SelectMergeCandidate -> {}
@@ -39,7 +40,8 @@ fun AddProductCategoryRoute(
                     is ModifyProductCategoryEvent.Submit -> {
                         val result = viewModel.handleEvent(event)
                         if (result is ModifyProductCategoryEventResult.SuccessInsert) {
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                 }

@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddProductRoute(
     defaultName: String?,
-    navigateBack: (productId: Long?) -> Unit,
+    provideBack: (productId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     navigateAddProductCategory: (query: String?) -> Unit,
     navigateAddProductProducer: (query: String?) -> Unit,
     navigateEditProductCategory: (categoryId: Long) -> Unit,
@@ -47,7 +48,7 @@ fun AddProductRoute(
                         navigateAddProductCategory(event.name)
                     is ModifyProductEvent.NavigateAddProductProducer ->
                         navigateAddProductProducer(event.name)
-                    is ModifyProductEvent.NavigateBack -> navigateBack(null)
+                    is ModifyProductEvent.NavigateBack -> navigateBack()
                     is ModifyProductEvent.NavigateEditProductCategory ->
                         navigateEditProductCategory(event.productCategoryId)
                     is ModifyProductEvent.NavigateEditProductProducer ->
@@ -67,7 +68,8 @@ fun AddProductRoute(
                     is ModifyProductEvent.Submit -> {
                         val result = viewModel.handleEvent(event)
                         if (result is ModifyProductEventResult.SuccessInsert) {
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                 }

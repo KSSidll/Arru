@@ -17,7 +17,8 @@ import kotlinx.coroutines.sync.Mutex
 fun AddProductVariantRoute(
     productId: Long,
     defaultName: String?,
-    navigateBack: (productVariantId: Long?) -> Unit,
+    provideBack: (productVariantId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: AddProductVariantViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -27,7 +28,8 @@ fun AddProductVariantRoute(
         scope.launch {
             if (!viewModel.setAndCheckProduct(productId) && !navigateBackLock.isLocked) {
                 navigateBackLock.tryLock()
-                navigateBack(null)
+                provideBack(null)
+                navigateBack()
             }
         }
     }
@@ -44,7 +46,7 @@ fun AddProductVariantRoute(
                     is ModifyProductVariantEvent.NavigateBack -> {
                         if (!navigateBackLock.isLocked) {
                             navigateBackLock.tryLock()
-                            navigateBack(null)
+                            navigateBack()
                         }
                     }
                     is ModifyProductVariantEvent.DeleteProductVariant -> {}
@@ -59,7 +61,8 @@ fun AddProductVariantRoute(
                     is ModifyProductVariantEvent.Submit -> {
                         val result = viewModel.handleEvent(event)
                         if (result is ModifyProductVariantEventResult.SuccessInsert) {
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                 }

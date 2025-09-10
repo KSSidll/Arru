@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddShopRoute(
     defaultName: String?,
-    navigateBack: (shopId: Long?) -> Unit,
+    provideBack: (shopId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: AddShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -25,7 +26,7 @@ fun AddShopRoute(
         onEvent = { event ->
             scope.launch {
                 when (event) {
-                    is ModifyShopEvent.NavigateBack -> navigateBack(null)
+                    is ModifyShopEvent.NavigateBack -> navigateBack()
                     is ModifyShopEvent.DeleteShop -> {}
                     is ModifyShopEvent.MergeShop -> {}
                     is ModifyShopEvent.SelectMergeCandidate -> {}
@@ -37,7 +38,8 @@ fun AddShopRoute(
                     is ModifyShopEvent.Submit -> {
                         val result = viewModel.handleEvent(event)
                         if (result is ModifyShopEventResult.SuccessInsert) {
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                 }

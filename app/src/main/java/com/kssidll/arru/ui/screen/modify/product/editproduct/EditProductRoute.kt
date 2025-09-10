@@ -19,7 +19,8 @@ import kotlinx.coroutines.sync.Mutex
 @Composable
 fun EditProductRoute(
     productId: Long,
-    navigateBack: (productId: Long?) -> Unit,
+    provideBack: (productId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     navigateAddProductCategory: (query: String?) -> Unit,
     navigateAddProductProducer: (query: String?) -> Unit,
     navigateEditProductCategory: (categoryId: Long) -> Unit,
@@ -34,7 +35,8 @@ fun EditProductRoute(
     BackHandler {
         if (!navigateBackLock.isLocked) {
             navigateBackLock.tryLock()
-            navigateBack(productId)
+            provideBack(productId)
+            navigateBack()
         }
     }
 
@@ -42,7 +44,8 @@ fun EditProductRoute(
         scope.launch {
             if (!viewModel.checkExists(productId) && !navigateBackLock.isLocked) {
                 navigateBackLock.tryLock()
-                navigateBack(null)
+                provideBack(null)
+                navigateBack()
             }
         }
     }
@@ -69,7 +72,8 @@ fun EditProductRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(null)
+                            provideBack(null)
+                            navigateBack()
                         }
                     }
                     is ModifyProductEvent.MergeProduct -> {
@@ -79,7 +83,8 @@ fun EditProductRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                     is ModifyProductEvent.NavigateAddProductCategory ->
@@ -89,7 +94,8 @@ fun EditProductRoute(
                     is ModifyProductEvent.NavigateBack -> {
                         if (!navigateBackLock.isLocked) {
                             navigateBackLock.tryLock()
-                            navigateBack(productId)
+                            provideBack(productId)
+                            navigateBack()
                         }
                     }
                     is ModifyProductEvent.NavigateEditProductCategory ->
@@ -119,7 +125,8 @@ fun EditProductRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(productId)
+                            provideBack(productId)
+                            navigateBack()
                         }
                     }
                 }

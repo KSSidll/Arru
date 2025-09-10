@@ -488,15 +488,15 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.AddProduct -> {
                 AddProductRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = { productId ->
+                    provideBack = { productId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProductId
                         ) {
                             productId?.let { previousDestination.provideProduct(it) }
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                     navigateAddProductCategory = navigateAddProductCategory,
                     navigateAddProductProducer = navigateAddProductProducer,
                     navigateEditProductCategory = navigateEditProductCategory,
@@ -510,7 +510,7 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                 AddProductVariantRoute(
                     productId = screen.productId,
                     defaultName = screen.defaultName,
-                    navigateBack = { productVariantId ->
+                    provideBack = { productVariantId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null &&
@@ -520,51 +520,51 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                                 previousDestination.provideProductVariant(productVariantId)
                             }
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.AddProductCategory -> {
                 AddProductCategoryRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = { productCategoryId ->
+                    provideBack = { productCategoryId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsCategoryId
                         ) {
                             productCategoryId?.let { previousDestination.provideCategory(it) }
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.AddProductProducer -> {
                 AddProductProducerRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = { productProducerId ->
+                    provideBack = { productProducerId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProducerId
                         ) {
                             productProducerId?.let { previousDestination.provideProducer(it) }
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.AddShop -> {
                 AddShopRoute(
                     defaultName = screen.defaultName,
-                    navigateBack = { shopId ->
+                    provideBack = { shopId ->
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsShopId) {
                             shopId?.let { previousDestination.provideShop(it) }
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
@@ -648,20 +648,20 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.EditShop -> {
                 EditShopRoute(
                     shopId = screen.shopId,
-                    navigateBack = { shopId ->
+                    provideBack = { shopId ->
                         val previousDestination = navController.previousDestination()
                         if (previousDestination != null && previousDestination is AcceptsShopId) {
                             previousDestination.provideShop(shopId)
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.EditProductVariant -> {
                 EditProductVariantRoute(
                     variantId = screen.variantId,
-                    navigateBack = { variantId ->
+                    provideBack = { variantId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null &&
@@ -669,23 +669,23 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                         ) {
                             previousDestination.provideProductVariant(variantId)
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.EditProduct -> {
                 EditProductRoute(
                     productId = screen.productId,
-                    navigateBack = { productId ->
+                    provideBack = { productId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProductId
                         ) {
                             previousDestination.provideProduct(productId)
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                     navigateAddProductCategory = navigateAddProductCategory,
                     navigateAddProductProducer = navigateAddProductProducer,
                     navigateEditProductCategory = navigateEditProductCategory,
@@ -698,30 +698,30 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
             is Screen.EditProductCategory -> {
                 EditProductCategoryRoute(
                     categoryId = screen.categoryId,
-                    navigateBack = { categoryId ->
+                    provideBack = { categoryId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsCategoryId
                         ) {
                             previousDestination.provideCategory(categoryId)
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 
             is Screen.EditProductProducer -> {
                 EditProductProducerRoute(
                     producerId = screen.producerId,
-                    navigateBack = { producerId ->
+                    provideBack = { producerId ->
                         val previousDestination = navController.previousDestination()
                         if (
                             previousDestination != null && previousDestination is AcceptsProducerId
                         ) {
                             previousDestination.provideProducer(producerId)
                         }
-                        navigateBack()
                     },
+                    navigateBack = navigateBack,
                 )
             }
 

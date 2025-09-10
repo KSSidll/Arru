@@ -19,7 +19,8 @@ import kotlinx.coroutines.sync.Mutex
 @Composable
 fun EditShopRoute(
     shopId: Long,
-    navigateBack: (shopId: Long?) -> Unit,
+    provideBack: (shopId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: EditShopViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -28,7 +29,8 @@ fun EditShopRoute(
     BackHandler {
         if (!navigateBackLock.isLocked) {
             navigateBackLock.tryLock()
-            navigateBack(shopId)
+            provideBack(shopId)
+            navigateBack()
         }
     }
 
@@ -36,7 +38,8 @@ fun EditShopRoute(
         scope.launch {
             if (!viewModel.checkExists(shopId) && !navigateBackLock.isLocked) {
                 navigateBackLock.tryLock()
-                navigateBack(null)
+                provideBack(null)
+                navigateBack()
             }
         }
     }
@@ -51,7 +54,8 @@ fun EditShopRoute(
                     is ModifyShopEvent.NavigateBack -> {
                         if (!navigateBackLock.isLocked) {
                             navigateBackLock.tryLock()
-                            navigateBack(shopId)
+                            provideBack(shopId)
+                            navigateBack()
                         }
                     }
                     is ModifyShopEvent.DeleteShop -> {
@@ -61,7 +65,8 @@ fun EditShopRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(null)
+                            provideBack(null)
+                            navigateBack()
                         }
                     }
                     is ModifyShopEvent.MergeShop -> {
@@ -71,7 +76,8 @@ fun EditShopRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                     is ModifyShopEvent.SelectMergeCandidate -> viewModel.handleEvent(event)
@@ -91,7 +97,8 @@ fun EditShopRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(shopId)
+                            provideBack(shopId)
+                            navigateBack()
                         }
                     }
                 }

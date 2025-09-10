@@ -19,7 +19,8 @@ import kotlinx.coroutines.sync.Mutex
 @Composable
 fun EditProductProducerRoute(
     producerId: Long,
-    navigateBack: (producerId: Long?) -> Unit,
+    provideBack: (producerId: Long?) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: EditProductProducerViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -28,7 +29,8 @@ fun EditProductProducerRoute(
     BackHandler {
         if (!navigateBackLock.isLocked) {
             navigateBackLock.tryLock()
-            navigateBack(producerId)
+            provideBack(producerId)
+            navigateBack()
         }
     }
 
@@ -36,7 +38,8 @@ fun EditProductProducerRoute(
         scope.launch {
             if (!viewModel.checkExists(producerId) && !navigateBackLock.isLocked) {
                 navigateBackLock.tryLock()
-                navigateBack(null)
+                provideBack(null)
+                navigateBack()
             }
         }
     }
@@ -51,7 +54,8 @@ fun EditProductProducerRoute(
                     is ModifyProductProducerEvent.NavigateBack -> {
                         if (!navigateBackLock.isLocked) {
                             navigateBackLock.tryLock()
-                            navigateBack(producerId)
+                            provideBack(producerId)
+                            navigateBack()
                         }
                     }
                     is ModifyProductProducerEvent.DeleteProductProducer -> {
@@ -61,7 +65,8 @@ fun EditProductProducerRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(null)
+                            provideBack(null)
+                            navigateBack()
                         }
                     }
                     is ModifyProductProducerEvent.MergeProductProducer -> {
@@ -71,7 +76,8 @@ fun EditProductProducerRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(result.id)
+                            provideBack(result.id)
+                            navigateBack()
                         }
                     }
                     is ModifyProductProducerEvent.SelectMergeCandidate ->
@@ -92,7 +98,8 @@ fun EditProductProducerRoute(
                                 !navigateBackLock.isLocked
                         ) {
                             navigateBackLock.tryLock()
-                            navigateBack(producerId)
+                            provideBack(producerId)
+                            navigateBack()
                         }
                     }
                 }
