@@ -1,0 +1,3 @@
+- Change minimum API from 21 to 23 (dependency update requirement)
+- Fix add/edit UX (long click consistency, data back propagation)
+- Fix scroll state loss in data display screens
