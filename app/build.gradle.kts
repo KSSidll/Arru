@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kssidll.arru"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 50
         versionName = "2.6.0"
