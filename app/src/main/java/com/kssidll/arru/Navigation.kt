@@ -51,73 +51,80 @@ import dev.olshevski.navigation.reimagined.pop
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
+@Immutable
+sealed class ProvidedLongId {
+    data class Some(val id: Long?) : ProvidedLongId()
+
+    data object None : ProvidedLongId()
+}
+
 /** Interface for navigation destinations that can accept shop id */
 private interface AcceptsShopId {
-    val providedShopId: MutableState<Long?>
+    val providedShopId: MutableState<ProvidedLongId>
 
     /**
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
      */
-    fun provideShop(id: Long? = null) {
-        providedShopId.value = id
+    fun provideShop(id: Long?) {
+        providedShopId.value = ProvidedLongId.Some(id)
     }
 }
 
 /** Interface for navigation destinations that can accept product id with product variant id */
 private interface AcceptsProductId {
-    val providedProductId: MutableState<Long?>
+    val providedProductId: MutableState<ProvidedLongId>
 
     /**
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
      */
-    fun provideProduct(id: Long? = null) {
-        providedProductId.value = id
+    fun provideProduct(id: Long?) {
+        providedProductId.value = ProvidedLongId.Some(id)
     }
 }
 
 /** Interface for navigation destinations that can accept product variant id */
 private interface AcceptsProductVariantId {
-    val providedProductVariantId: MutableState<Long?>
+    val providedProductVariantId: MutableState<ProvidedLongId>
 
     /**
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
      */
-    fun provideProductVariant(id: Long? = null) {
-        providedProductVariantId.value = id
+    fun provideProductVariant(id: Long?) {
+        providedProductVariantId.value = ProvidedLongId.Some(id)
     }
 }
 
 /** Interface for navigation destinations that can accept producer id */
 private interface AcceptsProducerId {
-    val providedProducerId: MutableState<Long?>
+    val providedProducerId: MutableState<ProvidedLongId>
 
     /**
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
      */
-    fun provideProducer(id: Long? = null) {
-        providedProducerId.value = id
+    fun provideProducer(id: Long?) {
+        providedProducerId.value = ProvidedLongId.Some(id)
     }
 }
 
 /** Interface for navigation destinations that can accept a category id */
 private interface AcceptsCategoryId {
-    val providedCategoryId: MutableState<Long?>
+    val providedCategoryId: MutableState<ProvidedLongId>
 
     /**
      * Provides the [id] to the navigation destination
      *
      * @param id id to provide
      */
-    fun provideCategory(id: Long? = null) {
-        providedCategoryId.value = id
+    fun provideCategory(id: Long?) {
+        providedCategoryId.value = ProvidedLongId.Some(id)
     }
 }
 
@@ -133,41 +140,50 @@ sealed class Screen : Parcelable {
 
     @Stable
     data class DisplayProduct(
-        override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null)
+        override val providedProductId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None)
     ) : Screen(), AcceptsProductId
 
     @Stable
     data class DisplayProductCategory(
-        override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null)
+        override val providedCategoryId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None)
     ) : Screen(), AcceptsCategoryId
 
     @Stable
     data class DisplayProductProducer(
-        override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null)
+        override val providedProducerId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None)
     ) : Screen(), AcceptsProducerId
 
     @Stable
     data class DisplayShop(
-        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null)
+        override val providedShopId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None)
     ) : Screen(), AcceptsShopId
 
     @Stable
     data class AddTransaction(
-        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null)
+        override val providedShopId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None)
     ) : Screen(), AcceptsShopId
 
     @Stable
     data class AddItem(
         val transactionId: Long,
-        override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
-        override val providedProductVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
+        override val providedProductId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
+        override val providedProductVariantId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
     ) : Screen(), AcceptsProductId, AcceptsProductVariantId
 
     @Stable
     data class AddProduct(
         val defaultName: String? = null,
-        override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null),
-        override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null),
+        override val providedProducerId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
+        override val providedCategoryId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
     ) : Screen(), AcceptsProducerId, AcceptsCategoryId
 
     @Immutable
@@ -182,21 +198,26 @@ sealed class Screen : Parcelable {
     @Stable
     data class EditTransaction(
         val transactionId: Long,
-        override val providedShopId: @RawValue MutableState<Long?> = mutableStateOf(null),
+        override val providedShopId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
     ) : Screen(), AcceptsShopId
 
     @Stable
     data class EditItem(
         val itemId: Long,
-        override val providedProductId: @RawValue MutableState<Long?> = mutableStateOf(null),
-        override val providedProductVariantId: @RawValue MutableState<Long?> = mutableStateOf(null),
+        override val providedProductId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
+        override val providedProductVariantId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
     ) : Screen(), AcceptsProductId, AcceptsProductVariantId
 
     @Stable
     data class EditProduct(
         val productId: Long,
-        override val providedProducerId: @RawValue MutableState<Long?> = mutableStateOf(null),
-        override val providedCategoryId: @RawValue MutableState<Long?> = mutableStateOf(null),
+        override val providedProducerId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
+        override val providedCategoryId: @RawValue MutableState<ProvidedLongId> =
+            mutableStateOf(ProvidedLongId.None),
     ) : Screen(), AcceptsProducerId, AcceptsCategoryId
 
     @Immutable data class EditProductVariant(val variantId: Long) : Screen()
@@ -586,7 +607,10 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
 
             is Screen.DisplayProductCategory -> {
                 DisplayProductCategoryRoute(
-                    categoryId = screen.providedCategoryId.value,
+                    categoryId =
+                        screen.providedCategoryId.value.let {
+                            if (it is ProvidedLongId.Some) it.id else null
+                        },
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
@@ -595,14 +619,20 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateEditShop = navigateEditShop,
                     navigateEditItem = navigateEditItem,
                     navigateEditProductCategory = {
-                        navigateEditProductCategory(screen.providedCategoryId.value)
+                        val providedCategoryId = screen.providedCategoryId.value
+                        if (providedCategoryId is ProvidedLongId.Some) {
+                            navigateEditProductCategory(providedCategoryId.id)
+                        }
                     },
                 )
             }
 
             is Screen.DisplayProductProducer -> {
                 DisplayProductProducerRoute(
-                    producerId = screen.providedProducerId.value,
+                    producerId =
+                        screen.providedProducerId.value.let {
+                            if (it is ProvidedLongId.Some) it.id else null
+                        },
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
@@ -611,14 +641,20 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateEditShop = navigateEditShop,
                     navigateEditItem = navigateEditItem,
                     navigateEditProductProducer = {
-                        navigateEditProductProducer(screen.providedProducerId.value)
+                        val providedProducerId = screen.providedProducerId.value
+                        if (providedProducerId is ProvidedLongId.Some) {
+                            navigateEditProductProducer(providedProducerId.id)
+                        }
                     },
                 )
             }
 
             is Screen.DisplayProduct -> {
                 DisplayProductRoute(
-                    productId = screen.providedProductId.value,
+                    productId =
+                        screen.providedProductId.value.let {
+                            if (it is ProvidedLongId.Some) it.id else null
+                        },
                     navigateBack = navigateBack,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
                     navigateEditProductCategory = navigateEditProductCategory,
@@ -627,13 +663,21 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateDisplayShop = navigateDisplayShop,
                     navigateEditShop = navigateEditShop,
                     navigateEditItem = navigateEditItem,
-                    navigateEditProduct = { navigateEditProduct(screen.providedProductId.value) },
+                    navigateEditProduct = {
+                        val providedProductId = screen.providedProductId.value
+                        if (providedProductId is ProvidedLongId.Some) {
+                            navigateEditProduct(providedProductId.id)
+                        }
+                    },
                 )
             }
 
             is Screen.DisplayShop -> {
                 DisplayShopRoute(
-                    shopId = screen.providedShopId.value,
+                    shopId =
+                        screen.providedShopId.value.let {
+                            if (it is ProvidedLongId.Some) it.id else null
+                        },
                     navigateBack = navigateBack,
                     navigateDisplayProduct = navigateDisplayProduct,
                     navigateDisplayProductCategory = navigateDisplayProductCategory,
@@ -641,7 +685,12 @@ fun Navigation(isExpandedScreen: Boolean, navController: NavController<Screen>) 
                     navigateDisplayProductProducer = navigateDisplayProductProducer,
                     navigateEditProductProducer = navigateEditProductProducer,
                     navigateEditItem = navigateEditItem,
-                    navigateEditShop = { navigateEditShop(screen.providedShopId.value) },
+                    navigateEditShop = {
+                        val providedShopId = screen.providedShopId.value
+                        if (providedShopId is ProvidedLongId.Some) {
+                            navigateEditShop(providedShopId.id)
+                        }
+                    },
                 )
             }
 

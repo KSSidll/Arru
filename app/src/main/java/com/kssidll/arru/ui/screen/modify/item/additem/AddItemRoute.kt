@@ -6,6 +6,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ProvidedLongId
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEvent
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemEventResult
 import com.kssidll.arru.ui.screen.modify.item.ModifyItemScreenImpl
@@ -21,8 +22,8 @@ fun AddItemRoute(
     navigateAddProductVariant: (productId: Long, query: String?) -> Unit,
     navigateEditProduct: (productId: Long) -> Unit,
     navigateEditProductVariant: (variantId: Long) -> Unit,
-    providedProductId: Long?,
-    providedProductVariantId: Long?,
+    providedProductId: ProvidedLongId,
+    providedProductVariantId: ProvidedLongId,
     viewModel: AddItemViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -37,11 +38,15 @@ fun AddItemRoute(
         }
     }
 
-    LaunchedEffect(providedProductId, providedProductVariantId) {
-        providedProductId?.let { viewModel.handleEvent(ModifyItemEvent.SelectProduct(it)) }
+    LaunchedEffect(providedProductId) {
+        if (providedProductId is ProvidedLongId.Some) {
+            viewModel.handleEvent(ModifyItemEvent.SelectProduct(providedProductId.id))
+        }
+    }
 
-        providedProductVariantId?.let {
-            viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(it))
+    LaunchedEffect(providedProductVariantId) {
+        if (providedProductVariantId is ProvidedLongId.Some) {
+            viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(providedProductVariantId.id))
         }
     }
 

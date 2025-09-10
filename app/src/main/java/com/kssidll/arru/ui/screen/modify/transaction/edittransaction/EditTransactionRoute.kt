@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ProvidedLongId
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEvent
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEventResult
@@ -22,7 +23,7 @@ fun EditTransactionRoute(
     navigateBack: () -> Unit,
     navigateAddShop: (query: String?) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
-    providedShopId: Long?,
+    providedShopId: ProvidedLongId,
     viewModel: EditTransactionViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -40,7 +41,9 @@ fun EditTransactionRoute(
     LaunchedEffect(transactionId) { viewModel.updateState(transactionId) }
 
     LaunchedEffect(providedShopId) {
-        viewModel.handleEvent(ModifyTransactionEvent.SelectShop(providedShopId))
+        if (providedShopId is ProvidedLongId.Some) {
+            viewModel.handleEvent(ModifyTransactionEvent.SelectShop(providedShopId.id))
+        }
     }
 
     ModifyTransactionScreenImpl(

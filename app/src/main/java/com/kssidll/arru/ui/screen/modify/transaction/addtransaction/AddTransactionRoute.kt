@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ProvidedLongId
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEvent
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionEventResult
 import com.kssidll.arru.ui.screen.modify.transaction.ModifyTransactionScreenImpl
@@ -17,13 +18,15 @@ fun AddTransactionRoute(
     navigateDisplayTransaction: (transactionId: Long) -> Unit,
     navigateAddShop: (query: String?) -> Unit,
     navigateEditShop: (shopId: Long) -> Unit,
-    providedShopId: Long?,
+    providedShopId: ProvidedLongId,
     viewModel: AddTransactionViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(providedShopId) {
-        viewModel.handleEvent(ModifyTransactionEvent.SelectShop(providedShopId))
+        if (providedShopId is ProvidedLongId.Some) {
+            viewModel.handleEvent(ModifyTransactionEvent.SelectShop(providedShopId.id))
+        }
     }
 
     ModifyTransactionScreenImpl(

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kssidll.arru.ProvidedLongId
 import com.kssidll.arru.R
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductEvent
 import com.kssidll.arru.ui.screen.modify.product.ModifyProductEventResult
@@ -25,8 +26,8 @@ fun EditProductRoute(
     navigateAddProductProducer: (query: String?) -> Unit,
     navigateEditProductCategory: (categoryId: Long) -> Unit,
     navigateEditProductProducer: (producerId: Long) -> Unit,
-    providedProducerId: Long?,
-    providedCategoryId: Long?,
+    providedProducerId: ProvidedLongId,
+    providedCategoryId: ProvidedLongId,
     viewModel: EditProductViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
@@ -53,11 +54,15 @@ fun EditProductRoute(
     LaunchedEffect(productId) { viewModel.updateState(productId) }
 
     LaunchedEffect(providedProducerId) {
-        viewModel.handleEvent(ModifyProductEvent.SelectProductProducer(providedProducerId))
+        if (providedProducerId is ProvidedLongId.Some) {
+            viewModel.handleEvent(ModifyProductEvent.SelectProductProducer(providedProducerId.id))
+        }
     }
 
     LaunchedEffect(providedCategoryId) {
-        viewModel.handleEvent(ModifyProductEvent.SelectProductCategory(providedCategoryId))
+        if (providedCategoryId is ProvidedLongId.Some) {
+            viewModel.handleEvent(ModifyProductEvent.SelectProductCategory(providedCategoryId.id))
+        }
     }
 
     ModifyProductScreenImpl(
