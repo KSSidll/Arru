@@ -61,7 +61,7 @@ fun ModifyTransactionScreenImpl(
     uiState: ModifyTransactionUiState,
     onEvent: (event: ModifyTransactionEvent) -> Unit,
     modifier: Modifier = Modifier,
-    submitButtonText: String = stringResource(id = R.string.item_add),
+    submitButtonText: String = stringResource(id = R.string.transaction_add),
 ) {
     val datePickerState = rememberDatePickerState()
 
