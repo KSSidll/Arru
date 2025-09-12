@@ -43,11 +43,11 @@ test-android-coroutines = "1.10.2"
 
 ## Plugins
 agp = "8.13.0"
-kotlin = "2.2.10"
+kotlin = "2.2.20"
 # hilt plugin has same version as hilt library so it is declared in the library section
 ktfmt = "0.58"
 spotless = "7.2.1"
-ksp = "2.2.10-2.0.2"
+ksp = "2.2.20-2.0.2"
 
 [libraries]
 # Kotlin
