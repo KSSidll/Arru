@@ -90,9 +90,7 @@ fun ModifyItemScreenImpl(
                 },
                 onItemLongClickLabel = stringResource(id = R.string.edit),
                 itemText = { it.name },
-                onAddButtonClick = {
-                    onEvent(ModifyItemEvent.NavigateAddProduct(it))
-                },
+                onAddButtonClick = { onEvent(ModifyItemEvent.NavigateAddProduct(it)) },
                 addButtonDescription = stringResource(R.string.item_product_add_description),
                 calculateScore = { item, query -> item.fuzzyScore(query) },
             )

@@ -43,12 +43,19 @@ fun EditItemRoute(
     LaunchedEffect(itemId) { viewModel.updateState(itemId) }
 
     LaunchedEffect(providedProductId, providedProductVariantId) {
-        if (providedProductId is ProvidedLongId.Some && providedProductVariantId is ProvidedLongId.Some) {
+        if (
+            providedProductId is ProvidedLongId.Some &&
+                providedProductVariantId is ProvidedLongId.Some
+        ) {
             viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(providedProductVariantId.id))
-            viewModel.handleEvent(ModifyItemEvent.SelectProduct(providedProductId.id, providedProductVariantId.id))
+            viewModel.handleEvent(
+                ModifyItemEvent.SelectProduct(providedProductId.id, providedProductVariantId.id)
+            )
         } else {
             if (providedProductVariantId is ProvidedLongId.Some) {
-                viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(providedProductVariantId.id))
+                viewModel.handleEvent(
+                    ModifyItemEvent.SelectProductVariant(providedProductVariantId.id)
+                )
             }
 
             if (providedProductId is ProvidedLongId.Some) {
