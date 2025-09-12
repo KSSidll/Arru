@@ -38,15 +38,18 @@ fun AddItemRoute(
         }
     }
 
-    LaunchedEffect(providedProductId) {
-        if (providedProductId is ProvidedLongId.Some) {
-            viewModel.handleEvent(ModifyItemEvent.SelectProduct(providedProductId.id))
-        }
-    }
-
-    LaunchedEffect(providedProductVariantId) {
-        if (providedProductVariantId is ProvidedLongId.Some) {
+    LaunchedEffect(providedProductId, providedProductVariantId) {
+        if (providedProductId is ProvidedLongId.Some && providedProductVariantId is ProvidedLongId.Some) {
             viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(providedProductVariantId.id))
+            viewModel.handleEvent(ModifyItemEvent.SelectProduct(providedProductId.id, providedProductVariantId.id))
+        } else {
+            if (providedProductVariantId is ProvidedLongId.Some) {
+                viewModel.handleEvent(ModifyItemEvent.SelectProductVariant(providedProductVariantId.id))
+            }
+
+            if (providedProductId is ProvidedLongId.Some) {
+                viewModel.handleEvent(ModifyItemEvent.SelectProduct(providedProductId.id))
+            }
         }
     }
 

@@ -48,7 +48,7 @@ sealed class ModifyItemEvent {
 
     data object DeleteItem : ModifyItemEvent()
 
-    data class SelectProduct(val productId: Long?) : ModifyItemEvent()
+    data class SelectProduct(val productId: Long?, val productVariantId: Long? = null) : ModifyItemEvent()
 
     data class SelectProductVariant(val productVariantId: Long?) : ModifyItemEvent()
 
@@ -126,7 +126,7 @@ abstract class ModifyItemViewModel : ViewModel() {
             is ModifyItemEvent.NavigateAddProductVariant -> {}
             is ModifyItemEvent.Submit -> {}
             is ModifyItemEvent.DeleteItem -> {}
-            is ModifyItemEvent.SelectProduct -> handleSelectProduct(event.productId)
+            is ModifyItemEvent.SelectProduct -> handleSelectProduct(event.productId, event.productVariantId)
             is ModifyItemEvent.SelectProductVariant ->
                 handleSelectProductVariant(event.productVariantId)
             is ModifyItemEvent.SetProductSearchDialogVisibility -> {
@@ -251,7 +251,7 @@ abstract class ModifyItemViewModel : ViewModel() {
         return ModifyItemEventResult.Success
     }
 
-    protected fun handleSelectProduct(productId: Long?) =
+    protected fun handleSelectProduct(productId: Long?, productVariantId: Long?) =
         viewModelScope.launch {
             cancelProductListener()
             cancelProductVariantListener()
@@ -266,7 +266,7 @@ abstract class ModifyItemViewModel : ViewModel() {
                 return@launch
             }
 
-            val productVariantId = _uiState.value.selectedProductVariant.data?.id
+            val productVariantId = productVariantId ?: _uiState.value.selectedProductVariant.data?.id
 
             // loading kinda not necessary here since it only makes a visual glitch, could be ok on
             // extremely slow devices maybe?
