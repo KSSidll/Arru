@@ -1,6 +1,5 @@
 package com.kssidll.arru.ui.component
 
-import androidx.collection.FloatFloatPair
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,13 +32,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kssidll.arru.LocalCurrencyFormatLocale
 import com.kssidll.arru.R
-import com.kssidll.arru.domain.data.data.ItemSpentChartData
-import com.kssidll.arru.domain.data.interfaces.ChartSource
-import com.kssidll.arru.domain.data.interfaces.avg
-import com.kssidll.arru.domain.data.interfaces.median
-import com.kssidll.arru.domain.data.interfaces.movingAverageChartData
-import com.kssidll.arru.domain.data.interfaces.movingMedianChartData
-import com.kssidll.arru.domain.data.interfaces.movingTotalChartData
 import com.kssidll.arru.domain.utils.formatToCurrency
 import com.kssidll.arru.helper.generateRandomFloatValue
 import com.kssidll.arru.ui.component.chart.rememberMarker
@@ -55,11 +47,9 @@ import com.patrykandpatrick.vico.compose.common.shader.verticalGradient
 import com.patrykandpatrick.vico.compose.common.vicoTheme
 import com.patrykandpatrick.vico.core.cartesian.Scroll
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.common.shader.ShaderProvider
 import java.util.Locale
-import kotlinx.collections.immutable.ImmutableList
 
 private val HALF_CHART_TOP_PADDING: Dp = 36.dp
 private val FULL_CHART_TOP_PADDING: Dp = 18.dp
@@ -69,25 +59,20 @@ private val CARD_TEXT_TOP_PADDING: Dp = 10.dp
 
 @Composable
 fun TotalAverageAndMedianSpendingComponent(
-    spentByTimeData: ImmutableList<ChartSource>,
-    totalSpentData: Float,
+    totalChartEntryModelProducer: CartesianChartModelProducer,
+    totalSpentValue: Float,
+    averageChartEntryModelProducer: CartesianChartModelProducer,
+    averageSpentValue: Float,
+    medianChartEntryModelProducer: CartesianChartModelProducer,
+    medianSpentValue: Float,
     modifier: Modifier = Modifier,
-    totalChartEntryModelProducer: CartesianChartModelProducer = remember {
-        CartesianChartModelProducer()
-    },
-    averageChartEntryModelProducer: CartesianChartModelProducer = remember {
-        CartesianChartModelProducer()
-    },
-    medianChartEntryModelProducer: CartesianChartModelProducer = remember {
-        CartesianChartModelProducer()
-    },
     animationSpec: AnimationSpec<Float> = tween(800, easing = EaseIn),
     skipAnimation: Boolean = false,
     onAnimationEnd: () -> Unit = {},
 ) {
-    val totalStartValue = if (skipAnimation) totalSpentData else 0f
-    val averageStartValue = if (skipAnimation) spentByTimeData.avg() else 0f
-    val medianStartValue = if (skipAnimation) spentByTimeData.median() else 0f
+    val totalStartValue = if (skipAnimation) totalSpentValue else 0f
+    val averageStartValue = if (skipAnimation) averageSpentValue else 0f
+    val medianStartValue = if (skipAnimation) medianSpentValue else 0f
     val currencyLocale = LocalCurrencyFormatLocale.current ?: Locale.getDefault()
 
     Column(modifier) {
@@ -100,25 +85,7 @@ fun TotalAverageAndMedianSpendingComponent(
         ) {
             var targetValue by remember { mutableFloatStateOf(totalStartValue) }
 
-            LaunchedEffect(totalSpentData) { targetValue = totalSpentData }
-
-            LaunchedEffect(spentByTimeData) {
-                val newData = spentByTimeData.movingTotalChartData().toMutableList()
-
-                if (newData.size == 1) {
-                    newData.add(
-                        FloatFloatPair(newData.first().first + 1.0f, newData.first().second)
-                    )
-                }
-
-                if (newData.isNotEmpty()) {
-                    totalChartEntryModelProducer.runTransaction {
-                        lineSeries {
-                            series(x = newData.map { it.first }, y = newData.map { it.second })
-                        }
-                    }
-                }
-            }
+            LaunchedEffect(totalSpentValue) { targetValue = totalSpentValue }
 
             val animatedValue =
                 animateFloatAsState(
@@ -194,24 +161,7 @@ fun TotalAverageAndMedianSpendingComponent(
             ) {
                 var averageTargetValue by remember { mutableFloatStateOf(averageStartValue) }
 
-                LaunchedEffect(spentByTimeData) {
-                    averageTargetValue = spentByTimeData.avg()
-                    val newData = spentByTimeData.movingAverageChartData().toMutableList()
-
-                    if (newData.size == 1) {
-                        newData.add(
-                            FloatFloatPair(newData.first().first + 1.0f, newData.first().second)
-                        )
-                    }
-
-                    if (newData.isNotEmpty()) {
-                        averageChartEntryModelProducer.runTransaction {
-                            lineSeries {
-                                series(x = newData.map { it.first }, y = newData.map { it.second })
-                            }
-                        }
-                    }
-                }
+                LaunchedEffect(averageSpentValue) { averageTargetValue = averageSpentValue }
 
                 val animatedAverageValue =
                     animateFloatAsState(
@@ -286,24 +236,7 @@ fun TotalAverageAndMedianSpendingComponent(
             ) {
                 var medianTargetValue by remember { mutableFloatStateOf(medianStartValue) }
 
-                LaunchedEffect(spentByTimeData) {
-                    medianTargetValue = spentByTimeData.median()
-                    val newData = spentByTimeData.movingMedianChartData().toMutableList()
-
-                    if (newData.size == 1) {
-                        newData.add(
-                            FloatFloatPair(newData.first().first + 1.0f, newData.first().second)
-                        )
-                    }
-
-                    if (newData.isNotEmpty()) {
-                        medianChartEntryModelProducer.runTransaction {
-                            lineSeries {
-                                series(x = newData.map { it.first }, y = newData.map { it.second })
-                            }
-                        }
-                    }
-                }
+                LaunchedEffect(medianSpentValue) { medianTargetValue = medianSpentValue }
 
                 val animatedMedianValue =
                     animateFloatAsState(
@@ -376,8 +309,12 @@ private fun TotalAverageAndMedianSpendingComponentPreview() {
     ArruTheme {
         Surface {
             TotalAverageAndMedianSpendingComponent(
-                spentByTimeData = ItemSpentChartData.generateList(),
-                totalSpentData = generateRandomFloatValue(),
+                totalChartEntryModelProducer = CartesianChartModelProducer(),
+                totalSpentValue = generateRandomFloatValue(),
+                averageChartEntryModelProducer = CartesianChartModelProducer(),
+                averageSpentValue = generateRandomFloatValue(),
+                medianChartEntryModelProducer = CartesianChartModelProducer(),
+                medianSpentValue = generateRandomFloatValue(),
             )
         }
     }

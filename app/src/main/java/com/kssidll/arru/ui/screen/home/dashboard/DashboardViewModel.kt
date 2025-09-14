@@ -6,8 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kssidll.arru.data.data.TotalSpentByCategory
 import com.kssidll.arru.data.data.TotalSpentByShop
+import com.kssidll.arru.domain.data.data.TransactionSpentChartData
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.ChartSource
+import com.kssidll.arru.domain.data.interfaces.avg
+import com.kssidll.arru.domain.data.interfaces.median
+import com.kssidll.arru.domain.data.interfaces.runMovingAverageChartDataTransaction
+import com.kssidll.arru.domain.data.interfaces.runMovingMedianChartDataTransaction
+import com.kssidll.arru.domain.data.interfaces.runMovingTotalChartDataTransaction
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByMonthUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByProductCategoryUseCase
@@ -31,12 +37,17 @@ import kotlinx.coroutines.launch
 @Immutable
 data class DashboardUiState(
     val scrollState: ScrollState = ScrollState(0),
-    val totalSpent: Float = 0f,
     val chartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
     val spentByTime: ImmutableList<ChartSource> = emptyImmutableList(),
     val spentByTimePeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
     val categorySpendingRankingData: ImmutableList<TotalSpentByCategory> = emptyImmutableList(),
     val shopSpendingRankingData: ImmutableList<TotalSpentByShop> = emptyImmutableList(),
+    val totalChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val totalSpentValue: Float = 0f,
+    val averageChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val averageSpentValue: Float = 0f,
+    val medianChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val medianSpentValue: Float = 0f,
 ) {
     val nothingToDisplayVisible: Boolean =
         spentByTime.isEmpty() &&
@@ -78,7 +89,7 @@ constructor(
     init {
         viewModelScope.launch {
             getTotalSpentUseCase().collectLatest {
-                _uiState.update { currentState -> currentState.copy(totalSpent = it ?: 0f) }
+                _uiState.update { currentState -> currentState.copy(totalSpentValue = it ?: 0f) }
             }
         }
 
@@ -135,29 +146,40 @@ constructor(
             viewModelScope.launch {
                 when (period) {
                     SpendingSummaryPeriod.Day -> {
-                        getTotalSpentByDayUseCase().collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
-                        }
+                        getTotalSpentByDayUseCase().collectLatest { updateChartUiState(it) }
                     }
 
                     SpendingSummaryPeriod.Week -> {
-                        getTotalSpentByWeekUseCase().collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
-                        }
+                        getTotalSpentByWeekUseCase().collectLatest { updateChartUiState(it) }
                     }
 
                     SpendingSummaryPeriod.Month -> {
-                        getTotalSpentByMonthUseCase().collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
-                        }
+                        getTotalSpentByMonthUseCase().collectLatest { updateChartUiState(it) }
                     }
 
                     SpendingSummaryPeriod.Year -> {
-                        getTotalSpentByYearUseCase().collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
-                        }
+                        getTotalSpentByYearUseCase().collectLatest { updateChartUiState(it) }
                     }
                 }
             }
+    }
+
+    private suspend fun updateChartUiState(spentByTime: ImmutableList<TransactionSpentChartData>) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                spentByTime = spentByTime,
+                averageSpentValue = spentByTime.avg(),
+                medianSpentValue = spentByTime.median(),
+            )
+        }
+
+        val currentUiState = _uiState.value
+        currentUiState.totalChartEntryModelProducer.runMovingTotalChartDataTransaction(spentByTime)
+        currentUiState.averageChartEntryModelProducer.runMovingAverageChartDataTransaction(
+            spentByTime
+        )
+        currentUiState.medianChartEntryModelProducer.runMovingMedianChartDataTransaction(
+            spentByTime
+        )
     }
 }

@@ -1,6 +1,8 @@
 package com.kssidll.arru.domain.data.interfaces
 
 import androidx.collection.FloatFloatPair
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 
 interface FloatSource {
     fun value(): Float
@@ -45,6 +47,35 @@ fun <E> List<E>.movingAverageChartData(): List<FloatFloatPair> where E : FloatSo
 }
 
 /**
+ * Runs a transaction committing [FloatSource] as moving average to the
+ * [CartesianChartModelProducer]
+ */
+suspend fun <E> CartesianChartModelProducer.runMovingAverageChartDataTransaction(data: List<E>)
+    where E : FloatSource {
+    val newAverageChartData = data.movingAverageChartData().toMutableList()
+
+    if (newAverageChartData.size == 1) {
+        newAverageChartData.add(
+            FloatFloatPair(
+                newAverageChartData.first().first + 1.0f,
+                newAverageChartData.first().second,
+            )
+        )
+    }
+
+    if (newAverageChartData.isNotEmpty()) {
+        runTransaction {
+            lineSeries {
+                series(
+                    x = newAverageChartData.map { it.first },
+                    y = newAverageChartData.map { it.second },
+                )
+            }
+        }
+    }
+}
+
+/**
  * assumes the list being ordered by time and creates a list representing the moving total in that
  * time
  *
@@ -72,6 +103,31 @@ fun <E> List<E>.movingTotalChartData(): List<FloatFloatPair> where E : FloatSour
     if (isEmpty()) return emptyList()
 
     return movingTotal().mapIndexed { index, median -> FloatFloatPair(index.toFloat(), median) }
+}
+
+/**
+ * Runs a transaction committing [FloatSource] as moving total to the [CartesianChartModelProducer]
+ */
+suspend fun <E> CartesianChartModelProducer.runMovingTotalChartDataTransaction(data: List<E>)
+    where E : FloatSource {
+    val newTotalChartData = data.movingTotalChartData().toMutableList()
+
+    if (newTotalChartData.size == 1) {
+        newTotalChartData.add(
+            FloatFloatPair(newTotalChartData.first().first + 1.0f, newTotalChartData.first().second)
+        )
+    }
+
+    if (newTotalChartData.isNotEmpty()) {
+        runTransaction {
+            lineSeries {
+                series(
+                    x = newTotalChartData.map { it.first },
+                    y = newTotalChartData.map { it.second },
+                )
+            }
+        }
+    }
 }
 
 /**
@@ -108,4 +164,33 @@ fun <E> List<E>.movingMedianChartData(): List<FloatFloatPair>
     if (isEmpty()) return emptyList()
 
     return movingMedian().mapIndexed { index, median -> FloatFloatPair(index.toFloat(), median) }
+}
+
+/**
+ * Runs a transaction committing [SortSource] [FloatSource] as moving average to the
+ * [CartesianChartModelProducer]
+ */
+suspend fun <E> CartesianChartModelProducer.runMovingMedianChartDataTransaction(data: List<E>)
+    where E : SortSource, E : FloatSource {
+    val newMedianChartData = data.movingMedianChartData().toMutableList()
+
+    if (newMedianChartData.size == 1) {
+        newMedianChartData.add(
+            FloatFloatPair(
+                newMedianChartData.first().first + 1.0f,
+                newMedianChartData.first().second,
+            )
+        )
+    }
+
+    if (newMedianChartData.isNotEmpty()) {
+        runTransaction {
+            lineSeries {
+                series(
+                    x = newMedianChartData.map { it.first },
+                    y = newMedianChartData.map { it.second },
+                )
+            }
+        }
+    }
 }

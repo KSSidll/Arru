@@ -7,8 +7,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.kssidll.arru.data.view.Item
+import com.kssidll.arru.domain.data.data.ItemSpentChartData
 import com.kssidll.arru.domain.data.emptyImmutableList
 import com.kssidll.arru.domain.data.interfaces.ChartSource
+import com.kssidll.arru.domain.data.interfaces.avg
+import com.kssidll.arru.domain.data.interfaces.median
+import com.kssidll.arru.domain.data.interfaces.runMovingAverageChartDataTransaction
+import com.kssidll.arru.domain.data.interfaces.runMovingMedianChartDataTransaction
+import com.kssidll.arru.domain.data.interfaces.runMovingTotalChartDataTransaction
 import com.kssidll.arru.domain.usecase.data.GetItemsForProductCategoryUseCase
 import com.kssidll.arru.domain.usecase.data.GetProductCategoryEntityUseCase
 import com.kssidll.arru.domain.usecase.data.GetTotalSpentByDayForProductCategoryUseCase
@@ -21,6 +27,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +38,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Immutable
 data class DisplayProductCategoryUiState(
@@ -39,8 +47,13 @@ data class DisplayProductCategoryUiState(
     val spentByTime: ImmutableList<ChartSource> = emptyImmutableList(),
     val spentByTimePeriod: SpendingSummaryPeriod = SpendingSummaryPeriod.Month,
     val categoryName: String = String(),
-    val totalSpent: Float = 0f,
     val items: Flow<PagingData<Item>> = emptyFlow(),
+    val totalChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val totalSpentValue: Float = 0f,
+    val averageChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val averageSpentValue: Float = 0f,
+    val medianChartEntryModelProducer: CartesianChartModelProducer = CartesianChartModelProducer(),
+    val medianSpentValue: Float = 0f,
 )
 
 @Immutable
@@ -118,7 +131,7 @@ constructor(
                         viewModelScope.launch {
                             getTotalSpentForProductCategoryUseCase(categoryId).collectLatest {
                                 _uiState.update { currentState ->
-                                    currentState.copy(totalSpent = it ?: 0f)
+                                    currentState.copy(totalSpentValue = it ?: 0f)
                                 }
                             }
                         }
@@ -156,28 +169,49 @@ constructor(
                 when (period) {
                     SpendingSummaryPeriod.Day -> {
                         getTotalSpentByDayForProductCategoryUseCase(categoryId).collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                            updateChartUiState(it)
                         }
                     }
 
                     SpendingSummaryPeriod.Week -> {
                         getTotalSpentByWeekForProductCategoryUseCase(categoryId).collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                            updateChartUiState(it)
                         }
                     }
 
                     SpendingSummaryPeriod.Month -> {
                         getTotalSpentByMonthForProductCategoryUseCase(categoryId).collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                            updateChartUiState(it)
                         }
                     }
 
                     SpendingSummaryPeriod.Year -> {
                         getTotalSpentByYearForProductCategoryUseCase(categoryId).collectLatest {
-                            _uiState.update { currentState -> currentState.copy(spentByTime = it) }
+                            updateChartUiState(it)
                         }
                     }
                 }
             }
+    }
+
+    private suspend fun updateChartUiState(spentByTime: ImmutableList<ItemSpentChartData>) {
+        withContext(Dispatchers.Default) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    spentByTime = spentByTime,
+                    averageSpentValue = spentByTime.avg(),
+                    medianSpentValue = spentByTime.median(),
+                )
+            }
+
+            val currentUiState = _uiState.value
+            currentUiState.totalChartEntryModelProducer.runMovingTotalChartDataTransaction(spentByTime)
+            currentUiState.averageChartEntryModelProducer.runMovingAverageChartDataTransaction(
+                spentByTime
+            )
+            currentUiState.medianChartEntryModelProducer.runMovingMedianChartDataTransaction(
+                spentByTime
+            )
+        }
     }
 }

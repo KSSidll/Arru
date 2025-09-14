@@ -134,9 +134,14 @@ fun DashboardScreenContent(
                     ) {
                         Column {
                             TotalAverageAndMedianSpendingComponent(
-                                totalChartEntryModelProducer = uiState.chartEntryModelProducer,
-                                spentByTimeData = uiState.spentByTime,
-                                totalSpentData = uiState.totalSpent,
+                                totalChartEntryModelProducer = uiState.totalChartEntryModelProducer,
+                                totalSpentValue = uiState.totalSpentValue,
+                                averageChartEntryModelProducer =
+                                    uiState.averageChartEntryModelProducer,
+                                averageSpentValue = uiState.averageSpentValue,
+                                medianChartEntryModelProducer =
+                                    uiState.medianChartEntryModelProducer,
+                                medianSpentValue = uiState.medianSpentValue,
                                 modifier = Modifier.padding(horizontal = 12.dp),
                             )
 
@@ -240,9 +245,12 @@ fun ExpandedDashboardScreenContent(
                 ) {
                     Column {
                         TotalAverageAndMedianSpendingComponent(
-                            totalChartEntryModelProducer = uiState.chartEntryModelProducer,
-                            spentByTimeData = uiState.spentByTime,
-                            totalSpentData = uiState.totalSpent,
+                            totalChartEntryModelProducer = uiState.totalChartEntryModelProducer,
+                            totalSpentValue = uiState.totalSpentValue,
+                            averageChartEntryModelProducer = uiState.averageChartEntryModelProducer,
+                            averageSpentValue = uiState.averageSpentValue,
+                            medianChartEntryModelProducer = uiState.medianChartEntryModelProducer,
+                            medianSpentValue = uiState.medianSpentValue,
                             modifier = Modifier.padding(horizontal = 12.dp),
                         )
 

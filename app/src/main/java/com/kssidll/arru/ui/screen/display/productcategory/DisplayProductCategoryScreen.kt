@@ -216,8 +216,12 @@ private fun DisplayProductCategoryScreenContent(
                     Spacer(Modifier.height(40.dp))
 
                     TotalAverageAndMedianSpendingComponent(
-                        spentByTimeData = uiState.spentByTime,
-                        totalSpentData = uiState.totalSpent,
+                        totalChartEntryModelProducer = uiState.totalChartEntryModelProducer,
+                        totalSpentValue = uiState.totalSpentValue,
+                        averageChartEntryModelProducer = uiState.averageChartEntryModelProducer,
+                        averageSpentValue = uiState.averageSpentValue,
+                        medianChartEntryModelProducer = uiState.medianChartEntryModelProducer,
+                        medianSpentValue = uiState.medianSpentValue,
                     )
 
                     Spacer(Modifier.height(28.dp))
@@ -288,7 +292,9 @@ private fun DisplayProductCategoryScreenPreview() {
                 uiState =
                     DisplayProductCategoryUiState(
                         spentByTime = ItemSpentChartData.generateList(),
-                        totalSpent = generateRandomFloatValue(),
+                        totalSpentValue = generateRandomFloatValue(),
+                        averageSpentValue = generateRandomFloatValue(),
+                        medianSpentValue = generateRandomFloatValue(),
                     ),
                 onEvent = {},
             )
@@ -315,7 +321,9 @@ private fun ExpandedDisplayProductCategoryScreenPreview() {
                 uiState =
                     DisplayProductCategoryUiState(
                         spentByTime = ItemSpentChartData.generateList(),
-                        totalSpent = generateRandomFloatValue(),
+                        totalSpentValue = generateRandomFloatValue(),
+                        averageSpentValue = generateRandomFloatValue(),
+                        medianSpentValue = generateRandomFloatValue(),
                     ),
                 onEvent = {},
             )
