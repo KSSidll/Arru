@@ -60,7 +60,8 @@ interface ProductCategoryEntityDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT 
+            SELECT
+                1 AS data_order,
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch') AS day,
                 DATE(current_timestamp, 'localtime') AS end_date
             FROM ItemEntity
@@ -69,7 +70,7 @@ interface ProductCategoryEntityDao {
                 ON ProductEntity.id = ItemEntity.productEntityId
                 AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
-            SELECT DATE(day, '+1 day') AS day, end_date
+            SELECT data_order + 1, DATE(day, '+1 day') AS day, end_date
             FROM date_series
             WHERE date_series.day < date_series.end_date
         ), spent_by_day AS (
@@ -82,14 +83,15 @@ interface ProductCategoryEntityDao {
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
-                date_series.day AS date, 
+                data_order,
+                date_series.day AS date,
                 COALESCE(spent_by_day.spent, 0) AS spent
             FROM date_series
             LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
             WHERE date_series.day IS NOT NULL
         ), full_spent_by_day_row AS (
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                data_order,
                 date,
                 spent AS value
             FROM full_spent_by_day
@@ -103,7 +105,8 @@ interface ProductCategoryEntityDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT 
+            SELECT
+                1 AS data_order,
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'weekday 1') AS day,
                 DATE(current_timestamp, 'localtime') AS end_date
             FROM ItemEntity
@@ -112,7 +115,7 @@ interface ProductCategoryEntityDao {
                 ON ProductEntity.id = ItemEntity.productEntityId
                 AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
-            SELECT DATE(day, '+7 days') AS day, end_date
+            SELECT data_order + 1, DATE(day, '+7 days') AS day, end_date
             FROM date_series
             WHERE DATE(date_series.day, '+7 days') <= date_series.end_date
         ), spent_by_day AS (
@@ -125,14 +128,15 @@ interface ProductCategoryEntityDao {
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
-                date_series.day AS date, 
+                data_order,
+                date_series.day AS date,
                 COALESCE(spent_by_day.spent, 0) AS spent
             FROM date_series
             LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
             WHERE date_series.day IS NOT NULL
         ), full_spent_by_day_row AS (
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                data_order,
                 date,
                 spent AS value
             FROM full_spent_by_day
@@ -146,7 +150,8 @@ interface ProductCategoryEntityDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT 
+            SELECT
+                1 AS data_order,
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'start of month') AS day,
                 DATE(current_timestamp, 'localtime') AS end_date
             FROM ItemEntity
@@ -155,7 +160,7 @@ interface ProductCategoryEntityDao {
                 ON ProductEntity.id = ItemEntity.productEntityId
                 AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
-            SELECT DATE(day, '+1 month') AS day, end_date
+            SELECT data_order + 1, DATE(day, '+1 month') AS day, end_date
             FROM date_series
             WHERE DATE(date_series.day, '+1 month') <= date_series.end_date
         ), spent_by_day AS (
@@ -168,14 +173,15 @@ interface ProductCategoryEntityDao {
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
-            STRFTIME('%Y-%m', date_series.day) AS date, 
+                data_order,
+                STRFTIME('%Y-%m', date_series.day) AS date,
                 COALESCE(spent_by_day.spent, 0) AS spent
             FROM date_series
             LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
             WHERE date_series.day IS NOT NULL
         ), full_spent_by_day_row AS (
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                data_order,
                 date,
                 spent AS value
             FROM full_spent_by_day
@@ -189,7 +195,8 @@ interface ProductCategoryEntityDao {
     @Query(
         """
         WITH date_series AS (
-            SELECT 
+            SELECT
+                1 AS data_order,
                 DATE(MIN(TransactionEntity.date / 1000), 'unixepoch', 'start of year') AS day,
                 DATE(current_timestamp, 'localtime') AS end_date
             FROM ItemEntity
@@ -198,7 +205,7 @@ interface ProductCategoryEntityDao {
                 ON ProductEntity.id = ItemEntity.productEntityId
                 AND ProductEntity.productCategoryEntityId = :id
             UNION ALL
-            SELECT DATE(day, '+1 year') AS day, end_date
+            SELECT data_order + 1, DATE(day, '+1 year') AS day, end_date
             FROM date_series
             WHERE DATE(date_series.day, '+1 year') <= date_series.end_date
         ), spent_by_day AS (
@@ -211,14 +218,15 @@ interface ProductCategoryEntityDao {
             GROUP BY day
         ), full_spent_by_day AS (
             SELECT
-            STRFTIME('%Y', date_series.day) AS date, 
+                data_order,
+                STRFTIME('%Y', date_series.day) AS date,
                 COALESCE(spent_by_day.spent, 0) AS spent
             FROM date_series
             LEFT JOIN spent_by_day ON date_series.day = spent_by_day.day
             WHERE date_series.day IS NOT NULL
         ), full_spent_by_day_row AS (
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY date ASC) data_order,
+                data_order,
                 date,
                 spent AS value
             FROM full_spent_by_day
